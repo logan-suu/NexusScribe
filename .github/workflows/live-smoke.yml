@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       approve_live_smoke:
-        description: 'Authorize one synthetic planning-only provider call; confirm overage is disabled'
+        description: 'Authorize up to five synthetic full-flow provider calls; confirm overage is disabled'
         type: boolean
         required: true
         default: false
