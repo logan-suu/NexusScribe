@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Readable} from 'node:stream';
-import {createAgentService,readConfig,validateInput,validateOutput,parseModelJson,MAX_BODY_BYTES} from '../server/provider.js';
+import {createAgentService,readConfig,validateInput,validateOutput,parseModelJson,MAX_BODY_BYTES,normalizePlan} from '../server/provider.js';
 import {createHandler,originAllowed} from '../server/index.js';
 const env={NEXUS_OVERAGE_CONFIRMED_OFF:'true',NEXUS_LIVE_ENABLED:'true',NEXUS_API_BASE_URL:'https://example.test/v1/',NEXUS_API_MODEL:'test-model',NEXUS_API_KEY:'server-only-secret'};
 const input={input:{idea:'一座灯塔每晚失去一层',protagonist:'阿离'}};
@@ -96,3 +96,44 @@ test('all calls use a stable session identifier without impersonation',async()=>
 });
 
 test('interview cannot reask an already answered question',()=>{assert.throws(()=>validateOutput('interview',interview,{idea:'灯塔',tone:'不安'}),{code:'INVALID_MODEL_OUTPUT'});assert.throws(()=>validateOutput('interview',interview,{idea:'灯塔',answers:{tone:'温暖'}}),{code:'INVALID_MODEL_OUTPUT'});});
+
+const compactInput={idea:'灯塔逐层消失',protagonist:'作者的小舟',tone:'作者的温暖',pov:'第一人称',goal:'作者的目标',boundaries:'不要复活'};
+const compactPlan={proposals:{},obstacle:'雾阻挡道路',coreQuestion:'谁收走灯塔',opening:'夜访海边',unresolved:['真相待定'],outline:[1,2,3].map(n=>({title:`纸灯${n}`,goal:'寻找灯塔',conflict:'海雾封路',knowledgeDelta:'发现纸灯',exitState:'决定追踪',emotionalArc:'好奇到犹豫',scene:{time:'夜晚',location:'海岛',participants:['小舟'],allowedReveal:'纸灯线索',forbiddenReveal:'最终真相',preconditions:[]}}))};
+test('compact plans preserve explicit author values and create stable canonical metadata',async()=>{
+ const canonical=normalizePlan(compactPlan,compactInput);
+ for(const [authorKey,contractKey] of [['idea','premise'],['protagonist','protagonist'],['tone','emotionalDirection'],['pov','pov'],['goal','desire'],['boundaries','boundaries']]){
+ assert.equal(canonical.contract[contractKey],compactInput[authorKey]);assert.equal(canonical.contract.fields.find(f=>f.key===contractKey).status,'confirmed');
+ }
+ assert.deepEqual(canonical.outline.map(ch=>ch.id),['chapter-1','chapter-2','chapter-3']);assert.ok(canonical.outline.every(ch=>ch.pov==='第一人称'));assert.equal(canonical.contract.fields.length,9);
+ assert.throws(()=>normalizePlan({...compactPlan,proposals:{pov:'擅自更改'}},compactInput),{code:'INVALID_MODEL_OUTPUT'});
+ let captured;const service=createAgentService({env,fetchImpl:async(url,options)=>{captured=JSON.parse(options.body);return reply(compactPlan);}});const out=await service.run('planStory',{input:compactInput});assert.equal(out.provider.id,'openai-compatible');assert.equal(out.contract.provenance.id,'openai-compatible');assert.equal(out.contract.status,'proposal');assert.ok(out.outline.every(ch=>ch.provenance==='openai-compatible'));
+ assert.ok(captured.messages[0].content.includes('Compact planning response'));assert.ok(captured.messages[0].content.includes('12 Chinese characters'));assert.equal(Object.hasOwn(captured,'reasoning_effort'),false);assert.equal(Object.hasOwn(captured,'thinking'),false);
+});
+test('compact plans require every missing author proposal and every creative field, without fabricated fallback',()=>{
+ const missingAuthor={idea:'灯塔'};const proposals={protagonist:'旅人',tone:'温暖',pov:'第三人称',goal:'找灯塔'};
+ const out=normalizePlan({...compactPlan,proposals},missingAuthor);assert.equal(out.contract.protagonist,'旅人');assert.equal(out.contract.fields.find(f=>f.key==='protagonist').status,'proposed');assert.equal(out.contract.boundaries,'');assert.equal(out.contract.fields.find(f=>f.key==='boundaries').status,'deferred');
+ const answers={idea:'灯塔',answers:{protagonist:'作者回答',tone:'明亮',pov:'第一人称',goal:'回家'}};assert.equal(normalizePlan(compactPlan,answers).contract.protagonist,'作者回答');
+ for(const key of ['obstacle','coreQuestion','opening','unresolved','outline','proposals']){const wire=structuredClone(compactPlan);delete wire[key];assert.throws(()=>normalizePlan(wire,compactInput),{code:'INVALID_MODEL_OUTPUT'});}
+ for(const key of Object.keys(proposals)){const proposed={...proposals};delete proposed[key];assert.throws(()=>normalizePlan({...compactPlan,proposals:proposed},missingAuthor),{code:'INVALID_MODEL_OUTPUT'});}
+ for(const key of ['title','goal','conflict','knowledgeDelta','exitState','emotionalArc','scene']){const wire=structuredClone(compactPlan);delete wire.outline[0][key];assert.throws(()=>normalizePlan(wire,compactInput),{code:'INVALID_MODEL_OUTPUT'});}
+ for(const key of ['time','location','participants','allowedReveal','forbiddenReveal','preconditions']){const wire=structuredClone(compactPlan);delete wire.outline[0].scene[key];assert.throws(()=>normalizePlan(wire,compactInput),{code:'INVALID_MODEL_OUTPUT'});}
+ for(const outline of [compactPlan.outline.slice(1),[...compactPlan.outline,compactPlan.outline[0]]])assert.throws(()=>normalizePlan({...compactPlan,outline},compactInput),{code:'INVALID_MODEL_OUTPUT'});
+ assert.throws(()=>normalizePlan({...compactPlan,outline:compactPlan.outline.map(ch=>({...ch,id:'untrusted'}))},compactInput),{code:'INVALID_MODEL_OUTPUT'});
+});
+test('compact example measures actual JSON character redundancy without estimating tokens',()=>{
+ const canonical=normalizePlan(compactPlan,compactInput);const compactCharacters=JSON.stringify(compactPlan).length,canonicalCharacters=JSON.stringify(canonical).length;
+ assert.ok(compactCharacters<canonicalCharacters);assert.equal(compactCharacters,832);assert.equal(canonicalCharacters,1634);
+});
+
+test('legacy plans cannot overwrite explicit author choices or elevate model creative fields',async()=>{
+ const legacy=normalizePlan(compactPlan,compactInput);const mapping={premise:'idea',protagonist:'protagonist',emotionalDirection:'tone',pov:'pov',desire:'goal',boundaries:'boundaries'};
+ for(const key of Object.keys(mapping))legacy.contract[key]='模型擅自改变';
+ for(const field of legacy.contract.fields){field.status='confirmed';if(Object.hasOwn(mapping,field.key))field.value='模型擅自改变';}
+ legacy.outline.forEach(ch=>{ch.id='model-'+ch.id;ch.pov='模型的视角';});
+ const original=structuredClone(legacy);const normalized=normalizePlan(legacy,compactInput);
+ for(const [key,authorKey] of Object.entries(mapping)){assert.equal(normalized.contract[key],compactInput[authorKey]);const field=normalized.contract.fields.find(f=>f.key===key);assert.equal(field.value,compactInput[authorKey]);assert.equal(field.status,'confirmed');}
+ for(const key of ['obstacle','coreQuestion','opening']){const field=normalized.contract.fields.find(f=>f.key===key);assert.equal(field.status,'proposed');assert.equal(field.value,compactPlan[key]);}
+ assert.deepEqual(normalized.outline.map(ch=>ch.id),['chapter-1','chapter-2','chapter-3']);assert.ok(normalized.outline.every(ch=>ch.pov===compactInput.pov));assert.deepEqual(legacy,original);
+ const noAuthor=normalizePlan(legacy,{idea:'作者灵感'});assert.equal(noAuthor.contract.fields.find(f=>f.key==='protagonist').status,'proposed');assert.equal(noAuthor.contract.boundaries,'');assert.equal(noAuthor.contract.fields.find(f=>f.key==='boundaries').status,'deferred');
+ const service=createAgentService({env,fetchImpl:async()=>reply(legacy)});const result=await service.run('planStory',{input:compactInput});assert.equal(result.contract.protagonist,compactInput.protagonist);assert.equal(result.contract.fields.find(f=>f.key==='obstacle').status,'proposed');
+});
