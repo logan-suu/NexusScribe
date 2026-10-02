@@ -1,13 +1,19 @@
-name: Manual bounded live-provider smoke
+name: Manual bounded real-browser writing journey
 
 on:
   workflow_dispatch:
     inputs:
       approve_live_smoke:
-        description: 'Authorize up to five synthetic full-flow provider calls; confirm overage is disabled'
+        description: 'Approve selected synthetic test and confirm overage disabled (journey cap12 or either probe cap1)'
         type: boolean
         required: true
         default: false
+      test_scope:
+        description: 'Choose full browser journey or one-call review/generation contract probe'
+        type: choice
+        required: true
+        default: review-probe
+        options: [journey, review-probe, generation-probe]
 
 permissions:
   contents: read
@@ -17,30 +23,58 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  live-smoke:
+  live-writing-journey:
     if: github.event_name == 'workflow_dispatch' && inputs.approve_live_smoke == true
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 8
     steps:
       - name: Check out the reviewed dispatch commit
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: Set up Node.js without dependency cache
+      - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
-      # Uses only built-in Node.js modules; do not install dependencies or upload outputs.
-      - name: Run approved bounded synthetic smoke
-        run: node scripts/live-smoke.mjs
+      - name: Install locked dependencies without credentials
+        if: inputs.test_scope == 'journey'
+        run: npm ci
+      - name: Install Chromium and Chinese fonts without credentials
+        if: inputs.test_scope == 'journey'
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get update && sudo apt-get install --yes fonts-noto-cjk
+      - name: Run approved bounded real-browser journey
+        if: inputs.test_scope == 'journey'
+        run: node scripts/live-writing-journey.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-          NEXUS_API_BASE_URL: https://opencode.ai/zen/go/v1
-          NEXUS_API_MODEL: deepseek-v4.1-flash
-          NEXUS_THINKING_MODE: 'disabled'
-          NEXUS_SMOKE_APPROVED: 'true'
+          NEXUS_JOURNEY_APPROVED: 'true'
           NEXUS_LIVE_ENABLED: 'true'
           NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
-          NEXUS_MAX_OUTPUT_TOKENS: '3000'
-          NEXUS_SMOKE_SCOPE: 'full-flow'
-          NEXUS_MAX_CALLS: '5'
+      - name: Run approved one-call synthetic review probe
+        if: inputs.test_scope == 'review-probe'
+        run: node scripts/live-review-probe.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_REVIEW_PROBE_APPROVED: 'true'
+          NEXUS_JOURNEY_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Run approved one-call synthetic generation probe
+        if: inputs.test_scope == 'generation-probe'
+        run: node scripts/live-generation-probe.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_GENERATION_PROBE_APPROVED: 'true'
+          NEXUS_JOURNEY_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve synthetic UI screenshots only
+        if: always() && inputs.test_scope == 'journey'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-live-journey-screenshots
+          path: live-journey-evidence/*.png
+          if-no-files-found: ignore
+          retention-days: 7

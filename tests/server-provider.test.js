@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Readable} from 'node:stream';
-import {createAgentService,readConfig,validateInput,validateOutput,parseModelJson,MAX_BODY_BYTES,normalizePlan} from '../server/provider.js';
+import {createAgentService,readConfig,validateInput,validateOutput,parseModelJson,MAX_BODY_BYTES,normalizePlan,normalizeChapter} from '../server/provider.js';
 import {createHandler,originAllowed} from '../server/index.js';
 const env={NEXUS_OVERAGE_CONFIRMED_OFF:'true',NEXUS_LIVE_ENABLED:'true',NEXUS_API_BASE_URL:'https://example.test/v1/',NEXUS_API_MODEL:'test-model',NEXUS_API_KEY:'server-only-secret'};
 const input={input:{idea:'一座灯塔每晚失去一层',protagonist:'阿离'}};
@@ -164,4 +164,84 @@ test('invalid or mutually exclusive thinking controls block before network',asyn
 });
 test('upstream rejection of thinking disabled never retries or silently changes controls',async()=>{
  let count=0;const service=createAgentService({env:{...env,NEXUS_THINKING_MODE:'disabled'},fetchImpl:async(url,options)=>{count++;assert.deepEqual(JSON.parse(options.body).thinking,{type:'disabled'});return new Response('unsupported private upstream body',{status:400});}});await assert.rejects(service.run('interview',input),e=>e.code==='UPSTREAM_ERROR'&&!e.message.includes('private'));assert.equal(count,1);
+});
+
+test('chapter two request disambiguates selected outline target from manuscript source IDs',async()=>{
+ const requestInput={project:{projectId:'p1',idea:'灯塔',outline:[{id:'chapter-1'},{id:'chapter-2'},{id:'chapter-3'}]},chapterIndex:1,context:{projectId:'p1',version:3,sources:[{chapterId:'ch1',revision:2,text:'阿离找到灯。'},{chapterId:'ch2',revision:1,text:'待写'},{chapterId:'ch3',revision:1,text:'待写'}]}};
+ let wire;const service=createAgentService({env,fetchImpl:async(url,options)=>{wire=JSON.parse(options.body);return reply({...chapter,chapterId:'chapter-2'})}});
+ await service.run('generateChapter',requestInput);
+ assert.equal(JSON.parse(wire.messages[1].content).input.chapterId,'chapter-2');assert.equal(Object.hasOwn(requestInput,'chapterId'),false);
+ assert.match(wire.messages[0].content,/copy input.chapterId exactly/);
+ const wrong=createAgentService({env,fetchImpl:async()=>reply({...chapter,chapterId:'ch2'})});
+ await assert.rejects(wrong.run('generateChapter',requestInput),{code:'INVALID_MODEL_OUTPUT',validationReason:'CHAPTER_ID_MISMATCH'});
+});
+test('safe validation diagnostics distinguish schema and exact evidence failures without raw content',()=>{
+ const cases=[
+  [{...chapter,unexpected:'PRIVATE'},'CHAPTER_FIELDS'],
+  [{...chapter,text:''},'CHAPTER_TEXT'],
+  [{...chapter,chapterId:'PRIVATE'},'CHAPTER_ID_MISMATCH'],
+  [{...chapter,staging:[{sourceQuote:'PRIVATE'}]},'STAGING_SCHEMA'],
+  [{...chapter,staging:[{label:'PRIVATE',sourceQuote:'PRIVATE'}]},'STAGING_QUOTE_MISMATCH'],
+  [{...chapter,reviewNotes:null},'REVIEW_NOTES_SCHEMA']
+ ];
+ for(const [out,reason] of cases)assert.throws(()=>validateOutput('generateChapter',out,generation),e=>e.code==='INVALID_MODEL_OUTPUT'&&e.validationReason===reason&&!JSON.stringify(e).includes('PRIVATE'));
+ for(const [out,reason] of [[null,'MISSING_CONTENT'],['PRIVATE','INVALID_JSON'],['[]','NON_OBJECT_JSON']])assert.throws(()=>parseModelJson(out),{code:'INVALID_MODEL_OUTPUT',validationReason:reason});
+});
+
+test('review diagnostic enums preserve strict schema, severity, and exact candidate evidence',()=>{
+ const reviewInput={text:'小舟提着蓝色纸灯。',chapterId:'ch2',context:{...context,sources:[{chapterId:'ch1',revision:2,text:'仅在旧章中出现的句子。'},{chapterId:'ch2',revision:1,text:'待写'}]}};
+ const issue={severity:'warning',explanation:'请作者核对颜色',sourceQuote:'蓝色纸灯'};
+ const valid={summary:'仍需作者审阅',issues:[issue],checks:['设定与来源']};
+ assert.deepEqual(validateOutput('reviewChapter',valid,reviewInput),valid);
+ const cases=[
+  [{...valid,verdict:'PRIVATE'},'REVIEW_FIELDS'],
+  [{...valid,summary:null},'REVIEW_SUMMARY'],
+  [{...valid,issues:null},'REVIEW_ISSUES_ARRAY'],
+  [{...valid,issues:[{...issue,confidence:0.9}]},'REVIEW_ISSUE_FIELDS'],
+  [{...valid,issues:[{...issue,severity:'info'}]},'REVIEW_SEVERITY'],
+  [{...valid,issues:[{...issue,explanation:''}]},'REVIEW_EXPLANATION'],
+  [{...valid,issues:[{...issue,sourceQuote:''}]},'REVIEW_QUOTE_SHAPE'],
+  [{...valid,issues:[{...issue,sourceQuote:'仅在旧章中出现的句子。'}]},'REVIEW_QUOTE_MISMATCH'],
+  [{...valid,checks:[{passed:true}]},'REVIEW_CHECKS']
+ ];
+ for(const [out,reason] of cases)assert.throws(()=>validateOutput('reviewChapter',out,reviewInput),e=>e.code==='INVALID_MODEL_OUTPUT'&&e.validationReason===reason&&!JSON.stringify(e).includes('PRIVATE'));
+ const blocking={...valid,issues:[{...issue,severity:'error'}]};assert.equal(validateOutput('reviewChapter',blocking,reviewInput).issues[0].severity,'error');
+});
+test('generation quote validation does not normalize punctuation or spaces after prompt clarification',()=>{
+ const prose='小舟举灯，查看潮痕。';
+ for(const quote of ['小舟举灯,查看潮痕。','小舟举灯， 查看潮痕。','小舟举灯查看潮痕'])assert.throws(()=>validateOutput('generateChapter',{...chapter,text:prose,staging:[{label:'查看潮痕',sourceQuote:quote}]},generation),{code:'INVALID_MODEL_OUTPUT',validationReason:'STAGING_QUOTE_MISMATCH'});
+ assert.equal(validateOutput('generateChapter',{...chapter,text:prose,staging:[{label:'查看潮痕',sourceQuote:'查看潮痕。'}]},generation).staging.length,1);
+});
+
+
+test('paragraph generation derives verbatim quotes and retains zero-based anchors',()=>{
+ const paragraphs=['小舟举灯，  查看潮痕。','“明天再来。”他收起纸灯。'];
+ const wire={paragraphs,chapterId:'chapter-1',staging:[{label:'查看潮痕',sourceParagraphIndex:0},{label:'决定再来',sourceParagraphIndex:1}],reviewNotes:['请作者复核语义']};
+ const out=normalizeChapter(wire,generation);
+ assert.equal(out.text,paragraphs.join('\n'));assert.equal(out.staging[0].sourceQuote,paragraphs[0]);assert.equal(out.staging[1].sourceQuote,paragraphs[1]);assert.equal(out.staging[1].sourceParagraphIndex,1);assert.equal(Object.hasOwn(out,'paragraphs'),false);
+ assert.deepEqual(normalizeChapter(chapter,generation),chapter);
+});
+test('paragraph generation rejects ambiguous/malformed references without fuzzy repair',()=>{
+ const wire={paragraphs:['新章第一段。','新章第二段。'],chapterId:'chapter-1',staging:[{label:'事件',sourceParagraphIndex:0}],reviewNotes:[]};
+ const cases=[
+  [{...wire,text:'不得混用'},'CHAPTER_FIELDS'],
+  [{...wire,paragraphs:[]},'CHAPTER_PARAGRAPHS'],
+  [{...wire,paragraphs:[' ']},'CHAPTER_PARAGRAPHS'],
+  [{...wire,paragraphs:['一段\n另一段']},'CHAPTER_PARAGRAPHS'],
+  [{...wire,paragraphs:['x'.repeat(4001)]},'CHAPTER_PARAGRAPHS'],
+  [{...wire,paragraphs:Array(8).fill('x'.repeat(4000))},'CHAPTER_TEXT'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:'0'}]},'STAGING_REFERENCE_SCHEMA'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:0.5}]},'STAGING_REFERENCE_SCHEMA'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:-1}]},'STAGING_REFERENCE_RANGE'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:2}]},'STAGING_REFERENCE_RANGE'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:0,sourceQuote:'伪造'}]},'STAGING_REFERENCE_SCHEMA'],
+  [{...wire,chapterId:'ch1'},'CHAPTER_ID_MISMATCH'],
+ ];
+ for(const [out,reason] of cases)assert.throws(()=>normalizeChapter(out,generation),{code:'INVALID_MODEL_OUTPUT',validationReason:reason});
+ assert.throws(()=>normalizeChapter({...chapter,staging:[{...chapter.staging[0],sourceQuote:'不存在'}]},generation),{code:'INVALID_MODEL_OUTPUT',validationReason:'STAGING_QUOTE_MISMATCH'});
+});
+test('provider normalizes paragraph wire before exposing canonical chapter',async()=>{
+ const wire={paragraphs:['小舟举灯。'],chapterId:'chapter-1',staging:[{label:'举灯',sourceParagraphIndex:0}],reviewNotes:[]};
+ const service=createAgentService({env,fetchImpl:async()=>reply(wire)});const out=await service.run('generateChapter',generation);
+ assert.equal(out.text,'小舟举灯。');assert.equal(out.staging[0].sourceQuote,out.text);assert.equal(out.provider.isLive,true);
 });

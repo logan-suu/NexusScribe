@@ -53,3 +53,19 @@ test('in-flight semantic review cannot authorize an equal-looking draft in anoth
  await page.route('**/api/agent',async route=>{const request=route.request().postDataJSON();expect(request.action).toBe('reviewChapter');expect(request.input.context.projectId).toBe('project-A');requests++;await gate;await route.fulfill({json:{output:{summary:'A-only clean review',issues:[],checks:['A约定'],provider}}})});
  await page.goto('/');await page.getByRole('button',{name:'审查候选稿'}).click();await expect.poll(()=>requests).toBe(1);await page.getByLabel('切换项目').selectOption('project-B');release();await expect(page.getByRole('status')).toContainText('模型审查结果与当前状态或草稿版本不一致');let saved=await state(page);expect(saved.state.projectId).toBe('project-B');expect(saved.state.drafts[0].modelReview.summary).toBe('B-specific blocking review');expect(saved.state.drafts[0].modelReview.issues).toHaveLength(1);await page.getByRole('button',{name:'接受此版本'}).click();saved=await state(page);expect(saved.state.drafts[0].status).not.toBe('ACCEPTED');expect(requests).toBe(1);await capture(page,testInfo,'08-cross-project-review-guard');expect(errors).toEqual([]);
 });
+
+test('editing an anchored candidate cannot silently discard or relocate its event',async({page})=>{
+ const errors=health(page);
+ await page.route('**/api/status',route=>route.fulfill({json:{configured:true,model:'test-model'}}));
+ await page.route('**/api/agent',async route=>{
+  const {action,input}=route.request().postDataJSON();let output;
+  if(action==='interview')output={questions:[],summary:'方向已足够'};
+  if(action==='planStory'){const config=createProjectConfig(input.input);output={contract:config.contract,outline:config.outline}}
+  if(action==='generateChapter')output={text:'小舟来到塔下。\n小舟举起蓝色纸灯。',chapterId:input.project.outline[input.chapterIndex].id,staging:[{label:'小舟举灯',sourceQuote:'小舟举起蓝色纸灯。',sourceParagraphIndex:1}],reviewNotes:[]};
+  if(action==='reviewChapter')output={summary:'仍需作者复核',issues:[],checks:['原文']};
+  await route.fulfill({json:{output:{...output,provider:{id:'test-model',isLive:true}}}});
+ });
+ await page.goto('/');await page.getByRole('button',{name:'模型运行方式'}).click();await page.getByRole('button',{name:'检查服务连接'}).click();await page.getByRole('button',{name:'使用真实模型'}).click();await page.getByRole('button',{name:'新建故事'}).click();await page.getByLabel(/你的故事灵感/).fill('小舟查找纸灯岛灯塔变矮的原因。');await page.getByRole('button',{name:'聊聊这个故事'}).click();await page.getByRole('button',{name:'查看故事约定'}).click();await page.getByRole('button',{name:'确认约定，开始创作'}).click();await page.getByRole('button',{name:'生成当前章'}).click();
+ await page.getByRole('button',{name:'编辑此稿'}).click();await page.getByLabel('编辑候选稿').fill('新加入的段落。\n小舟来到塔下。\n小舟举起蓝色纸灯。');await page.getByRole('button',{name:'保存候选稿修改'}).click();await page.getByRole('button',{name:'审查候选稿'}).click();await expect(page.getByText(/暂存事件段落引用已失效/)).toBeVisible();await page.getByRole('button',{name:'接受此版本'}).click();let saved=await state(page);expect(saved.state.events).toHaveLength(0);expect(saved.state.drafts[0].status).not.toBe('ACCEPTED');
+ await page.getByRole('button',{name:'编辑此稿'}).click();await page.getByLabel('编辑候选稿').fill('小舟来到塔下。');await page.getByRole('button',{name:'保存候选稿修改'}).click();await page.getByRole('button',{name:'审查候选稿'}).click();await expect(page.getByText(/暂存事件证据已不在当前正文中/)).toBeVisible();await page.getByRole('button',{name:'接受此版本'}).click();saved=await state(page);expect(saved.state.events).toHaveLength(0);expect(saved.state.drafts[0].staging).toHaveLength(1);expect(errors).toEqual([]);
+});

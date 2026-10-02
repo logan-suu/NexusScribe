@@ -60,11 +60,39 @@ export function validateInput(action,input) {
 export const SCHEMAS = Object.freeze({
   interview:'{"questions":[{"key":"protagonist|tone|pov|goal|boundaries","title":"question","hint":"hint","placeholder":"placeholder","options":["optional choice"]}],"summary":"short summary"}; at most 2 questions, ask only unanswered keys',
   planStory:'{"proposals":{"protagonist":"only if missing","tone":"only if missing","pov":"only if missing","goal":"only if missing"},"obstacle":"obstacle","coreQuestion":"question","opening":"opening","unresolved":["question"],"outline":[{"title":"title","goal":"goal","conflict":"conflict","knowledgeDelta":"knowledge delta","exitState":"exit state","emotionalArc":"arc","scene":{"time":"time","location":"location","participants":["name"],"allowedReveal":"allowed reveal","forbiddenReveal":"forbidden reveal","preconditions":["precondition"]}}]}; exactly 3 outline chapters. Compact planning response: use terse phrases, short arrays, and each creative value ideally within 12 Chinese characters. Include every creative field. Proposals must supply each missing protagonist/tone/pov/goal and MUST omit already answered keys. Do not repeat premise, boundaries, confirmed author values, labels, field statuses, chapter IDs, chapter numbers, chapter POV or metadata; the server supplies these deterministically.',
-  generateChapter:'{"text":"chapter prose","chapterId":"exact id of selected project.outline chapter","staging":[{"label":"proposed event","sourceQuote":"exact substring from text"}],"reviewNotes":["note"]}',
+  generateChapter:'{"paragraphs":["one nonempty prose paragraph per string; no embedded newline"],"chapterId":"copy input.chapterId exactly; context.sources IDs are references, not this output target","staging":[{"label":"proposed event supported by the referenced new paragraph","sourceParagraphIndex":0}],"reviewNotes":["note"]}; paragraphs must be nonempty and sourceParagraphIndex must be a zero-based integer indexing this response paragraphs array, never context.sources or earlier chapters. The server derives exact evidence directly from that paragraph; do not return text or sourceQuote. Unsupported proposals or uncertainty belong in reviewNotes, not invented references. A valid reference is not proof that its label is semantically entailed; author review remains required.',
   interpretRevision:'{"summary":"summary","intents":["local_prose|canon_update|knowledge_update|ambiguous"],"questions":["question"],"suggestedFacts":[{"label":"proposed fact","sourceQuote":"exact substring of afterText"}]}',
-  reviewChapter:'{"summary":"summary","issues":[{"severity":"error|warning","explanation":"explanation","sourceQuote":"exact nonempty substring of text"}],"checks":["check"]}'
+  reviewChapter:'{"summary":"summary","issues":[{"severity":"error|warning","explanation":"explanation","sourceQuote":"copy an exact nonempty substring from input.text, never from context.sources"}],"checks":["short plain string"]}; use only these keys and severity error or warning. Review the candidate input.text against context; context.sources can include older accepted prose or ungenerated planning placeholders and is reference material, not the candidate. For concerns without an exact candidate quote, explain the uncertainty or review limitation in summary instead of fabricating an issue quote. Do not suppress legitimate concerns or treat an empty issues list as proof of correctness. Do not return verdict, passed, confidence, suggestions, chapterId or provider metadata'
 });
 function evidenceList(x,text) {return list(x,e=>keys(e,['label','sourceQuote'])&&str(e.label,1000)&&str(e.sourceQuote,4000)&&text.includes(e.sourceQuote));}
+export const SAFE_VALIDATION_REASONS=Object.freeze(['INVALID_JSON','NON_OBJECT_JSON','MISSING_CONTENT','OUTPUT_SCHEMA','CHAPTER_FIELDS','CHAPTER_TEXT','CHAPTER_ID_MISMATCH','STAGING_SCHEMA','STAGING_QUOTE_MISMATCH','REVIEW_NOTES_SCHEMA','REVIEW_FIELDS','REVIEW_SUMMARY','REVIEW_ISSUES_ARRAY','REVIEW_ISSUE_FIELDS','REVIEW_SEVERITY','REVIEW_EXPLANATION','REVIEW_QUOTE_SHAPE','REVIEW_QUOTE_MISMATCH','REVIEW_CHECKS','CHAPTER_PARAGRAPHS','STAGING_REFERENCE_SCHEMA','STAGING_REFERENCE_RANGE','STAGING_REFERENCE_MISMATCH']);
+function invalidOutput(reason,message='模型返回格式不符合约定，请调整配置或重试') {
+ const error=new ApiError(502,'INVALID_MODEL_OUTPUT',message);error.validationReason=reason;return error;
+}
+function chapterOutputIssue(out,input) {
+ if(!keys(out,['text','chapterId','staging','reviewNotes']))return 'CHAPTER_FIELDS';
+ if(!str(out.text,30000))return 'CHAPTER_TEXT';
+ if(out.chapterId!==input.project.outline[input.chapterIndex].id)return 'CHAPTER_ID_MISMATCH';
+ if(!list(out.staging,e=>keys(e,['label','sourceQuote','sourceParagraphIndex'])&&str(e.label,1000)&&str(e.sourceQuote,4000)))return 'STAGING_SCHEMA';
+ if(out.staging.some(e=>!out.text.includes(e.sourceQuote)))return 'STAGING_QUOTE_MISMATCH';
+ if(out.staging.some(e=>Object.hasOwn(e,'sourceParagraphIndex')&&(!Number.isInteger(e.sourceParagraphIndex)||e.sourceParagraphIndex<0||out.text.split('\n')[e.sourceParagraphIndex]!==e.sourceQuote)))return 'STAGING_REFERENCE_MISMATCH';
+ if(!textList(out.reviewNotes))return 'REVIEW_NOTES_SCHEMA';
+ return null;
+}
+function reviewOutputIssue(out,input) {
+ if(!keys(out,['summary','issues','checks']))return 'REVIEW_FIELDS';
+ if(!str(out.summary))return 'REVIEW_SUMMARY';
+ if(!Array.isArray(out.issues)||out.issues.length>30)return 'REVIEW_ISSUES_ARRAY';
+ for(const issue of out.issues){
+  if(!keys(issue,['severity','explanation','sourceQuote']))return 'REVIEW_ISSUE_FIELDS';
+  if(!['error','warning'].includes(issue.severity))return 'REVIEW_SEVERITY';
+  if(!str(issue.explanation))return 'REVIEW_EXPLANATION';
+  if(!str(issue.sourceQuote,4000))return 'REVIEW_QUOTE_SHAPE';
+  if(!input.text.includes(issue.sourceQuote))return 'REVIEW_QUOTE_MISMATCH';
+ }
+ if(!textList(out.checks))return 'REVIEW_CHECKS';
+ return null;
+}
 export function validateOutput(action,out,input) {
   let valid=false;
   if(action==='interview')valid=keys(out,['questions','summary'])&&str(out.summary)&&list(out.questions,q=>keys(q,['key','title','hint','placeholder','options'])&&answerKeys.includes(q.key)&&!str(input[q.key])&&!str(input.answers?.[q.key])&&['title','hint','placeholder'].every(k=>str(q[k],1000))&&(q.options===undefined||list(q.options,s=>str(s,500),8)),2)&&new Set(out.questions.map(q=>q.key)).size===out.questions.length;
@@ -72,12 +100,25 @@ export function validateOutput(action,out,input) {
     const c=out?.contract,fields=['premise','protagonist','emotionalDirection','pov','desire','obstacle','coreQuestion','boundaries','opening'];
     valid=keys(out,['contract','outline'])&&keys(c,['fields','premise','protagonist','emotionalDirection','pov','desire','boundaries','unresolved'])&&['premise','protagonist','emotionalDirection','pov','desire'].every(k=>str(c[k]))&&str(c.boundaries,4000,true)&&textList(c.unresolved)&&list(c.fields,f=>keys(f,['key','label','value','status'])&&fields.includes(f.key)&&str(f.label,200)&&str(f.value)&&['proposed','confirmed','deferred'].includes(f.status),9)&&c.fields.length===9&&new Set(c.fields.map(f=>f.key)).size===9&&list(out.outline,ch=>keys(ch,['id','title','goal','conflict','knowledgeDelta','exitState','emotionalArc','pov','scene'])&&['id','title','goal','conflict','knowledgeDelta','exitState','emotionalArc','pov'].every(k=>str(ch[k],2000))&&keys(ch.scene,['time','location','participants','allowedReveal','forbiddenReveal','preconditions'])&&['time','location','allowedReveal','forbiddenReveal'].every(k=>str(ch.scene[k],2000))&&textList(ch.scene.participants)&&ch.scene.participants.length>0&&textList(ch.scene.preconditions),3)&&out.outline.length===3&&new Set(out.outline.map(ch=>ch.id)).size===3;
   }
-  if(action==='generateChapter')valid=keys(out,['text','chapterId','staging','reviewNotes'])&&str(out.text,30000)&&out.chapterId===input.project.outline[input.chapterIndex].id&&evidenceList(out.staging,out.text)&&textList(out.reviewNotes);
+  if(action==='generateChapter'){const issue=chapterOutputIssue(out,input);if(issue)throw invalidOutput(issue);valid=true;}
   if(action==='interpretRevision')valid=keys(out,['summary','intents','questions','suggestedFacts'])&&str(out.summary)&&list(out.intents,i=>['local_prose','canon_update','knowledge_update','ambiguous'].includes(i),4)&&out.intents.length>0&&textList(out.questions)&&evidenceList(out.suggestedFacts,input.afterText);
-  if(action==='reviewChapter')valid=keys(out,['summary','issues','checks'])&&str(out.summary)&&list(out.issues,i=>keys(i,['severity','explanation','sourceQuote'])&&['error','warning'].includes(i.severity)&&str(i.explanation)&&str(i.sourceQuote,4000)&&input.text.includes(i.sourceQuote))&&textList(out.checks);
-  if(!valid)throw new ApiError(502,'INVALID_MODEL_OUTPUT','模型返回格式不符合约定，请调整配置或重试');
+  if(action==='reviewChapter'){const issue=reviewOutputIssue(out,input);if(issue)throw invalidOutput(issue);valid=true;}
+  if(!valid)throw invalidOutput('OUTPUT_SCHEMA');
   return out;
 }
+/** New generation wire format binds evidence deterministically; legacy quotes remain strict. */
+export function normalizeChapter(wire,input) {
+ if(!object(wire)||!Object.hasOwn(wire,'paragraphs'))return validateOutput('generateChapter',wire,input);
+ if(!keys(wire,['paragraphs','chapterId','staging','reviewNotes']))throw invalidOutput('CHAPTER_FIELDS');
+ if(!list(wire.paragraphs,p=>str(p,4000)&&!/[\r\n]/.test(p),60)||wire.paragraphs.length===0)throw invalidOutput('CHAPTER_PARAGRAPHS');
+ const text=wire.paragraphs.join('\n');
+ if(!str(text,30000))throw invalidOutput('CHAPTER_TEXT');
+ if(!list(wire.staging,e=>keys(e,['label','sourceParagraphIndex'])&&str(e.label,1000)&&Number.isInteger(e.sourceParagraphIndex)))throw invalidOutput('STAGING_REFERENCE_SCHEMA');
+ if(wire.staging.some(e=>e.sourceParagraphIndex<0||e.sourceParagraphIndex>=wire.paragraphs.length))throw invalidOutput('STAGING_REFERENCE_RANGE');
+ const staging=wire.staging.map(e=>({label:e.label,sourceParagraphIndex:e.sourceParagraphIndex,sourceQuote:wire.paragraphs[e.sourceParagraphIndex]}));
+ return validateOutput('generateChapter',{text,chapterId:wire.chapterId,staging,reviewNotes:wire.reviewNotes},input);
+}
+
 /** Validate the compact wire response before building deterministic canonical metadata.
  * Legacy full plans are separately validated for backwards compatibility only.
  */
@@ -106,9 +147,10 @@ export function normalizePlan(wire,input) {
 }
 
 export function parseModelJson(content) {
-  if(typeof content!=='string')throw new ApiError(502,'INVALID_MODEL_OUTPUT','模型未返回有效 JSON');
+  if(typeof content!=='string')throw invalidOutput('MISSING_CONTENT','模型未返回有效 JSON');
   let text=content.trim();const fenced=text.match(/^```(?:json)?\s*\n([\s\S]*?)\n```$/i);if(fenced)text=fenced[1].trim();
-  try {const out=JSON.parse(text);if(!object(out))throw Error();return out;}catch{throw new ApiError(502,'INVALID_MODEL_OUTPUT','模型未返回有效 JSON');}
+  let out;try {out=JSON.parse(text);}catch{throw invalidOutput('INVALID_JSON','模型未返回有效 JSON');}
+  if(!object(out))throw invalidOutput('NON_OBJECT_JSON','模型未返回有效 JSON');return out;
 }
 async function readResponse(response) {
   if(!response.body){const t=await response.text();if(Buffer.byteLength(t)>MAX_RESPONSE_BYTES)throw Error();return JSON.parse(t);}
@@ -127,6 +169,9 @@ export function createAgentService({env=process.env,fetchImpl=globalThis.fetch,t
   const status=()=>({configured:config.configured,liveEnabled:config.enabled,model:config.model,baseHost:config.host,callsUsed:calls,maxCalls:config.maxCalls,maxOutputTokens:config.maxTokens});
   async function run(action,input) {
     input=validateInput(action,input);
+    // Explicitly distinguish output target IDs from manuscript source IDs (ch1/ch2/ch3).
+    // Do not rewrite returned IDs: strict output validation remains authoritative.
+    if(action==='generateChapter')input={...input,chapterId:input.project.outline[input.chapterIndex].id};
     if(!config.configured)throw new ApiError(503,'NOT_CONFIGURED','模型服务未启用，请在服务器端完成配置');
     if(active>=2)throw new ApiError(429,'CONCURRENT_LIMIT','已有生成任务正在运行，请稍后重试');
     if(calls>=config.maxCalls)throw new ApiError(429,'CALL_LIMIT','已达到本次服务运行的调用上限');
@@ -138,7 +183,7 @@ export function createAgentService({env=process.env,fetchImpl=globalThis.fetch,t
         if(!response.ok)throw new ApiError(502,'UPSTREAM_ERROR','模型服务请求失败，请检查服务器配置后重试');
         const data=await readResponse(response);if(data.choices?.[0]?.finish_reason==='length'){const error=new ApiError(502,'OUTPUT_TRUNCATED','模型输出达到长度上限，未采用不完整结果');error.diagnostics=responseDiagnostics(data);throw error;}
         const wire=parseModelJson(data.choices?.[0]?.message?.content);
-        const out=action==='planStory'?normalizePlan(wire,input):validateOutput(action,wire,input);
+        const out=action==='planStory'?normalizePlan(wire,input):action==='generateChapter'?normalizeChapter(wire,input):validateOutput(action,wire,input);
         const provider={id:'openai-compatible',label:'已配置模型',isLive:true,model:config.model};
         if(action==='planStory') {out.contract={...out.contract,schemaVersion:1,status:'proposal',provenance:provider};out.outline=out.outline.map((ch,i)=>({...ch,number:i+1,status:'planned',provenance:provider.id}));}
         return {...out,provider};
