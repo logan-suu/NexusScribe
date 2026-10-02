@@ -28,18 +28,30 @@ export function createServerProvider({fetchImpl=(...args)=>globalThis.fetch(...a
  if(!/^\/(?!\/)/.test(baseUrl))throw Error('生成服务必须使用同源相对路径');
  const endpoint=baseUrl.replace(/\/$/,'');
  const identity={id:'server-model',label:'服务端模型',isLive:true};
- async function request(path,body){
-  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeoutMs);
+ async function request(path,body,{signal}={}){
+  const controller=new AbortController();let timer,abortError,rejectAbort;
+  const interrupted=new Promise((_,reject)=>{rejectAbort=reject;});
+  const abort=timeout=>{if(abortError)return;abortError=Object.assign(new Error(timeout?'生成服务响应超时，请重试；没有生成或接受任何章节':'生成请求已取消'),{name:timeout?'TimeoutError':'AbortError',code:timeout?'UPSTREAM_TIMEOUT':'REQUEST_CANCELLED'});rejectAbort(abortError);controller.abort();};
+  const onAbort=()=>abort(false);
+  signal?.addEventListener('abort',onAbort,{once:true});
+  if(signal?.aborted)onAbort();
+  timer=setTimeout(()=>abort(true),timeoutMs);
   try {
-   const response=await fetchImpl(`${endpoint}${path}`,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{}),signal:controller.signal});
-   let payload;try{payload=await response.json();}catch{throw Error(`生成服务返回无法读取的响应（HTTP ${response.status}）`);}
-   if(!response.ok||payload?.error){const detail=typeof payload?.error==='string'?payload.error:payload?.error?.message||payload?.message;throw Error(detail||`生成服务请求失败（HTTP ${response.status}）`);}
-   return payload;
-  }catch(error){if(error?.name==='AbortError')throw Error('生成服务响应超时，请重试；没有生成或接受任何章节');throw error;}finally{clearTimeout(timer);}
+   const operation=async()=>{
+    if(abortError)throw abortError;
+    const response=await fetchImpl(`${endpoint}${path}`,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{}),signal:controller.signal});
+    if(abortError)throw abortError;
+    let payload;try{payload=await response.json();}catch{throw Error(`生成服务返回无法读取的响应（HTTP ${response.status}）`);}
+    if(abortError)throw abortError;
+    if(!response.ok||payload?.error){const detail=typeof payload?.error==='string'?payload.error:payload?.error?.message||payload?.message;const error=Error(detail||`生成服务请求失败（HTTP ${response.status}）`);if(payload?.error?.code==='REQUEST_CANCELLED')Object.assign(error,{name:'AbortError',code:'REQUEST_CANCELLED'});if(payload?.error?.code==='UPSTREAM_TIMEOUT')Object.assign(error,{name:'TimeoutError',code:'UPSTREAM_TIMEOUT'});throw error;}
+    return payload;
+   };
+   return await Promise.race([operation(),interrupted]);
+  }catch(error){if(abortError)throw abortError;throw error;}finally{clearTimeout(timer);signal?.removeEventListener('abort',onAbort);}
  }
  const provider={...identity,async getStatus(){const status=await request('/status');if(typeof status?.configured!=='boolean')throw Error('生成服务状态格式无效');return status;}};
- for(const action of CAPABILITIES)provider[action]=async input=>{
-  const payload=await request('/agent',{action,input});
+ for(const action of CAPABILITIES)provider[action]=async (input,{signal}={})=>{
+  const payload=await request('/agent',{action,input},{signal});
   const output=validateActionOutput(action,payload?.output);
   if(action==='generateChapter')return {...output,provider:{...identity,...(object(payload.provider)?payload.provider:{}),...(object(output.provider)?output.provider:{}),isLive:true},...(payload.model?{model:payload.model}:{}),status:'candidate',baseVersion:input?.context?.stateVersion??input?.context?.version??null,staging:Array.isArray(output.staging)?output.staging:[]};
   return output;

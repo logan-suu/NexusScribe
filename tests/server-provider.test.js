@@ -245,3 +245,61 @@ test('provider normalizes paragraph wire before exposing canonical chapter',asyn
  const service=createAgentService({env,fetchImpl:async()=>reply(wire)});const out=await service.run('generateChapter',generation);
  assert.equal(out.text,'小舟举灯。');assert.equal(out.staging[0].sourceQuote,out.text);assert.equal(out.provider.isLive,true);
 });
+
+test('usage exposes only reported safe numeric counters from successful response envelopes',async()=>{
+ const {responseUsage}=await import('../server/provider.js');
+ const valid={prompt_tokens:0,completion_tokens:12,total_tokens:1000000000,completion_tokens_details:{reasoning_tokens:3,private:'secret'},cost:42,private:'secret'};
+ assert.deepEqual(responseUsage({usage:valid}),{promptTokens:0,completionTokens:12,totalTokens:1000000000,reasoningTokens:3});
+ for(const value of [-1,1.5,'10',null,Infinity,NaN,1000000001,Number.MAX_SAFE_INTEGER])assert.equal(responseUsage({usage:{prompt_tokens:value,completion_tokens:value,total_tokens:value,completion_tokens_details:{reasoning_tokens:value}}}),undefined);
+ for(const usage of [undefined,null,{}, {prompt_tokens:5}]){
+  const service=createAgentService({env,fetchImpl:async()=>new Response(JSON.stringify({usage,choices:[{finish_reason:'stop',message:{content:JSON.stringify(interview),usage:valid}}]}))});
+  const result=await service.run('interview',input);
+  if(usage?.prompt_tokens===5)assert.deepEqual(result.provider.usage,{promptTokens:5});else assert.equal(Object.hasOwn(result.provider,'usage'),false);
+ }
+});
+test('service external cancellation is bounded, redacted, isolated, and cleans listeners',async()=>{
+ const {getEventListeners}=await import('node:events');const pending=[];
+ const service=createAgentService({env,fetchImpl:(_url,options)=>new Promise(resolve=>pending.push({resolve,signal:options.signal}))});
+ const older=new AbortController(),newer=new AbortController();
+ const a=service.run('interview',input,{signal:older.signal});older.abort('PRIVATE');await assert.rejects(a,e=>e.code==='REQUEST_CANCELLED'&&e.status===499&&!e.message.includes('PRIVATE'));
+ assert.equal(pending[0].signal.aborted,true);assert.equal(service.status().callsUsed,1);
+ const b=service.run('interview',input,{signal:newer.signal});pending[0].resolve(reply(interview));assert.equal(pending[1].signal.aborted,false);
+ pending[1].resolve(reply(interview));await b;
+ for(const controller of [older,newer])assert.equal(getEventListeners(controller.signal,'abort').length,0);
+ newer.abort();assert.equal(pending[1].signal.aborted,false);
+});
+test('pre-cancelled service does not consume calls; timeout remains distinct and releases active slots',async()=>{
+ const controller=new AbortController();controller.abort();let calls=0;
+ const service=createAgentService({env,timeoutMs:5,fetchImpl:async()=>{calls++;return new Promise(()=>{});}});
+ await assert.rejects(service.run('interview',input,{signal:controller.signal}),{code:'REQUEST_CANCELLED'});assert.equal(calls,0);assert.equal(service.status().callsUsed,0);
+ for(let i=0;i<3;i++)await assert.rejects(service.run('interview',input),{code:'UPSTREAM_TIMEOUT'});
+ assert.equal(calls,3);
+});
+test('HTTP disconnect aborts only its upstream, suppresses writes, and removes listeners',async()=>{
+ const {EventEmitter,getEventListeners}=await import('node:events');let upstream,started;
+ const ready=new Promise(resolve=>{started=resolve;});
+ const service=createAgentService({env,fetchImpl:async(_url,options)=>{upstream=options.signal;started();return new Promise(()=>{});}});
+ const req=Readable.from([Buffer.from(JSON.stringify({action:'interview',input}))]);Object.assign(req,{method:'POST',url:'/api/agent',headers:{host:'localhost:8787','content-type':'application/json'}});
+ const res=new EventEmitter();let writes=0;res.writeHead=()=>writes++;res.end=()=>writes++;
+ const pending=createHandler(service)(req,res);await ready;
+ // A completed request body is normal and must not cancel generation.
+ assert.equal(upstream.aborted,false);res.emit('close');await pending;assert.equal(upstream.aborted,true);assert.equal(writes,0);
+ assert.equal(getEventListeners(res,'close').length,0);assert.equal(getEventListeners(req,'aborted').length,0);
+});
+test('service body-read cancellation and timeout are bounded even when the reader stalls',async()=>{
+ for(const cancelled of [true,false]){
+  const controller=new AbortController();let upstream,started;
+  const ready=new Promise(resolve=>{started=resolve;});
+  const service=createAgentService({env,timeoutMs:10,fetchImpl:async(_url,options)=>{upstream=options.signal;return {ok:true,body:{getReader:()=>({read:()=>{started();return new Promise(()=>{});},cancel:async()=>{}})}};}});
+  const pending=service.run('interview',input,{signal:controller.signal});await ready;if(cancelled)controller.abort();
+  await assert.rejects(pending,{code:cancelled?'REQUEST_CANCELLED':'UPSTREAM_TIMEOUT'});assert.equal(upstream.aborted,true);
+ }
+});
+test('normal HTTP completion cleans disconnect listeners without aborting successful upstream',async()=>{
+ const {EventEmitter,getEventListeners}=await import('node:events');let upstream;
+ const service=createAgentService({env,fetchImpl:async(_url,options)=>{upstream=options.signal;return reply(interview);}});
+ const req=Readable.from([Buffer.from(JSON.stringify({action:'interview',input}))]);Object.assign(req,{method:'POST',url:'/api/agent',headers:{host:'localhost:8787','content-type':'application/json'}});
+ const res=new EventEmitter();let code,payload;res.writeHead=status=>{code=status;};res.end=body=>{payload=JSON.parse(body);res.writableEnded=true;res.emit('close');};
+ await createHandler(service)(req,res);assert.equal(code,200);assert.equal(payload.output.summary,interview.summary);assert.equal(upstream.aborted,false);
+ assert.equal(getEventListeners(res,'close').length,0);assert.equal(getEventListeners(req,'aborted').length,0);
+});

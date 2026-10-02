@@ -168,3 +168,11 @@ Bug reports should include reproducible steps and fictional sample text. Keep pr
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the review checklist and branch flow: feature branch → `dev_v1.0` → `main`. Changes go through reviewed pull requests; publication does not imply merge approval.
 
 **License:** no project license has been selected. Public visibility alone does not grant an open-source license.
+
+### Request controls and usage
+
+Model actions show the action being performed and a waiting/result/failure status, without invented completion percentages. Cancel stops the browser wait and asks the local gateway to abort its upstream request; disconnects and wizard close also abort. Cancellation does **not** guarantee that the provider stops work or billing. Requests are never automatically retried. Use the original action button to retry deliberately after checking an error.
+
+Results are bound to the initiating request and exact project, manuscript/draft state, pending edits, chapter selection, and mode. If these change, the response is discarded. Cancelling an older request cannot clear or apply a newer request. Reload does not resume a model request; saved text and pending edits retain their existing persistence behavior. Failure/cancellation never accepts candidate prose or commits story memory.
+
+The task panel displays only numeric token counters reported by the provider through the server. Missing counters, including unavailable usage after cancellation or failure, are shown as unknown. No total is inferred, and no currency cost or billing cap is estimated. These controls and their fake-provider tests do not establish real-model quality or actual billing behavior.

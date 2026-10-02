@@ -46,3 +46,36 @@ test('template adapter continues to support the same workflow',async()=>{
  const plan=await provider.planStory({input});assert.equal(plan.outline.length,3);
  assert.equal((await provider.generateChapter({project:plan})).provider.isLive,false);
 });
+
+test('all actions support external cancellation, including an uncooperative transport',async()=>{
+ for(const action of CAPABILITIES){
+  const external=new AbortController();let upstream;
+  const provider=createServerProvider({fetchImpl:async(_url,options)=>{upstream=options.signal;return new Promise(()=>{});}});
+  const pending=provider[action]({}, {signal:external.signal});external.abort('PRIVATE cancellation reason');
+  await assert.rejects(pending,error=>error.name==='AbortError'&&error.code==='REQUEST_CANCELLED'&&!error.message.includes('PRIVATE'));
+  assert.equal(upstream.aborted,true);
+ }
+});
+test('pre-cancelled requests skip fetch; transport and body deadlines reject as timeout',async()=>{
+ const external=new AbortController();external.abort();let calls=0;
+ const provider=createServerProvider({fetchImpl:async()=>{calls++;return response({questions:[]});}});
+ await assert.rejects(provider.interview({}, {signal:external.signal}),{name:'AbortError',code:'REQUEST_CANCELLED'});assert.equal(calls,0);
+ for(const fetchImpl of [async()=>new Promise(()=>{}),async()=>({ok:true,status:200,json:async()=>new Promise(()=>{})})]){
+  const timed=createServerProvider({timeoutMs:5,fetchImpl});await assert.rejects(timed.interview({}),{name:'TimeoutError',code:'UPSTREAM_TIMEOUT'});
+ }
+});
+test('late cancelled response cannot cancel or replace a newer request; listeners are removed',async()=>{
+ const {getEventListeners}=await import('node:events');const requests=[];
+ const provider=createServerProvider({fetchImpl:(_url,options)=>new Promise(resolve=>requests.push({resolve,signal:options.signal}))});
+ const older=new AbortController(),newer=new AbortController();
+ const a=provider.interview({}, {signal:older.signal});older.abort();await assert.rejects(a,{code:'REQUEST_CANCELLED'});
+ const b=provider.interview({}, {signal:newer.signal});requests[0].resolve(response({questions:[{key:'old',title:'old'}]}));
+ assert.equal(requests[1].signal.aborted,false);requests[1].resolve(response({questions:[]}));assert.deepEqual(await b,{questions:[]});
+ assert.equal(getEventListeners(older.signal,'abort').length,0);assert.equal(getEventListeners(newer.signal,'abort').length,0);
+ newer.abort();assert.equal(requests[1].signal.aborted,false);
+});
+test('provider-reported usage survives success without synthesizing absent counters',async()=>{
+ const usage={promptTokens:0,completionTokens:12};const provider=createServerProvider({fetchImpl:async()=>response({text:'章节',provider:{usage}})});
+ assert.deepEqual((await provider.generateChapter({})).provider.usage,usage);
+ const absent=createServerProvider({fetchImpl:async()=>response({text:'章节'})});assert.equal(Object.hasOwn((await absent.generateChapter({})).provider,'usage'),false);
+});
