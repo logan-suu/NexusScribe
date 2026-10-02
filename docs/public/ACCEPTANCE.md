@@ -129,3 +129,31 @@ live model calls. Local browser startup remained blocked by a socket permission;
 the visual evidence comes from hosted CI. See [backup/recovery boundaries](BACKUP-RECOVERY.md)
 for size limits, last-good lag, quota sharing, and remaining crash/concurrency risks.
 This is bounded local recovery protection, not a production durability guarantee.
+
+## Subsequent generation controls (2026-10-02)
+
+Exact source `61fed3369795870369bf2db10bb12aa44ed25606` passed
+[CI 37051765813](https://github.com/logan-suu/NexusScribe/actions/runs/37051765813):
+251 unit/contract tests, all DOM suites, production build and 30 mocked
+desktop/mobile Chromium cases. The first [run 37051275580](https://github.com/logan-suu/NexusScribe/actions/runs/37051275580)
+passed 28/30 browser cases: both failures were the existing cross-project review
+test expecting the former notification text. One assertion was updated to the
+new cancellation status; request-source, blocking-review, project-state and
+acceptance protections were retained, with no runtime behavior change.
+
+Eight inspected screenshots from that first run, where all new controls cases
+passed, show desktop/mobile waiting, cancellation, successful reported token
+counts (12 input, 7 output, 19 total; reasoning unknown), and failure with author
+edits retained. Status panels and billing caveats were readable; overflow checks
+passed. Local Chromium startup was blocked by socket permissions, so rendered
+verification used hosted CI.
+
+The increment adds request-specific cancellation, duplicate-request protection,
+exact authoring-snapshot guards against late results, and explicit manual retry.
+Failure, cancellation, project changes, wizard close/reopen and reload were tested
+with fictional providers; this increment made zero live model calls. Cancellation
+propagates to the gateway/upstream where supported but remains best effort and
+does not guarantee that provider processing or billing stops. Only provider-reported
+numeric token counters are displayed; missing usage is unknown, totals are not
+inferred, and no price estimate is made. These tests do not establish real-model
+quality, actual billing behavior, or production durability.
