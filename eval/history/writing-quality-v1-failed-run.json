@@ -1,0 +1,34 @@
+{
+  "protocol": {
+    "version": 1,
+    "model": "deepseek-v4.1-flash",
+    "temperature": 0.7,
+    "maxTokens": 3000,
+    "maxCalls": 6,
+    "thinking": "disabled",
+    "target": "450–600 Chinese characters",
+    "seed": null
+  },
+  "status": "stopped",
+  "attempts": 1,
+  "code": "INVALID_MODEL_OUTPUT",
+  "validationReason": "STAGING_REFERENCE_SCHEMA",
+  "calls": [
+    {
+      "sequence": 1,
+      "fixture": "mystery",
+      "arm": "baseline",
+      "requestSha256": "cfb6dd319ea07b6c3a1a052a3f018f0263bca1eae7cf20811f5044b3c9c731bf",
+      "inputBytes": 7258,
+      "inputCharacters": 5108,
+      "usage": {
+        "prompt_tokens": 1819,
+        "completion_tokens": 365,
+        "total_tokens": 2184
+      }
+    }
+  ],
+  "sourceCommitShort": "d389976",
+  "runUrl": "https://github.com/logan-suu/NexusScribe/actions/runs/37047153813",
+  "interpretation": "Pilot stopped after first baseline request. No complete pair or reviewable prose corpus exists. This failure is preserved and is not writing-quality evidence."
+}

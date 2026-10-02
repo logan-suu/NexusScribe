@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "sha256": {
+    "eval/WRITING-QUALITY-PROTOCOL.md": "34d9a76a58107abc09ce4f6765c9d681f5ca080a032e89c971bfb8732b1c2e7d",
+    "eval/writing-quality-fixtures.mjs": "7ccc665810cf8aa8c101b4615be1bbdabfe802e2020da6ff08170f7bbf6480b4",
+    "eval/history/writing-quality-v1-protocol.md": "75f034013d64df2441e7c69fc29373c4deeaf2ad7740b1302c60c7bc4cccba5c",
+    "eval/history/writing-quality-v1-failed-run.json": "b402d3407a089fec2ed2128347a6ed3f24a816f74e219540b6347a42fd3c664e"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "protocol": {
+    "version": 2,
+    "model": "deepseek-v4.1-flash",
+    "temperature": 0.7,
+    "maxTokens": 3000,
+    "maxCalls": 6,
+    "thinking": "disabled",
+    "target": "450–600 Chinese characters",
+    "seed": null
+  },
+  "status": "stopped",
+  "attempts": 2,
+  "code": "INVALID_MODEL_OUTPUT",
+  "validationReason": "CHAPTER_PARAGRAPHS",
+  "calls": [
+    {
+      "sequence": 1,
+      "fixture": "mystery",
+      "arm": "baseline",
+      "requestSha256": "b6bbde52f634dc9b2c9d9a627a5bcc3cc253f56fdf5bad74519d7a6dd4234dcd",
+      "inputBytes": 7512,
+      "inputCharacters": 5362,
+      "usage": {
+        "prompt_tokens": 1871,
+        "completion_tokens": 488,
+        "total_tokens": 2359
+      },
+      "structure": {
+        "shape": "PARSED_OBJECT",
+        "stagingCount": 0,
+        "reviewNotesCount": 0,
+        "reasons": []
+      },
+      "output": {
+        "characters": 611,
+        "hanCharacters": 504,
+        "paragraphs": 7,
+        "repeatedExactSentences": 1
+      },
+      "outputSha256": "5067d1444cf8577aea8cd8ea3a7cd984435a17e511d97da4b69acad77381e0e7"
+    },
+    {
+      "sequence": 2,
+      "fixture": "mystery",
+      "arm": "nexus",
+      "requestSha256": "5caea642146db77f3a28d8224f5a6d692ccd6d1fcb883947ce13267cdd691e90",
+      "inputBytes": 7474,
+      "inputCharacters": 5324,
+      "usage": {
+        "prompt_tokens": 1702,
+        "completion_tokens": 486,
+        "total_tokens": 2188
+      },
+      "structure": {
+        "shape": "PARSED_OBJECT",
+        "stagingCount": 0,
+        "reviewNotesCount": 0,
+        "reasons": []
+      }
+    }
+  ],
+  "runUrl": "https://github.com/logan-suu/NexusScribe/actions/runs/37048386575",
+  "interpretation": "Stopped after two requests. First baseline validated but its prose was not checkpointed and cannot be recovered. Second request failed paragraph validation. Zero completed pairs; no quality comparison is available.",
+  "sourceCommit": "fab85ef55c2861d245989a65df83b945faa68e4a"
+}

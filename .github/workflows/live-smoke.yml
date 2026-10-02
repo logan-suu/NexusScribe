@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       approve_live_smoke:
-        description: 'Approve selected synthetic test and confirm overage disabled (journey cap12 or either probe cap1)'
+        description: 'Approve selected synthetic test and confirm Use balance OFF (journey cap12, probe cap1, quality-pilot cap6 at 3000 tokens)'
         type: boolean
         required: true
         default: false
       test_scope:
-        description: 'Choose full browser journey or one-call review/generation contract probe'
+        description: 'Choose journey, one-call contract probe, or six-call synthetic quality pilot'
         type: choice
         required: true
         default: review-probe
-        options: [journey, review-probe, generation-probe]
+        options: [journey, review-probe, generation-probe, quality-pilot]
 
 permissions:
   contents: read
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   live-writing-journey:
-    if: github.event_name == 'workflow_dispatch' && inputs.approve_live_smoke == true
+    if: github.event_name == 'workflow_dispatch' && inputs.approve_live_smoke == true && (inputs.test_scope == 'journey' || inputs.test_scope == 'review-probe' || inputs.test_scope == 'generation-probe' || (inputs.test_scope == 'quality-pilot' && github.run_attempt == 1))
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -76,5 +76,34 @@ jobs:
         with:
           name: synthetic-live-journey-screenshots
           path: live-journey-evidence/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Check frozen quality pilot offline without credentials
+        if: inputs.test_scope == 'quality-pilot'
+        run: node --test tests/writing-quality-eval.test.js
+      - name: Generate approved six-call synthetic quality pilot
+        if: inputs.test_scope == 'quality-pilot'
+        run: node scripts/writing-quality-eval.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_QUALITY_EVAL_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve allowlisted synthetic quality evidence
+        if: always() && inputs.test_scope == 'quality-pilot'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-writing-quality-pilot
+          path: |
+            writing-quality-evidence/inputs.json
+            writing-quality-evidence/blind-pairs.json
+            writing-quality-evidence/unblinding.json
+            writing-quality-evidence/diagnostics.json
+            writing-quality-evidence/completed-01.json
+            writing-quality-evidence/completed-02.json
+            writing-quality-evidence/completed-03.json
+            writing-quality-evidence/completed-04.json
+            writing-quality-evidence/completed-05.json
+            writing-quality-evidence/completed-06.json
           if-no-files-found: ignore
           retention-days: 7
