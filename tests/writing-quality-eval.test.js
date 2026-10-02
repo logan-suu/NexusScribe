@@ -47,3 +47,18 @@ test('registered workflow quality scope is opt-in and isolated from existing liv
   if(block.includes('scripts/live-generation-probe.mjs'))assert.match(block,/if: inputs.test_scope == 'generation-probe'/);
  }
 });
+test('v2 uses identical prose-only system instruction and rejects valid but nonempty ancillary fields',async()=>{
+ for(const extra of [{staging:[{label:'她修鞋',sourceParagraphIndex:0}],reviewNotes:[]},{staging:[],reviewNotes:['PRIVATE_NOTE_SENTINEL']}]){
+  const saved={};let calls=0;await assert.rejects(runQualityEval({env,log:()=>{},save:async(n,d)=>saved[n]=d,fetchImpl:async(url,opt)=>{
+   calls++;const body=JSON.parse(opt.body);assert.match(body.messages[0].content,/staging MUST be \[\] and reviewNotes MUST be \[\]/);
+   return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({paragraphs:['她修鞋。'],chapterId:'chapter-2',...extra})},finish_reason:'stop'}]}));
+  }}));assert.equal(calls,1);assert.match(saved['diagnostics.json'].validationReason,/^EVAL_(STAGING|REVIEW_NOTES)_NOT_EMPTY$/);assert.equal(JSON.stringify(saved).includes('PRIVATE_NOTE_SENTINEL'),false);
+ }
+});
+test('v2 structural diagnostics are fixed enums and counts, never unexpected field names or values',async()=>{
+ const {structuralDiagnostics}=await import('../scripts/writing-quality-eval.mjs');
+ const result=structuralDiagnostics({choices:[{message:{content:JSON.stringify({staging:[{PRIVATE_FIELD:'PRIVATE_VALUE',label:42,sourceParagraphIndex:'PRIVATE_INDEX'},null],reviewNotes:[]})}}]});
+ assert.deepEqual(result,{shape:'PARSED_OBJECT',stagingCount:2,reviewNotesCount:0,reasons:['EVENT_EXTRA_FIELDS','EVENT_LABEL_SHAPE','EVENT_INDEX_NOT_INTEGER','EVENT_NOT_OBJECT']});assert.equal(JSON.stringify(result).includes('PRIVATE'),false);
+ assert.deepEqual(structuralDiagnostics({choices:[]}),{shape:'UNPARSEABLE'});
+ assert.deepEqual(structuralDiagnostics({choices:[{message:{content:'{"staging":{},"reviewNotes":[]}'}}]}).reasons,['STAGING_NOT_ARRAY']);
+});

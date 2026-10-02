@@ -2,10 +2,27 @@
 import {pathToFileURL} from 'node:url';
 import {createHash,randomInt} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {createAgentService,SAFE_VALIDATION_REASONS} from '../server/provider.js';
+import {createAgentService,SAFE_VALIDATION_REASONS,parseModelJson,ApiError} from '../server/provider.js';
 import {fixtures,buildPair,protocol} from '../eval/writing-quality-fixtures.mjs';
 const digest=x=>createHash('sha256').update(x).digest('hex');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
+export const PROSE_ONLY_INSTRUCTION='For this prose-only evaluation, return exactly these four fields: paragraphs, chapterId, staging, reviewNotes. staging MUST be [] and reviewNotes MUST be []. Do not extract events or write review notes. Preserve the paragraphs and chapterId rules above.';
+const evalReasons=new Set(['EVAL_STAGING_NOT_EMPTY','EVAL_REVIEW_NOTES_NOT_EMPTY']);
+export function structuralDiagnostics(data){
+ let wire;try{wire=parseModelJson(data?.choices?.[0]?.message?.content);}catch{return {shape:'UNPARSEABLE'};}
+ const reasons=[];
+ if(!Array.isArray(wire.staging))reasons.push('STAGING_NOT_ARRAY');
+ else {
+  if(wire.staging.length>30)reasons.push('STAGING_TOO_MANY');
+  for(const event of wire.staging){
+   if(!event||typeof event!=='object'||Array.isArray(event)){reasons.push('EVENT_NOT_OBJECT');continue;}
+   if(Object.keys(event).some(k=>!['label','sourceParagraphIndex'].includes(k)))reasons.push('EVENT_EXTRA_FIELDS');
+   if(typeof event.label!=='string'||!event.label.trim()||event.label.length>1000)reasons.push('EVENT_LABEL_SHAPE');
+   if(!Number.isInteger(event.sourceParagraphIndex))reasons.push('EVENT_INDEX_NOT_INTEGER');
+  }
+ }
+ return {shape:'PARSED_OBJECT',stagingCount:Array.isArray(wire.staging)?Math.min(wire.staging.length,1000000):null,reviewNotesCount:Array.isArray(wire.reviewNotes)?Math.min(wire.reviewNotes.length,1000000):null,reasons:[...new Set(reasons)]};
+}
 const safeCodes=new Set(['NOT_CONFIGURED','INVALID_INPUT','INVALID_MODEL_OUTPUT','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','OUTPUT_TRUNCATED','CALL_LIMIT','RATE_LIMIT','CONCURRENT_LIMIT']);
 export function approvedConfig(env){
  if(env.NEXUS_QUALITY_EVAL_APPROVED!=='true'||env.NEXUS_LIVE_ENABLED!=='true'||env.NEXUS_OVERAGE_CONFIRMED_OFF!=='true')throw Error('APPROVAL_REQUIRED');
@@ -18,18 +35,18 @@ async function boundedResponse(response){
  const reader=response.body?.getReader();if(!reader)throw Error('RESPONSE_BODY');
  const chunks=[];let size=0;
  try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>128*1024)throw Error('RESPONSE_SIZE');chunks.push(value);}}catch(e){await reader.cancel();throw e;}
- const bytes=Buffer.concat(chunks);let usage={};try{usage=safeUsage(JSON.parse(bytes.toString('utf8')));}catch{}
+ const bytes=Buffer.concat(chunks);let usage={},structure={shape:'UNPARSEABLE'};try{const data=JSON.parse(bytes.toString('utf8'));usage=safeUsage(data);structure=structuralDiagnostics(data);}catch{}
  // Raw response exists only transiently in memory; allowlisted token counts survive.
- return {response:new Response(bytes,{status:response.status}),usage};
+ return {response:new Response(bytes,{status:response.status}),usage,structure};
 }
 export async function runQualityEval({env=process.env,fetchImpl=globalThis.fetch,sleep=wait,choose=randomInt,log=console.log,save=async()=>{}}={}){
  const config=approvedConfig(env);let attempts=0,current=null;const calls=[],pairs=[],mapping=[];
  const service=createAgentService({env:config,fetchImpl:async(url,options)=>{
   if(attempts>=6)throw Error('CALL_LIMIT');attempts++;
-  const body=JSON.parse(options.body);body.temperature=protocol.temperature;
+  const body=JSON.parse(options.body);body.temperature=protocol.temperature;body.messages[0].content+=' '+PROSE_ONLY_INSTRUCTION;
   const serialized=JSON.stringify(body);
   const record={sequence:attempts,fixture:current.fixture,arm:current.arm,requestSha256:digest(serialized),inputBytes:Buffer.byteLength(serialized),inputCharacters:[...serialized].length,usage:{}};calls.push(record);
-  const result=await boundedResponse(await fetchImpl(url,{...options,body:serialized}));record.usage=result.usage;return result.response;
+  const result=await boundedResponse(await fetchImpl(url,{...options,body:serialized}));record.usage=result.usage;if(result.structure)record.structure=result.structure;return result.response;
  }});
  const inputs=fixtures.map(f=>({fixture:f.id,...buildPair(f)}));
  // Written before the first request; exact prompts can be reconstructed using provider.js at source SHA.
@@ -41,6 +58,7 @@ export async function runQualityEval({env=process.env,fetchImpl=globalThis.fetch
     if(attempts)await sleep(11000);
     current={fixture:f.id,arm};
     const result=await service.run('generateChapter',pair[arm]);
+    if(result.staging.length||result.reviewNotes.length){const error=new ApiError(502,'INVALID_MODEL_OUTPUT','Prose-only evaluation contract rejected');error.validationReason=result.staging.length?'EVAL_STAGING_NOT_EMPTY':'EVAL_REVIEW_NOTES_NOT_EMPTY';throw error;}
     outputs[arm]=result.text;calls.at(-1).output=stats(result.text);calls.at(-1).outputSha256=digest(result.text);
     log(`quality-eval completed ${attempts}/6`);
    }
@@ -55,7 +73,7 @@ export async function runQualityEval({env=process.env,fetchImpl=globalThis.fetch
   return {status:'complete',attempts,pairs};
  }catch(error){
   const code=safeCodes.has(error?.code)?error.code:'EVAL_STOPPED';
-  await save('diagnostics.json',{protocol,status:'stopped',attempts,code,...(SAFE_VALIDATION_REASONS.includes(error?.validationReason)?{validationReason:error.validationReason}:{}),calls});
+  await save('diagnostics.json',{protocol,status:'stopped',attempts,code,...((SAFE_VALIDATION_REASONS.includes(error?.validationReason)||evalReasons.has(error?.validationReason))?{validationReason:error.validationReason}:{}),calls});
   log(`quality-eval stopped ${attempts}/6 ${code}`);throw Error('Quality evaluation stopped; no automatic retry');
  }
 }
