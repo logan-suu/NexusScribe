@@ -8,7 +8,7 @@ NexusScribe 是一个以**版本化叙事记忆**为核心、由作者掌握关�
 
 当前原型面向中文小说，采用中文界面。本地运行，默认使用离线模板，也可显式启用服务端模型适配。
 
-> **项目状态：可运行原型。** 离线模板用于演示工作流；真实供应商连通性、写作质量与成本尚未完成端到端验证。固定案例中的一致性规则不能证明任意故事都能保持语义正确。
+> **项目状态：可运行原型。** 一轮受限真实供应商测试已通过全部五类操作及内存中的受保护接受与撤销。桌面和移动浏览器测试使用模拟供应商。真实模型与浏览器联合测试、文学质量、通用语义可靠性及成本评估仍待验证。见[验收记录](docs/public/ACCEPTANCE.md)。
 
 ## 为什么需要叙事记忆？
 
@@ -34,7 +34,7 @@ NexusScribe 是一个以**版本化叙事记忆**为核心、由作者掌握关�
 
 ## 快速开始
 
-可运行演示目前位于 [`feat/nexusscribe-demo`](https://github.com/logan-suu/NexusScribe/tree/feat/nexusscribe-demo) 分支与 [PR #1](https://github.com/logan-suu/NexusScribe/pull/1)；合并前请使用该分支。
+集成完成后使用开发分支 `dev_v1.0`；审阅未合入改动时使用对应 PR 的提交。`main` 保留为发布边界，克隆仓库不会创建公开在线应用。
 
 需要 **Node.js 22.12+** 和 npm。在包含本演示程序的仓库目录执行：
 
@@ -73,7 +73,7 @@ NEXUS_MAX_OUTPUT_TOKENS=1200
 NEXUS_MAX_CALLS=10
 ```
 
-这组 OpenCode Go 地址与模型 ID **是配置示例，不代表账户已具备使用权限或已完成生产验收**。一次明确设置 `NEXUS_REASONING_EFFORT=low`、上限 3000 tokens 的合成故事规划测试已通过，但后续 low 请求仍发生截断，因此不代表稳定完成、所有创作环节或任意小说质量已验证。详见[模型兼容性证据](docs/public/MODEL-COMPATIBILITY.md)。程序不会自动加载 `.env` 文件。
+这组 OpenCode Go 地址与模型 ID **是配置示例，不代表账户已具备使用权限或已完成生产验收**。一次明确设置 `NEXUS_REASONING_EFFORT=low`、上限 3000 tokens 的合成故事规划测试已通过，但后续 low 请求仍发生截断。随后单独使用 `NEXUS_THINKING_MODE=disabled` 请求、无 effort 字段、相同输出上限的合成五环节测试通过，并完成暂存、拒稿、接受和补偿撤销验证。这是有界样例证据，不是任意小说质量保证。详见[模型兼容性证据](docs/public/MODEL-COMPATIBILITY.md)。程序不会自动加载 `.env` 文件。
 
 启用真实模式：
 
@@ -86,7 +86,7 @@ NEXUS_MAX_CALLS=10
 ### 请求与费用边界
 
 - 默认输出上限 `1200` tokens，可配置至 `3000`
-- 可显式设置 `NEXUS_REASONING_EFFORT=low`，或单独设置 `NEXUS_THINKING_MODE=disabled`，不能同时使用。不设置则保留供应商默认行为；Go 的 thinking-disabled 路径仍在兼容性验证中，不支持的值会被拒绝
+- 可显式设置 `NEXUS_REASONING_EFFORT=low`，或单独设置 `NEXUS_THINKING_MODE=disabled`，不能同时使用。不设置则保留供应商默认行为；Go 的 thinking-disabled 请求配置已通过有界合成测试，但不能据此证明内部推理为零；不支持的值会被拒绝
 - 每个服务进程默认最多尝试 `10` 次，可配置至 `30` 次
 - 最多两个并发请求，每分钟最多六次尝试
 - 默认超时 30 秒；请求与响应各限 128 KiB
@@ -125,7 +125,7 @@ NEXUS_MAX_CALLS=10
 | `server/` | 供应商协议、schema、超时与请求限制 |
 | `tests/` 与 `scripts/` | 叙事内核、模型适配和 UI 工作流检查 |
 
-详见[运行时架构](docs/public/ARCHITECTURE.md)与[完整产品蓝图](docs/public/NexusScribe-blueprint.md)。蓝图包含规划中的能力，不代表全部已实现。
+详见[验收记录](docs/public/ACCEPTANCE.md)、[启动清单](docs/public/LAUNCH.md)与[运行时架构](docs/public/ARCHITECTURE.md)与[完整产品蓝图](docs/public/NexusScribe-blueprint.md)。蓝图包含规划中的能力，不代表全部已实现。
 
 ## 开发与验证
 
@@ -135,6 +135,7 @@ npm run server        # 仅 API，端口 8787
 npm test              # 领域、契约与假供应商测试
 npm run test:ui       # 离线 DOM 工作流检查
 npm run test:ui:live  # 假模型五环节 UI 工作流
+npm run test:ui:race  # 在途跨项目审阅竞态回归
 npm run check         # 上述检查与 production build
 npm run build
 npm run preview       # 构建预览，端口 4173；API 需另行启动
@@ -156,7 +157,7 @@ npm run test:e2e
 - **单作者、本地存储：** 没有服务端数据库、账号鉴权、云备份或多人并发保证。过时窗口检测不是数据库事务。
 - **备份仅支持导出：** 清理浏览器站点数据可能丢失工作区。请定期导出；目前没有备份导入界面。
 - **叙事推理范围有限：** 任意设定的语义冲突／替代推理与通用知识传递路径证明尚未完成。
-- **仍需进一步验收：** 真实供应商测试、长篇评测、基线比较、跨浏览器覆盖与生产安全审查仍需推进。
+- **仍需进一步验收：** 有界真实供应商／领域样例已通过；更广泛的供应商稳定性、长篇评测、基线比较、跨浏览器覆盖与生产安全审查仍需推进。
 
 后续方向包括验证真实模型行为与写作质量、将修改与证据处理扩展到固定案例之外，以及加强持久化与恢复。这些是发展目标，并非已交付能力或交付时间承诺。
 

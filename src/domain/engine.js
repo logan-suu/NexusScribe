@@ -156,21 +156,33 @@ export function stageProviderDraft(state,result,chapterId) {
  s.drafts.push({id,projectId:s.projectId,chapterId,runId:`run-${s.sequence}`,revision:1,baseVersion:s.version,chapterRevisions:Object.fromEntries(s.chapters.map(c=>[c.id,c.revision])),status:'DRAFT',text:result.text,textHash:hash(result.text),provider:typeof result.provider==='string'?result.provider:(result.provider?.id||'external-provider'),providerInfo:typeof result.provider==='object'&&result.provider?copy(result.provider):null,requiresSemanticReview:Boolean(result.provider?.isLive),modelReview:null,staging,context:copy(context),review:null});return s;
 }
 
+/** Capture before the asynchronous request; never rebuild this from a response target. */
+export function createReviewBinding(state,draftId) {
+ const d=draft(state,draftId);
+ return {projectId:state.projectId,draftId:d.id,runId:d.runId,chapterId:d.chapterId||'ch3',stateVersion:state.version,draftRevision:d.revision,textHash:hash(d.text),stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:Object.fromEntries(state.chapters.map(c=>[c.id,c.revision])),contextHash:hash(JSON.stringify(getContext(state)))};
+}
+function reviewBindingMatches(actual,expected) {
+ if(!actual||!expected)return false;
+ const fields=['projectId','draftId','runId','chapterId','stateVersion','draftRevision','textHash','stagingHash','contextHash'];
+ if(fields.some(key=>!Object.hasOwn(actual,key)||actual[key]===undefined||actual[key]!==expected[key]))return false;
+ const revisions=actual.chapterRevisions,wanted=expected.chapterRevisions;
+ return Boolean(revisions&&typeof revisions==='object'&&!Array.isArray(revisions)&&Object.keys(revisions).length===Object.keys(wanted).length&&Object.entries(wanted).every(([id,revision])=>Object.hasOwn(revisions,id)&&revisions[id]===revision));
+}
 function currentSemanticReview(state,d) {
  const r=d.modelReview;
- return Boolean(r&&r.stateVersion===state.version&&r.draftRevision===d.revision&&r.textHash===hash(d.text)&&r.chapterId===(d.chapterId||'ch3')&&r.stagingHash===hash(JSON.stringify(d.staging))&&state.chapters.every(c=>r.chapterRevisions?.[c.id]===c.revision&&d.chapterRevisions?.[c.id]===c.revision)&&!issuesFor(state,d).length);
+ return Boolean(r&&d.projectId===state.projectId&&reviewBindingMatches(r.binding,createReviewBinding(state,d.id))&&r.stateVersion===state.version&&r.draftRevision===d.revision&&r.textHash===hash(d.text)&&r.chapterId===(d.chapterId||'ch3')&&r.stagingHash===hash(JSON.stringify(d.staging))&&state.chapters.every(c=>r.chapterRevisions?.[c.id]===c.revision&&d.chapterRevisions?.[c.id]===c.revision)&&!issuesFor(state,d).length);
 }
 /** Attach a model's advisory, never a source of authoritative Canon changes. */
 export function attachSemanticReview(state,draftId,report,expected) {
  const original=draft(state,draftId);
  if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能审查待定草稿');
- if(!expected||expected.stateVersion!==state.version||expected.draftRevision!==original.revision||expected.textHash!==hash(original.text)||original.baseVersion!==state.version)fail('STALE_SEMANTIC_REVIEW','模型审查结果与当前状态或草稿版本不一致');
+ if(!reviewBindingMatches(expected,createReviewBinding(state,draftId))||original.baseVersion!==state.version)fail('STALE_SEMANTIC_REVIEW','模型审查结果与当前状态或草稿版本不一致');
  if(original.projectId!==state.projectId||state.chapters.some(c=>original.chapterRevisions?.[c.id]!==c.revision||c.syncStatus!=='CLEAN'))fail('STALE_SEMANTIC_REVIEW','模型审查使用的项目或源正文已变化');
  if(!report||typeof report.summary!=='string'||!Array.isArray(report.issues)||!Array.isArray(report.checks)||report.checks.some(x=>typeof x!=='string')||!(typeof report.provider==='string'&&report.provider.trim()||report.provider&&typeof report.provider==='object'&&typeof report.provider.id==='string'&&report.provider.id.trim()))fail('INVALID_SEMANTIC_REVIEW','模型审查报告格式不完整');
  for(const issue of report.issues){
   if(!issue||typeof issue!=='object'||Array.isArray(issue)||Object.keys(issue).some(k=>!['severity','explanation','sourceQuote'].includes(k))||!['error','warning'].includes(issue.severity)||typeof issue.explanation!=='string'||!issue.explanation.trim()||typeof issue.sourceQuote!=='string'||!issue.sourceQuote.trim()||!original.text.includes(issue.sourceQuote))fail('INVALID_SEMANTIC_REVIEW','每项审查问题必须使用合法级别、说明和当前草稿中的精确原文证据');
  }
  const s=copy(state),d=draft(s,draftId);
- d.modelReview={summary:report.summary,issues:copy(report.issues),checks:copy(report.checks),provider:copy(report.provider),stateVersion:s.version,draftRevision:d.revision,textHash:hash(d.text),chapterId:d.chapterId||'ch3',stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:copy(d.chapterRevisions),semanticStatus:'model_reviewed_unverified',advisory:true,limitations:['模型审查是候选判断，并非独立真实性或全面语义一致性证明；作者仍需核对来源与知识获取路径']};
+ d.modelReview={binding:copy(expected),summary:report.summary,issues:copy(report.issues),checks:copy(report.checks),provider:copy(report.provider),stateVersion:s.version,draftRevision:d.revision,textHash:hash(d.text),chapterId:d.chapterId||'ch3',stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:copy(d.chapterRevisions),semanticStatus:'model_reviewed_unverified',advisory:true,limitations:['模型审查是候选判断，并非独立真实性或全面语义一致性证明；作者仍需核对来源与知识获取路径']};
  return s;
 }

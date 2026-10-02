@@ -49,11 +49,16 @@ A bounded planning-only call with explicit low effort subsequently passed the co
 
 The adapter also permits explicit `NEXUS_THINKING_MODE=disabled`, sending only `thinking: {type: "disabled"}`. It is mutually exclusive with `NEXUS_REASONING_EFFORT`; supplying both or an unsupported value blocks configuration before any request. Unset controls leave provider defaults unchanged.
 
-This parameter is documented for the direct DeepSeek API. The current Go check is still a compatibility probe, not an assumption of passthrough semantics. Its manual workflow is fixed to one planning request, 3000 output tokens, and no retry, with the low-effort field omitted to isolate the variable. A returned response and usage metadata must establish what happened; code serialization alone does not prove that thinking was disabled.
+This parameter is documented for the direct DeepSeek API. The initial Go compatibility probe used one planning request, 3000 output tokens, and no retry, with the low-effort field omitted to isolate the variable. A returned response and usage metadata must establish what happened; code serialization alone does not prove that thinking was disabled.
 
 ## Author-context completeness
 
 Custom projects now provide a separate `context.constitution` containing the exact saved idea, protagonist, tone, narrative perspective, goal, boundaries and contract metadata. Explicitly emptied author fields do not fall back to older contract values. This is author intent, not promoted Canon. Deterministic UI tests capture the actual critic request after switching away from and back to a project, verifying the author boundary and other fields survive intact. This mapping test does not require a live provider call.
 
 
-A single planning-only request with `thinking.type=disabled` subsequently passed the compact planning contract. Success alone does not prove that the provider used zero reasoning tokens: the success report retained no reasoning-token breakdown. The next separately controlled full-flow check uses that same requested setting, no reasoning-effort field, at most five calls and the same 3000-token ceiling. It also exercises isolated drafts, guarded acceptance and compensation in memory without further model calls. Full-flow acceptance is not established by the planning-only result.
+A single planning-only request with `thinking.type=disabled` subsequently passed the compact planning contract. Success alone does not prove that the provider used zero reasoning tokens: the success report retained no reasoning-token breakdown. The separately controlled full-flow result is recorded below. The planning-only result alone did not establish full-flow acceptance.
+
+
+## Observed full-flow result
+
+The subsequent [five-action run](https://github.com/logan-suu/NexusScribe/actions/runs/36979109822) passed with requested thinking-disabled, no effort field, the same model and a 3000-token ceiling per call. It made exactly five requests with no retry. Its in-memory domain checks reported 2 staged and promoted events, 1 accepted chapter and successful compensation preserving text/history. This is one synthetic provider/domain smoke, not a live-browser test or a literary-quality/general-consistency result. See the [acceptance record](ACCEPTANCE.md).

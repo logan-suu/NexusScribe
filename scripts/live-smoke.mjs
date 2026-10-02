@@ -1,6 +1,6 @@
 /** Manual, opt-in network smoke. Never imported by the ordinary test suite to make live calls. */
 import assert from 'node:assert/strict';
-import {createProjectFromConfig,getContext,stageProviderDraft,rejectDraft,editDraft,saveRevision,attachSemanticReview,reviewDraft,acceptDraft,undoCommit,hash} from '../src/domain/engine.js';
+import {createProjectFromConfig,getContext,stageProviderDraft,rejectDraft,editDraft,saveRevision,attachSemanticReview,createReviewBinding,reviewDraft,acceptDraft,undoCommit,hash} from '../src/domain/engine.js';
 import {pathToFileURL} from 'node:url';
 import {createAgentService} from '../server/provider.js';
 const SAFE_CODES=new Set(['NOT_CONFIGURED','INVALID_INPUT','INVALID_MODEL_OUTPUT','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','OUTPUT_TRUNCATED','CALL_LIMIT','RATE_LIMIT','CONCURRENT_LIMIT']);
@@ -55,8 +55,9 @@ export async function runLiveSmoke({env=process.env,fetchImpl=globalThis.fetch,l
  const revisionBranch=saveRevision(revisionBase,chapterId,afterText,revisionBase.chapters[0].revision);
  await call(ACTIONS[3],{beforeText:generated.text,afterText,chapterId,context:getContext(revisionBranch)});
  domain('domainInterpret',()=>{assert.equal(JSON.stringify(original),originalSnapshot);assert.equal(JSON.stringify(edited),editedSnapshot);assert.equal(canonical(edited),originalCanon);});
+ const expectedReview=createReviewBinding(edited,draftId);
  const modelReview=await call(ACTIONS[4],{text:afterText,chapterId,context:originalContext});
- const reviewed=domain('domainReview',()=>{const d=edited.drafts[0];const attached=attachSemanticReview(edited,draftId,modelReview,{stateVersion:edited.version,draftRevision:d.revision,textHash:hash(d.text)});const state=reviewDraft(attached,draftId);assert.deepEqual(state.drafts[0].modelReview.issues,modelReview.issues);assert.equal(state.drafts[0].review.passed,true);assert.equal(canonical(state),originalCanon);return state;});
+ const reviewed=domain('domainReview',()=>{const d=edited.drafts[0];const attached=attachSemanticReview(edited,draftId,modelReview,expectedReview);const state=reviewDraft(attached,draftId);assert.deepEqual(state.drafts[0].modelReview.issues,modelReview.issues);assert.equal(state.drafts[0].review.passed,true);assert.equal(canonical(state),originalCanon);return state;});
  if(modelReview.issues.some(issue=>issue.severity==='error')){
   domain('domainRejectReview',()=>assert.throws(()=>acceptDraft(reviewed,draftId),{code:'SEMANTIC_REVIEW_ERRORS'}));
   log(`domain METADATA ${JSON.stringify({stagedEvents:reviewed.drafts[0].staging.length,promotedEvents:0,acceptedChapters:0,acceptance:'BLOCKED'})}`);

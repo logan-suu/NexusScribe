@@ -8,7 +8,7 @@ NexusScribe is an author-guided fiction-writing workspace built around **version
 
 The current prototype focuses on Chinese fiction and has a Chinese-language interface. It runs locally with an offline template mode and an opt-in, server-side model adapter.
 
-> **Project status:** working prototype. Offline templates demonstrate the workflow; live-provider connectivity, writing quality, and cost have not been validated end to end. The deterministic demo's consistency rules do not establish correctness for arbitrary stories.
+> **Project status:** working prototype. One bounded real-provider test passed all five actions and guarded in-memory acceptance/undo. Desktop/mobile browser tests use a mock provider. A combined live-browser test, literary quality, general semantic reliability, and cost characterization remain unverified. See the [acceptance record](docs/public/ACCEPTANCE.md).
 
 ## Why narrative memory?
 
@@ -34,7 +34,7 @@ Offline mode supports the three-chapter template workflow. The server adapter im
 
 ## Quick start
 
-The runnable demo currently lives on [`feat/nexusscribe-demo`](https://github.com/logan-suu/NexusScribe/tree/feat/nexusscribe-demo) in [PR #1](https://github.com/logan-suu/NexusScribe/pull/1); use that checkout until it is merged.
+Use the development checkout on `dev_v1.0` after integration, or the reviewed PR head while changes are under review. `main` is reserved for releases; no public hosted app is created by cloning this repository.
 
 Requires **Node.js 22.12+** and npm. From a checkout containing this demo:
 
@@ -73,7 +73,7 @@ NEXUS_MAX_OUTPUT_TOKENS=1200
 NEXUS_MAX_CALLS=10
 ```
 
-This OpenCode Go endpoint/model pair is a configuration example, **not a claim of account eligibility or production acceptance**. One bounded synthetic planning check passed with explicit `NEXUS_REASONING_EFFORT=low` and a 3000-token limit; a later low-effort run still truncated, so this does not establish reliable completion, general story quality or every workflow action. See [model compatibility evidence](docs/public/MODEL-COMPATIBILITY.md). The app does not automatically load `.env` files.
+This OpenCode Go endpoint/model pair is a configuration example, **not a claim of account eligibility or production acceptance**. One bounded synthetic planning check passed with explicit `NEXUS_REASONING_EFFORT=low` and a 3000-token limit; a later low-effort run still truncated. A separate five-action synthetic smoke subsequently passed with requested `NEXUS_THINKING_MODE=disabled`, no effort field and the same output ceiling, including domain staging, rejection, acceptance and compensation. This is bounded fixture evidence, not a general quality guarantee. See [model compatibility evidence](docs/public/MODEL-COMPATIBILITY.md). The app does not automatically load `.env` files.
 
 To enable live mode:
 
@@ -86,7 +86,7 @@ Never put a key in `VITE_` variables, the browser, chat, source code, shared fil
 ### Request and cost boundaries
 
 - Default output limit: `1200` tokens; configurable up to `3000`
-- Optional `NEXUS_REASONING_EFFORT=low` or separately `NEXUS_THINKING_MODE=disabled`; never both. Unset preserves provider defaults. The thinking-disabled Go route remains under compatibility testing; unsupported values are rejected
+- Optional `NEXUS_REASONING_EFFORT=low` or separately `NEXUS_THINKING_MODE=disabled`; never both. Unset preserves provider defaults. The thinking-disabled Go request profile passed the bounded synthetic smoke; this does not prove zero internal reasoning. Unsupported values are rejected
 - Default call allowance: `10` attempts per server process; configurable up to `30`
 - At most two concurrent requests and six attempts per minute
 - Thirty-second default timeout; request and response bodies limited to 128 KiB each
@@ -125,7 +125,7 @@ Chinese writing workspace (React + Vite)
 | `server/` | Provider protocol, schemas, timeouts, and request limits |
 | `tests/` and `scripts/` | Runtime, provider, and UI workflow checks |
 
-See the [runtime architecture](docs/public/ARCHITECTURE.md) for boundaries and the [product blueprint](docs/public/NexusScribe-blueprint.md) for the broader design. The blueprint includes planned capabilities.
+See the [acceptance record](docs/public/ACCEPTANCE.md), [launch checklist](docs/public/LAUNCH.md), and [runtime architecture](docs/public/ARCHITECTURE.md) for boundaries and the [product blueprint](docs/public/NexusScribe-blueprint.md) for the broader design. The blueprint includes planned capabilities.
 
 ## Development and verification
 
@@ -135,6 +135,7 @@ npm run server        # API only, port 8787
 npm test              # Domain, contract, and mocked-provider tests
 npm run test:ui       # Offline DOM workflow checks
 npm run test:ui:live  # Mocked five-action model UI workflow
+npm run test:ui:race  # In-flight cross-project review regression
 npm run check         # Above checks plus production build
 npm run build
 npm run preview       # Production preview, port 4173; start API separately
@@ -156,7 +157,7 @@ These automated suites do not make paid model calls. Passing them does not demon
 - **Single-author local storage.** No server database, authentication, cloud backup, or multiuser concurrency guarantees. Stale-window detection is not a database transaction.
 - **Export-only backups.** Clearing browser site data can erase the workspace. Export regularly; a backup-import interface is not implemented.
 - **Bounded narrative reasoning.** General semantic conflict/replacement reasoning and knowledge-transfer proofs remain incomplete.
-- **Further validation needed.** Real-provider testing, long-form evaluation, baseline comparisons, cross-browser coverage, and production security review remain acceptance work.
+- **Further validation needed.** A bounded real-provider/domain fixture has passed; broader provider reliability, long-form evaluation, baseline comparisons, cross-browser coverage, and production security review remain acceptance work.
 
 The development direction is to validate provider behavior and writing quality, broaden revision and evidence handling beyond the fixture, and strengthen persistence and recovery. These are goals, not shipped features or delivery commitments.
 
