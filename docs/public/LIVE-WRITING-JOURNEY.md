@@ -11,6 +11,65 @@ The runner needs the repository's existing `NEXUS_API_KEY` secret. Never copy th
 secret into source, browser storage, screenshots, reports or workflow inputs.
 The approval includes confirmation that provider overage / Use balance is off.
 
+## Accepted bounded milestone (2026-10-02)
+
+[Real-browser run 37033463722](https://github.com/logan-suu/NexusScribe/actions/runs/37033463722)
+passed on tested commit `0d664452e01182e78df97bc7543b62019186a9a4` with `journey PASS 9 3 3`.
+[CI run 37032590299](https://github.com/logan-suu/NexusScribe/actions/runs/37032590299)
+passed 163 unit/contract tests, DOM suites/build and 12 mocked Chromium scenarios.
+The real-browser operational checks established:
+
+- Nine actual provider calls, with no retries or mocked provider replies
+- Three short synthetic chapters generated, reviewed and accepted by the test driver through UI controls
+- An author-confirmed setting entered through chapter 1 editing/analysis and present in the actual chapter 2/3 request context
+- Direct setting undo correctly blocked while later accepted chapters depended on it
+- Three compensations through History: chapter 3 events, chapter 2 events, then the setting
+- Tested state restored while manuscript/revisions/history were retained; reload verified
+- Five UI milestone screenshots produced as temporary workflow artifacts and inspected for legibility/privacy
+
+This establishes this single bounded integration path, not full-length chapter
+quality, independent semantic correctness, repeated-run reliability or production
+readiness. The target was roughly 100 Chinese characters per chapter; the harness
+did not certify an exact length. Checking request context proves that the setting
+was supplied, not that every literary consequence was independently evaluated.
+The real-model browser run was desktop Chromium; mobile coverage remains mocked.
+
+### Observed semantic failure despite operational completion
+
+The confirmed setting was “小舟的纸灯是蓝色的。” Yet the generated chapter 2
+contained “小红纸灯”. The model review itself raised the color conflict as an
+advisory warning. It also noted causal/motivation gaps in chapter 3. The existing
+acceptance gate blocks structural errors and model issues marked `error`, but
+permits author acceptance of `warning` issues; the test driver exercised that
+permitted path. Thus a finished workflow did not prevent this observed setting
+contradiction, and the run is not a pass for precise setting inheritance.
+
+All five screenshots were inspected as readable and privacy-clean. The chapter 3
+capture shows its review section rather than the full chapter prose, so those
+screenshots are not a complete manuscript-quality review.
+
+Preserve the blue-setting/red-lamp case for the next scoped inheritance evaluation:
+separate objectively source-backed author-fact contradictions from subjective style
+advice, retain referent/evidence checks, and require an appropriate resolution path.
+Do not simply turn every model warning into a blocker. The current milestone
+makes no claim that this classification or resolution design is implemented.
+
+Earlier manual diagnostics were not silently omitted: full journeys stopped after
+6, 7 and 6 attempts; isolated review and generation probes used one attempt each.
+Together with this successful 9-call journey, this milestone's reviewed runs used
+30 provider attempts. Each run stopped on its first provider failure, with no
+automatic retry. Actual currency cost was not measured. See the observations below.
+
+## Remaining milestones
+
+1. Precise inheritance: preserve the blue-setting/red-lamp regression case and distinguish source-backed contradictions from subjective warnings
+2. Explicit event rejection/rebinding and valuable-draft recovery when evidence fails
+3. Longer chapters, repeated multi-chapter trials, interruption/recovery cases, and independent author assessment of consistency and literary quality
+4. Durable storage/import/backup, transactional safety, deployment and security review
+5. Longer-form and baseline comparisons, plus measured cost per accepted chapter
+
+These are future work, not additional completed acceptance claims.
+
 ## Bounded scope
 
 - One entirely fictional short Chinese story, desktop Chromium at 1440×1000
