@@ -1,0 +1,32 @@
+{
+  "name": "nexusscribe-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test tests/*.test.js",
+    "test:ui": "node scripts/test-ui.mjs",
+    "check": "npm test && npm run test:ui && npm run test:ui:live && npm run test:ui:race && npm run build",
+    "server": "node server/index.js",
+    "start": "node scripts/start-demo.mjs",
+    "test:ui:live": "node scripts/test-ui-live.mjs",
+    "test:e2e": "playwright test",
+    "test:ui:race": "node scripts/test-ui-review-race.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^30.1.1",
+    "vite": "^7.0.0"
+  }
+}
