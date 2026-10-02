@@ -11,6 +11,17 @@ const evalReasons=new Set(['EVAL_STAGING_NOT_EMPTY','EVAL_REVIEW_NOTES_NOT_EMPTY
 export function structuralDiagnostics(data){
  let wire;try{wire=parseModelJson(data?.choices?.[0]?.message?.content);}catch{return {shape:'UNPARSEABLE'};}
  const reasons=[];
+ if(!Array.isArray(wire.paragraphs))reasons.push('PARAGRAPHS_NOT_ARRAY');
+ else {
+  if(wire.paragraphs.length===0)reasons.push('PARAGRAPHS_EMPTY');
+  if(wire.paragraphs.length>60)reasons.push('PARAGRAPHS_TOO_MANY');
+  for(const paragraph of wire.paragraphs){
+   if(typeof paragraph!=='string'){reasons.push('PARAGRAPH_NOT_STRING');continue;}
+   if(!paragraph.trim())reasons.push('PARAGRAPH_BLANK');
+   if(paragraph.length>4000)reasons.push('PARAGRAPH_TOO_LONG');
+   if(/[\r\n]/.test(paragraph))reasons.push('PARAGRAPH_EMBEDDED_NEWLINE');
+  }
+ }
  if(!Array.isArray(wire.staging))reasons.push('STAGING_NOT_ARRAY');
  else {
   if(wire.staging.length>30)reasons.push('STAGING_TOO_MANY');
@@ -21,7 +32,7 @@ export function structuralDiagnostics(data){
    if(!Number.isInteger(event.sourceParagraphIndex))reasons.push('EVENT_INDEX_NOT_INTEGER');
   }
  }
- return {shape:'PARSED_OBJECT',stagingCount:Array.isArray(wire.staging)?Math.min(wire.staging.length,1000000):null,reviewNotesCount:Array.isArray(wire.reviewNotes)?Math.min(wire.reviewNotes.length,1000000):null,reasons:[...new Set(reasons)]};
+ return {shape:'PARSED_OBJECT',paragraphCount:Array.isArray(wire.paragraphs)?Math.min(wire.paragraphs.length,1000000):null,stagingCount:Array.isArray(wire.staging)?Math.min(wire.staging.length,1000000):null,reviewNotesCount:Array.isArray(wire.reviewNotes)?Math.min(wire.reviewNotes.length,1000000):null,reasons:[...new Set(reasons)]};
 }
 const safeCodes=new Set(['NOT_CONFIGURED','INVALID_INPUT','INVALID_MODEL_OUTPUT','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','OUTPUT_TRUNCATED','CALL_LIMIT','RATE_LIMIT','CONCURRENT_LIMIT']);
 export function approvedConfig(env){
@@ -60,6 +71,9 @@ export async function runQualityEval({env=process.env,fetchImpl=globalThis.fetch
     const result=await service.run('generateChapter',pair[arm]);
     if(result.staging.length||result.reviewNotes.length){const error=new ApiError(502,'INVALID_MODEL_OUTPUT','Prose-only evaluation contract rejected');error.validationReason=result.staging.length?'EVAL_STAGING_NOT_EMPTY':'EVAL_REVIEW_NOTES_NOT_EMPTY';throw error;}
     outputs[arm]=result.text;calls.at(-1).output=stats(result.text);calls.at(-1).outputSha256=digest(result.text);
+    // Future runs retain each validated synthetic result even if a later request fails.
+    // These arm-labeled checkpoints must never be given to the blinded reviewer.
+    await save(`completed-${String(attempts).padStart(2,'0')}.json`,{fixture:f.id,arm,sequence:attempts,text:result.text,output:calls.at(-1).output,outputSha256:calls.at(-1).outputSha256});
     log(`quality-eval completed ${attempts}/6`);
    }
    const first=choose(2)===0?'baseline':'nexus',second=first==='baseline'?'nexus':'baseline';

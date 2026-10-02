@@ -57,8 +57,21 @@ test('v2 uses identical prose-only system instruction and rejects valid but none
 });
 test('v2 structural diagnostics are fixed enums and counts, never unexpected field names or values',async()=>{
  const {structuralDiagnostics}=await import('../scripts/writing-quality-eval.mjs');
- const result=structuralDiagnostics({choices:[{message:{content:JSON.stringify({staging:[{PRIVATE_FIELD:'PRIVATE_VALUE',label:42,sourceParagraphIndex:'PRIVATE_INDEX'},null],reviewNotes:[]})}}]});
- assert.deepEqual(result,{shape:'PARSED_OBJECT',stagingCount:2,reviewNotesCount:0,reasons:['EVENT_EXTRA_FIELDS','EVENT_LABEL_SHAPE','EVENT_INDEX_NOT_INTEGER','EVENT_NOT_OBJECT']});assert.equal(JSON.stringify(result).includes('PRIVATE'),false);
+ const result=structuralDiagnostics({choices:[{message:{content:JSON.stringify({paragraphs:['合规正文。'],staging:[{PRIVATE_FIELD:'PRIVATE_VALUE',label:42,sourceParagraphIndex:'PRIVATE_INDEX'},null],reviewNotes:[]})}}]});
+ assert.deepEqual(result,{shape:'PARSED_OBJECT',paragraphCount:1,stagingCount:2,reviewNotesCount:0,reasons:['EVENT_EXTRA_FIELDS','EVENT_LABEL_SHAPE','EVENT_INDEX_NOT_INTEGER','EVENT_NOT_OBJECT']});assert.equal(JSON.stringify(result).includes('PRIVATE'),false);
  assert.deepEqual(structuralDiagnostics({choices:[]}),{shape:'UNPARSEABLE'});
- assert.deepEqual(structuralDiagnostics({choices:[{message:{content:'{"staging":{},"reviewNotes":[]}'}}]}).reasons,['STAGING_NOT_ARRAY']);
+ assert.deepEqual(structuralDiagnostics({choices:[{message:{content:'{"paragraphs":["正文"],"staging":{},"reviewNotes":[]}'}}]}).reasons,['STAGING_NOT_ARRAY']);
+});
+test('future failed run checkpoints only completed validated synthetic output, without reconstructing missing outputs',async()=>{
+ const saved={};let calls=0;await assert.rejects(runQualityEval({env,log:()=>{},sleep:async()=>{},save:async(n,d)=>saved[n]=d,fetchImpl:async()=>++calls===1?response():new Response('UPSTREAM_PRIVATE',{status:500})}));
+ assert.equal(calls,2);assert.equal(saved['completed-01.json'].arm,'baseline');assert.match(saved['completed-01.json'].text,/白线/);assert.equal(saved['completed-02.json'],undefined);assert.equal(saved['blind-pairs.json'],undefined);assert.equal(saved['diagnostics.json'].status,'stopped');assert.equal(JSON.stringify(saved).includes('UPSTREAM_PRIVATE'),false);
+});
+test('every paragraph shape rejection gets fixed diagnostic enums and still fails unchanged production validation',async()=>{
+ const {structuralDiagnostics}=await import('../scripts/writing-quality-eval.mjs');
+ const {normalizeChapter}=await import('../server/provider.js');
+ const cases=[[null,'PARAGRAPHS_NOT_ARRAY'],[[],'PARAGRAPHS_EMPTY'],[Array(61).fill('文'),'PARAGRAPHS_TOO_MANY'],[[7],'PARAGRAPH_NOT_STRING'],[['   '],'PARAGRAPH_BLANK'],[['文'.repeat(4001)],'PARAGRAPH_TOO_LONG'],[['上段\n下段'],'PARAGRAPH_EMBEDDED_NEWLINE'],[['上段\r下段'],'PARAGRAPH_EMBEDDED_NEWLINE']];
+ for(const [paragraphs,reason] of cases){
+  const wire={paragraphs,chapterId:'chapter-2',staging:[],reviewNotes:[]};
+  const d=structuralDiagnostics({choices:[{message:{content:JSON.stringify(wire)}}]});assert.ok(d.reasons.includes(reason));assert.throws(()=>normalizeChapter(wire,buildPair(fixtures[0]).nexus),e=>e.validationReason==='CHAPTER_PARAGRAPHS');
+ }
 });

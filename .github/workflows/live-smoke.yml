@@ -99,5 +99,11 @@ jobs:
             writing-quality-evidence/blind-pairs.json
             writing-quality-evidence/unblinding.json
             writing-quality-evidence/diagnostics.json
+            writing-quality-evidence/completed-01.json
+            writing-quality-evidence/completed-02.json
+            writing-quality-evidence/completed-03.json
+            writing-quality-evidence/completed-04.json
+            writing-quality-evidence/completed-05.json
+            writing-quality-evidence/completed-06.json
           if-no-files-found: ignore
           retention-days: 7
