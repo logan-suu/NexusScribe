@@ -12,7 +12,8 @@
     "check": "npm test && npm run test:ui && npm run test:ui:live && npm run build",
     "server": "node server/index.js",
     "start": "node scripts/start-demo.mjs",
-    "test:ui:live": "node scripts/test-ui-live.mjs"
+    "test:ui:live": "node scripts/test-ui-live.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

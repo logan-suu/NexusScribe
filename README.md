@@ -1,105 +1,168 @@
 # NexusScribe
 
-中文小说协作写作原型。由作者控制关键决定，通过版本化叙事记忆，让已确认的修改影响后续创作。
+**Start with an idea. Shape the story, one chapter at a time.**
 
-## 当前能力
+[English](README.md) · [简体中文](README.zh-CN.md)
 
-- 灵感 → 针对性访谈 → 可编辑故事约定 → 三章大纲
-- 章节候选生成、编辑、结构检查、模型审阅、接受或拒绝
-- 版本化正文、带原文证据的记忆补丁、人工确认与补偿撤销
-- 预置故事的选择性依赖复核、替代知识来源与草稿隔离
-- 自建项目、项目切换、本地持久化、正文和 JSON 备份导出
-- 可启用的服务端 OpenAI-compatible 模型链路，覆盖访谈、规划、生成、修改解释和审阅
+NexusScribe is an author-guided fiction-writing workspace built around **versioned narrative memory**. Develop an idea into a story agreement and chapter plan, review candidate prose, and decide which changes become part of the story. Confirmed revisions can then inform what comes next.
 
-**这是原型，不是已经完成生产验收的小说 Agent。** 默认离线模板模式。真实模型适配已实现，但尚未进行真实供应商端到端测试。固定案例的语义规则不能代表任意故事的一致性保证。
+The current prototype focuses on Chinese fiction and has a Chinese-language interface. It runs locally with an offline template mode and an opt-in, server-side model adapter.
 
-## 快速开始
+> **Project status:** working prototype. Offline templates demonstrate the workflow; live-provider connectivity, writing quality, and cost have not been validated end to end. The deterministic demo's consistency rules do not establish correctness for arbitrary stories.
 
-Node.js 22.12+，npm。
+## Why narrative memory?
+
+A small edit can change a relationship, invalidate a future scene, or alter what a character knows. NexusScribe keeps manuscript text, proposed changes, and confirmed story state separate so that these decisions remain visible and reviewable.
+
+- **Traceable changes:** versioned text and memory patches tied to exact source excerpts
+- **Author-controlled commits:** proposed facts and candidate chapters require explicit acceptance
+- **Selective review:** the included story demonstrates dependency checks and alternative sources of knowledge
+- **Draft isolation:** rejected drafts never become confirmed story facts, or *Canon*
+- **Revision-aware safeguards:** stale proposals and reviews cannot be applied to changed source material
+- **Compensating undo:** undo creates a new history entry; dependent later changes can block an unsafe reversal
+
+## The writing workflow
+
+1. **Explore an idea.** Answer focused interview questions about characters, tone, perspective, goals, and boundaries.
+2. **Agree on the story.** Edit the proposed story agreement and three-chapter outline before confirming them.
+3. **Write a chapter.** Generate a candidate, edit the prose, and inspect proposed events and review results.
+4. **Accept or reject.** Accepted candidates update the story state; rejected candidates stay outside Canon.
+5. **Revise with evidence.** Save manuscript edits, inspect proposed memory updates and their source excerpts, then explicitly confirm the changes.
+6. **Continue and preserve.** Move between chapters and projects, inspect version history, and export manuscript text or a JSON backup.
+
+Offline mode supports the three-chapter template workflow. The server adapter implements five model actions: interview, story planning, chapter generation, revision interpretation, and chapter review. Model output remains a proposal throughout.
+
+## Quick start
+
+The runnable demo currently lives on [`feat/nexusscribe-demo`](https://github.com/logan-suu/NexusScribe/tree/feat/nexusscribe-demo) in [PR #1](https://github.com/logan-suu/NexusScribe/pull/1); use that checkout until it is merged.
+
+Requires **Node.js 22.12+** and npm. From a checkout containing this demo:
 
 ```sh
 npm ci
 npm start
 ```
 
-打开运行机器上的 http://127.0.0.1:5173。前端与 API 都只监听本机，API 端口为 8787。
+Open **http://127.0.0.1:5173** on the machine running the app. The frontend and API bind to loopback; the API uses port `8787`. No account, API key, or external model call is needed for offline mode.
 
-```sh
-npm run dev          # 仅前端
-npm run server       # 仅 API
-npm run check        # 单元、DOM、假模型闭环与 production build
-npm run build
-npm run preview      # production preview，端口 4173；API 需另行启动
+### Try a revision that matters
+
+Open the included story **「雾港来信」**:
+
+1. In chapter two, choose **「插入设定修改」**, then **「保存并分析」**.
+2. Inspect the relationship change, its source evidence, and affected plans before confirming it.
+3. See the stranger-relationship premise become invalid while unrelated plans, such as the storm, are evaluated separately.
+4. Generate a candidate and review it before accepting or rejecting it.
+5. In chapter one, remove the telephone source: the remaining valid note can still support the character's knowledge.
+6. Inspect version history and compensating undo, including guards against reversing changes with later dependencies.
+
+This fixture demonstrates specific mechanisms. New projects have structural safeguards and model-assisted proposals, but do not inherit a general-purpose proof of story consistency.
+
+## Optional model connection
+
+The browser calls a same-origin API; the **server process owns credentials and outbound requests**. Live mode transmits the selected action's inputs, including relevant manuscript text and story context, to the configured provider. Check that provider's terms and data handling before using private manuscripts.
+
+The tracked [`.env.example`](.env.example) contains this nonsecret reference configuration:
+
+```dotenv
+NEXUS_API_BASE_URL=https://opencode.ai/zen/go/v1
+NEXUS_API_MODEL=deepseek-v4.1-flash
+NEXUS_LIVE_ENABLED=false
+NEXUS_OVERAGE_CONFIRMED_OFF=false
+NEXUS_MAX_OUTPUT_TOKENS=1200
+NEXUS_MAX_CALLS=10
 ```
 
-## 两种模式
+This OpenCode Go endpoint/model pair is a configuration example, **not a verified provider integration or a claim of account eligibility**. The app does not automatically load `.env` files.
 
-### 离线演示
+To enable live mode:
 
-无需账号、密钥或外部调用。可从「新建故事」完成三章模板流程。模板不代表模型生成质量。
+1. Verify the provider endpoint, model access, applicable terms, and account allowance. Check that balance/overage charging is disabled in the provider account.
+2. Supply the configuration and `NEXUS_API_KEY` securely through the **server process environment**. Set `NEXUS_LIVE_ENABLED=true` and `NEXUS_OVERAGE_CONFIRMED_OFF=true` only after those checks.
+3. Start or restart the API, then select live mode under **「模型」** in the interface.
 
-预置「雾港来信」可复现关键行为：
+Never put a key in `VITE_` variables, the browser, chat, source code, shared files, or shell history. The app has no browser key field and cannot verify or change the provider's overage setting.
 
-1. 在第二章点击「插入设定修改」→「保存并分析」
-2. 检查关系变化、原文证据和后续影响，再确认提交
-3. 陌生关系前提失效；警方首次知情、风暴等计划按各自条件保留
-4. 生成候选稿，先审查再接受或拒绝；拒绝的事件不会进入 Canon
-5. 第一章删除电话来源时，有效纸条仍能支持角色认知
-6. 版本记录中的撤销产生补偿版本；已有后续依赖时拒绝盲目逆操作
+### Request and cost boundaries
 
-### 服务端模型
+- Default output limit: `1200` tokens; configurable up to `3000`
+- Default call allowance: `10` attempts per server process; configurable up to `30`
+- At most two concurrent requests and six attempts per minute
+- Thirty-second default timeout; request and response bodies limited to 128 KiB each
+- No automatic retries, upstream redirects, or silent fallback to templates
 
-在服务端进程环境中提供下列配置，再启动 API，并通过界面「模型」选择真实模式。浏览器没有密钥输入或存储字段。
+Failed provider calls also consume the process allowance. Restarting the server resets it. **These limits are not a monetary budget or a provider billing cap.** The API does not log manuscript text or keys, and does not forward raw upstream error details.
 
-| 环境变量 | 说明 |
+## Acceptance safeguards
+
+- Proposals are bound to their project, state version, and manuscript revision.
+- Exact source excerpts must match current text before a memory update can be confirmed.
+- Authors can explicitly replace an existing fact while preserving its stable ID and earlier versions.
+- Live-model drafts need both structural checks and a model review of the current revision. Error-level issues block acceptance; warnings remain visible for the author.
+- Editing a candidate invalidates its old review. A model review is an unverified advisory, not independent evidence of correctness.
+- Saving prose and updating narrative memory are separate steps. Unsupported semantic changes must not silently appear synchronized.
+
+## Architecture
+
+```text
+Chinese writing workspace (React + Vite)
+  ├─ Authoring workflow: interview → agreement → outline → candidate
+  ├─ Narrative runtime: evidence, versions, dependencies, review, commits
+  ├─ Local persistence: workspace, history, manuscript / JSON export
+  └─ Same-origin model client
+       └─ Node.js gateway: validation, credentials, request limits
+            └─ HTTPS OpenAI-compatible provider (opt-in)
+```
+
+| Location | Responsibility |
 | --- | --- |
-| NEXUS_API_BASE_URL | 经确认可用的 HTTPS OpenAI-compatible base URL |
-| NEXUS_API_MODEL | 模型 ID |
-| NEXUS_API_KEY | 仅通过安全的服务端进程环境注入 |
-| NEXUS_LIVE_ENABLED | 显式 true 才允许外部请求 |
-| NEXUS_OVERAGE_CONFIRMED_OFF | 用户确认账户超额扣费已关闭后设为 true |
-| NEXUS_MAX_OUTPUT_TOKENS | 默认 1200，允许上限 3000 |
-| NEXUS_MAX_CALLS | 每个服务进程最多尝试次数，默认 10，允许上限 30 |
+| `src/domain/` | Story state, patches, evidence, dependencies, draft isolation, review guards |
+| `src/authoring/` | Interview, story agreement, outline, template and live workflows |
+| `src/adapters/` | Browser-side model boundary |
+| `src/components/` | Chinese-language writing workspace |
+| `src/storage.js` | Local persistence and export |
+| `server/` | Provider protocol, schemas, timeouts, and request limits |
+| `tests/` and `scripts/` | Runtime, provider, and UI workflow checks |
 
-`.env.example` 仅包含不含密钥的配置示例，不会自动加载。它不证明供应商可用性、账户权限或适用用途。请先核对服务条款与账户额度；应用不会更改或验证账户的超额扣费设置。
+See the [runtime architecture](docs/public/ARCHITECTURE.md) for boundaries and the [product blueprint](docs/public/NexusScribe-blueprint.md) for the broader design. The blueprint includes planned capabilities.
 
-不要把密钥放进 VITE_ 变量、浏览器、聊天、源代码、共享文件或命令历史。
+## Development and verification
 
-模型请求默认 30 秒超时，最多两个并发、每分钟六次、请求与响应各限 128 KiB，不自动重试。失败也消耗本进程调用次数。重启会重置计数，因此**调用和输出限制不等于金额预算或供应商账单上限**。
+```sh
+npm run dev           # Frontend only, port 5173
+npm run server        # API only, port 8787
+npm test              # Domain, contract, and mocked-provider tests
+npm run test:ui       # Offline DOM workflow checks
+npm run test:ui:live  # Mocked five-action model UI workflow
+npm run check         # Above checks plus production build
+npm run build
+npm run preview       # Production preview, port 4173; start API separately
+```
 
-真实模型异常会明确报错，绝不自动回退为模板。API 不记录正文或密钥，不透传上游原始错误、不跟随重定向。身份标识为 NexusScribe-demo/0.1。
+Run the separate Playwright suite after installing its Chromium browser:
 
-## 验证与提交边界
+```sh
+npx playwright install chromium
+npm run test:e2e
+```
 
-- 模型只提出候选，不能直接提交 Canon
-- 候选绑定项目、状态和正文 revision；来源改变后不得接受旧结果
-- 模型审阅是 model_reviewed_unverified 建议，不是独立正确性证明
-- 真实模型稿必须同时完成结构检查和当前版本模型审阅；错误级问题阻止接受
-- 编辑候选稿会清除旧审查，警告保留供作者判断
-- 修改解释需要作者明确确认，原文片段必须精确对应当前正文；作者可明确选择替代现有设定，保留稳定 ID 与旧版本历史
-- 原文与记忆分开保存；不支持的语义修改不能默默当作同步成功
+The browser suite targets desktop and mobile-sized Chromium viewports. It uses offline content and mocked API responses; it is separate from `npm run check`. On Linux CI, browser system dependencies are also required (`npx playwright install --with-deps chromium`).
 
-## 代码结构
+These automated suites do not make paid model calls. Passing them does not demonstrate live-provider availability, semantic quality, cross-browser compatibility, or visual acceptance. Real-service smoke testing is a separate, explicitly enabled check, and a GitHub repository secret does not configure a locally running or deployed app.
 
-- `src/domain/`：独立的叙事状态、补丁、来源、依赖、草稿和审查内核
-- `src/authoring/`：访谈、约定、大纲与模板适配
-- `src/adapters/`：同源客户端模型边界
-- `src/components/`：中文创作工作台
-- `src/storage.js`：本地保存与备份导出
-- `server/`：服务端协议适配、schema、超时和调用限制
-- `tests/`：确定性机制与假服务测试
-- `scripts/test-ui*.mjs`：DOM 工作流验证
+## Current limits and next steps
 
-## 测试现状与限制
+- **Single-author local storage.** No server database, authentication, cloud backup, or multiuser concurrency guarantees. Stale-window detection is not a database transaction.
+- **Export-only backups.** Clearing browser site data can erase the workspace. Export regularly; a backup-import interface is not implemented.
+- **Bounded narrative reasoning.** General semantic conflict/replacement reasoning and knowledge-transfer proofs remain incomplete.
+- **Further validation needed.** Real-provider testing, long-form evaluation, baseline comparisons, cross-browser coverage, and production security review remain acceptance work.
 
-当前 99 个单元/契约/假服务测试、15 项离线 DOM 检查和一条覆盖五环节的假模型 UI 流程通过，production build 通过。假服务测试不产生外部模型调用。浏览器视觉验收、跨浏览器兼容性、真实模型质量与成本尚未验证。
+The development direction is to validate provider behavior and writing quality, broaden revision and evidence handling beyond the fixture, and strengthen persistence and recovery. These are goals, not shipped features or delivery commitments.
 
-单用户原型使用 localStorage，无服务器数据库、账号鉴权、云备份或多人并发保证。过时窗口检测不是数据库事务。清理站点数据会丢失内容，请导出备份；目前没有备份导入界面。
+## Contributing
 
-尚未完成任意设定的语义冲突/替代推理、通用知识传递路径证明、长篇评测、基线比较或生产安全评审。自建项目中的结构保护与模型建议不能替代作者审阅。
+Bug reports should include reproducible steps and fictional sample text. Keep private manuscripts, project exports, and credentials out of public issues.
 
-## 设计与协作
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the review checklist and branch flow: feature branch → `dev_v1.0` → `main`. Changes go through reviewed pull requests; publication does not imply merge approval.
 
-- [运行时架构](docs/public/ARCHITECTURE.md)
-- [完整产品蓝图](docs/public/NexusScribe-blueprint.md)：含规划中的能力，不代表全部已实现
-- [贡献与 Git 工作流](CONTRIBUTING.md)
+**License:** no project license has been selected. Public visibility alone does not grant an open-source license.
