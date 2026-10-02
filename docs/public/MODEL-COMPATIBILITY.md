@@ -27,3 +27,9 @@ NexusScribe therefore does not send an assumed thinking-disable parameter or sil
 ## Retained safeguards
 
 Server-only credentials, explicit live enablement, declared output/call bounds, no automatic retries, strict response validation, evidence binding and author confirmation remain required. Model self-review is still advisory. Repository secrets configure a CI job only; they do not automatically configure a deployed application.
+
+## Safe diagnostics for a future authorized run
+
+A truncated response may now emit an allowlisted diagnostic record: finish reason, whether final/reasoning content was returned, and numeric token counters only when supplied by the provider. It never logs either text, prompts, request bodies or credentials. Missing reasoning counters remain unknown; absence of a returned reasoning field does not prove that thinking was disabled. These diagnostics cannot reconstruct the two earlier runs.
+
+The current manual smoke workflow is fixed to planning-only: one attempted request, a 3000-token ceiling, no retries. A new real invocation still requires the applicable task authorization; publishing or passing CI does not itself start the smoke.

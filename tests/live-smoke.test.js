@@ -58,5 +58,27 @@ test('invalid explicit token limits fail before any network',async()=>{
 });
 test('a higher selected limit does not authorize truncation retries',async()=>{
  let count=0;const lines=[];const fetchImpl=async(url,options)=>{count++;const body=JSON.parse(options.body);assert.equal(body.max_tokens,3000);const {action}=JSON.parse(body.messages[1].content);return action==='planStory'?new Response(JSON.stringify({choices:[{finish_reason:'length',message:{content:'{}'}}]})):response(fixtures[action]);};
- await assert.rejects(runLiveSmoke({env:{...env,NEXUS_MAX_OUTPUT_TOKENS:'3000'},fetchImpl,log:s=>lines.push(s)}),{code:'OUTPUT_TRUNCATED'});assert.equal(count,2);assert.deepEqual(lines,['interview PASS','planStory OUTPUT_TRUNCATED']);
+ await assert.rejects(runLiveSmoke({env:{...env,NEXUS_MAX_OUTPUT_TOKENS:'3000'},fetchImpl,log:s=>lines.push(s)}),{code:'OUTPUT_TRUNCATED'});assert.equal(count,2);assert.deepEqual(lines,['interview PASS','planStory METADATA {"finishReason":"length","finalContentPresent":true,"reasoningContentPresent":false}','planStory OUTPUT_TRUNCATED']);
+});
+
+test('planning-only makes exactly one planStory call with synthetic input and bounded tokens',async()=>{
+ const m=mock(),lines=[];const result=await runLiveSmoke({env:{...env,NEXUS_SMOKE_SCOPE:'planning-only',NEXUS_MAX_OUTPUT_TOKENS:'5000'},fetchImpl:m.fetchImpl,log:s=>lines.push(s)});
+ assert.equal(m.calls.length,1);assert.equal(m.calls[0].request.action,'planStory');assert.equal(m.calls[0].body.max_tokens,3000);assert.equal(result.scope,'planning-only');assert.equal(result.attempts,1);assert.equal(result.kind,'bounded-connectivity-contract-smoke');assert.deepEqual(lines,['planStory PASS']);assert.ok(m.calls[0].request.input.idea.includes('虚构'));assert.ok(m.calls[0].body.messages[0].content.includes('Compact planning response'));
+ for(const privateText of [env.NEXUS_API_KEY,env.NEXUS_API_BASE_URL,fixtures.generateChapter.text])assert.equal(JSON.stringify({result,lines}).includes(privateText),false);
+});
+test('planning-only stops on malformed, truncated or failed first response without retry',async()=>{
+ for(const mode of ['malformed','failed','truncated']){
+ let count=0;const lines=[];const fetchImpl=async()=>{count++;if(mode==='failed')throw Error('private credential '+env.NEXUS_API_KEY);return mode==='truncated'?new Response(JSON.stringify({choices:[{finish_reason:'length',message:{content:'{}'}}]})):response({});};
+ const expected={malformed:'INVALID_MODEL_OUTPUT',failed:'UPSTREAM_ERROR',truncated:'OUTPUT_TRUNCATED'}[mode];await assert.rejects(runLiveSmoke({env:{...env,NEXUS_SMOKE_SCOPE:'planning-only',NEXUS_MAX_OUTPUT_TOKENS:'3000'},fetchImpl,log:s=>lines.push(s)}),{code:expected});assert.equal(count,1);assert.deepEqual(lines,[...(mode==='truncated'?['planStory METADATA {"finishReason":"length","finalContentPresent":true,"reasoningContentPresent":false}']:[]),`planStory ${expected}`]);
+ }
+});
+test('invalid scope is rejected before network, explicit full-flow remains five calls',async()=>{
+ for(const scope of ['','planning','FULL-FLOW','planning-only ']){const m=mock();await assert.rejects(runLiveSmoke({env:{...env,NEXUS_SMOKE_SCOPE:scope},fetchImpl:m.fetchImpl,log:()=>{}}),{code:'INVALID_SCOPE'});assert.equal(m.calls.length,0);}
+ const m=mock();const result=await runLiveSmoke({env:{...env,NEXUS_SMOKE_SCOPE:'full-flow'},fetchImpl:m.fetchImpl,log:()=>{}});assert.equal(result.scope,'full-flow');assert.equal(result.attempts,5);assert.equal(m.calls.length,5);
+});
+test('planning-only truncation records aggregate usage but never content or reasoning text',async()=>{
+ const lines=[],secret='private-reasoning-and-output-must-never-be-logged';let count=0;
+ const fetchImpl=async()=>{count++;return new Response(JSON.stringify({choices:[{finish_reason:'length',message:{content:null,reasoning_content:secret}}],usage:{prompt_tokens:200,completion_tokens:900,total_tokens:1100,completion_tokens_details:{reasoning_tokens:900},untrusted_text:secret}}))};
+ await assert.rejects(runLiveSmoke({env:{...env,NEXUS_SMOKE_SCOPE:'planning-only'},fetchImpl,log:s=>lines.push(s)}),e=>e.code==='OUTPUT_TRUNCATED');
+ assert.equal(count,1);const output=lines.join('\n');assert.equal(output.includes(secret),false);assert.equal(output.includes(env.NEXUS_API_KEY),false);assert.match(output,/"reasoningTokens":900/);assert.match(output,/"finalContentPresent":false/);assert.match(output,/"reasoningContentPresent":true/);assert.match(output,/planStory OUTPUT_TRUNCATED/);
 });
