@@ -54,3 +54,6 @@ This parameter is documented for the direct DeepSeek API. The current Go check i
 ## Author-context completeness
 
 Custom projects now provide a separate `context.constitution` containing the exact saved idea, protagonist, tone, narrative perspective, goal, boundaries and contract metadata. Explicitly emptied author fields do not fall back to older contract values. This is author intent, not promoted Canon. Deterministic UI tests capture the actual critic request after switching away from and back to a project, verifying the author boundary and other fields survive intact. This mapping test does not require a live provider call.
+
+
+A single planning-only request with `thinking.type=disabled` subsequently passed the compact planning contract. Success alone does not prove that the provider used zero reasoning tokens: the success report retained no reasoning-token breakdown. The next separately controlled full-flow check uses that same requested setting, no reasoning-effort field, at most five calls and the same 3000-token ceiling. It also exercises isolated drafts, guarded acceptance and compensation in memory without further model calls. Full-flow acceptance is not established by the planning-only result.
