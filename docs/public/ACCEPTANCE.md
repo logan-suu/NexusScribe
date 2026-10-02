@@ -85,7 +85,7 @@ There is no deployed public or persistent online application endpoint in this ac
 Still outside this demo: authentication, database transactions, multiuser isolation, durable hosted deployment, backup import, comprehensive semantic inference, long-form evaluation, comparative benchmarks and measured financial cost per accepted chapter.
 
 
-## Subsequent fact-review guard (offline scope)
+## Subsequent fact-review guard (2026-10-02)
 
 The blue/red regression is now a policy-contract fixture: a model-supplied
 contradiction with exact evidence blocks independently of warning severity.
@@ -95,3 +95,19 @@ are audited, and leave Canon unchanged. General errors and event anchors still b
 Fixtures for negation, dialogue and hypotheses test preservation of supplied
 classifications, not automatic semantic understanding. No new provider accuracy,
 long-form consistency or live-browser pass is asserted by these offline tests.
+
+
+Exact tested source `5a65e74b64b371fe135df4ad67807c0e8dfbe684` passed
+[CI 37038776898](https://github.com/logan-suu/NexusScribe/actions/runs/37038776898):
+190 unit/contract tests, four DOM suites, build and 14 mocked desktop/mobile
+Chromium scenarios. Four inspected screenshots show readable exact evidence,
+revisions and author-rationale/Canon-retention state; overflow assertions passed.
+The new reload fixture now seeds only absent storage, preserving the real persistence
+check rather than overwriting accepted state during navigation.
+
+[Probe 37039268803](https://github.com/logan-suu/NexusScribe/actions/runs/37039268803)
+used one real provider call and returned one generic error plus one fact contradiction.
+The engine rejected acceptance with `FACT_DECISION_REQUIRED`; no exception or
+acceptance was inserted. This one positive synthetic case is separate from the
+mocked browser exception UI test and is not an accuracy benchmark. No new full
+live writing journey was run, and the prior journey belongs to its older revision.
