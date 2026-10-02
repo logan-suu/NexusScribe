@@ -73,7 +73,7 @@ NEXUS_MAX_OUTPUT_TOKENS=1200
 NEXUS_MAX_CALLS=10
 ```
 
-这组 OpenCode Go 地址与模型 ID **是配置示例，不代表账户已具备使用权限或已完成生产验收**。一次明确设置 `NEXUS_REASONING_EFFORT=low`、上限 3000 tokens 的合成故事规划测试已通过，但不代表所有创作环节或任意小说质量已验证。详见[模型兼容性证据](docs/public/MODEL-COMPATIBILITY.md)。程序不会自动加载 `.env` 文件。
+这组 OpenCode Go 地址与模型 ID **是配置示例，不代表账户已具备使用权限或已完成生产验收**。一次明确设置 `NEXUS_REASONING_EFFORT=low`、上限 3000 tokens 的合成故事规划测试已通过，但后续 low 请求仍发生截断，因此不代表稳定完成、所有创作环节或任意小说质量已验证。详见[模型兼容性证据](docs/public/MODEL-COMPATIBILITY.md)。程序不会自动加载 `.env` 文件。
 
 启用真实模式：
 
@@ -86,7 +86,7 @@ NEXUS_MAX_CALLS=10
 ### 请求与费用边界
 
 - 默认输出上限 `1200` tokens，可配置至 `3000`
-- 可显式设置 `NEXUS_REASONING_EFFORT=low`；不设置则保留供应商默认行为，不支持的值会被拒绝
+- 可显式设置 `NEXUS_REASONING_EFFORT=low`，或单独设置 `NEXUS_THINKING_MODE=disabled`，不能同时使用。不设置则保留供应商默认行为；Go 的 thinking-disabled 路径仍在兼容性验证中，不支持的值会被拒绝
 - 每个服务进程默认最多尝试 `10` 次，可配置至 `30` 次
 - 最多两个并发请求，每分钟最多六次尝试
 - 默认超时 30 秒；请求与响应各限 128 KiB

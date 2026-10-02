@@ -42,4 +42,15 @@ The adapter now permits an explicit `NEXUS_REASONING_EFFORT=low` opt-in, seriali
 
 The [OpenCode gateway's variant parser](https://github.com/anomalyco/opencode/blob/dev/packages/console/app/src/routes/zen/util/variant.ts) recognizes `reasoning_effort`, and its client code defines compatible DeepSeek effort mappings. Direct `thinking.type=disabled` remains a separate, untested option and is not combined with low in this check. No raw reasoning content is logged or exposed.
 
-A bounded planning-only call with explicit low effort subsequently passed the compact schema contract. This verifies that specific synthetic request on the selected route; it does not establish literary quality or full workflow acceptance. The next manual full-flow check remains capped at five calls and uses domain assertions in memory without requesting additional model output.
+A bounded planning-only call with explicit low effort subsequently passed the compact schema contract. This verifies that specific synthetic request on the selected route; it does not establish literary quality or full workflow acceptance. A later low-effort full-flow check again stopped in planning: the provider reported 2818 reasoning tokens out of 3000 completion tokens, with incomplete final content. Thus the earlier single planning success was not reliable full-workflow completion. Domain assertions were prepared but were not reached in that failed run.
+
+
+## Isolated thinking-disabled probe
+
+The adapter also permits explicit `NEXUS_THINKING_MODE=disabled`, sending only `thinking: {type: "disabled"}`. It is mutually exclusive with `NEXUS_REASONING_EFFORT`; supplying both or an unsupported value blocks configuration before any request. Unset controls leave provider defaults unchanged.
+
+This parameter is documented for the direct DeepSeek API. The current Go check is still a compatibility probe, not an assumption of passthrough semantics. Its manual workflow is fixed to one planning request, 3000 output tokens, and no retry, with the low-effort field omitted to isolate the variable. A returned response and usage metadata must establish what happened; code serialization alone does not prove that thinking was disabled.
+
+## Author-context completeness
+
+Custom projects now provide a separate `context.constitution` containing the exact saved idea, protagonist, tone, narrative perspective, goal, boundaries and contract metadata. Explicitly emptied author fields do not fall back to older contract values. This is author intent, not promoted Canon. Deterministic UI tests capture the actual critic request after switching away from and back to a project, verifying the author boundary and other fields survive intact. This mapping test does not require a live provider call.

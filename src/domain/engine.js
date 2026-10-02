@@ -77,8 +77,26 @@ export function undoCommit(state,commitId) {
  s.commits.push({id:`commit-${s.sequence}`,kind:'compensation',undoes:commitId,version:s.version,summary:'补偿撤销：保留全部正文和提交历史',before,after:snapshot(s),dependencies:[]});
  if(c.chapterId){chapter(s,c.chapterId).syncStatus='NEEDS_REVIEW';chapter(s,c.chapterId).syncedRevision=Math.max(1,(c.revision??2)-1);}return s;
 }
+/** Author intent remains separate from world Canon; preserve saved values and provenance. */
+function authorConstitution(config = {}) {
+ const aliases = {title:'title',idea:'premise',protagonist:'protagonist',tone:'emotionalDirection',pov:'pov',goal:'desire',boundaries:'boundaries'};
+ const contract = config.contract && typeof config.contract === 'object' ? config.contract : {};
+ const fields = Array.isArray(contract.fields) ? contract.fields : [];
+ const constitution = {};
+ for (const [name, canonical] of Object.entries(aliases)) {
+  // Presence matters: a deliberate empty string must never restore an older proposal.
+  if (Object.hasOwn(config, name)) constitution[name] = copy(config[name]);
+  else if (Object.hasOwn(contract, canonical)) constitution[name] = copy(contract[canonical]);
+  else {
+   const field = fields.find(entry => entry?.key === canonical && Object.hasOwn(entry, 'value'));
+   constitution[name] = field ? copy(field.value) : '';
+  }
+ }
+ if (Object.hasOwn(config, 'contract')) constitution.contract = copy(config.contract);
+ return constitution;
+}
 export function getContext(state) {
- return {projectId:state.projectId,version:state.version,view:'writer',sceneTime:3,pov:state.mode==='custom'?(state.config?.protagonist??'主角'):'林夏',facts:copy(state.facts.filter(f=>f.status==='confirmed')),knowledge:copy(state.knowledge),forbiddenReveals:state.mode==='custom'?(state.config?.constraints??[]):['警方不得无来源得知陈默与死者过去相识'],plans:getImpacts(state),obligations:state.mode==='custom'?[]:[{id:'letter-origin',label:'母亲多年收到的旧信：寄信人仍待揭示',status:'OPEN'}],sources:state.chapters.map(c=>({chapterId:c.id,revision:c.revision,revisionId:`${c.id}-r${c.revision}`,text:c.text,channel:'original_text'})),summaries:copy(state.derived.filter(x=>x.status==='valid'&&chapter(state,x.chapterId).revision===x.revision)),support:state.knowledge.some(k=>k.id==='lin-address')?evaluateSupport(state):{status:'unsupported',validPaths:[],sourceIds:[]},staging:[]};
+ return {...(state.mode==='custom'?{constitution:authorConstitution(state.config??{})}:{}),projectId:state.projectId,version:state.version,view:'writer',sceneTime:3,pov:state.mode==='custom'?(state.config?.protagonist??'主角'):'林夏',facts:copy(state.facts.filter(f=>f.status==='confirmed')),knowledge:copy(state.knowledge),forbiddenReveals:state.mode==='custom'?(state.config?.constraints??[]):['警方不得无来源得知陈默与死者过去相识'],plans:getImpacts(state),obligations:state.mode==='custom'?[]:[{id:'letter-origin',label:'母亲多年收到的旧信：寄信人仍待揭示',status:'OPEN'}],sources:state.chapters.map(c=>({chapterId:c.id,revision:c.revision,revisionId:`${c.id}-r${c.revision}`,text:c.text,channel:'original_text'})),summaries:copy(state.derived.filter(x=>x.status==='valid'&&chapter(state,x.chapterId).revision===x.revision)),support:state.knowledge.some(k=>k.id==='lin-address')?evaluateSupport(state):{status:'unsupported',validPaths:[],sourceIds:[]},staging:[]};
 }
 export function generateDraft(state) {
  if(state.mode==='custom')fail('PROVIDER_REQUIRED','自定义项目需要已配置的模型生成结果；预置演示不会冒充通用生成');

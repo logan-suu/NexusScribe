@@ -73,7 +73,7 @@ NEXUS_MAX_OUTPUT_TOKENS=1200
 NEXUS_MAX_CALLS=10
 ```
 
-This OpenCode Go endpoint/model pair is a configuration example, **not a claim of account eligibility or production acceptance**. One bounded synthetic planning check passed with explicit `NEXUS_REASONING_EFFORT=low` and a 3000-token limit; this does not establish general story quality or every workflow action. See [model compatibility evidence](docs/public/MODEL-COMPATIBILITY.md). The app does not automatically load `.env` files.
+This OpenCode Go endpoint/model pair is a configuration example, **not a claim of account eligibility or production acceptance**. One bounded synthetic planning check passed with explicit `NEXUS_REASONING_EFFORT=low` and a 3000-token limit; a later low-effort run still truncated, so this does not establish reliable completion, general story quality or every workflow action. See [model compatibility evidence](docs/public/MODEL-COMPATIBILITY.md). The app does not automatically load `.env` files.
 
 To enable live mode:
 
@@ -86,7 +86,7 @@ Never put a key in `VITE_` variables, the browser, chat, source code, shared fil
 ### Request and cost boundaries
 
 - Default output limit: `1200` tokens; configurable up to `3000`
-- Optional `NEXUS_REASONING_EFFORT=low`; unset preserves the provider default, unsupported values are rejected
+- Optional `NEXUS_REASONING_EFFORT=low` or separately `NEXUS_THINKING_MODE=disabled`; never both. Unset preserves provider defaults. The thinking-disabled Go route remains under compatibility testing; unsupported values are rejected
 - Default call allowance: `10` attempts per server process; configurable up to `30`
 - At most two concurrent requests and six attempts per minute
 - Thirty-second default timeout; request and response bodies limited to 128 KiB each

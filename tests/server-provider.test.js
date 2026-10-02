@@ -152,3 +152,16 @@ test('invalid reasoning values block configuration before fetch and low errors n
  for(const value of ['','none','high','max','LOW','low ','disabled']){let calls=0;const service=createAgentService({env:{...env,NEXUS_REASONING_EFFORT:value},fetchImpl:async()=>{calls++;return reply(interview);}});assert.equal(service.status().configured,false);await assert.rejects(service.run('interview',input),{code:'NOT_CONFIGURED'});assert.equal(calls,0);}
  let calls=0;const service=createAgentService({env:{...env,NEXUS_REASONING_EFFORT:'low'},fetchImpl:async()=>{calls++;return new Response('private upstream',{status:400});}});await assert.rejects(service.run('interview',input),{code:'UPSTREAM_ERROR'});assert.equal(calls,1);
 });
+
+test('explicit thinking disabled sends only the opt-in control and preserves transport',async()=>{
+ let captured;const service=createAgentService({env:{...env,NEXUS_THINKING_MODE:'disabled'},fetchImpl:async(url,options)=>{captured={url,options,body:JSON.parse(options.body)};return reply(interview);}});const result=await service.run('interview',input);
+ assert.deepEqual(captured.body.thinking,{type:'disabled'});assert.equal(Object.hasOwn(captured.body,'reasoning_effort'),false);assert.equal(captured.body.max_tokens,1200);assert.equal(captured.options.headers.Authorization,'Bearer server-only-secret');assert.equal(captured.options.headers['User-Agent'],'NexusScribe-demo/0.1');assert.match(captured.options.headers['x-opencode-session'],/^[0-9a-f-]{36}$/);assert.equal(captured.options.redirect,'error');assert.equal(result.provider.thinkingMode,undefined);
+});
+test('invalid or mutually exclusive thinking controls block before network',async()=>{
+ for(const controls of [{NEXUS_THINKING_MODE:''},{NEXUS_THINKING_MODE:'enabled'},{NEXUS_THINKING_MODE:'DISABLED'},{NEXUS_THINKING_MODE:'none'},{NEXUS_THINKING_MODE:'disabled',NEXUS_REASONING_EFFORT:'low'},{NEXUS_THINKING_MODE:'disabled',NEXUS_REASONING_EFFORT:''}]){
+ let count=0;const service=createAgentService({env:{...env,...controls},fetchImpl:async()=>{count++;return reply(interview);}});assert.equal(service.status().configured,false);await assert.rejects(service.run('interview',input),{code:'NOT_CONFIGURED'});assert.equal(count,0);
+ }
+});
+test('upstream rejection of thinking disabled never retries or silently changes controls',async()=>{
+ let count=0;const service=createAgentService({env:{...env,NEXUS_THINKING_MODE:'disabled'},fetchImpl:async(url,options)=>{count++;assert.deepEqual(JSON.parse(options.body).thinking,{type:'disabled'});return new Response('unsupported private upstream body',{status:400});}});await assert.rejects(service.run('interview',input),e=>e.code==='UPSTREAM_ERROR'&&!e.message.includes('private'));assert.equal(count,1);
+});
