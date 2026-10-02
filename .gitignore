@@ -1,0 +1,30 @@
+# Dependencies and generated output
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.log
+*.tsbuildinfo
+
+# Secrets and machine-specific configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.DS_Store
+.vscode/
+.idea/
+
+# Local research, design concepts, and QA records are not public source
+/docs/*
+!/docs/public/
+/design/
+/qa/
+/artifacts/
+/screenshots/
+
+# Local author data and exports
+/backups/
+/exports/

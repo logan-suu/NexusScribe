@@ -1,0 +1,33 @@
+// DOM interaction verification only; does not claim browser visual QA.
+import {JSDOM} from 'jsdom';
+import {build} from 'esbuild';
+import {mkdir,symlink} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import assert from 'node:assert/strict';
+const out='/tmp/nexusscribe-ui-tests';await mkdir(out+'/node_modules',{recursive:true});
+for(const name of ['react','react-dom','lucide-react']){try{await symlink(resolve('node_modules',name),out+'/node_modules/'+name)}catch(e){if(e.code!=='EEXIST')throw e}}
+await build({entryPoints:['src/App.jsx'],bundle:true,packages:'external',format:'esm',outfile:out+'/App.mjs',loader:{'.css':'empty'},jsx:'automatic'});
+const dom=new JSDOM('<!doctype html><html><body></body></html>',{url:'http://localhost/'});
+for(const key of ['window','document','HTMLElement','Element','Node','MutationObserver','localStorage','getComputedStyle'])globalThis[key]=dom.window[key];
+Object.defineProperty(globalThis,'navigator',{value:dom.window.navigator,configurable:true});
+globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+dom.window.HTMLElement.prototype.scrollIntoView=function(){};
+const React=await import('react');const {render,screen,cleanup,waitFor}=await import('@testing-library/react');const user=(await import('@testing-library/user-event')).default.setup();const {default:App}=await import(out+'/App.mjs');
+let count=0;function pass(name){console.log('PASS',++count,name)}
+function saved(){return JSON.parse(localStorage.getItem('nexusscribe.demo.v1'))}
+render(React.createElement(App));assert.equal(screen.getByRole('heading',{level:1}).textContent,'第二章 雨夜证词');pass('workbench meaningful Chinese entry');
+await user.click(screen.getByRole('button',{name:'插入设定修改'}));assert.match(saved().editing.ch2,/三年前/);pass('author edit persisted without canon mutation');
+await user.click(screen.getByRole('button',{name:'保存并分析'}));assert.equal(saved().state.facts[0].value,'never_met');assert.equal(saved().patch.operations.length,1);pass('save produces proposed memory patch');
+await user.click(screen.getByRole('button',{name:'确认并提交状态'}));assert.equal(saved().state.facts[0].value,'has_met');assert.equal(saved().state.plans.find(p=>p.id==='stranger').status,'invalid');assert.equal(saved().state.plans.find(p=>p.id==='storm').status,'valid');pass('commit changes dependent plan only');
+await user.click(screen.getByRole('button',{name:'生成下一场景'}));assert.equal(saved().state.events.filter(e=>e.label?.includes('钥匙')).length,0);pass('draft generation isolated from canon');
+await user.click(screen.getByRole('button',{name:'审查候选稿'}));await user.click(screen.getByRole('button',{name:'拒绝此稿'}));assert.equal(saved().state.drafts[0].status,'REJECTED');pass('reject draft preserves isolated state');
+cleanup();render(React.createElement(App));assert.equal(saved().state.facts[0].value,'has_met');pass('reload restores state and rejected draft');
+await user.click(screen.getByRole('button',{name:'新建故事'}));await user.type(screen.getByLabelText(/你的故事灵感/),'一位钟表师发现所有停摆的钟都指向明天。');await user.type(screen.getByLabelText(/给故事起个名字/),'明日时刻');await user.click(screen.getByRole('button',{name:'聊聊这个故事'}));await user.type(screen.getByLabelText(/谁来经历/),'林舟');await user.click(screen.getByRole('button',{name:'克制而不安'}));await user.click(screen.getByRole('button',{name:'查看故事约定'}));assert.ok(screen.getByRole('heading',{name:'明日时刻'}));pass('idea and targeted interview create reviewable contract');
+await user.click(screen.getByRole('button',{name:'确认约定，开始创作'}));assert.equal(saved().state.title,'明日时刻');assert.equal(saved().state.mode,'custom');assert.equal(saved().state.facts.length,0);assert.equal(saved().archived.length,1);pass('custom project keeps prior project and no fixture facts');
+await user.click(screen.getByRole('button',{name:'生成当前章'}));await waitFor(()=>assert.equal(saved().state.drafts.length,1));assert.match(saved().state.drafts[0].text,/林舟/);await user.click(screen.getByRole('button',{name:'审查候选稿'}));assert.equal(saved().state.drafts[0].review.semanticStatus,'not_evaluated');await user.click(screen.getByRole('button',{name:'接受此版本'}));assert.equal(saved().state.chapters[0].status,'ACCEPTED');pass('custom template draft review honestly structural, accepted into targeted chapter');
+await user.click(screen.getByRole('button',{name:/第二章答案的另一面/}));await user.click(screen.getByRole('button',{name:'生成当前章'}));await waitFor(()=>assert.equal(saved().state.drafts.length,2));pass('next chapter uses same confirmed project context');
+await user.click(screen.getByRole('button',{name:'审查候选稿'}));await user.click(screen.getByRole('button',{name:'编辑此稿'}));await user.type(screen.getByLabelText('编辑候选稿'),'\n林舟合上笔记，决定明早再来。');await user.click(screen.getByRole('button',{name:'保存候选稿修改'}));assert.equal(saved().state.drafts[1].review,null);pass('candidate edit invalidates prior review');
+await user.click(screen.getByRole('button',{name:'审查候选稿'}));await user.click(screen.getByRole('button',{name:'接受此版本'}));assert.equal(saved().state.chapters[1].status,'ACCEPTED');await user.click(screen.getByRole('button',{name:/第三章选择的代价/}));await user.click(screen.getByRole('button',{name:'生成当前章'}));await waitFor(()=>assert.equal(saved().state.drafts.length,3));await user.click(screen.getByRole('button',{name:'审查候选稿'}));await user.click(screen.getByRole('button',{name:'接受此版本'}));assert.ok(saved().state.chapters.every(c=>c.status==='ACCEPTED'));pass('full three-chapter custom generation review and acceptance loop');
+await user.type(screen.getByLabelText('章节正文'),'\n林舟的祖父是一名钟表匠。');await user.click(screen.getByRole('button',{name:'保存并分析'}));await user.type(screen.getByLabelText(/确认的设定/),'林舟的祖父是一名钟表匠。');await user.click(screen.getByRole('button',{name:'按这条设定准备补丁'}));assert.equal(saved().state.facts.length,0);await user.click(screen.getByRole('button',{name:'确认并提交状态'}));assert.equal(saved().state.facts[0].label,'林舟的祖父是一名钟表匠。');pass('custom author-confirmed exact-evidence fact follows proposal then commit');
+await user.selectOptions(screen.getByLabelText('切换项目'),'mist-harbor');assert.equal(saved().state.projectId,'mist-harbor');assert.equal(saved().state.facts[0].value,'has_met');pass('project switch restores independent state');
+cleanup();console.log(`${count} DOM interaction checks passed. Browser rendering, layout, and screenshot QA remain unverified.`);

@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createTemplateAdapter,createInjectedProvider,CAPABILITIES} from '../src/adapters/provider.js';
+test('full provider boundary exposes all five flow capabilities and no live claim',async()=>{const p=createInjectedProvider(createTemplateAdapter());assert.equal(p.isLive,false);for(const k of CAPABILITIES)assert.equal(typeof p[k],'function');assert.equal((await p.reviewChapter({})).semanticStatus,'not_evaluated');assert.equal((await p.interpretRevision({})).status,'needs_author_confirmation')});
+test('partial provider rejected before workflow execution',()=>assert.throws(()=>createInjectedProvider({generateChapter(){}}),/interview/));
