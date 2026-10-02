@@ -165,3 +165,25 @@ test('invalid or mutually exclusive thinking controls block before network',asyn
 test('upstream rejection of thinking disabled never retries or silently changes controls',async()=>{
  let count=0;const service=createAgentService({env:{...env,NEXUS_THINKING_MODE:'disabled'},fetchImpl:async(url,options)=>{count++;assert.deepEqual(JSON.parse(options.body).thinking,{type:'disabled'});return new Response('unsupported private upstream body',{status:400});}});await assert.rejects(service.run('interview',input),e=>e.code==='UPSTREAM_ERROR'&&!e.message.includes('private'));assert.equal(count,1);
 });
+
+test('chapter two request disambiguates selected outline target from manuscript source IDs',async()=>{
+ const requestInput={project:{projectId:'p1',idea:'灯塔',outline:[{id:'chapter-1'},{id:'chapter-2'},{id:'chapter-3'}]},chapterIndex:1,context:{projectId:'p1',version:3,sources:[{chapterId:'ch1',revision:2,text:'阿离找到灯。'},{chapterId:'ch2',revision:1,text:'待写'},{chapterId:'ch3',revision:1,text:'待写'}]}};
+ let wire;const service=createAgentService({env,fetchImpl:async(url,options)=>{wire=JSON.parse(options.body);return reply({...chapter,chapterId:'chapter-2'})}});
+ await service.run('generateChapter',requestInput);
+ assert.equal(JSON.parse(wire.messages[1].content).input.chapterId,'chapter-2');assert.equal(Object.hasOwn(requestInput,'chapterId'),false);
+ assert.match(wire.messages[0].content,/copy input.chapterId exactly/);
+ const wrong=createAgentService({env,fetchImpl:async()=>reply({...chapter,chapterId:'ch2'})});
+ await assert.rejects(wrong.run('generateChapter',requestInput),{code:'INVALID_MODEL_OUTPUT',validationReason:'CHAPTER_ID_MISMATCH'});
+});
+test('safe validation diagnostics distinguish schema and exact evidence failures without raw content',()=>{
+ const cases=[
+  [{...chapter,unexpected:'PRIVATE'},'CHAPTER_FIELDS'],
+  [{...chapter,text:''},'CHAPTER_TEXT'],
+  [{...chapter,chapterId:'PRIVATE'},'CHAPTER_ID_MISMATCH'],
+  [{...chapter,staging:[{sourceQuote:'PRIVATE'}]},'STAGING_SCHEMA'],
+  [{...chapter,staging:[{label:'PRIVATE',sourceQuote:'PRIVATE'}]},'STAGING_QUOTE_MISMATCH'],
+  [{...chapter,reviewNotes:null},'REVIEW_NOTES_SCHEMA']
+ ];
+ for(const [out,reason] of cases)assert.throws(()=>validateOutput('generateChapter',out,generation),e=>e.code==='INVALID_MODEL_OUTPUT'&&e.validationReason===reason&&!JSON.stringify(e).includes('PRIVATE'));
+ for(const [out,reason] of [[null,'MISSING_CONTENT'],['PRIVATE','INVALID_JSON'],['[]','NON_OBJECT_JSON']])assert.throws(()=>parseModelJson(out),{code:'INVALID_MODEL_OUTPUT',validationReason:reason});
+});

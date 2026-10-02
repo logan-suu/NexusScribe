@@ -25,3 +25,9 @@ test('concurrent request is rejected without an extra provider call',async()=>{
  let release,calls=0;const gate=new Promise(r=>release=r);const guard=guardJourney({status:()=>({}),run:async()=>{calls++;await gate;return {}}},{sleep:async()=>{},log:()=>{}});
  const first=guard.run('interview',{});await assert.rejects(guard.run('interview',{}));release();await first;assert.equal(calls,1);
 });
+test('journey logs only allowlisted validation reason, never model diagnostics',async()=>{
+ for(const reason of ['STAGING_QUOTE_MISMATCH','PRIVATE RAW OUTPUT']){
+  const logs=[];const guard=guardJourney({status:()=>({}),run:async()=>{throw Object.assign(Error('PRIVATE RAW OUTPUT'),{code:'INVALID_MODEL_OUTPUT',validationReason:reason,diagnostics:{text:'PRIVATE RAW OUTPUT'}})}},{sleep:async()=>{},log:x=>logs.push(x)});
+  await assert.rejects(guard.run('generateChapter',{}));assert.deepEqual(logs,reason==='STAGING_QUOTE_MISMATCH'?['provider INVALID_MODEL_OUTPUT 1','validation STAGING_QUOTE_MISMATCH']:['provider INVALID_MODEL_OUTPUT 1']);
+ }
+});

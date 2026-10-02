@@ -60,11 +60,24 @@ export function validateInput(action,input) {
 export const SCHEMAS = Object.freeze({
   interview:'{"questions":[{"key":"protagonist|tone|pov|goal|boundaries","title":"question","hint":"hint","placeholder":"placeholder","options":["optional choice"]}],"summary":"short summary"}; at most 2 questions, ask only unanswered keys',
   planStory:'{"proposals":{"protagonist":"only if missing","tone":"only if missing","pov":"only if missing","goal":"only if missing"},"obstacle":"obstacle","coreQuestion":"question","opening":"opening","unresolved":["question"],"outline":[{"title":"title","goal":"goal","conflict":"conflict","knowledgeDelta":"knowledge delta","exitState":"exit state","emotionalArc":"arc","scene":{"time":"time","location":"location","participants":["name"],"allowedReveal":"allowed reveal","forbiddenReveal":"forbidden reveal","preconditions":["precondition"]}}]}; exactly 3 outline chapters. Compact planning response: use terse phrases, short arrays, and each creative value ideally within 12 Chinese characters. Include every creative field. Proposals must supply each missing protagonist/tone/pov/goal and MUST omit already answered keys. Do not repeat premise, boundaries, confirmed author values, labels, field statuses, chapter IDs, chapter numbers, chapter POV or metadata; the server supplies these deterministically.',
-  generateChapter:'{"text":"chapter prose","chapterId":"exact id of selected project.outline chapter","staging":[{"label":"proposed event","sourceQuote":"exact substring from text"}],"reviewNotes":["note"]}',
+  generateChapter:'{"text":"chapter prose","chapterId":"copy input.chapterId exactly, which is the selected project.outline chapter id; context.sources chapter IDs are source references, not this output target","staging":[{"label":"proposed event","sourceQuote":"exact substring from text"}],"reviewNotes":["note"]}',
   interpretRevision:'{"summary":"summary","intents":["local_prose|canon_update|knowledge_update|ambiguous"],"questions":["question"],"suggestedFacts":[{"label":"proposed fact","sourceQuote":"exact substring of afterText"}]}',
   reviewChapter:'{"summary":"summary","issues":[{"severity":"error|warning","explanation":"explanation","sourceQuote":"exact nonempty substring of text"}],"checks":["check"]}'
 });
 function evidenceList(x,text) {return list(x,e=>keys(e,['label','sourceQuote'])&&str(e.label,1000)&&str(e.sourceQuote,4000)&&text.includes(e.sourceQuote));}
+export const SAFE_VALIDATION_REASONS=Object.freeze(['INVALID_JSON','NON_OBJECT_JSON','MISSING_CONTENT','OUTPUT_SCHEMA','CHAPTER_FIELDS','CHAPTER_TEXT','CHAPTER_ID_MISMATCH','STAGING_SCHEMA','STAGING_QUOTE_MISMATCH','REVIEW_NOTES_SCHEMA']);
+function invalidOutput(reason,message='模型返回格式不符合约定，请调整配置或重试') {
+ const error=new ApiError(502,'INVALID_MODEL_OUTPUT',message);error.validationReason=reason;return error;
+}
+function chapterOutputIssue(out,input) {
+ if(!keys(out,['text','chapterId','staging','reviewNotes']))return 'CHAPTER_FIELDS';
+ if(!str(out.text,30000))return 'CHAPTER_TEXT';
+ if(out.chapterId!==input.project.outline[input.chapterIndex].id)return 'CHAPTER_ID_MISMATCH';
+ if(!list(out.staging,e=>keys(e,['label','sourceQuote'])&&str(e.label,1000)&&str(e.sourceQuote,4000)))return 'STAGING_SCHEMA';
+ if(out.staging.some(e=>!out.text.includes(e.sourceQuote)))return 'STAGING_QUOTE_MISMATCH';
+ if(!textList(out.reviewNotes))return 'REVIEW_NOTES_SCHEMA';
+ return null;
+}
 export function validateOutput(action,out,input) {
   let valid=false;
   if(action==='interview')valid=keys(out,['questions','summary'])&&str(out.summary)&&list(out.questions,q=>keys(q,['key','title','hint','placeholder','options'])&&answerKeys.includes(q.key)&&!str(input[q.key])&&!str(input.answers?.[q.key])&&['title','hint','placeholder'].every(k=>str(q[k],1000))&&(q.options===undefined||list(q.options,s=>str(s,500),8)),2)&&new Set(out.questions.map(q=>q.key)).size===out.questions.length;
@@ -72,10 +85,10 @@ export function validateOutput(action,out,input) {
     const c=out?.contract,fields=['premise','protagonist','emotionalDirection','pov','desire','obstacle','coreQuestion','boundaries','opening'];
     valid=keys(out,['contract','outline'])&&keys(c,['fields','premise','protagonist','emotionalDirection','pov','desire','boundaries','unresolved'])&&['premise','protagonist','emotionalDirection','pov','desire'].every(k=>str(c[k]))&&str(c.boundaries,4000,true)&&textList(c.unresolved)&&list(c.fields,f=>keys(f,['key','label','value','status'])&&fields.includes(f.key)&&str(f.label,200)&&str(f.value)&&['proposed','confirmed','deferred'].includes(f.status),9)&&c.fields.length===9&&new Set(c.fields.map(f=>f.key)).size===9&&list(out.outline,ch=>keys(ch,['id','title','goal','conflict','knowledgeDelta','exitState','emotionalArc','pov','scene'])&&['id','title','goal','conflict','knowledgeDelta','exitState','emotionalArc','pov'].every(k=>str(ch[k],2000))&&keys(ch.scene,['time','location','participants','allowedReveal','forbiddenReveal','preconditions'])&&['time','location','allowedReveal','forbiddenReveal'].every(k=>str(ch.scene[k],2000))&&textList(ch.scene.participants)&&ch.scene.participants.length>0&&textList(ch.scene.preconditions),3)&&out.outline.length===3&&new Set(out.outline.map(ch=>ch.id)).size===3;
   }
-  if(action==='generateChapter')valid=keys(out,['text','chapterId','staging','reviewNotes'])&&str(out.text,30000)&&out.chapterId===input.project.outline[input.chapterIndex].id&&evidenceList(out.staging,out.text)&&textList(out.reviewNotes);
+  if(action==='generateChapter'){const issue=chapterOutputIssue(out,input);if(issue)throw invalidOutput(issue);valid=true;}
   if(action==='interpretRevision')valid=keys(out,['summary','intents','questions','suggestedFacts'])&&str(out.summary)&&list(out.intents,i=>['local_prose','canon_update','knowledge_update','ambiguous'].includes(i),4)&&out.intents.length>0&&textList(out.questions)&&evidenceList(out.suggestedFacts,input.afterText);
   if(action==='reviewChapter')valid=keys(out,['summary','issues','checks'])&&str(out.summary)&&list(out.issues,i=>keys(i,['severity','explanation','sourceQuote'])&&['error','warning'].includes(i.severity)&&str(i.explanation)&&str(i.sourceQuote,4000)&&input.text.includes(i.sourceQuote))&&textList(out.checks);
-  if(!valid)throw new ApiError(502,'INVALID_MODEL_OUTPUT','模型返回格式不符合约定，请调整配置或重试');
+  if(!valid)throw invalidOutput('OUTPUT_SCHEMA');
   return out;
 }
 /** Validate the compact wire response before building deterministic canonical metadata.
@@ -106,9 +119,10 @@ export function normalizePlan(wire,input) {
 }
 
 export function parseModelJson(content) {
-  if(typeof content!=='string')throw new ApiError(502,'INVALID_MODEL_OUTPUT','模型未返回有效 JSON');
+  if(typeof content!=='string')throw invalidOutput('MISSING_CONTENT','模型未返回有效 JSON');
   let text=content.trim();const fenced=text.match(/^```(?:json)?\s*\n([\s\S]*?)\n```$/i);if(fenced)text=fenced[1].trim();
-  try {const out=JSON.parse(text);if(!object(out))throw Error();return out;}catch{throw new ApiError(502,'INVALID_MODEL_OUTPUT','模型未返回有效 JSON');}
+  let out;try {out=JSON.parse(text);}catch{throw invalidOutput('INVALID_JSON','模型未返回有效 JSON');}
+  if(!object(out))throw invalidOutput('NON_OBJECT_JSON','模型未返回有效 JSON');return out;
 }
 async function readResponse(response) {
   if(!response.body){const t=await response.text();if(Buffer.byteLength(t)>MAX_RESPONSE_BYTES)throw Error();return JSON.parse(t);}
@@ -127,6 +141,9 @@ export function createAgentService({env=process.env,fetchImpl=globalThis.fetch,t
   const status=()=>({configured:config.configured,liveEnabled:config.enabled,model:config.model,baseHost:config.host,callsUsed:calls,maxCalls:config.maxCalls,maxOutputTokens:config.maxTokens});
   async function run(action,input) {
     input=validateInput(action,input);
+    // Explicitly distinguish output target IDs from manuscript source IDs (ch1/ch2/ch3).
+    // Do not rewrite returned IDs: strict output validation remains authoritative.
+    if(action==='generateChapter')input={...input,chapterId:input.project.outline[input.chapterIndex].id};
     if(!config.configured)throw new ApiError(503,'NOT_CONFIGURED','模型服务未启用，请在服务器端完成配置');
     if(active>=2)throw new ApiError(429,'CONCURRENT_LIMIT','已有生成任务正在运行，请稍后重试');
     if(calls>=config.maxCalls)throw new ApiError(429,'CALL_LIMIT','已达到本次服务运行的调用上限');

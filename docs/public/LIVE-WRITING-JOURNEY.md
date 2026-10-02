@@ -48,3 +48,19 @@ pacing tests for the guard. This does not contact a provider or execute the real
 browser journey. `node --check scripts/live-writing-journey.mjs` checks syntax.
 The Browser plugin is not available in the cloud task. Local browser socket use
 is restricted, so real Chromium execution runs on GitHub-hosted CI only.
+
+## First live observation and targeted follow-up
+
+The first run passed interview, planning, chapter 1 generation/review/acceptance,
+and setting interpretation. Chapter 2 generation failed strict output validation
+on provider attempt 6; the runner stopped immediately. This is a partial result,
+not a three-chapter pass. Raw model output was deliberately not retained, so the
+specific failed field cannot be reconstructed from that run.
+
+Offline inspection found an input ambiguity: outline targets use `chapter-2`
+while manuscript source references use `ch2`. The backend now explicitly includes
+the selected outline ID as `input.chapterId` and explains the distinction in the
+model schema. Returned IDs and exact source quotes remain strictly checked;
+nothing is silently normalized. Offline regressions cover the mixed-ID request
+and rejection of wrong IDs. Future failures may log one allowlisted validation
+reason (JSON, schema, target ID or exact quote), never field values or model text.

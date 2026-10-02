@@ -1,4 +1,4 @@
-import {ApiError} from '../server/provider.js';
+import {ApiError,SAFE_VALIDATION_REASONS} from '../server/provider.js';
 export const SAFE_CODES=new Set(['NOT_CONFIGURED','INVALID_INPUT','INVALID_MODEL_OUTPUT','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','OUTPUT_TRUNCATED','CALL_LIMIT','RATE_LIMIT','CONCURRENT_LIMIT']);
 export function journeyConfig(env) {
  if(env.NEXUS_JOURNEY_APPROVED!=='true'||env.NEXUS_LIVE_ENABLED!=='true'||env.NEXUS_OVERAGE_CONFIRMED_OFF!=='true')throw Error('APPROVAL_REQUIRED');
@@ -18,7 +18,7 @@ export function guardJourney(service,{log=console.log,now=Date.now,sleep=ms=>new
    last=now();attempts++;actions.push(action);
    const result=await service.run(action,input);
    log(`provider PASS ${attempts}`);return result;
-  }catch(error){stopped=true;const code=SAFE_CODES.has(error?.code)?error.code:'JOURNEY_FAILED';log(`provider ${code} ${attempts}`);throw new ApiError(502,code,'Live journey stopped');}
+  }catch(error){stopped=true;const code=SAFE_CODES.has(error?.code)?error.code:'JOURNEY_FAILED';log(`provider ${code} ${attempts}`);if(code==='INVALID_MODEL_OUTPUT'&&SAFE_VALIDATION_REASONS.includes(error?.validationReason))log(`validation ${error.validationReason}`);throw new ApiError(502,code,'Live journey stopped');}
   finally{busy=false;}
  }};
 }
