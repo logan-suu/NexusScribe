@@ -28,3 +28,6 @@ test-results/
 # Local author data and exports
 /backups/
 /exports/
+
+# Manual synthetic real-browser evidence
+live-journey-evidence/
