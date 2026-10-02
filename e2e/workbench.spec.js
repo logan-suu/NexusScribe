@@ -79,7 +79,7 @@ test('fact contradiction blocks; explicit evidence-bound exception is cancelable
  const id=initial.drafts[0].id,fact=initial.facts[0];
  initial=reviewDraft(initial,id);
  initial=attachSemanticReview(initial,id,{summary:'合成模型判断；不证明语义精度',issues:[{severity:'warning',explanation:'节奏可润色',sourceQuote:text}],checks:['设定'],factChecks:[{factId:fact.id,recordVersion:fact.recordVersion,status:'contradiction',explanation:'给定同一盏灯的颜色矛盾',sourceQuote:text}],provider:'fixture'},createReviewBinding(initial,id));
- await page.addInitScript(workspace=>localStorage.setItem('nexusscribe.demo.v1',JSON.stringify(workspace)),{format:1,serial:0,state:initial,editing:{},patch:null});
+ await page.addInitScript(workspace=>{if(localStorage.getItem('nexusscribe.demo.v1')===null)localStorage.setItem('nexusscribe.demo.v1',JSON.stringify(workspace))},{format:1,serial:0,state:initial,editing:{},patch:null});
  await page.goto('/');await expect(page).toHaveTitle('NexusScribe · 雾港来信');await expect(page.getByRole('button',{name:'接受此版本'})).toBeDisabled();
  await page.getByRole('button',{name:'审阅并决定此项例外'}).click();const dialog=page.getByRole('dialog',{name:'确认单项设定例外'});
  await expect(dialog).toContainText(blue);await expect(dialog).toContainText(text);await expect(dialog.getByRole('button',{name:'确认接受此项例外，保留原设定'})).toBeDisabled();await capture(page,testInfo,'09-fact-decision-evidence');await noOverflow(page);
