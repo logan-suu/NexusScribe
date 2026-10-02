@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       approve_live_smoke:
-        description: 'Approve selected bounded synthetic test and confirm overage disabled (journey cap12 or review probe cap1)'
+        description: 'Approve selected synthetic test and confirm overage disabled (journey cap12 or either probe cap1)'
         type: boolean
         required: true
         default: false
       test_scope:
-        description: 'Choose full browser journey or one-call synthetic review contract probe'
+        description: 'Choose full browser journey or one-call review/generation contract probe'
         type: choice
         required: true
         default: review-probe
-        options: [journey, review-probe]
+        options: [journey, review-probe, generation-probe]
 
 permissions:
   contents: read
@@ -58,6 +58,15 @@ jobs:
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_REVIEW_PROBE_APPROVED: 'true'
+          NEXUS_JOURNEY_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Run approved one-call synthetic generation probe
+        if: inputs.test_scope == 'generation-probe'
+        run: node scripts/live-generation-probe.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_GENERATION_PROBE_APPROVED: 'true'
           NEXUS_JOURNEY_APPROVED: 'true'
           NEXUS_LIVE_ENABLED: 'true'
           NEXUS_OVERAGE_CONFIRMED_OFF: 'true'

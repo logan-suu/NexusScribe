@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Readable} from 'node:stream';
-import {createAgentService,readConfig,validateInput,validateOutput,parseModelJson,MAX_BODY_BYTES,normalizePlan} from '../server/provider.js';
+import {createAgentService,readConfig,validateInput,validateOutput,parseModelJson,MAX_BODY_BYTES,normalizePlan,normalizeChapter} from '../server/provider.js';
 import {createHandler,originAllowed} from '../server/index.js';
 const env={NEXUS_OVERAGE_CONFIRMED_OFF:'true',NEXUS_LIVE_ENABLED:'true',NEXUS_API_BASE_URL:'https://example.test/v1/',NEXUS_API_MODEL:'test-model',NEXUS_API_KEY:'server-only-secret'};
 const input={input:{idea:'一座灯塔每晚失去一层',protagonist:'阿离'}};
@@ -206,4 +206,42 @@ test('review diagnostic enums preserve strict schema, severity, and exact candid
  ];
  for(const [out,reason] of cases)assert.throws(()=>validateOutput('reviewChapter',out,reviewInput),e=>e.code==='INVALID_MODEL_OUTPUT'&&e.validationReason===reason&&!JSON.stringify(e).includes('PRIVATE'));
  const blocking={...valid,issues:[{...issue,severity:'error'}]};assert.equal(validateOutput('reviewChapter',blocking,reviewInput).issues[0].severity,'error');
+});
+test('generation quote validation does not normalize punctuation or spaces after prompt clarification',()=>{
+ const prose='小舟举灯，查看潮痕。';
+ for(const quote of ['小舟举灯,查看潮痕。','小舟举灯， 查看潮痕。','小舟举灯查看潮痕'])assert.throws(()=>validateOutput('generateChapter',{...chapter,text:prose,staging:[{label:'查看潮痕',sourceQuote:quote}]},generation),{code:'INVALID_MODEL_OUTPUT',validationReason:'STAGING_QUOTE_MISMATCH'});
+ assert.equal(validateOutput('generateChapter',{...chapter,text:prose,staging:[{label:'查看潮痕',sourceQuote:'查看潮痕。'}]},generation).staging.length,1);
+});
+
+
+test('paragraph generation derives verbatim quotes and retains zero-based anchors',()=>{
+ const paragraphs=['小舟举灯，  查看潮痕。','“明天再来。”他收起纸灯。'];
+ const wire={paragraphs,chapterId:'chapter-1',staging:[{label:'查看潮痕',sourceParagraphIndex:0},{label:'决定再来',sourceParagraphIndex:1}],reviewNotes:['请作者复核语义']};
+ const out=normalizeChapter(wire,generation);
+ assert.equal(out.text,paragraphs.join('\n'));assert.equal(out.staging[0].sourceQuote,paragraphs[0]);assert.equal(out.staging[1].sourceQuote,paragraphs[1]);assert.equal(out.staging[1].sourceParagraphIndex,1);assert.equal(Object.hasOwn(out,'paragraphs'),false);
+ assert.deepEqual(normalizeChapter(chapter,generation),chapter);
+});
+test('paragraph generation rejects ambiguous/malformed references without fuzzy repair',()=>{
+ const wire={paragraphs:['新章第一段。','新章第二段。'],chapterId:'chapter-1',staging:[{label:'事件',sourceParagraphIndex:0}],reviewNotes:[]};
+ const cases=[
+  [{...wire,text:'不得混用'},'CHAPTER_FIELDS'],
+  [{...wire,paragraphs:[]},'CHAPTER_PARAGRAPHS'],
+  [{...wire,paragraphs:[' ']},'CHAPTER_PARAGRAPHS'],
+  [{...wire,paragraphs:['一段\n另一段']},'CHAPTER_PARAGRAPHS'],
+  [{...wire,paragraphs:['x'.repeat(4001)]},'CHAPTER_PARAGRAPHS'],
+  [{...wire,paragraphs:Array(8).fill('x'.repeat(4000))},'CHAPTER_TEXT'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:'0'}]},'STAGING_REFERENCE_SCHEMA'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:0.5}]},'STAGING_REFERENCE_SCHEMA'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:-1}]},'STAGING_REFERENCE_RANGE'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:2}]},'STAGING_REFERENCE_RANGE'],
+  [{...wire,staging:[{label:'事件',sourceParagraphIndex:0,sourceQuote:'伪造'}]},'STAGING_REFERENCE_SCHEMA'],
+  [{...wire,chapterId:'ch1'},'CHAPTER_ID_MISMATCH'],
+ ];
+ for(const [out,reason] of cases)assert.throws(()=>normalizeChapter(out,generation),{code:'INVALID_MODEL_OUTPUT',validationReason:reason});
+ assert.throws(()=>normalizeChapter({...chapter,staging:[{...chapter.staging[0],sourceQuote:'不存在'}]},generation),{code:'INVALID_MODEL_OUTPUT',validationReason:'STAGING_QUOTE_MISMATCH'});
+});
+test('provider normalizes paragraph wire before exposing canonical chapter',async()=>{
+ const wire={paragraphs:['小舟举灯。'],chapterId:'chapter-1',staging:[{label:'举灯',sourceParagraphIndex:0}],reviewNotes:[]};
+ const service=createAgentService({env,fetchImpl:async()=>reply(wire)});const out=await service.run('generateChapter',generation);
+ assert.equal(out.text,'小舟举灯。');assert.equal(out.staging[0].sourceQuote,out.text);assert.equal(out.provider.isLive,true);
 });

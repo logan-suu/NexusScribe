@@ -26,6 +26,7 @@ test('manual workflow requires exact scope and defaults to one-call probe',()=>{
  assert.match(workflow,/default: review-probe/);
  assert.match(workflow,/Run approved bounded real-browser journey\n\s+if: inputs.test_scope == 'journey'/);
  assert.match(workflow,/Run approved one-call synthetic review probe\n\s+if: inputs.test_scope == 'review-probe'/);
+ assert.match(workflow,/Run approved one-call synthetic generation probe\n\s+if: inputs.test_scope == 'generation-probe'/);
  assert.match(workflow,/if: always\(\) && inputs.test_scope == 'journey'/);
  assert.equal(workflow.includes("test_scope !="),false);
  assert.match(workflow,/workflow_dispatch:/);assert.equal(/\n  (push|pull_request):/.test(workflow),false);

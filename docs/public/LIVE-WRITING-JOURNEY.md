@@ -84,3 +84,28 @@ It has hard cap 1, output cap 3000, disabled thinking and no retries. The probe
 logs only contract status plus issue/error counts or an allowlisted failure reason;
 even a schema-valid blocking review is reported faithfully. No dependencies,
 browser, screenshots or story payload artifacts are needed for this probe.
+
+A later full run stopped on attempt 6 with `STAGING_QUOTE_MISMATCH`: a proposed
+event quote did not occur in that response's generated prose. This is a precise
+failure observation; it does not prove that earlier generic failures had the same
+cause. The new generation wire format returns `paragraphs[]` plus zero-based event
+`sourceParagraphIndex` references into those newly generated paragraphs. The
+server validates bounded single-paragraph strings and integer/range constraints,
+joins them with newlines, and derives exact quotes verbatim. Unsupported proposals
+belong in review notes, not invented references. Legacy text/quote responses still
+undergo the original exact-match check. No punctuation normalization, fuzzy
+matching, fabricated quote or automatic event removal is performed. A paragraph
+reference does not prove that its event label is semantically true.
+
+`test_scope: generation-probe` performs one synthetic chapter-2 generation with
+competing previous/planned sources and an explicit setting. It has cap 1, output
+cap 3000, disabled thinking, no retries, no raw response logging and no artifacts.
+It is not a replay of a discarded live response or proof of the complete UI flow.
+
+The generation probe logs attempt count, proposed event count, paragraph-anchored
+event count and review-note count. A zero-event result provides no positive evidence
+of anchor use. Accepted paragraph references retain revision-local paragraph IDs.
+If subsequent editing removes an event quote or moves its anchored paragraph,
+structural review and acceptance now block instead of silently dropping that event.
+The author may restore the evidence/paragraph position or reject and regenerate;
+individual event rejection/rebinding and draft quarantine UI remain future work.
