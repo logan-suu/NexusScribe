@@ -21,3 +21,20 @@ The last-good slot can lag the latest edit. All slots share the same origin and 
 ## Verification
 
 `npm run check` includes pure storage tests and DOM failure/recovery tests. `e2e/storage.spec.js` covers desktop/mobile preview/cancel/import/reload, corrupt-primary confirmation and preservation, and quota-failure export/retry/reload. All fixtures are fictional and external network requests are blocked. Browser tests run in the standard CI browser environment; a local environment unable to start Chromium does not count as a visual pass. No live-provider quality or production durability claim follows from these tests.
+
+### Verified milestone (2026-10-02)
+
+Exact source `771c3497a7c3fad1ca2e642423288f993ddc8e49` passed
+[CI 37042160359](https://github.com/logan-suu/NexusScribe/actions/runs/37042160359):
+231 unit/contract tests (including 41 storage tests), five DOM suites, the production
+build, and 20 desktop/mobile Chromium scenarios. Six inspected backup-specific
+screenshots cover import preview, corrupt-primary recovery warnings, and quota-failure
+export/retry controls at both viewport sizes. Preview counts and cancel/confirm
+controls were readable; the scenarios' overflow checks passed.
+
+The first CI attempt timed out during Ubuntu package installation. A fresh hosted
+runner rerun passed without changing the source. Local Chromium could not start
+because its socket operation was denied; local browser verification remains unclaimed.
+All milestone tests used fictional fixtures without live model calls. These bounded
+checks do not establish cross-browser behavior, resilience to every process/storage
+failure, cloud backup, atomic multi-window transactions, or production durability.

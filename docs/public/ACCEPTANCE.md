@@ -111,3 +111,21 @@ The engine rejected acceptance with `FACT_DECISION_REQUIRED`; no exception or
 acceptance was inserted. This one positive synthetic case is separate from the
 mocked browser exception UI test and is not an accuracy benchmark. No new full
 live writing journey was run, and the prior journey belongs to its older revision.
+
+## Subsequent local backup/recovery guard (2026-10-02)
+
+Exact source `771c3497a7c3fad1ca2e642423288f993ddc8e49` passed
+[CI 37042160359](https://github.com/logan-suu/NexusScribe/actions/runs/37042160359):
+231 unit/contract tests, five DOM suites, build and 20 desktop/mobile Chromium
+scenarios. Six inspected backup-specific screenshots show readable import preview
+and explicit confirmation, corrupt-primary recovery warnings, and quota-failure
+export/retry controls; overflow checks passed. An initial runner dependency-install
+timeout was resolved by rerunning on a fresh hosted runner without source changes.
+
+The increment preserves original project audit when importing into a new namespace,
+invalidates pending approvals, avoids startup writes, and keeps failed text saves
+in memory for export/retry. Testing was entirely offline with fictional data and no
+live model calls. Local browser startup remained blocked by a socket permission;
+the visual evidence comes from hosted CI. See [backup/recovery boundaries](BACKUP-RECOVERY.md)
+for size limits, last-good lag, quota sharing, and remaining crash/concurrency risks.
+This is bounded local recovery protection, not a production durability guarantee.
