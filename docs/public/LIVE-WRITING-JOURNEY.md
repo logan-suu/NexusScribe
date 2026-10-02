@@ -60,9 +60,64 @@ Together with this successful 9-call journey, this milestone's reviewed runs use
 30 provider attempts. Each run stopped on its first provider failure, with no
 automatic retry. Actual currency cost was not measured. See the observations below.
 
+## Fact-inheritance guard revision (2026-10-02)
+
+The subsequent implementation adds a separate per-author-fact assessment ledger.
+Every confirmed explicit author fact is bound to its record version and original
+revision evidence. Contradiction and unknown assessments block direct acceptance,
+independent of generic issue severity; missing assessments become visible unknowns.
+An assessed not_applicable permits scenes that simply do not involve the fact.
+No lamp/color keyword rules infer these semantic classifications.
+
+An explicit per-item author exception requires reviewing the evidence and supplying
+a reason. It is bound to the current report, candidate, run, project and fact version,
+recorded in acceptance history, and never changes Canon. Editing or re-reviewing
+invalidates it. Correcting Canon still uses the existing explicit author patch flow.
+General model errors and structural/paragraph-source guards remain independent.
+
+The offline cases supply model classifications to prove binding and gate behavior;
+they do not measure semantic accuracy. Referent, time, negation, dialogue and
+hypothesis interpretation remain model-dependent. The one-call review-probe creates a synthetic source-backed
+author fact through the domain patch API, supplies an intentionally contradictory
+red-lamp candidate, and requires both a model contradiction assessment and a blocked
+engine accept attempt. It never records an author exception or accepts the candidate.
+Unknown, missing, consistent or not_applicable judgments fail this positive test
+without retries; failure logs fixed reason codes only. This probe is distinct from
+browser UI validation and is not an accuracy percentage. The earlier 9-call journey remains historical evidence of the
+failure that motivated this revision; a current live journey may now stop on an
+unresolved fact instead of accepting it as a warning.
+
+### Verified bounded result for this revision
+
+Tested source: `5a65e74b64b371fe135df4ad67807c0e8dfbe684`.
+[CI 37038776898](https://github.com/logan-suu/NexusScribe/actions/runs/37038776898)
+passed 190 unit/contract tests, four DOM suites, production build and 14 mocked
+Chromium desktop/mobile scenarios. The new scenario checks the blocked blue/red
+candidate, cancelable explicit exception, required reason, unchanged Canon and
+persistence after reload. Four desktop/mobile screenshots were inspected as readable
+and privacy-clean, showing exact blue/red evidence, revisions, rationale and retained
+Canon. Both viewport runs passed horizontal-overflow checks.
+
+[One-call review probe 37039268803](https://github.com/logan-suu/NexusScribe/actions/runs/37039268803)
+returned `review-probe PASS 1 1 1 1 1`: one provider call, one generic issue marked
+error, one model-classified fact contradiction, and one blocked engine acceptance.
+The exact rejection was `FACT_DECISION_REQUIRED`. No author exception was recorded
+and no candidate was accepted. This is a synthetic domain probe, not browser E2E.
+It used Go `deepseek-v4.1-flash`, disabled thinking and the 3000-token output cap,
+with no retry. It establishes one positive classification plus its enforced gate,
+not a semantic accuracy percentage, general inheritance reliability or a new
+three-chapter live journey. The earlier nine-call journey belongs to its earlier
+revision. Across the previously documented 30 attempts and this probe, the recorded
+milestones total 31 provider attempts; currency cost remains unmeasured.
+
+The first guard CI run had two failures in the new reload test because its test
+initialization overwrote storage on every navigation. The narrow fixture correction
+initializes only absent storage; the actual reload/persistence assertion remains.
+No app behavior was relaxed to obtain the passing rerun.
+
 ## Remaining milestones
 
-1. Precise inheritance: preserve the blue-setting/red-lamp regression case and distinguish source-backed contradictions from subjective warnings
+1. Expand precise-inheritance evaluation beyond the single positive blue/red probe: repeated classifications, ambiguous referents/time, independent author assessment and a current-revision multi-chapter journey
 2. Explicit event rejection/rebinding and valuable-draft recovery when evidence fails
 3. Longer chapters, repeated multi-chapter trials, interruption/recovery cases, and independent author assessment of consistency and literary quality
 4. Durable storage/import/backup, transactional safety, deployment and security review
