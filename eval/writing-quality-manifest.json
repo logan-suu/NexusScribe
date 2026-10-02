@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "sha256": {
+    "eval/WRITING-QUALITY-PROTOCOL.md": "75f034013d64df2441e7c69fc29373c4deeaf2ad7740b1302c60c7bc4cccba5c",
+    "eval/writing-quality-fixtures.mjs": "c371293b936bbb6937e5986dcd2646d099cfd74006b7e5e2cb7fb50f005779e7"
+  }
+}
