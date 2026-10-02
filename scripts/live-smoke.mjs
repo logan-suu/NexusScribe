@@ -11,8 +11,9 @@ export async function runLiveSmoke({env=process.env,fetchImpl=globalThis.fetch,l
  const report=(action,code)=>log(`${action} ${code}`);
  const stop=(action,code)=>{report(action,code);throw new SmokeError(action,code);};
  if(env.NEXUS_SMOKE_APPROVED!=='true'||env.NEXUS_LIVE_ENABLED!=='true'||env.NEXUS_OVERAGE_CONFIRMED_OFF!=='true')stop('setup','APPROVAL_REQUIRED');
- const requestedTokens=Number(env.NEXUS_MAX_OUTPUT_TOKENS);
- const maxTokens=Number.isInteger(requestedTokens)&&requestedTokens>0?Math.min(requestedTokens,900):900;
+ const requestedTokens=env.NEXUS_MAX_OUTPUT_TOKENS===undefined?900:Number(env.NEXUS_MAX_OUTPUT_TOKENS);
+ if(!Number.isSafeInteger(requestedTokens)||requestedTokens<=0)stop('setup','INVALID_TOKEN_LIMIT');
+ const maxTokens=Math.min(requestedTokens,3000);
  // Hard upper bounds override a caller's larger configuration. No retry branch exists.
  const service=createAgentService({env:{...env,NEXUS_MAX_OUTPUT_TOKENS:String(maxTokens),NEXUS_MAX_CALLS:'5'},fetchImpl});
  if(!service.status().configured)stop('setup','NOT_CONFIGURED');

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runLiveSmoke} from '../scripts/live-smoke.mjs';
-const env={NEXUS_SMOKE_APPROVED:'true',NEXUS_LIVE_ENABLED:'true',NEXUS_OVERAGE_CONFIRMED_OFF:'true',NEXUS_API_BASE_URL:'https://provider.example.test/v1',NEXUS_API_MODEL:'mock-model',NEXUS_API_KEY:'secret-never-print',NEXUS_MAX_OUTPUT_TOKENS:'5000',NEXUS_MAX_CALLS:'100'};
+const env={NEXUS_SMOKE_APPROVED:'true',NEXUS_LIVE_ENABLED:'true',NEXUS_OVERAGE_CONFIRMED_OFF:'true',NEXUS_API_BASE_URL:'https://provider.example.test/v1',NEXUS_API_MODEL:'mock-model',NEXUS_API_KEY:'secret-never-print',NEXUS_MAX_CALLS:'100'};
 const fieldKeys=['premise','protagonist','emotionalDirection','pov','desire','obstacle','coreQuestion','boundaries','opening'];
 const fixtures={
  interview:{questions:[{key:'tone',title:'情绪？',hint:'请选择',placeholder:'温暖'}],summary:'待补充'},
@@ -44,4 +44,19 @@ test('malformed and unsupported evidence stop the smoke',async()=>{
 });
 test('lower explicitly configured output token bound is preserved',async()=>{
  const m=mock();await runLiveSmoke({env:{...env,NEXUS_MAX_OUTPUT_TOKENS:'400'},fetchImpl:m.fetchImpl,log:()=>{}});assert.ok(m.calls.every(c=>c.body.max_tokens===400));
+});
+
+test('explicit 3000-token limit is supported and larger requests are hard-capped',async()=>{
+ for(const selected of ['3000','5000']){
+ const m=mock();const result=await runLiveSmoke({env:{...env,NEXUS_MAX_OUTPUT_TOKENS:selected},fetchImpl:m.fetchImpl,log:()=>{}});assert.equal(result.attempts,5);assert.ok(m.calls.every(c=>c.body.max_tokens===3000));
+ }
+});
+test('invalid explicit token limits fail before any network',async()=>{
+ for(const selected of ['0','-1','1.5','','invalid','Infinity','9007199254740992']){
+ const m=mock(),lines=[];await assert.rejects(runLiveSmoke({env:{...env,NEXUS_MAX_OUTPUT_TOKENS:selected},fetchImpl:m.fetchImpl,log:s=>lines.push(s)}),{code:'INVALID_TOKEN_LIMIT'});assert.equal(m.calls.length,0);assert.deepEqual(lines,['setup INVALID_TOKEN_LIMIT']);
+ }
+});
+test('a higher selected limit does not authorize truncation retries',async()=>{
+ let count=0;const lines=[];const fetchImpl=async(url,options)=>{count++;const body=JSON.parse(options.body);assert.equal(body.max_tokens,3000);const {action}=JSON.parse(body.messages[1].content);return action==='planStory'?new Response(JSON.stringify({choices:[{finish_reason:'length',message:{content:'{}'}}]})):response(fixtures[action]);};
+ await assert.rejects(runLiveSmoke({env:{...env,NEXUS_MAX_OUTPUT_TOKENS:'3000'},fetchImpl,log:s=>lines.push(s)}),{code:'OUTPUT_TRUNCATED'});assert.equal(count,2);assert.deepEqual(lines,['interview PASS','planStory OUTPUT_TRUNCATED']);
 });

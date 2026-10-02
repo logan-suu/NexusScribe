@@ -40,5 +40,5 @@ jobs:
           NEXUS_SMOKE_APPROVED: 'true'
           NEXUS_LIVE_ENABLED: 'true'
           NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
-          NEXUS_MAX_OUTPUT_TOKENS: '900'
+          NEXUS_MAX_OUTPUT_TOKENS: '3000'
           NEXUS_MAX_CALLS: '5'
