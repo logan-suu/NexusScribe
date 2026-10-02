@@ -155,7 +155,7 @@ These automated suites do not make paid model calls. Passing them does not demon
 ## Current limits and next steps
 
 - **Single-author local storage.** No server database, authentication, cloud backup, or multiuser concurrency guarantees. Stale-window detection is not a database transaction.
-- **Export-only backups.** Clearing browser site data can erase the workspace. Export regularly; a backup-import interface is not implemented.
+- **Bounded backup recovery.** JSON backups can be previewed and explicitly imported as new projects. Failed text saves remain in memory with export/retry controls. A previous-good local copy can recover a corrupt primary after confirmation and preservation of damaged bytes. Clearing browser site data still erases all local copies; export regularly. See [backup and recovery limits](docs/public/BACKUP-RECOVERY.md).
 - **Bounded narrative reasoning.** General semantic conflict/replacement reasoning and knowledge-transfer proofs remain incomplete.
 - **Further validation needed.** A bounded real-provider/domain fixture has passed; broader provider reliability, long-form evaluation, baseline comparisons, cross-browser coverage, and production security review remain acceptance work.
 
