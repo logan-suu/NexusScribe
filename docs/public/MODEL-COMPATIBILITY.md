@@ -32,7 +32,7 @@ Server-only credentials, explicit live enablement, declared output/call bounds, 
 
 A truncated response may now emit an allowlisted diagnostic record: finish reason, whether final/reasoning content was returned, and numeric token counters only when supplied by the provider. It never logs either text, prompts, request bodies or credentials. Missing reasoning counters remain unknown; absence of a returned reasoning field does not prove that thinking was disabled. These diagnostics cannot reconstruct the two earlier runs.
 
-The current manual smoke workflow is fixed to planning-only: one attempted request, a 3000-token ceiling, no retries. A new real invocation still requires the applicable task authorization; publishing or passing CI does not itself start the smoke.
+The planning-only mode enforces one attempted request; full-flow mode enforces at most five. Both retain the selected 3000-token ceiling and prohibit retries. A new real invocation still requires the applicable task authorization; publishing or passing CI does not itself start the smoke.
 
 ## Bounded low-effort compatibility check
 
@@ -41,3 +41,5 @@ A later planning-only request reported 3000 completion tokens, including 3000 re
 The adapter now permits an explicit `NEXUS_REASONING_EFFORT=low` opt-in, serialized as `reasoning_effort: "low"`. If unset, neither reasoning nor thinking controls are sent. Other values are rejected rather than guessed. The manual planning-only workflow selects low for a one-request compatibility check while keeping the same model and 3000-token ceiling. This is not a claim that the hosted route has already passed the test.
 
 The [OpenCode gateway's variant parser](https://github.com/anomalyco/opencode/blob/dev/packages/console/app/src/routes/zen/util/variant.ts) recognizes `reasoning_effort`, and its client code defines compatible DeepSeek effort mappings. Direct `thinking.type=disabled` remains a separate, untested option and is not combined with low in this check. No raw reasoning content is logged or exposed.
+
+A bounded planning-only call with explicit low effort subsequently passed the compact schema contract. This verifies that specific synthetic request on the selected route; it does not establish literary quality or full workflow acceptance. The next manual full-flow check remains capped at five calls and uses domain assertions in memory without requesting additional model output.

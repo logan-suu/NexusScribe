@@ -25,12 +25,12 @@ test('all approval flags required before any network, missing credentials blocke
 });
 test('successful smoke performs exactly five sequential validated calls, bounded output and summary-only logs',async()=>{
  const m=mock(),lines=[];const result=await runLiveSmoke({env,fetchImpl:m.fetchImpl,log:s=>lines.push(s)});
- assert.equal(result.passed,true);assert.equal(result.attempts,5);assert.equal(m.calls.length,5);
- assert.deepEqual(m.calls.map(c=>c.request.action),Object.keys(fixtures));assert.deepEqual(lines,Object.keys(fixtures).map(action=>`${action} PASS`));
+ assert.equal(result.passed,true);assert.equal(result.attempts,5);assert.equal(m.calls.length,5);assert.deepEqual(result.domainSummary,{stagedEvents:1,promotedEvents:1,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED'});
+ assert.deepEqual(m.calls.map(c=>c.request.action),Object.keys(fixtures));assert.deepEqual(lines.filter(line=>!line.startsWith('domain')),Object.keys(fixtures).map(action=>`${action} PASS`));assert.deepEqual(result.domainResults.map(r=>r.action),['domainStage','domainReject','domainEdit','domainInterpret','domainReview','domainAccept','domainUndo']);
  for(const call of m.calls){assert.equal(call.body.max_tokens,900);assert.equal(call.options.headers.Authorization,`Bearer ${env.NEXUS_API_KEY}`);assert.equal(call.options.redirect,'error');}
  const text=JSON.stringify({result,lines});for(const forbidden of [env.NEXUS_API_KEY,env.NEXUS_API_BASE_URL,env.NEXUS_API_MODEL,fixtures.generateChapter.text,'Authorization','messages'])assert.equal(text.includes(forbidden),false);
  const revised=m.calls[3].request.input,review=m.calls[4].request.input;
- assert.equal(revised.context.sources[0].text,revised.afterText);assert.equal(review.context.sources[0].text,review.text);assert.equal(revised.chapterId,'chapter-1');
+ assert.equal(revised.context.sources[0].text,revised.afterText);assert.notEqual(review.context.sources[0].text,review.text);assert.equal(revised.chapterId,'ch1');assert.equal(review.chapterId,'ch1');assert.equal(review.context.sources.length,3);assert.equal(m.calls[2].request.input.context.version,1);
 });
 test('stop at every first failure without retry or fallback and redact upstream details',async()=>{
  for(const [index,action] of Object.keys(fixtures).entries()){
@@ -81,4 +81,18 @@ test('planning-only truncation records aggregate usage but never content or reas
  const fetchImpl=async()=>{count++;return new Response(JSON.stringify({choices:[{finish_reason:'length',message:{content:null,reasoning_content:secret}}],usage:{prompt_tokens:200,completion_tokens:900,total_tokens:1100,completion_tokens_details:{reasoning_tokens:900},untrusted_text:secret}}))};
  await assert.rejects(runLiveSmoke({env:{...env,NEXUS_SMOKE_SCOPE:'planning-only'},fetchImpl,log:s=>lines.push(s)}),e=>e.code==='OUTPUT_TRUNCATED');
  assert.equal(count,1);const output=lines.join('\n');assert.equal(output.includes(secret),false);assert.equal(output.includes(env.NEXUS_API_KEY),false);assert.match(output,/"reasoningTokens":900/);assert.match(output,/"finalContentPresent":false/);assert.match(output,/"reasoningContentPresent":true/);assert.match(output,/planStory OUTPUT_TRUNCATED/);
+});
+
+test('real review error remains blocking after five calls; smoke cannot claim accept or undo success',async()=>{
+ let calls=0;const lines=[];const fetchImpl=async(url,options)=>{calls++;const {action}=JSON.parse(JSON.parse(options.body).messages[1].content);return response(action==='reviewChapter'?{summary:'发现阻塞',issues:[{severity:'error',explanation:'需要修改',sourceQuote:'小舟把一盏纸灯放在窗边。'}],checks:['检查正文']}:fixtures[action]);};
+ await assert.rejects(runLiveSmoke({env,fetchImpl,log:s=>lines.push(s)}),{code:'DOMAIN_REVIEW_BLOCKED'});assert.equal(calls,5);assert.ok(lines.includes('domainRejectReview PASS'));assert.equal(lines.at(-1),'domainAccept DOMAIN_REVIEW_BLOCKED');assert.equal(lines.includes('domainAccept PASS'),false);assert.equal(lines.includes('domainUndo PASS'),false);assert.equal(lines.join().includes('需要修改'),false);
+});
+test('warning advisory is preserved while domain accept and compensation run without extra network',async()=>{
+ let calls=0;const fetchImpl=async(url,options)=>{calls++;const {action}=JSON.parse(JSON.parse(options.body).messages[1].content);return response(action==='reviewChapter'?{summary:'保留建议',issues:[{severity:'warning',explanation:'可再润色',sourceQuote:'小舟把一盏纸灯放在窗边。'}],checks:['检查正文']}:fixtures[action]);};
+ const result=await runLiveSmoke({env,fetchImpl,log:()=>{}});assert.equal(calls,5);assert.equal(result.passed,true);assert.ok(result.domainResults.some(r=>r.action==='domainAccept'));assert.ok(result.domainResults.some(r=>r.action==='domainUndo'));
+});
+
+test('empty model staging is reported as zero rather than fabricated event promotion',async()=>{
+ let calls=0;const lines=[];const fetchImpl=async(url,options)=>{calls++;const {action}=JSON.parse(JSON.parse(options.body).messages[1].content);return response(action==='generateChapter'?{...fixtures.generateChapter,staging:[]}:fixtures[action]);};
+ const result=await runLiveSmoke({env,fetchImpl,log:s=>lines.push(s)});assert.equal(calls,5);assert.deepEqual(result.domainSummary,{stagedEvents:0,promotedEvents:0,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED'});assert.ok(lines.includes('domain METADATA '+JSON.stringify(result.domainSummary)));
 });
