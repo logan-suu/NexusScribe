@@ -137,3 +137,18 @@ test('legacy plans cannot overwrite explicit author choices or elevate model cre
  const noAuthor=normalizePlan(legacy,{idea:'作者灵感'});assert.equal(noAuthor.contract.fields.find(f=>f.key==='protagonist').status,'proposed');assert.equal(noAuthor.contract.boundaries,'');assert.equal(noAuthor.contract.fields.find(f=>f.key==='boundaries').status,'deferred');
  const service=createAgentService({env,fetchImpl:async()=>reply(legacy)});const result=await service.run('planStory',{input:compactInput});assert.equal(result.contract.protagonist,compactInput.protagonist);assert.equal(result.contract.fields.find(f=>f.key==='obstacle').status,'proposed');
 });
+
+test('reasoning effort is absent by default and explicit low preserves transport/auth/caps',async()=>{
+ const requests=[];for(const selected of [undefined,'low']){
+ const configuredEnv={...env};if(selected!==undefined)configuredEnv.NEXUS_REASONING_EFFORT=selected;
+ const service=createAgentService({env:configuredEnv,fetchImpl:async(url,options)=>{requests.push({url,options,body:JSON.parse(options.body)});return reply(interview);}});await service.run('interview',input);
+ }
+ assert.equal(Object.hasOwn(requests[0].body,'reasoning_effort'),false);assert.equal(requests[1].body.reasoning_effort,'low');
+ for(const request of requests){assert.equal(Object.hasOwn(request.body,'thinking'),false);assert.equal(request.body.max_tokens,1200);assert.equal(request.options.headers.Authorization,'Bearer server-only-secret');assert.equal(request.options.headers['User-Agent'],'NexusScribe-demo/0.1');assert.equal(request.options.redirect,'error');}
+ assert.equal(requests[0].options.headers['x-opencode-session'],requests[1].options.headers['x-opencode-session']);assert.equal(requests[0].url,requests[1].url);
+ const {reasoning_effort,...withoutEffort}=requests[1].body;assert.deepEqual(withoutEffort,requests[0].body);
+});
+test('invalid reasoning values block configuration before fetch and low errors never fallback',async()=>{
+ for(const value of ['','none','high','max','LOW','low ','disabled']){let calls=0;const service=createAgentService({env:{...env,NEXUS_REASONING_EFFORT:value},fetchImpl:async()=>{calls++;return reply(interview);}});assert.equal(service.status().configured,false);await assert.rejects(service.run('interview',input),{code:'NOT_CONFIGURED'});assert.equal(calls,0);}
+ let calls=0;const service=createAgentService({env:{...env,NEXUS_REASONING_EFFORT:'low'},fetchImpl:async()=>{calls++;return new Response('private upstream',{status:400});}});await assert.rejects(service.run('interview',input),{code:'UPSTREAM_ERROR'});assert.equal(calls,1);
+});

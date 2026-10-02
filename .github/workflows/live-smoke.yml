@@ -37,6 +37,7 @@ jobs:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_API_BASE_URL: https://opencode.ai/zen/go/v1
           NEXUS_API_MODEL: deepseek-v4.1-flash
+          NEXUS_REASONING_EFFORT: 'low'
           NEXUS_SMOKE_APPROVED: 'true'
           NEXUS_LIVE_ENABLED: 'true'
           NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
