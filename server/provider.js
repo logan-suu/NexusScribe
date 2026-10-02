@@ -62,10 +62,10 @@ export const SCHEMAS = Object.freeze({
   planStory:'{"proposals":{"protagonist":"only if missing","tone":"only if missing","pov":"only if missing","goal":"only if missing"},"obstacle":"obstacle","coreQuestion":"question","opening":"opening","unresolved":["question"],"outline":[{"title":"title","goal":"goal","conflict":"conflict","knowledgeDelta":"knowledge delta","exitState":"exit state","emotionalArc":"arc","scene":{"time":"time","location":"location","participants":["name"],"allowedReveal":"allowed reveal","forbiddenReveal":"forbidden reveal","preconditions":["precondition"]}}]}; exactly 3 outline chapters. Compact planning response: use terse phrases, short arrays, and each creative value ideally within 12 Chinese characters. Include every creative field. Proposals must supply each missing protagonist/tone/pov/goal and MUST omit already answered keys. Do not repeat premise, boundaries, confirmed author values, labels, field statuses, chapter IDs, chapter numbers, chapter POV or metadata; the server supplies these deterministically.',
   generateChapter:'{"text":"chapter prose","chapterId":"copy input.chapterId exactly, which is the selected project.outline chapter id; context.sources chapter IDs are source references, not this output target","staging":[{"label":"proposed event","sourceQuote":"exact substring from text"}],"reviewNotes":["note"]}',
   interpretRevision:'{"summary":"summary","intents":["local_prose|canon_update|knowledge_update|ambiguous"],"questions":["question"],"suggestedFacts":[{"label":"proposed fact","sourceQuote":"exact substring of afterText"}]}',
-  reviewChapter:'{"summary":"summary","issues":[{"severity":"error|warning","explanation":"explanation","sourceQuote":"exact nonempty substring of text"}],"checks":["check"]}'
+  reviewChapter:'{"summary":"summary","issues":[{"severity":"error|warning","explanation":"explanation","sourceQuote":"copy an exact nonempty substring from input.text, never from context.sources"}],"checks":["short plain string"]}; use only these keys and severity error or warning. Review the candidate input.text against context; context.sources can include older accepted prose or ungenerated planning placeholders and is reference material, not the candidate. For concerns without an exact candidate quote, explain the uncertainty or review limitation in summary instead of fabricating an issue quote. Do not suppress legitimate concerns or treat an empty issues list as proof of correctness. Do not return verdict, passed, confidence, suggestions, chapterId or provider metadata'
 });
 function evidenceList(x,text) {return list(x,e=>keys(e,['label','sourceQuote'])&&str(e.label,1000)&&str(e.sourceQuote,4000)&&text.includes(e.sourceQuote));}
-export const SAFE_VALIDATION_REASONS=Object.freeze(['INVALID_JSON','NON_OBJECT_JSON','MISSING_CONTENT','OUTPUT_SCHEMA','CHAPTER_FIELDS','CHAPTER_TEXT','CHAPTER_ID_MISMATCH','STAGING_SCHEMA','STAGING_QUOTE_MISMATCH','REVIEW_NOTES_SCHEMA']);
+export const SAFE_VALIDATION_REASONS=Object.freeze(['INVALID_JSON','NON_OBJECT_JSON','MISSING_CONTENT','OUTPUT_SCHEMA','CHAPTER_FIELDS','CHAPTER_TEXT','CHAPTER_ID_MISMATCH','STAGING_SCHEMA','STAGING_QUOTE_MISMATCH','REVIEW_NOTES_SCHEMA','REVIEW_FIELDS','REVIEW_SUMMARY','REVIEW_ISSUES_ARRAY','REVIEW_ISSUE_FIELDS','REVIEW_SEVERITY','REVIEW_EXPLANATION','REVIEW_QUOTE_SHAPE','REVIEW_QUOTE_MISMATCH','REVIEW_CHECKS']);
 function invalidOutput(reason,message='模型返回格式不符合约定，请调整配置或重试') {
  const error=new ApiError(502,'INVALID_MODEL_OUTPUT',message);error.validationReason=reason;return error;
 }
@@ -78,6 +78,20 @@ function chapterOutputIssue(out,input) {
  if(!textList(out.reviewNotes))return 'REVIEW_NOTES_SCHEMA';
  return null;
 }
+function reviewOutputIssue(out,input) {
+ if(!keys(out,['summary','issues','checks']))return 'REVIEW_FIELDS';
+ if(!str(out.summary))return 'REVIEW_SUMMARY';
+ if(!Array.isArray(out.issues)||out.issues.length>30)return 'REVIEW_ISSUES_ARRAY';
+ for(const issue of out.issues){
+  if(!keys(issue,['severity','explanation','sourceQuote']))return 'REVIEW_ISSUE_FIELDS';
+  if(!['error','warning'].includes(issue.severity))return 'REVIEW_SEVERITY';
+  if(!str(issue.explanation))return 'REVIEW_EXPLANATION';
+  if(!str(issue.sourceQuote,4000))return 'REVIEW_QUOTE_SHAPE';
+  if(!input.text.includes(issue.sourceQuote))return 'REVIEW_QUOTE_MISMATCH';
+ }
+ if(!textList(out.checks))return 'REVIEW_CHECKS';
+ return null;
+}
 export function validateOutput(action,out,input) {
   let valid=false;
   if(action==='interview')valid=keys(out,['questions','summary'])&&str(out.summary)&&list(out.questions,q=>keys(q,['key','title','hint','placeholder','options'])&&answerKeys.includes(q.key)&&!str(input[q.key])&&!str(input.answers?.[q.key])&&['title','hint','placeholder'].every(k=>str(q[k],1000))&&(q.options===undefined||list(q.options,s=>str(s,500),8)),2)&&new Set(out.questions.map(q=>q.key)).size===out.questions.length;
@@ -87,7 +101,7 @@ export function validateOutput(action,out,input) {
   }
   if(action==='generateChapter'){const issue=chapterOutputIssue(out,input);if(issue)throw invalidOutput(issue);valid=true;}
   if(action==='interpretRevision')valid=keys(out,['summary','intents','questions','suggestedFacts'])&&str(out.summary)&&list(out.intents,i=>['local_prose','canon_update','knowledge_update','ambiguous'].includes(i),4)&&out.intents.length>0&&textList(out.questions)&&evidenceList(out.suggestedFacts,input.afterText);
-  if(action==='reviewChapter')valid=keys(out,['summary','issues','checks'])&&str(out.summary)&&list(out.issues,i=>keys(i,['severity','explanation','sourceQuote'])&&['error','warning'].includes(i.severity)&&str(i.explanation)&&str(i.sourceQuote,4000)&&input.text.includes(i.sourceQuote))&&textList(out.checks);
+  if(action==='reviewChapter'){const issue=reviewOutputIssue(out,input);if(issue)throw invalidOutput(issue);valid=true;}
   if(!valid)throw invalidOutput('OUTPUT_SCHEMA');
   return out;
 }

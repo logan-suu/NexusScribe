@@ -187,3 +187,23 @@ test('safe validation diagnostics distinguish schema and exact evidence failures
  for(const [out,reason] of cases)assert.throws(()=>validateOutput('generateChapter',out,generation),e=>e.code==='INVALID_MODEL_OUTPUT'&&e.validationReason===reason&&!JSON.stringify(e).includes('PRIVATE'));
  for(const [out,reason] of [[null,'MISSING_CONTENT'],['PRIVATE','INVALID_JSON'],['[]','NON_OBJECT_JSON']])assert.throws(()=>parseModelJson(out),{code:'INVALID_MODEL_OUTPUT',validationReason:reason});
 });
+
+test('review diagnostic enums preserve strict schema, severity, and exact candidate evidence',()=>{
+ const reviewInput={text:'小舟提着蓝色纸灯。',chapterId:'ch2',context:{...context,sources:[{chapterId:'ch1',revision:2,text:'仅在旧章中出现的句子。'},{chapterId:'ch2',revision:1,text:'待写'}]}};
+ const issue={severity:'warning',explanation:'请作者核对颜色',sourceQuote:'蓝色纸灯'};
+ const valid={summary:'仍需作者审阅',issues:[issue],checks:['设定与来源']};
+ assert.deepEqual(validateOutput('reviewChapter',valid,reviewInput),valid);
+ const cases=[
+  [{...valid,verdict:'PRIVATE'},'REVIEW_FIELDS'],
+  [{...valid,summary:null},'REVIEW_SUMMARY'],
+  [{...valid,issues:null},'REVIEW_ISSUES_ARRAY'],
+  [{...valid,issues:[{...issue,confidence:0.9}]},'REVIEW_ISSUE_FIELDS'],
+  [{...valid,issues:[{...issue,severity:'info'}]},'REVIEW_SEVERITY'],
+  [{...valid,issues:[{...issue,explanation:''}]},'REVIEW_EXPLANATION'],
+  [{...valid,issues:[{...issue,sourceQuote:''}]},'REVIEW_QUOTE_SHAPE'],
+  [{...valid,issues:[{...issue,sourceQuote:'仅在旧章中出现的句子。'}]},'REVIEW_QUOTE_MISMATCH'],
+  [{...valid,checks:[{passed:true}]},'REVIEW_CHECKS']
+ ];
+ for(const [out,reason] of cases)assert.throws(()=>validateOutput('reviewChapter',out,reviewInput),e=>e.code==='INVALID_MODEL_OUTPUT'&&e.validationReason===reason&&!JSON.stringify(e).includes('PRIVATE'));
+ const blocking={...valid,issues:[{...issue,severity:'error'}]};assert.equal(validateOutput('reviewChapter',blocking,reviewInput).issues[0].severity,'error');
+});

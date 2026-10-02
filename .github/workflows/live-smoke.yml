@@ -4,10 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       approve_live_smoke:
-        description: 'Authorize one synthetic three-chapter UI journey (9 expected calls, hard cap 12); confirm overage disabled'
+        description: 'Approve selected bounded synthetic test and confirm overage disabled (journey cap12 or review probe cap1)'
         type: boolean
         required: true
         default: false
+      test_scope:
+        description: 'Choose full browser journey or one-call synthetic review contract probe'
+        type: choice
+        required: true
+        default: review-probe
+        options: [journey, review-probe]
 
 permissions:
   contents: read
@@ -31,20 +37,32 @@ jobs:
         with:
           node-version: '22'
       - name: Install locked dependencies without credentials
+        if: inputs.test_scope == 'journey'
         run: npm ci
       - name: Install Chromium and Chinese fonts without credentials
+        if: inputs.test_scope == 'journey'
         run: |
           npx playwright install --with-deps chromium
           sudo apt-get update && sudo apt-get install --yes fonts-noto-cjk
       - name: Run approved bounded real-browser journey
+        if: inputs.test_scope == 'journey'
         run: node scripts/live-writing-journey.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_JOURNEY_APPROVED: 'true'
           NEXUS_LIVE_ENABLED: 'true'
           NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Run approved one-call synthetic review probe
+        if: inputs.test_scope == 'review-probe'
+        run: node scripts/live-review-probe.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_REVIEW_PROBE_APPROVED: 'true'
+          NEXUS_JOURNEY_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
       - name: Preserve synthetic UI screenshots only
-        if: always()
+        if: always() && inputs.test_scope == 'journey'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: synthetic-live-journey-screenshots

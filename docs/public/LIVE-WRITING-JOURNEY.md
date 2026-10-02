@@ -4,7 +4,9 @@ The manual `.github/workflows/live-smoke.yml` workflow now runs the three-chapte
 browser milestone. The older standalone `scripts/live-smoke.mjs` and its offline
 regressions remain available. Ordinary PR/push jobs do not receive provider secrets.
 
-Dispatch the reviewed feature ref explicitly with `approve_live_smoke: true`.
+Dispatch the reviewed feature ref explicitly with `approve_live_smoke: true` and
+`test_scope: journey` for the full browser test. The default scope is the one-call review probe; an omitted or unknown scope
+runs neither test. A full journey always requires explicit scope selection.
 The runner needs the repository's existing `NEXUS_API_KEY` secret. Never copy that
 secret into source, browser storage, screenshots, reports or workflow inputs.
 The approval includes confirmation that provider overage / Use balance is off.
@@ -64,3 +66,21 @@ model schema. Returned IDs and exact source quotes remain strictly checked;
 nothing is silently normalized. Offline regressions cover the mixed-ID request
 and rejection of wrong IDs. Future failures may log one allowlisted validation
 reason (JSON, schema, target ID or exact quote), never field values or model text.
+
+A second bounded run passed chapter 2 generation, including the edited-setting
+context assertions, then stopped on chapter 2 review at attempt 7. Its aggregate
+`OUTPUT_SCHEMA` reason does not establish which review field failed. Review
+validation now distinguishes field shape, summary, issue shape/severity,
+explanation, quote shape/exact candidate match, and checks. The prompt clarifies
+that older/planned source text is reference material; issue evidence must quote
+the candidate, and unsupported/global uncertainties belong in the summary as
+review limitations. Blocking concerns remain blocking; validation is not relaxed.
+
+For isolated investigation, dispatch `test_scope: review-probe`. This sends
+exactly one invented `reviewChapter` request with prior accepted prose, an
+explicit setting and current/future planning placeholders. It is not a replay of
+the failed candidate (that raw response was not retained), and is not browser E2E.
+It has hard cap 1, output cap 3000, disabled thinking and no retries. The probe
+logs only contract status plus issue/error counts or an allowlisted failure reason;
+even a schema-valid blocking review is reported faithfully. No dependencies,
+browser, screenshots or story payload artifacts are needed for this probe.
