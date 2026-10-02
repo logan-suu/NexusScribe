@@ -10,3 +10,5 @@
 .recovery-banner button{margin:4px;white-space:normal}
 .modal[aria-label="备份导入预览"],.modal[aria-label="确认恢复存储"]{max-height:calc(100dvh - 32px);overflow:auto;overflow-wrap:anywhere}
 @media(max-width:700px){.top-actions{flex-wrap:wrap}.backup-import{max-width:135px}}
+
+.model-task-status{margin:16px 28px;padding:14px 16px;border:1px solid var(--line,#dedbd4);border-radius:10px;background:#f6f8f7;color:#33433c;font-size:13px;overflow-wrap:anywhere}.model-task-status>div{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.model-task-status strong{font-size:14px}.model-task-status p{margin:9px 0 5px}.model-task-status small{line-height:1.6;display:block;color:#626d65}.model-task-status button{margin-left:auto}.ns-wizard .model-task-status{margin:12px 0}@media(max-width:600px){.model-task-status{margin:12px}.model-task-status>div{gap:8px}}
