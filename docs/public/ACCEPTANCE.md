@@ -83,3 +83,15 @@ Development source is integrated into `dev_v1.0` after its checks and review; `m
 There is no deployed public or persistent online application endpoint in this acceptance. Localhost belongs to the machine running the app. GitHub Actions is temporary test infrastructure, and its repository secret does not configure another runtime.
 
 Still outside this demo: authentication, database transactions, multiuser isolation, durable hosted deployment, backup import, comprehensive semantic inference, long-form evaluation, comparative benchmarks and measured financial cost per accepted chapter.
+
+
+## Subsequent fact-review guard (offline scope)
+
+The blue/red regression is now a policy-contract fixture: a model-supplied
+contradiction with exact evidence blocks independently of warning severity.
+Missing/unknown per-fact checks stay unresolved; explicit not_applicable is distinct.
+Per-item author exceptions require rationale and current evidence/report binding,
+are audited, and leave Canon unchanged. General errors and event anchors still block.
+Fixtures for negation, dialogue and hypotheses test preservation of supplied
+classifications, not automatic semantic understanding. No new provider accuracy,
+long-form consistency or live-browser pass is asserted by these offline tests.

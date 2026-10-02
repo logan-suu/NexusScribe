@@ -34,6 +34,7 @@ function boundedJson(x,depth=0) {
   for(const [k,v] of Object.entries(x)){if(['__proto__','constructor','prototype'].includes(k))bad();boundedJson(v,depth+1);}
 }
 function contextValid(x,initial=false) { return object(x)&&str(x.projectId,200)&&Number.isInteger(x.version)&&x.version>=(initial?0:1)&&Array.isArray(x.sources)&&x.sources.length<=100&&x.sources.every(s=>object(s)&&str(s.chapterId,200)&&Number.isInteger(s.revision)&&s.revision>=1&&str(s.text,40000,true)); }
+const explicitFacts = context => Array.isArray(context?.facts)?context.facts.filter(f=>object(f)&&f.status==='confirmed'&&f.authority==='explicit_author_decision'):[];
 const answerKeys=['protagonist','tone','pov','goal','boundaries'];
 export function validateInput(action,input) {
   if(!str(action,40)||!Object.hasOwn(SCHEMAS,action))bad('未知创作操作');
@@ -54,6 +55,9 @@ export function validateInput(action,input) {
     if(!input.context.sources.some(s=>s.chapterId===input.chapterId&&s.text===input.afterText))bad('修改后的正文必须对应当前上下文');
   } else if(action==='reviewChapter') {
     if(!keys(input,['text','chapterId','context'])||!str(input.text,40000)||!str(input.chapterId,200)||!contextValid(input.context)||!input.context.sources.some(s=>s.chapterId===input.chapterId))bad();
+    if(input.context.facts!==undefined&&!Array.isArray(input.context.facts))bad();
+    const facts=explicitFacts(input.context);
+    if(facts.some(f=>!str(f.id,200)||!Number.isSafeInteger(f.recordVersion)||f.recordVersion<1)||new Set(facts.map(f=>f.id)).size!==facts.length)bad('作者设定记录标识或版本无效');
   }
   return input;
 }
@@ -62,10 +66,10 @@ export const SCHEMAS = Object.freeze({
   planStory:'{"proposals":{"protagonist":"only if missing","tone":"only if missing","pov":"only if missing","goal":"only if missing"},"obstacle":"obstacle","coreQuestion":"question","opening":"opening","unresolved":["question"],"outline":[{"title":"title","goal":"goal","conflict":"conflict","knowledgeDelta":"knowledge delta","exitState":"exit state","emotionalArc":"arc","scene":{"time":"time","location":"location","participants":["name"],"allowedReveal":"allowed reveal","forbiddenReveal":"forbidden reveal","preconditions":["precondition"]}}]}; exactly 3 outline chapters. Compact planning response: use terse phrases, short arrays, and each creative value ideally within 12 Chinese characters. Include every creative field. Proposals must supply each missing protagonist/tone/pov/goal and MUST omit already answered keys. Do not repeat premise, boundaries, confirmed author values, labels, field statuses, chapter IDs, chapter numbers, chapter POV or metadata; the server supplies these deterministically.',
   generateChapter:'{"paragraphs":["one nonempty prose paragraph per string; no embedded newline"],"chapterId":"copy input.chapterId exactly; context.sources IDs are references, not this output target","staging":[{"label":"proposed event supported by the referenced new paragraph","sourceParagraphIndex":0}],"reviewNotes":["note"]}; paragraphs must be nonempty and sourceParagraphIndex must be a zero-based integer indexing this response paragraphs array, never context.sources or earlier chapters. The server derives exact evidence directly from that paragraph; do not return text or sourceQuote. Unsupported proposals or uncertainty belong in reviewNotes, not invented references. A valid reference is not proof that its label is semantically entailed; author review remains required.',
   interpretRevision:'{"summary":"summary","intents":["local_prose|canon_update|knowledge_update|ambiguous"],"questions":["question"],"suggestedFacts":[{"label":"proposed fact","sourceQuote":"exact substring of afterText"}]}',
-  reviewChapter:'{"summary":"summary","issues":[{"severity":"error|warning","explanation":"explanation","sourceQuote":"copy an exact nonempty substring from input.text, never from context.sources"}],"checks":["short plain string"]}; use only these keys and severity error or warning. Review the candidate input.text against context; context.sources can include older accepted prose or ungenerated planning placeholders and is reference material, not the candidate. For concerns without an exact candidate quote, explain the uncertainty or review limitation in summary instead of fabricating an issue quote. Do not suppress legitimate concerns or treat an empty issues list as proof of correctness. Do not return verdict, passed, confidence, suggestions, chapterId or provider metadata'
+  reviewChapter:'{"summary":"summary","issues":[{"severity":"error|warning","explanation":"explanation","sourceQuote":"copy an exact nonempty substring from input.text, never from context.sources"}],"checks":["short plain string"],"factChecks":[{"factId":"copy context fact id exactly","recordVersion":1,"status":"consistent|contradiction|not_applicable|unknown","explanation":"nonempty explanation","sourceQuote":"exact candidate input.text substring, or empty only for unknown/not_applicable"}]}; use only these keys and severity error or warning on generic issues only. Review the candidate input.text against context; context.sources can include older accepted prose or ungenerated planning placeholders and is reference material, not the candidate. Assess every context.facts record with status confirmed AND authority explicit_author_decision exactly once in factChecks, using its exact id and recordVersion; do not assess proposed, superseded, or other-authority facts. A consistent or contradiction assessment requires an exact nonempty candidate quote. Determine whether the candidate makes a direct world assertion about the same referent and relevant story time; distinguish dialogue, character belief, lies, negation, hypothesis, metaphor, and ambiguity from established world facts. A contradiction must express an incompatible world assertion, not merely omit a fact or use different words. Use not_applicable when the fact is not relevant or mentioned: facts never force a mention, scene, event, or exposition. Use unknown when evidence or semantic interpretation is insufficient; explain uncertainty instead of guessing. Unknown and not_applicable still require a nonempty explanation and may use an empty sourceQuote; any nonempty quote must come exactly from input.text. Do not add severity, provenance, candidate binding, or any other fields to factChecks; the domain derives authority, fact source provenance, and candidate binding independently. For generic concerns without an exact candidate quote, explain the uncertainty or review limitation in summary instead of fabricating an issue quote. Preserve legitimate generic issues; do not treat empty issues or factChecks as proof of correctness or verified completeness. Do not return verdict, passed, confidence, suggestions, chapterId or provider metadata'
 });
 function evidenceList(x,text) {return list(x,e=>keys(e,['label','sourceQuote'])&&str(e.label,1000)&&str(e.sourceQuote,4000)&&text.includes(e.sourceQuote));}
-export const SAFE_VALIDATION_REASONS=Object.freeze(['INVALID_JSON','NON_OBJECT_JSON','MISSING_CONTENT','OUTPUT_SCHEMA','CHAPTER_FIELDS','CHAPTER_TEXT','CHAPTER_ID_MISMATCH','STAGING_SCHEMA','STAGING_QUOTE_MISMATCH','REVIEW_NOTES_SCHEMA','REVIEW_FIELDS','REVIEW_SUMMARY','REVIEW_ISSUES_ARRAY','REVIEW_ISSUE_FIELDS','REVIEW_SEVERITY','REVIEW_EXPLANATION','REVIEW_QUOTE_SHAPE','REVIEW_QUOTE_MISMATCH','REVIEW_CHECKS','CHAPTER_PARAGRAPHS','STAGING_REFERENCE_SCHEMA','STAGING_REFERENCE_RANGE','STAGING_REFERENCE_MISMATCH']);
+export const SAFE_VALIDATION_REASONS=Object.freeze(['INVALID_JSON','NON_OBJECT_JSON','MISSING_CONTENT','OUTPUT_SCHEMA','CHAPTER_FIELDS','CHAPTER_TEXT','CHAPTER_ID_MISMATCH','STAGING_SCHEMA','STAGING_QUOTE_MISMATCH','REVIEW_NOTES_SCHEMA','REVIEW_FIELDS','REVIEW_SUMMARY','REVIEW_ISSUES_ARRAY','REVIEW_ISSUE_FIELDS','REVIEW_SEVERITY','REVIEW_EXPLANATION','REVIEW_QUOTE_SHAPE','REVIEW_QUOTE_MISMATCH','REVIEW_CHECKS','CHAPTER_PARAGRAPHS','STAGING_REFERENCE_SCHEMA','STAGING_REFERENCE_RANGE','STAGING_REFERENCE_MISMATCH','REVIEW_FACT_CHECKS_ARRAY','REVIEW_FACT_CHECK_FIELDS','REVIEW_FACT_ID','REVIEW_FACT_VERSION','REVIEW_FACT_DUPLICATE','REVIEW_FACT_STATUS','REVIEW_FACT_EXPLANATION','REVIEW_FACT_QUOTE_SHAPE','REVIEW_FACT_QUOTE_MISMATCH']);
 function invalidOutput(reason,message='模型返回格式不符合约定，请调整配置或重试') {
  const error=new ApiError(502,'INVALID_MODEL_OUTPUT',message);error.validationReason=reason;return error;
 }
@@ -80,7 +84,7 @@ function chapterOutputIssue(out,input) {
  return null;
 }
 function reviewOutputIssue(out,input) {
- if(!keys(out,['summary','issues','checks']))return 'REVIEW_FIELDS';
+ if(!keys(out,['summary','issues','checks','factChecks']))return 'REVIEW_FIELDS';
  if(!str(out.summary))return 'REVIEW_SUMMARY';
  if(!Array.isArray(out.issues)||out.issues.length>30)return 'REVIEW_ISSUES_ARRAY';
  for(const issue of out.issues){
@@ -91,6 +95,25 @@ function reviewOutputIssue(out,input) {
   if(!input.text.includes(issue.sourceQuote))return 'REVIEW_QUOTE_MISMATCH';
  }
  if(!textList(out.checks))return 'REVIEW_CHECKS';
+ // A missing/partial legacy assessment is preserved, never upgraded to a semantic verdict.
+ // The domain fills missing entries with unknown and binds trusted provenance itself.
+ if(Object.hasOwn(out,'factChecks')){
+  if(!Array.isArray(out.factChecks)||out.factChecks.length>150)return 'REVIEW_FACT_CHECKS_ARRAY';
+  const facts=explicitFacts(input.context),seen=new Set();
+  for(const check of out.factChecks){
+   if(!keys(check,['factId','recordVersion','status','explanation','sourceQuote']))return 'REVIEW_FACT_CHECK_FIELDS';
+   const matches=facts.filter(f=>f.id===check.factId);
+   if(!str(check.factId,200)||matches.length!==1)return 'REVIEW_FACT_ID';
+   if(!Number.isSafeInteger(check.recordVersion)||check.recordVersion<1||check.recordVersion!==matches[0].recordVersion)return 'REVIEW_FACT_VERSION';
+   if(seen.has(check.factId))return 'REVIEW_FACT_DUPLICATE';
+   seen.add(check.factId);
+   if(!['consistent','contradiction','not_applicable','unknown'].includes(check.status))return 'REVIEW_FACT_STATUS';
+   if(!str(check.explanation))return 'REVIEW_FACT_EXPLANATION';
+   const uncertain=['not_applicable','unknown'].includes(check.status);
+   if(!str(check.sourceQuote,4000,uncertain))return 'REVIEW_FACT_QUOTE_SHAPE';
+   if(check.sourceQuote&&!input.text.includes(check.sourceQuote))return 'REVIEW_FACT_QUOTE_MISMATCH';
+  }
+ }
  return null;
 }
 export function validateOutput(action,out,input) {

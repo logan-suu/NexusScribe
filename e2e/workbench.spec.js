@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {createProjectConfig} from '../src/authoring/index.js';
-import {createProjectFromConfig,getContext,stageProviderDraft,createReviewBinding,attachSemanticReview,reviewDraft} from '../src/domain/engine.js';
+import {createProjectFromConfig,getContext,stageProviderDraft,createReviewBinding,attachSemanticReview,reviewDraft,proposeCustomPatch,commitPatch} from '../src/domain/engine.js';
 
 // All API responses are ephemeral test fixtures. External network requests are blocked.
 test.beforeEach(async({page,context})=>{
@@ -68,4 +68,22 @@ test('editing an anchored candidate cannot silently discard or relocate its even
  await page.goto('/');await page.getByRole('button',{name:'模型运行方式'}).click();await page.getByRole('button',{name:'检查服务连接'}).click();await page.getByRole('button',{name:'使用真实模型'}).click();await page.getByRole('button',{name:'新建故事'}).click();await page.getByLabel(/你的故事灵感/).fill('小舟查找纸灯岛灯塔变矮的原因。');await page.getByRole('button',{name:'聊聊这个故事'}).click();await page.getByRole('button',{name:'查看故事约定'}).click();await page.getByRole('button',{name:'确认约定，开始创作'}).click();await page.getByRole('button',{name:'生成当前章'}).click();
  await page.getByRole('button',{name:'编辑此稿'}).click();await page.getByLabel('编辑候选稿').fill('新加入的段落。\n小舟来到塔下。\n小舟举起蓝色纸灯。');await page.getByRole('button',{name:'保存候选稿修改'}).click();await page.getByRole('button',{name:'审查候选稿'}).click();await expect(page.getByText(/暂存事件段落引用已失效/)).toBeVisible();await page.getByRole('button',{name:'接受此版本'}).click();let saved=await state(page);expect(saved.state.events).toHaveLength(0);expect(saved.state.drafts[0].status).not.toBe('ACCEPTED');
  await page.getByRole('button',{name:'编辑此稿'}).click();await page.getByLabel('编辑候选稿').fill('小舟来到塔下。');await page.getByRole('button',{name:'保存候选稿修改'}).click();await page.getByRole('button',{name:'审查候选稿'}).click();await expect(page.getByText(/暂存事件证据已不在当前正文中/)).toBeVisible();await page.getByRole('button',{name:'接受此版本'}).click();saved=await state(page);expect(saved.state.events).toHaveLength(0);expect(saved.state.drafts[0].staging).toHaveLength(1);expect(errors).toEqual([]);
+});
+
+
+test('fact contradiction blocks; explicit evidence-bound exception is cancelable and auditable',async({page},testInfo)=>{
+ const errors=health(page),blue='小舟的纸灯是蓝色的。',text='小舟提着小红纸灯。';
+ let initial=createProjectFromConfig({projectId:'fact-e2e',idea:'纸灯故事',chapters:[{text:blue}]});
+ initial=commitPatch(initial,proposeCustomPatch(initial,'ch1',{intent:'author_fact',statement:blue}));
+ initial=stageProviderDraft(initial,{text,provider:{id:'fixture',isLive:true},context:getContext(initial)},'ch2');
+ const id=initial.drafts[0].id,fact=initial.facts[0];
+ initial=reviewDraft(initial,id);
+ initial=attachSemanticReview(initial,id,{summary:'合成模型判断；不证明语义精度',issues:[{severity:'warning',explanation:'节奏可润色',sourceQuote:text}],checks:['设定'],factChecks:[{factId:fact.id,recordVersion:fact.recordVersion,status:'contradiction',explanation:'给定同一盏灯的颜色矛盾',sourceQuote:text}],provider:'fixture'},createReviewBinding(initial,id));
+ await page.addInitScript(workspace=>localStorage.setItem('nexusscribe.demo.v1',JSON.stringify(workspace)),{format:1,serial:0,state:initial,editing:{},patch:null});
+ await page.goto('/');await expect(page).toHaveTitle('NexusScribe · 雾港来信');await expect(page.getByRole('button',{name:'接受此版本'})).toBeDisabled();
+ await page.getByRole('button',{name:'审阅并决定此项例外'}).click();const dialog=page.getByRole('dialog',{name:'确认单项设定例外'});
+ await expect(dialog).toContainText(blue);await expect(dialog).toContainText(text);await expect(dialog.getByRole('button',{name:'确认接受此项例外，保留原设定'})).toBeDisabled();await capture(page,testInfo,'09-fact-decision-evidence');await noOverflow(page);
+ await dialog.getByLabel('作者决定理由').fill('暂时保留这段有意例外，待作者后续改稿');await dialog.getByRole('button',{name:'取消决定'}).click();await expect(page.getByRole('button',{name:'接受此版本'})).toBeDisabled();expect((await state(page)).state.drafts[0].factDecisions||[]).toHaveLength(0);
+ await page.getByRole('button',{name:'审阅并决定此项例外'}).click();await page.getByLabel('作者决定理由').fill('保留本稿有意例外，不替代蓝灯设定');await page.getByRole('button',{name:'确认接受此项例外，保留原设定'}).click();await expect(page.getByRole('button',{name:'接受此版本'})).toBeEnabled();
+ await page.getByRole('button',{name:'接受此版本'}).click();let saved=await state(page);expect(saved.state.facts[0].label).toBe(blue);expect(saved.state.drafts[0].status).toBe('ACCEPTED');expect(saved.state.commits.at(-1).factDecisions[0].sourceQuote).toBe(text);await page.reload();await expect(page.getByText('作者已明确接受本稿例外 · 原设定保留')).toBeVisible();await capture(page,testInfo,'10-fact-exception-audit');await noOverflow(page);expect(errors).toEqual([]);
 });

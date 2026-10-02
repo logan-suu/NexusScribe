@@ -1,3 +1,4 @@
+import {buildFactLedger} from './fact-review.js';
 /** Deterministic, local demonstration runtime. No LLM is called. */
 export const NEVER_MET = '陈默从未见过死者。';
 export const HAS_MET = '陈默三年前见过死者，但一直隐瞒。';
@@ -112,12 +113,14 @@ function issuesFor(s,d){const issues=[];const add=(ruleId,explanation)=>issues.p
  if(s.mode==='custom')return issues;
  if(d.text.includes('用铜钥匙打开')&&!d.text.includes('取下一把铜钥匙'))add('KEY_SUPPORT','开门动作缺少此前获得钥匙的来源');if(d.text.includes('警方已经知道')||d.text.includes('警方早已知道'))add('KNOWLEDGE_LEAK','警方无来源提前获知秘密');if(relation(s)?.value==='has_met'&&d.text.includes('素未谋面'))add('CANON','草稿仍使用被替代的陌生关系');return issues;}
 export function reviewDraft(state,id){const s=copy(state),d=draft(s,id);if(!['DRAFT','IN_REVIEW'].includes(d.status))fail('DRAFT_STATUS','只能审查待定草稿');const issues=issuesFor(s,d);d.review={stateVersion:s.version,chapterId:d.chapterId||'ch3',stagingHash:hash(JSON.stringify(d.staging)),textHash:hash(d.text),revision:d.revision,issues,passed:!issues.length,checks:s.mode==='custom'?['项目隔离','状态版本','正文版本','目标章节','非空正文']:['状态版本','正文版本','角色知识边界','钥匙获取前置条件','已确认关系'],semanticStatus:s.mode==='custom'?'not_evaluated':'fixture_rules_only',limitations:s.mode==='custom'?['仅通过确定性版本与结构检查；通用语义一致性、角色知识与文风需作者复核']:['预置案例规则审查，不代表通用语义完备性']};d.status='IN_REVIEW';return s;}
-export function editDraft(state,id,text){if(typeof text!=='string'||!text.trim())fail('INVALID_TEXT','正文不能为空');const s=copy(state),d=draft(s,id);if(!['DRAFT','IN_REVIEW'].includes(d.status))fail('DRAFT_STATUS','只能编辑待定草稿');d.text=text;d.textHash=hash(text);d.revision++;d.review=null;d.modelReview=null;d.status='DRAFT';return s;}
+export function editDraft(state,id,text){if(typeof text!=='string'||!text.trim())fail('INVALID_TEXT','正文不能为空');const s=copy(state),d=draft(s,id);if(!['DRAFT','IN_REVIEW'].includes(d.status))fail('DRAFT_STATUS','只能编辑待定草稿');d.text=text;d.textHash=hash(text);d.revision++;d.review=null;d.modelReview=null;d.factDecisions=[];d.status='DRAFT';return s;}
 export function acceptDraft(state,id){const original=draft(state,id);if(original.status==='ACCEPTED')return copy(state);if(original.status==='REJECTED')fail('DRAFT_STATUS','拒绝的草稿不能接受');if(!original.review?.passed||original.review.chapterId!==(original.chapterId||'ch3')||original.review.stagingHash!==hash(JSON.stringify(original.staging))||original.review.textHash!==hash(original.text)||original.review.stateVersion!==state.version||original.review.revision!==original.revision||issuesFor(state,original).length)fail('REVIEW_REQUIRED','请对当前正文与当前状态重新审查');
- if(original.requiresSemanticReview&&!currentSemanticReview(state,original))fail('SEMANTIC_REVIEW_REQUIRED','真实模型草稿需要当前版本的模型审查建议；模型审查不是独立真实性证明');if(original.requiresSemanticReview&&original.modelReview.issues.some(i=>i.severity==='error'))fail('SEMANTIC_REVIEW_ERRORS','模型审查发现阻塞问题，请修改并重新审查');
+ if(original.requiresSemanticReview&&!currentSemanticReview(state,original))fail('SEMANTIC_REVIEW_REQUIRED','真实模型草稿需要当前版本的模型审查建议；模型审查不是独立真实性证明');
+ if(original.requiresSemanticReview&&getFactReviewGate(state,id).some(x=>x.blocking&&!x.resolved))fail('FACT_DECISION_REQUIRED','已确认设定存在冲突或未完成的判断；请修正重审或逐条明确决定');
+ if(original.requiresSemanticReview&&original.modelReview.issues.some(i=>i.severity==='error'))fail('SEMANTIC_REVIEW_ERRORS','模型审查发现阻塞问题，请修改并重新审查');
  const s=copy(state),d=draft(s,id),before=snapshot(s);d.status='ACCEPTED';const c=chapter(s,d.chapterId||'ch3');c.text=d.text;c.revision++;c.revisions.push(revisionRecord(c,c.text,c.revision));c.status='ACCEPTED';c.syncStatus='CLEAN';c.syncedRevision=c.revision;s.version++;s.sequence++;
  for(const e of d.staging)s.events.push({...e,status:'confirmed',draftId:id,source:{chapterId:c.id,revision:c.revision,...(Object.hasOwn(e,'sourceParagraphIndex')?{paragraphId:`p${e.sourceParagraphIndex+1}`} : {}),quote:e.sourceQuote}});
- s.commits.push({id:`commit-${s.sequence}`,kind:'draft_accept',draftId:id,version:s.version,summary:'接受经当前版本审查的候选稿',before,after:snapshot(s),dependencies:s.commits.filter(x=>x.kind==='patch'&&!s.commits.some(y=>y.undoes===x.id)).map(x=>x.id),chapterId:c.id,revision:c.revision});return s;}
+ s.commits.push({id:`commit-${s.sequence}`,kind:'draft_accept',draftId:id,version:s.version,summary:'接受经当前版本审查的候选稿',factDecisions:copy(d.factDecisions??[]),before,after:snapshot(s),dependencies:s.commits.filter(x=>x.kind==='patch'&&!s.commits.some(y=>y.undoes===x.id)).map(x=>x.id),chapterId:c.id,revision:c.revision});return s;}
 export function rejectDraft(state,id){const s=copy(state),d=draft(s,id);if(d.status==='ACCEPTED')fail('DRAFT_STATUS','已接受草稿需要补偿撤销');d.status='REJECTED';d.staging=[];return s;}
 
 /** Generic projects contain only user-supplied configuration, never demo Canon. */
@@ -171,7 +174,8 @@ function reviewBindingMatches(actual,expected) {
 }
 function currentSemanticReview(state,d) {
  const r=d.modelReview;
- return Boolean(r&&d.projectId===state.projectId&&reviewBindingMatches(r.binding,createReviewBinding(state,d.id))&&r.stateVersion===state.version&&r.draftRevision===d.revision&&r.textHash===hash(d.text)&&r.chapterId===(d.chapterId||'ch3')&&r.stagingHash===hash(JSON.stringify(d.staging))&&state.chapters.every(c=>r.chapterRevisions?.[c.id]===c.revision&&d.chapterRevisions?.[c.id]===c.revision)&&!issuesFor(state,d).length);
+ let ledgerCurrent=false;try{ledgerCurrent=JSON.stringify(r?.factLedger??[])===JSON.stringify(buildFactLedger(state,d,r?.factChecks));}catch{return false;}
+ return Boolean(r&&ledgerCurrent&&d.projectId===state.projectId&&reviewBindingMatches(r.binding,createReviewBinding(state,d.id))&&r.stateVersion===state.version&&r.draftRevision===d.revision&&r.textHash===hash(d.text)&&r.chapterId===(d.chapterId||'ch3')&&r.stagingHash===hash(JSON.stringify(d.staging))&&state.chapters.every(c=>r.chapterRevisions?.[c.id]===c.revision&&d.chapterRevisions?.[c.id]===c.revision)&&!issuesFor(state,d).length);
 }
 /** Attach a model's advisory, never a source of authoritative Canon changes. */
 export function attachSemanticReview(state,draftId,report,expected) {
@@ -183,7 +187,26 @@ export function attachSemanticReview(state,draftId,report,expected) {
  for(const issue of report.issues){
   if(!issue||typeof issue!=='object'||Array.isArray(issue)||Object.keys(issue).some(k=>!['severity','explanation','sourceQuote'].includes(k))||!['error','warning'].includes(issue.severity)||typeof issue.explanation!=='string'||!issue.explanation.trim()||typeof issue.sourceQuote!=='string'||!issue.sourceQuote.trim()||!original.text.includes(issue.sourceQuote))fail('INVALID_SEMANTIC_REVIEW','每项审查问题必须使用合法级别、说明和当前草稿中的精确原文证据');
  }
- const s=copy(state),d=draft(s,draftId);
- d.modelReview={binding:copy(expected),summary:report.summary,issues:copy(report.issues),checks:copy(report.checks),provider:copy(report.provider),stateVersion:s.version,draftRevision:d.revision,textHash:hash(d.text),chapterId:d.chapterId||'ch3',stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:copy(d.chapterRevisions),semanticStatus:'model_reviewed_unverified',advisory:true,limitations:['模型审查是候选判断，并非独立真实性或全面语义一致性证明；作者仍需核对来源与知识获取路径']};
+ const factLedger=buildFactLedger(state,original,report.factChecks);
+ const s=copy(state),d=draft(s,draftId);d.factDecisions=[];
+ d.modelReview={binding:copy(expected),factChecks:copy(report.factChecks??[]),factLedger,summary:report.summary,issues:copy(report.issues),checks:copy(report.checks),provider:copy(report.provider),stateVersion:s.version,draftRevision:d.revision,textHash:hash(d.text),chapterId:d.chapterId||'ch3',stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:copy(d.chapterRevisions),semanticStatus:'model_reviewed_unverified',advisory:true,limitations:['模型审查是候选判断，并非独立真实性或全面语义一致性证明；作者仍需核对来源与知识获取路径']};
+ return s;
+}
+
+/** Explicit decisions waive this review item only; never change Canon. */
+export function getFactReviewGate(state,id) {
+ const d=draft(state,id);if(!d.modelReview)return [];
+ const historical=['ACCEPTED','REJECTED'].includes(d.status),current=currentSemanticReview(state,d);
+ const ledger=historical?copy(d.modelReview.factLedger??[]):current?buildFactLedger(state,d,d.modelReview.factChecks):buildFactLedger(state,d,[]).map(item=>({...item,explanation:'审查绑定已过期，请对当前候选与设定重新审查',stale:true}));
+ return ledger.map(item=>({...item,resolved:(historical||current)&&Boolean(d.factDecisions?.some(decision=>decision.factId===item.factId&&decision.recordVersion===item.recordVersion&&decision.reviewHash===hash(JSON.stringify(d.modelReview))&&reviewBindingMatches(decision.binding,historical?d.modelReview.binding:createReviewBinding(state,id))&&decision.action==='accept_exception'&&typeof decision.reason==='string'&&decision.reason.trim()))}));
+}
+export function resolveFactReview(state,id,instruction,expected) {
+ const original=draft(state,id);
+ if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能决定待定草稿');
+ if(!currentSemanticReview(state,original)||!reviewBindingMatches(expected,createReviewBinding(state,id))||instruction?.reviewHash!==hash(JSON.stringify(original.modelReview)))fail('STALE_FACT_DECISION','决定对应的草稿、设定或审查已变化，请重新查看');
+ const item=getFactReviewGate(state,id).find(x=>x.factId===instruction?.factId&&x.recordVersion===instruction?.recordVersion);
+ if(!item?.blocking||instruction.action!=='accept_exception'||typeof instruction.reason!=='string'||!instruction.reason.trim()||instruction.reason.length>2000)fail('FACT_DECISION_REQUIRED','请针对指定设定明确确认例外并填写理由');
+ const s=copy(state),d=draft(s,id);
+ d.factDecisions=[...(d.factDecisions??[]).filter(x=>x.factId!==item.factId),{factId:item.factId,recordVersion:item.recordVersion,action:'accept_exception',reason:instruction.reason.trim(),binding:copy(expected),reviewHash:instruction.reviewHash,factSource:copy(item.factSource),sourceQuote:item.sourceQuote,assessment:item.status,authority:'explicit_author_decision'}];
  return s;
 }

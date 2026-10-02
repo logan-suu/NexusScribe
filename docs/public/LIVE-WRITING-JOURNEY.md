@@ -60,6 +60,34 @@ Together with this successful 9-call journey, this milestone's reviewed runs use
 30 provider attempts. Each run stopped on its first provider failure, with no
 automatic retry. Actual currency cost was not measured. See the observations below.
 
+## Fact-inheritance guard revision (offline milestone)
+
+The subsequent implementation adds a separate per-author-fact assessment ledger.
+Every confirmed explicit author fact is bound to its record version and original
+revision evidence. Contradiction and unknown assessments block direct acceptance,
+independent of generic issue severity; missing assessments become visible unknowns.
+An assessed not_applicable permits scenes that simply do not involve the fact.
+No lamp/color keyword rules infer these semantic classifications.
+
+An explicit per-item author exception requires reviewing the evidence and supplying
+a reason. It is bound to the current report, candidate, run, project and fact version,
+recorded in acceptance history, and never changes Canon. Editing or re-reviewing
+invalidates it. Correcting Canon still uses the existing explicit author patch flow.
+General model errors and structural/paragraph-source guards remain independent.
+
+The offline cases supply model classifications to prove binding and gate behavior;
+they do not measure semantic accuracy. Referent, time, negation, dialogue and
+hypothesis interpretation remain model-dependent. No new live result is claimed
+by this section. The one-call review-probe now creates a synthetic source-backed
+author fact through the domain patch API, supplies an intentionally contradictory
+red-lamp candidate, and requires both a model contradiction assessment and a blocked
+engine accept attempt. It never records an author exception or accepts the candidate.
+Unknown, missing, consistent or not_applicable judgments fail this positive test
+without retries; failure logs fixed reason codes only. This probe is distinct from
+browser UI validation and is not an accuracy percentage. The earlier 9-call journey remains historical evidence of the
+failure that motivated this revision; a current live journey may now stop on an
+unresolved fact instead of accepting it as a warning.
+
 ## Remaining milestones
 
 1. Precise inheritance: preserve the blue-setting/red-lamp regression case and distinguish source-backed contradictions from subjective warnings
