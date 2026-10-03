@@ -1,0 +1,45 @@
+{
+  "fixture": "retained-cross-paragraph",
+  "sequence": 1,
+  "output": {
+    "summary": "候选文本是一段连贯的寄存室场景：程岚检查旧锁柜、发现纸屑并收进表壳，阿陶催促她询问管理员。上下文未提供任何已确认事实或记忆候选之外的参考文本，因此无法核验世界事实或跨段落一致性；仅对两条记忆候选逐条评估。",
+    "issues": [],
+    "checks": [
+      "context.facts 为空，无已确认事实可核验",
+      "context.sources 仅含空文本，未提供可对照的旧稿",
+      "候选文本内部叙事连贯，未发现明显矛盾"
+    ],
+    "factChecks": [],
+    "memoryChecks": [
+      {
+        "candidateId": "retained-combined",
+        "status": "supported",
+        "explanation": "该候选的引文包含阿陶说“你总得问点什么”，直接支持“阿陶催促程岚问点什么”；引文本身未包含程岚回应“先问锁、收费低”的内容，但标签后半部分由同一候选的另一引文（retained-reply）支撑，按整段候选文本判断成立。"
+      },
+      {
+        "candidateId": "retained-reply",
+        "status": "supported",
+        "explanation": "引文“先问这锁。”程岚说，“收费低。”直接、完整地支持标签“程岚回应先问这锁，收费低”，说话人、内容与顺序均一致。"
+      }
+    ]
+  },
+  "assessments": [
+    {
+      "candidateId": "retained-combined",
+      "expected": "not_supported",
+      "status": "supported",
+      "missing": false,
+      "explanation": "该候选的引文包含阿陶说“你总得问点什么”，直接支持“阿陶催促程岚问点什么”；引文本身未包含程岚回应“先问锁、收费低”的内容，但标签后半部分由同一候选的另一引文（retained-reply）支撑，按整段候选文本判断成立。",
+      "matched": false
+    },
+    {
+      "candidateId": "retained-reply",
+      "expected": "supported",
+      "status": "supported",
+      "missing": false,
+      "explanation": "引文“先问这锁。”程岚说，“收费低。”直接、完整地支持标签“程岚回应先问这锁，收费低”，说话人、内容与顺序均一致。",
+      "matched": true
+    }
+  ],
+  "serviceElapsedMs": 2327.1345610000003
+}
