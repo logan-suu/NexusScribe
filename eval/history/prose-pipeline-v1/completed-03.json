@@ -1,0 +1,86 @@
+{
+  "fixture": "mystery",
+  "arm": "proseFirst",
+  "stage": "extractMemory",
+  "sequence": 3,
+  "staging": [
+    {
+      "label": "程岚在寄存室将右耳贴近锁柜，左耳一侧听不到声音",
+      "sourceQuote": "雨落在寄存室的气窗上，声音像一把小螺丝在铁皮盒里来回滚。程岚把右耳贴近锁柜，左耳那侧什么也没有，只有她自己的呼吸。阿陶站在她身后，鞋底在地砖上蹭了两下，说：“你总得问点什么。”",
+      "sourceParagraphIndex": 0,
+      "sourceStart": 0,
+      "sourceEnd": 88
+    },
+    {
+      "label": "阿陶催促程岚问点什么，程岚回应先问锁、收费低",
+      "sourceQuote": "雨落在寄存室的气窗上，声音像一把小螺丝在铁皮盒里来回滚。程岚把右耳贴近锁柜，左耳那侧什么也没有，只有她自己的呼吸。阿陶站在她身后，鞋底在地砖上蹭了两下，说：“你总得问点什么。”",
+      "sourceParagraphIndex": 0,
+      "sourceStart": 0,
+      "sourceEnd": 88
+    },
+    {
+      "label": "程岚回应先问这锁，收费低",
+      "sourceQuote": "“先问这锁。”程岚说，“收费低。”",
+      "sourceParagraphIndex": 1,
+      "sourceStart": 90,
+      "sourceEnd": 107
+    },
+    {
+      "label": "程岚蹲下用手电照旧锁柜底部，发现锁孔边有新的刮痕",
+      "sourceQuote": "她蹲下去，手电筒咬在腮边，光柱落在那只旧锁柜的底部。锁是老式的横开铜锁，锁孔边有一圈新刮痕，像有人拿不对号的钥匙试过。阿陶递来一根回形针，她没接，只从围裙口袋里摸出一把修表用的镊子，伸进柜底与墙的缝里拨了拨。",
+      "sourceParagraphIndex": 2,
+      "sourceStart": 109,
+      "sourceEnd": 213
+    },
+    {
+      "label": "程岚用修表镊子从柜底与墙缝中拨出三片纸屑",
+      "sourceQuote": "拨出来的是纸屑。三片，指甲盖大小，边缘毛糙，像是从什么票据上撕下来的。程岚把它们排在修表垫上，手电照着。纸面有浅浅的蓝线，其中一片上留着一个半个数字，看不出是几。阿陶凑近，呼吸落在她手背上：“是车票？”",
+      "sourceParagraphIndex": 3,
+      "sourceStart": 215,
+      "sourceEnd": 316
+    },
+    {
+      "label": "程岚把纸屑排在修表垫上，阿陶凑近问是不是车票",
+      "sourceQuote": "拨出来的是纸屑。三片，指甲盖大小，边缘毛糙，像是从什么票据上撕下来的。程岚把它们排在修表垫上，手电照着。纸面有浅浅的蓝线，其中一片上留着一个半个数字，看不出是几。阿陶凑近，呼吸落在她手背上：“是车票？”",
+      "sourceParagraphIndex": 3,
+      "sourceStart": 215,
+      "sourceEnd": 316
+    },
+    {
+      "label": "程岚只回答“是纸”",
+      "sourceQuote": "“是纸。”程岚说。",
+      "sourceParagraphIndex": 4,
+      "sourceStart": 318,
+      "sourceEnd": 327
+    },
+    {
+      "label": "阿陶不再追问，问明早管理员来开门时程岚问不问",
+      "sourceQuote": "阿陶没再追问。他把回形针弯回原样，搁回柜台，说明早管理员来开门，你问不问。程岚把纸屑收进一只空表壳，旋紧盖子，说：“问。锁的押金条还在我这儿，他跑不掉。”",
+      "sourceParagraphIndex": 5,
+      "sourceStart": 329,
+      "sourceEnd": 406
+    },
+    {
+      "label": "程岚把纸屑收进空表壳，决定明早问管理员",
+      "sourceQuote": "阿陶没再追问。他把回形针弯回原样，搁回柜台，说明早管理员来开门，你问不问。程岚把纸屑收进一只空表壳，旋紧盖子，说：“问。锁的押金条还在我这儿，他跑不掉。”",
+      "sourceParagraphIndex": 5,
+      "sourceStart": 329,
+      "sourceEnd": 406
+    },
+    {
+      "label": "雨仍在下，程岚关掉手电，寄存室只剩水管低响",
+      "sourceQuote": "雨还在下。她关掉手电，寄存室里只剩水管低低的响，像有人在很远的地方数数。",
+      "sourceParagraphIndex": 6,
+      "sourceStart": 408,
+      "sourceEnd": 444
+    }
+  ],
+  "reviewNotes": [
+    "input.context 中的 facts、plans、forbiddenReveals 与 sources 属于设定/规划参考，未用于生成 staging 条目；所有条目仅依据 input.paragraphs 的已保存正文。",
+    "第3段中“像有人拿不对号的钥匙试过”为程岚的观察性推测，未单独列为已发生事件；如需将其作为确定事实，需作者确认。",
+    "第3段中阿陶递回形针、程岚未接的动作属于可观察行为，未单独拆分条目，因该段主要事件已覆盖。",
+    "阿陶问“是车票？”仅表示他的猜测，第4段程岚回答“是纸”，未确认车票内容；寄信人身份在正文中仍未出现或揭晓。",
+    "第0段“左耳那侧什么也没有”与已确认设定“程岚的左耳听不见”一致，但未在 staging 中作为新事实提出。"
+  ],
+  "inputProseSha256": "9d22af5b7d647758649befc39e0bc43a9470bd267f6ab0e12123e822ee8bcd97"
+}

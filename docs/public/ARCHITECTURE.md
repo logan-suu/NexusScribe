@@ -47,3 +47,9 @@ Each attempt binds project, draft/run, target chapter, draft revision, exact tex
 A failed local save keeps newly returned prose in memory with the existing export/retry warning; it is not reported as durably saved and extraction waits for successful saving. Closing/crashing before recovery can still lose in-memory-only work.
 
 This path adds a model call: writing + extraction + review is three calls per successful chapter instead of two. It does not claim lower cost or latency. Per-task reported usage remains distinct; the bounded architecture experiment measures attempted calls, provider usage and elapsed time by stage, including failed outputs, in [its frozen protocol](../../eval/PROSE-PIPELINE-PROTOCOL.md). Wire-format success is separate from literary quality. The old strict `generateChapter` comparator is not weakened or silently routed through the new path.
+
+Budget note: the unchanged default gateway limit is ten calls per process. A full
+three-chapter live UI journey with interview, planning and one revision
+interpretation now needs twelve calls if every phase succeeds; the manual journey
+already has a twelve-call explicit cap. The application never silently raises
+that default or starts additional calls to finish a budget-blocked project.

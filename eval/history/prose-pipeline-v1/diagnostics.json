@@ -1,0 +1,500 @@
+{
+  "protocol": {
+    "id": "prose-pipeline-v1",
+    "version": 1,
+    "model": "deepseek-v4.1-flash",
+    "temperature": 0.7,
+    "maxTokens": 3000,
+    "maxCalls": 9,
+    "thinking": "disabled",
+    "minimumGapMs": 11000,
+    "target": "450–600 Chinese characters",
+    "seed": null,
+    "arms": {
+      "legacy": [
+        "generateChapter"
+      ],
+      "proseFirst": [
+        "generateProse",
+        "extractMemory"
+      ]
+    },
+    "fixtureOrder": [
+      "mystery",
+      "warm-fantasy",
+      "slice-of-life"
+    ]
+  },
+  "status": "stopped",
+  "attempts": 6,
+  "requestsPrepared": 6,
+  "attemptAccountingComplete": true,
+  "completedPhases": 5,
+  "completedPairs": 1,
+  "sourceCommit": "77def9cb3a49cd6285e1dac116dace3ffea7f9b3",
+  "runId": "37096346301",
+  "code": "INVALID_MODEL_OUTPUT",
+  "validationReason": "INVALID_JSON",
+  "workflowElapsedMs": 89425.88923300001,
+  "timingNote": "Monotonic milliseconds. Stage service latency includes in-service telemetry writes and excludes throttle and output checkpoints; workflow elapsed includes both. No billing or cost inference.",
+  "usage": {
+    "promptTokens": {
+      "knownSum": 10163,
+      "reportedCalls": 6,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "completionTokens": {
+      "knownSum": 3254,
+      "reportedCalls": 6,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "totalTokens": {
+      "knownSum": 13417,
+      "reportedCalls": 6,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "reasoningTokens": {
+      "knownSum": 0,
+      "reportedCalls": 6,
+      "missingCalls": 0,
+      "complete": true
+    }
+  },
+  "byStage": {
+    "generateChapter": {
+      "phaseInvocations": 2,
+      "attemptedRequests": 2,
+      "successfulPhases": 1,
+      "measuredServiceMs": 15795.312358000006,
+      "measuredRequestMs": 15789.038539000012,
+      "usage": {
+        "promptTokens": {
+          "knownSum": 3355,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "completionTokens": {
+          "knownSum": 1454,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "totalTokens": {
+          "knownSum": 4809,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "reasoningTokens": {
+          "knownSum": 0,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        }
+      }
+    },
+    "generateProse": {
+      "phaseInvocations": 2,
+      "attemptedRequests": 2,
+      "successfulPhases": 2,
+      "measuredServiceMs": 10695.885785999995,
+      "measuredRequestMs": 10690.501242000002,
+      "usage": {
+        "promptTokens": {
+          "knownSum": 3169,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "completionTokens": {
+          "knownSum": 887,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "totalTokens": {
+          "knownSum": 4056,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "reasoningTokens": {
+          "knownSum": 0,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        }
+      }
+    },
+    "extractMemory": {
+      "phaseInvocations": 2,
+      "attemptedRequests": 2,
+      "successfulPhases": 2,
+      "measuredServiceMs": 7891.139911000006,
+      "measuredRequestMs": 7885.217787000009,
+      "usage": {
+        "promptTokens": {
+          "knownSum": 3639,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "completionTokens": {
+          "knownSum": 913,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "totalTokens": {
+          "knownSum": 4552,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "reasoningTokens": {
+          "knownSum": 0,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        }
+      }
+    }
+  },
+  "byArm": {
+    "legacy": {
+      "attemptedRequests": 2,
+      "measuredServiceMs": 15795.312358000006,
+      "usage": {
+        "promptTokens": {
+          "knownSum": 3355,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "completionTokens": {
+          "knownSum": 1454,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "totalTokens": {
+          "knownSum": 4809,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "reasoningTokens": {
+          "knownSum": 0,
+          "reportedCalls": 2,
+          "missingCalls": 0,
+          "complete": true
+        }
+      }
+    },
+    "proseFirst": {
+      "attemptedRequests": 4,
+      "measuredServiceMs": 18587.025697,
+      "usage": {
+        "promptTokens": {
+          "knownSum": 6808,
+          "reportedCalls": 4,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "completionTokens": {
+          "knownSum": 1800,
+          "reportedCalls": 4,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "totalTokens": {
+          "knownSum": 8608,
+          "reportedCalls": 4,
+          "missingCalls": 0,
+          "complete": true
+        },
+        "reasoningTokens": {
+          "knownSum": 0,
+          "reportedCalls": 4,
+          "missingCalls": 0,
+          "complete": true
+        }
+      }
+    }
+  },
+  "byFixture": [
+    {
+      "fixture": "mystery",
+      "arms": {
+        "legacy": {
+          "proseAvailable": true,
+          "memoryAvailable": true,
+          "firstProseServiceMs": 6474.818853,
+          "completePipelineServiceMs": 6474.818853
+        },
+        "proseFirst": {
+          "proseAvailable": true,
+          "memoryAvailable": true,
+          "firstProseServiceMs": 4467.688618999997,
+          "completePipelineServiceMs": 8177.376425999999
+        }
+      }
+    },
+    {
+      "fixture": "warm-fantasy",
+      "arms": {
+        "legacy": {
+          "proseAvailable": false,
+          "memoryAvailable": false,
+          "firstProseServiceMs": null,
+          "completePipelineServiceMs": null
+        },
+        "proseFirst": {
+          "proseAvailable": true,
+          "memoryAvailable": true,
+          "firstProseServiceMs": 6228.197166999998,
+          "completePipelineServiceMs": 10409.649271000002
+        }
+      }
+    },
+    {
+      "fixture": "slice-of-life",
+      "arms": {
+        "legacy": {
+          "proseAvailable": false,
+          "memoryAvailable": false,
+          "firstProseServiceMs": null,
+          "completePipelineServiceMs": null
+        },
+        "proseFirst": {
+          "proseAvailable": false,
+          "memoryAvailable": false,
+          "firstProseServiceMs": null,
+          "completePipelineServiceMs": null
+        }
+      }
+    }
+  ],
+  "phases": [
+    {
+      "fixture": "mystery",
+      "arm": "legacy",
+      "stage": "generateChapter",
+      "requestCount": 1,
+      "status": "complete",
+      "serviceElapsedMs": 6474.818853,
+      "checkpointSaved": true
+    },
+    {
+      "fixture": "mystery",
+      "arm": "proseFirst",
+      "stage": "generateProse",
+      "requestCount": 1,
+      "status": "complete",
+      "serviceElapsedMs": 4467.688618999997,
+      "checkpointSaved": true
+    },
+    {
+      "fixture": "mystery",
+      "arm": "proseFirst",
+      "stage": "extractMemory",
+      "requestCount": 1,
+      "status": "complete",
+      "serviceElapsedMs": 3709.687807000002,
+      "checkpointSaved": true
+    },
+    {
+      "fixture": "warm-fantasy",
+      "arm": "proseFirst",
+      "stage": "generateProse",
+      "requestCount": 1,
+      "status": "complete",
+      "serviceElapsedMs": 6228.197166999998,
+      "checkpointSaved": true
+    },
+    {
+      "fixture": "warm-fantasy",
+      "arm": "proseFirst",
+      "stage": "extractMemory",
+      "requestCount": 1,
+      "status": "complete",
+      "serviceElapsedMs": 4181.452104000004,
+      "checkpointSaved": true
+    },
+    {
+      "fixture": "warm-fantasy",
+      "arm": "legacy",
+      "stage": "generateChapter",
+      "requestCount": 1,
+      "status": "failed",
+      "serviceElapsedMs": 9320.493505000006,
+      "checkpointSaved": false,
+      "code": "INVALID_MODEL_OUTPUT",
+      "validationReason": "INVALID_JSON"
+    }
+  ],
+  "calls": [
+    {
+      "sequence": 1,
+      "fixture": "mystery",
+      "arm": "legacy",
+      "stage": "generateChapter",
+      "requestSha256": "920b8c4c8fa58b11f5740015986adc70fabe7f835a90c06da63f10b8c6b6bfe3",
+      "inputBytes": 7220,
+      "inputCharacters": 5070,
+      "status": "validated",
+      "dispatched": true,
+      "requestElapsedMs": 6471.213497000001,
+      "usage": {
+        "promptTokens": 1650,
+        "completionTokens": 544,
+        "totalTokens": 2194,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 2547,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "output": {
+        "characters": 515,
+        "hanCharacters": 422,
+        "paragraphs": 6,
+        "repeatedExactSentences": 0
+      },
+      "outputSha256": "5877328b96bb32a208f1db5217a859dc0e36b7bfdf8da6428f6b3d21dbe44e2c"
+    },
+    {
+      "sequence": 2,
+      "fixture": "mystery",
+      "arm": "proseFirst",
+      "stage": "generateProse",
+      "requestSha256": "3b7fbcea2289c1321d6e25888f2690bc2b8ab637f878b4d99816780a1b71a947",
+      "inputBytes": 6713,
+      "inputCharacters": 4563,
+      "status": "validated",
+      "dispatched": true,
+      "requestElapsedMs": 4464.986366000001,
+      "usage": {
+        "promptTokens": 1557,
+        "completionTokens": 336,
+        "totalTokens": 1893,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 1737,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "output": {
+        "characters": 444,
+        "hanCharacters": 368,
+        "paragraphs": 7,
+        "repeatedExactSentences": 0
+      },
+      "outputSha256": "9d22af5b7d647758649befc39e0bc43a9470bd267f6ab0e12123e822ee8bcd97"
+    },
+    {
+      "sequence": 3,
+      "fixture": "mystery",
+      "arm": "proseFirst",
+      "stage": "extractMemory",
+      "requestSha256": "ebf6116d8f3098fa90be3142f796687b18c80fcf9dc533120c8732eae3a1114e",
+      "inputBytes": 7222,
+      "inputCharacters": 5156,
+      "status": "validated",
+      "dispatched": true,
+      "requestElapsedMs": 3706.2921879999994,
+      "usage": {
+        "promptTokens": 1701,
+        "completionTokens": 464,
+        "totalTokens": 2165,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 2285,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "stagingCount": 10,
+      "reviewNotesCount": 5
+    },
+    {
+      "sequence": 4,
+      "fixture": "warm-fantasy",
+      "arm": "proseFirst",
+      "stage": "generateProse",
+      "requestSha256": "f36dc355708bd9fcae9d04e4c5dd78b6b57556125e848c277fadec77317e7241",
+      "inputBytes": 7086,
+      "inputCharacters": 4708,
+      "status": "validated",
+      "dispatched": true,
+      "requestElapsedMs": 6225.514876000001,
+      "usage": {
+        "promptTokens": 1612,
+        "completionTokens": 551,
+        "totalTokens": 2163,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 2600,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "output": {
+        "characters": 731,
+        "hanCharacters": 621,
+        "paragraphs": 6,
+        "repeatedExactSentences": 0
+      },
+      "outputSha256": "ae09094c7b83b8a9a562fbe4d1613db3695878896732c4e7821f1cbb9e8a3df1"
+    },
+    {
+      "sequence": 5,
+      "fixture": "warm-fantasy",
+      "arm": "proseFirst",
+      "stage": "extractMemory",
+      "requestSha256": "81accb5b8ef357338f36803009d90f36d547a8913447fcbbc8b3ffe9da388af8",
+      "inputBytes": 8271,
+      "inputCharacters": 5479,
+      "status": "validated",
+      "dispatched": true,
+      "requestElapsedMs": 4178.925599000009,
+      "usage": {
+        "promptTokens": 1938,
+        "completionTokens": 449,
+        "totalTokens": 2387,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 2257,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "stagingCount": 4,
+      "reviewNotesCount": 6
+    },
+    {
+      "sequence": 6,
+      "fixture": "warm-fantasy",
+      "arm": "legacy",
+      "stage": "generateChapter",
+      "requestSha256": "f3433ea758f5de41f0caf19fe5d80a98ab23d324c60130b53c1d744456d7ad83",
+      "inputBytes": 7593,
+      "inputCharacters": 5215,
+      "status": "validation_failed",
+      "dispatched": true,
+      "requestElapsedMs": 9317.825042000011,
+      "usage": {
+        "promptTokens": 1705,
+        "completionTokens": 910,
+        "totalTokens": 2615,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 4112,
+      "finishReason": "stop",
+      "finalContentPresent": true
+    }
+  ],
+  "diagnosticRevision": 18
+}
