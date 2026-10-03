@@ -14,7 +14,9 @@ function extracted({live=true,body=text,candidates=entries}={}) {
 function report(s,statuses=['supported','unsupported','supported']) {
  return {summary:'测试提供的语义判断，不代表独立验证',issues:[],checks:[],factChecks:[],provider:'review-fixture',memoryChecks:s.drafts[0].staging.map((candidate,i)=>({candidateId:candidate.id,status:statuses[i]??'unknown',explanation:statuses[i]==='unsupported'?'原文只提到北城，不能支持寄信人所在地这一额外分句':'对完整原始主张逐项检查'}))};
 }
-function review(s=extracted(),r=report(s)) {s=e.reviewDraft(s,id(s));return e.attachSemanticReview(s,id(s),r,e.createReviewBinding(s,id(s)));}
+function auditFixture(s,index,status,explanation='对完整原始主张逐项检查'){const candidateId=s.drafts[0].staging[index].id;s=e.beginMemorySupportAssessment(s,id(s),candidateId);return e.attachMemorySupportAssessment(s,id(s),candidateId,{status,explanation,provider:'isolated-fixture'},e.createMemorySupportBinding(s,id(s),candidateId));}
+// Explicit offline isolated-result fixtures keep these prior gate tests focused.
+function review(s=extracted(),r=report(s)) {s=e.reviewDraft(s,id(s));s=e.attachSemanticReview(s,id(s),r,e.createReviewBinding(s,id(s)));for(const [index,candidate] of s.drafts[0].staging.entries()){const check=r.memoryChecks?.find(c=>c.candidateId===candidate.id);if(check)s=auditFixture(s,index,check.status,check.explanation);}return s;}
 function decide(s,index,action='keep',reason) {const row=e.getMemoryReviewGate(s,id(s))[index];return e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reason,reviewHash:row.reviewHash},row.binding);}
 function selected(s=review()) {s=decide(s,0);s=decide(s,1,'reject');return decide(s,2);}
 
@@ -53,7 +55,7 @@ test('rejecting every candidate accepts prose without promoting any memory',()=>
 test('missing checks and missing per-candidate checks are explicit unknown and never ordinary keep',()=>{
  for(const checks of [undefined,[],[report(extracted()).memoryChecks[0]]]){
   const source=extracted(),r=report(source);r.memoryChecks=checks;const s=review(source,r),rows=e.getMemoryReviewGate(s,id(s));
-  assert.equal(rows[1].status,'unknown');assert.equal(rows[1].assessmentOrigin,'missing');assert.throws(()=>decide(s,1),{code:'MEMORY_DECISION_REQUIRED'});
+  assert.equal(rows[1].status,'unknown');assert.equal(rows[1].assessmentOrigin,'not_audited');assert.throws(()=>decide(s,1),{code:'MEMORY_DECISION_REQUIRED'});
  }
 });
 test('duplicate, foreign, unsupported statuses and malformed memory checks fail closed',()=>{
@@ -128,7 +130,7 @@ test('supported decisions cannot waive generic model errors or fact conflicts',(
  let fact=e.createProjectFromConfig({projectId:'fact-with-memory',chapters:[{text:'纸灯是蓝色的。'}]});
  fact=e.commitPatch(fact,e.proposeCustomPatch(fact,'ch1',{intent:'author_fact',statement:'纸灯是蓝色的。'}));
  fact=e.stageProviderDraft(fact,{text:'纸灯是红色的。',staging:[{label:'纸灯为红色',sourceQuote:'纸灯是红色的。'}],context:e.getContext(fact),provider:{id:'live',isLive:true}},'ch2');
- fact=e.reviewDraft(fact,id(fact));r=report(fact,['supported']);r.factChecks=[{factId:fact.facts[0].id,recordVersion:1,status:'contradiction',sourceQuote:'纸灯是红色的。',explanation:'颜色冲突'}];fact=e.attachSemanticReview(fact,id(fact),r,e.createReviewBinding(fact,id(fact)));fact=decide(fact,0);
+ fact=e.reviewDraft(fact,id(fact));r=report(fact,['supported']);r.factChecks=[{factId:fact.facts[0].id,recordVersion:1,status:'contradiction',sourceQuote:'纸灯是红色的。',explanation:'颜色冲突'}];fact=e.attachSemanticReview(fact,id(fact),r,e.createReviewBinding(fact,id(fact)));fact=auditFixture(fact,0,'supported');fact=decide(fact,0);
  assert.throws(()=>e.acceptDraft(fact,id(fact)),{code:'FACT_DECISION_REQUIRED'});
 });
 

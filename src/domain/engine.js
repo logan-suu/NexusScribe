@@ -1,5 +1,5 @@
 import {buildFactLedger} from './fact-review.js';
-import {initializeMemoryReview, archiveMemoryReview, replaceMemoryCandidates, memoryCandidatesIntact, buildMemoryLedger, validateMemoryDraftRecord, memoryReviewSnapshot, registerMemoryAuthority, compactMemoryBinding, expandMemoryBinding, memoryAssessmentSnapshot} from './memory-review.js';
+import {initializeMemoryReview, archiveMemoryReview, replaceMemoryCandidates, memoryCandidatesIntact, buildMemoryLedger, validateMemoryDraftRecord, memoryReviewSnapshot, registerMemoryAuthority, compactMemoryBinding, expandMemoryBinding, memoryAssessmentSnapshot, ISOLATED_MEMORY_PROTOCOL, initializeMemorySupport, memorySupportHead} from './memory-review.js';
 export {validateMemoryDraftRecord} from './memory-review.js';
 import {segmentProse, MAX_PROSE_LENGTH} from './prose.js';
 /** Deterministic, local demonstration runtime. No LLM is called. */
@@ -382,24 +382,55 @@ export function createMemoryReviewInput(state,id) {
  if(d.memoryReviewSchema!==undefined&&!memoryCandidatesIntact(d))fail('INVALID_MEMORY_REVIEW','候选记忆的原始主张或证据已变化');
  return buildMemoryLedger(d).map(({candidateId,label,sourceQuote})=>({candidateId,label,sourceQuote}));
 }
+function memoryReviewFor(state,d) {
+ const semantic=currentSemanticReview(state,d);
+ return {semantic,review:semantic?d.modelReview:d.review};
+}
+function memoryAuthorityMatches(d,authority,review,binding,candidate,historical=false) {
+ const actual=authority?expandMemoryBinding(d,authority.binding):null;
+ return Boolean(authority&&actual&&review&&(historical||authority.reviewHash===hash(JSON.stringify(review)))&&JSON.stringify(authority.reviewSnapshot)===JSON.stringify(memoryReviewSnapshot(review))&&reviewBindingMatches(actual,binding)&&JSON.stringify(actual.stagingSnapshot.find(item=>item.id===candidate.id))===JSON.stringify(candidate));
+}
+function isolatedAttemptCurrent(state,d,candidate,attempt,review,binding,historical=false) {
+ const authority=d.memoryAuthorities?.find(item=>item.id===attempt?.authorityId);
+ return Boolean(attempt&&attempt.candidateId===candidate.id&&attempt.protocol===ISOLATED_MEMORY_PROTOCOL&&memoryAuthorityMatches(d,authority,review,binding,candidate,historical));
+}
+function isolatedResultValid(attempt) {
+ return Boolean(attempt?.state==='complete'&&attempt.result?.assessmentOrigin===ISOLATED_MEMORY_PROTOCOL&&['supported','unsupported','unknown'].includes(attempt.result.status)&&typeof attempt.result.explanation==='string'&&attempt.result.explanation.trim()&&JSON.stringify(attempt.result)===JSON.stringify(attempt.resultSnapshot));
+}
+const supportBindingFields=['memoryCandidateId','memorySupportAttemptId','memorySupportState','memorySupportResult'];
+function memoryDecisionBindingMatches(actual,expected) {
+ if(!actual||!expected||supportBindingFields.some(key=>!Object.hasOwn(actual,key)||JSON.stringify(actual[key])!==JSON.stringify(expected[key])))return false;
+ const left=copy(actual),right=copy(expected);for(const key of supportBindingFields){delete left[key];delete right[key];}
+ return reviewBindingMatches(left,right);
+}
 export function getMemoryReviewGate(state,id) {
  const d=draft(state,id),historical=['ACCEPTED','REJECTED'].includes(d.status);
- const structural=currentStructuralReview(state,d),semantic=currentSemanticReview(state,d),intact=memoryCandidatesIntact(d);
- const review=historical?(d.modelReview??d.review):(semantic?d.modelReview:d.review);
+ const structural=currentStructuralReview(state,d),{semantic,review:activeReview}=memoryReviewFor(state,d),intact=memoryCandidatesIntact(d);
+ const review=historical?(d.modelReview??d.review):activeReview;
  const binding=historical?expandMemoryBinding(d,review?.binding??d.memoryAuthorities?.find(a=>a.id===d.memoryDecisions?.[0]?.authorityId)?.binding):createReviewBinding(state,id);
  const reviewHash=review?hash(JSON.stringify(review)):null;
  const canDecide=!historical&&structural&&intact;
  const canOverride=canDecide&&(!needsSemanticReview(d)||semantic);
- let ledger;
- try{ledger=buildMemoryLedger(d,(historical||semantic)?d.modelReview?.memoryChecks:[]);}catch{ledger=(d.staging??[]).map(candidate=>({candidateId:candidate.id,label:candidate.label,sourceQuote:candidate.sourceQuote,candidateSnapshot:copy(candidate),status:'unknown',explanation:'候选记忆审查记录无效，请重新提取和审查',assessmentOrigin:'invalid'}));}
- return ledger.map(entry=>{
-  const item={...entry,candidateSnapshot:copy(d.staging.find(candidate=>candidate.id===entry.candidateId))};
-  const record=d.memoryDecisions?.find(decision=>decision.candidateId===item.candidateId);
+ let legacy=[];try{legacy=buildMemoryLedger(d,d.modelReview?.memoryChecks);}catch{}
+ return (d.staging??[]).map(candidate=>{
+  const record=d.memoryDecisions?.find(decision=>decision.candidateId===candidate.id);
+  const historicalLegacy=historical&&record&&!Object.hasOwn(record,'supportAttemptId');
+  const head=memorySupportHead(d,candidate.id);
+  const attempt=historical&&record?.supportAttemptId?d.memorySupport?.attempts.find(item=>item.id===record.supportAttemptId):head;
+  const attemptCurrent=isolatedAttemptCurrent(state,d,candidate,attempt,review,binding,historical);
+  const completed=attemptCurrent&&isolatedResultValid(attempt);
+  const previous=legacy.find(item=>item.candidateId===candidate.id);
+  const legacyAssessment=previous?.assessmentOrigin==='model'?{status:previous.status,explanation:previous.explanation,assessmentOrigin:'legacy_combined_unverified',current:historical||semantic}:null;
+  const status=historicalLegacy?(record.assessment??previous?.status??'unknown'):completed?attempt.result.status:'unknown';
+  const explanation=historicalLegacy?(record.explanation??previous?.explanation??'历史混合审查，未经本条引文单独核验'):completed?attempt.result.explanation:attemptCurrent&&attempt?.state==='pending'?'正在仅用本条标签和本条引文单独核验':attemptCurrent&&['failed','cancelled'].includes(attempt?.state)?'本次单条引文核验未完成；旧结果不会恢复为保留依据':'尚无当前版本的单条引文核验；混合正文审查不能作为普通保留依据';
+  const auditState=attempt?(attemptCurrent?attempt.state:'stale'):(d.memorySupport?.attempts.some(item=>item.candidateId===candidate.id)?'stale':'not_started');
+  const supportAttemptId=attempt?.id??null;
+  const supportResult=completed?copy(attempt.result):null;
+  const decisionBinding=binding?{...copy(binding),memoryCandidateId:candidate.id,memorySupportAttemptId:supportAttemptId,memorySupportState:auditState,memorySupportResult:supportResult}:null;
   const authority=d.memoryAuthorities?.find(a=>a.id===record?.authorityId);
-  const authorityBinding=authority?expandMemoryBinding(d,authority.binding):null;
-  const decisionValid=Boolean(record&&authority&&authorityBinding&&(historical||canDecide)&&record.authority==='explicit_author_decision'&&(historical||record.reviewHash===reviewHash)&&JSON.stringify(authority.reviewSnapshot)===JSON.stringify(memoryReviewSnapshot(review))&&JSON.stringify(authorityBinding.stagingSnapshot.find(candidate=>candidate.id===item.candidateId))===JSON.stringify(item.candidateSnapshot)&&reviewBindingMatches(authorityBinding,binding)&&d.memoryDecisionHistory?.some(history=>JSON.stringify(history)===JSON.stringify(record))&&record.assessment===item.status&&record.explanation===item.explanation&&['keep','reject','override_keep'].includes(record.action)&&(record.action!=='keep'||item.status==='supported'&&(historical||semantic))&&(record.action!=='override_keep'||typeof record.reason==='string'&&!!record.reason.trim()&&(historical||canOverride)));
-  const resolved=decisionValid,decision=decisionValid?copy(record):null;
-  return {...item,...(!intact?{status:'unknown',explanation:'原始候选快照与当前候选不一致，请重新提取',assessmentOrigin:'invalid'}:{}),decision,blocking:!resolved,canKeep:canDecide&&semantic&&item.status==='supported',canDecide,canOverride,resolved,historical,stale:Boolean(record&&!decisionValid),reviewHash,binding:copy(binding??null)};
+  const supportDecisionMatches=historicalLegacy||Boolean(record&&record.supportAttemptId===supportAttemptId&&record.supportState===auditState&&(record.supportResultHash??null)===(supportResult?hash(JSON.stringify(supportResult)):null));
+  const decisionValid=Boolean(record&&(historical||canDecide)&&record.authority==='explicit_author_decision'&&(historical||record.reviewHash===reviewHash)&&memoryAuthorityMatches(d,authority,review,binding,candidate,historical)&&d.memoryDecisionHistory?.some(history=>JSON.stringify(history)===JSON.stringify(record))&&supportDecisionMatches&&record.assessment===status&&record.explanation===explanation&&['keep','reject','override_keep'].includes(record.action)&&(record.action!=='keep'||historicalLegacy||completed&&status==='supported')&&(record.action!=='override_keep'||typeof record.reason==='string'&&!!record.reason.trim()&&(historical||canOverride)));
+  return {candidateId:candidate.id,label:candidate.label,sourceQuote:candidate.sourceQuote,candidateSnapshot:copy(candidate),status:intact?status:'unknown',explanation:intact?explanation:'原始候选快照与当前候选不一致，请重新提取',assessmentOrigin:!intact?'invalid':historicalLegacy?'historic_combined_unverified':completed?ISOLATED_MEMORY_PROTOCOL:'not_audited',legacyAssessment,auditState,isolatedAssessmentId:completed?attempt.id:null,decision:decisionValid?copy(record):null,blocking:!decisionValid,canKeep:canOverride&&completed&&status==='supported',canAudit:canOverride,canDecide,canOverride,resolved:decisionValid,historical,stale:Boolean(record&&!decisionValid),reviewHash,binding:decisionBinding};
  });
 }
 /** Author decisions are separate audit records; candidate claim/evidence never change. */
@@ -408,12 +439,62 @@ export function decideMemoryCandidate(state,id,instruction,expected) {
  if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能决定待定草稿');
  if(!plainObject(instruction)||Object.keys(instruction).some(k=>!['candidateId','action','reason','reviewHash'].includes(k)))fail('MEMORY_DECISION_REQUIRED','候选记忆决定格式无效');
  const item=getMemoryReviewGate(state,id).find(row=>row.candidateId===instruction.candidateId);
- if(!item?.canDecide||!reviewBindingMatches(expected,item.binding)||instruction.reviewHash!==item.reviewHash)fail('STALE_MEMORY_DECISION','候选、提取或审查已变化，请重新查看后决定');
+ if(!item?.canDecide||!memoryDecisionBindingMatches(expected,item.binding)||instruction.reviewHash!==item.reviewHash)fail('STALE_MEMORY_DECISION','候选、提取或审查已变化，请重新查看后决定');
  if(!['keep','reject','override_keep'].includes(instruction.action)||instruction.action==='keep'&&!item.canKeep||instruction.action==='override_keep'&&(!item.canOverride||typeof instruction.reason!=='string'||!instruction.reason.trim())||instruction.reason!==undefined&&(typeof instruction.reason!=='string'||instruction.reason.length>2000))fail('MEMORY_DECISION_REQUIRED','普通保留需要完整主张获原文支持；例外保留必须填写作者理由');
  const s=copy(state),d=draft(s,id),review=currentSemanticReview(s,d)?d.modelReview:d.review;
- const authority=registerMemoryAuthority(d,expected,review,item.reviewHash);
- const decision={decisionId:`${d.id}-memory-decision-${d.memoryDecisionHistory.length+1}`,candidateId:item.candidateId,action:instruction.action,reason:instruction.reason?.trim()??'',authorityId:authority.id,reviewHash:item.reviewHash,assessment:item.status,explanation:item.explanation,authority:'explicit_author_decision'};
+ const authority=registerMemoryAuthority(d,createReviewBinding(s,id),review,item.reviewHash);
+ const decision={decisionId:`${d.id}-memory-decision-${d.memoryDecisionHistory.length+1}`,candidateId:item.candidateId,action:instruction.action,reason:instruction.reason?.trim()??'',authorityId:authority.id,reviewHash:item.reviewHash,supportAttemptId:item.binding.memorySupportAttemptId,supportState:item.binding.memorySupportState,supportResultHash:item.binding.memorySupportResult?hash(JSON.stringify(item.binding.memorySupportResult)):null,assessment:item.status,explanation:item.explanation,authority:'explicit_author_decision'};
  d.memoryDecisions=[...d.memoryDecisions.filter(entry=>entry.candidateId!==item.candidateId),decision];
  d.memoryDecisionHistory.push(copy(decision));
+ return s;
+}
+
+/** An explicit author action starts exactly one candidate's isolated support request. */
+export function beginMemorySupportAssessment(state,id,candidateId) {
+ const original=draft(state,id);
+ if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能核验待定草稿的候选记忆');
+ const row=getMemoryReviewGate(state,id).find(item=>item.candidateId===candidateId);
+ if(!row?.canAudit)fail('MEMORY_SUPPORT_REQUIRED','请先完成当前正文的提取与审查，再核验指定候选');
+ const s=copy(state),d=draft(s,id);initializeMemorySupport(d);
+ const previous=memorySupportHead(d,candidateId);
+ if(previous?.state==='pending'){previous.state='cancelled';previous.outcomeReason='superseded';}
+ const invalidated=d.memoryDecisions.filter(item=>item.candidateId===candidateId);
+ d.memoryDecisions=d.memoryDecisions.filter(item=>item.candidateId!==candidateId);
+ const review=memoryReviewFor(s,d).review,authority=registerMemoryAuthority(d,createReviewBinding(s,id),review,row.reviewHash);
+ d.memorySupport.sequence++;
+ const attempt={id:`${d.id}-support-${d.memorySupport.sequence}`,sequence:d.memorySupport.sequence,candidateId,authorityId:authority.id,protocol:ISOLATED_MEMORY_PROTOCOL,state:'pending',supersedesAttemptId:previous?.id??null,invalidatedDecisionIds:invalidated.map(item=>item.decisionId)};
+ d.memorySupport.attempts.push(attempt);
+ d.memorySupport.heads=[...d.memorySupport.heads.filter(item=>item.candidateId!==candidateId),{candidateId,attemptId:attempt.id}];
+ return s;
+}
+export function createMemorySupportBinding(state,id,candidateId) {
+ const d=draft(state,id),candidate=d.staging.find(item=>item.id===candidateId),attempt=memorySupportHead(d,candidateId),{semantic,review}=memoryReviewFor(state,d),binding=createReviewBinding(state,id);
+ if(!['DRAFT','IN_REVIEW'].includes(d.status)||!candidate||!currentStructuralReview(state,d)||!memoryCandidatesIntact(d)||(needsSemanticReview(d)&&!semantic)||attempt?.state!=='pending'||!isolatedAttemptCurrent(state,d,candidate,attempt,review,binding))fail('STALE_MEMORY_SUPPORT','单条引文核验请求与当前候选、提取或审查不一致');
+ return {candidateId,attemptId:attempt.id,reviewAuthorityId:attempt.authorityId,reviewBinding:binding};
+}
+/** This is the entire network input: never send draft/context/siblings or local IDs. */
+export function createMemorySupportInput(state,id,candidateId) {
+ createMemorySupportBinding(state,id,candidateId);
+ const candidate=draft(state,id).staging.find(item=>item.id===candidateId);
+ return {label:candidate.label,sourceQuote:candidate.sourceQuote};
+}
+function pendingMemorySupportMatches(state,id,candidateId,expected) {
+ try{const current=createMemorySupportBinding(state,id,candidateId);return exactKeys(expected,['candidateId','attemptId','reviewAuthorityId','reviewBinding'])&&expected.candidateId===current.candidateId&&expected.attemptId===current.attemptId&&expected.reviewAuthorityId===current.reviewAuthorityId&&reviewBindingMatches(expected.reviewBinding,current.reviewBinding);}catch{return false;}
+}
+export function attachMemorySupportAssessment(state,id,candidateId,report,expected) {
+ if(!pendingMemorySupportMatches(state,id,candidateId,expected))fail('STALE_MEMORY_SUPPORT','单条引文核验响应已过期或不属于当前请求');
+ if(!exactKeys(report,['status','explanation','provider'])||!['supported','unsupported','unknown'].includes(report.status)||typeof report.explanation!=='string'||!report.explanation.trim()||report.explanation.length>4000||!validProvider(report.provider))fail('INVALID_MEMORY_SUPPORT','单条引文核验只接受判断、说明和服务来源');
+ const s=copy(state),d=draft(s,id),attempt=memorySupportHead(d,candidateId);
+ attempt.state='complete';attempt.result={status:report.status,explanation:report.explanation,provider:copy(report.provider),assessmentOrigin:ISOLATED_MEMORY_PROTOCOL};
+ attempt.resultSnapshot=copy(attempt.result);
+ d.memoryDecisions=d.memoryDecisions.filter(item=>item.candidateId!==candidateId);
+ return s;
+}
+export function markMemorySupportFailure(state,id,candidateId,expected,status='failed') {
+ if(!['failed','cancelled'].includes(status))fail('INVALID_MEMORY_SUPPORT_STATUS','单条引文核验结束状态无效');
+ if(!pendingMemorySupportMatches(state,id,candidateId,expected))return copy(state);
+ const s=copy(state),d=draft(s,id),attempt=memorySupportHead(d,candidateId);
+ attempt.state=status;attempt.outcomeReason=status;
+ d.memoryDecisions=d.memoryDecisions.filter(item=>item.candidateId!==candidateId);
  return s;
 }

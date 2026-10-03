@@ -11,7 +11,7 @@ function fixture({live=true}={}) {
  s=e.attachMemoryExtraction(s,id(s),{staging:[{label:'阿岚保管信件',sourceParagraphIndex:0},{label:'阿岚离开房间',sourceParagraphIndex:1}],reviewNotes:[],provider:'extractor'},e.createExtractionBinding(s,id(s)));
  s=e.reviewDraft(s,id(s));
  s=e.attachSemanticReview(s,id(s),{summary:'保存模型判断',issues:[],checks:[],provider:'reviewer',memoryChecks:s.drafts[0].staging.map(c=>({candidateId:c.id,status:'supported',explanation:'完整主张有原文支持'}))},e.createReviewBinding(s,id(s)));
- for(const [index,action] of [[0,'keep'],[1,'reject']]){const row=e.getMemoryReviewGate(s,id(s))[index];s=e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reviewHash:row.reviewHash},row.binding);}
+ for(const [index,action] of [[0,'keep'],[1,'reject']]){if(action==='keep'){const candidateId=s.drafts[0].staging[index].id;s=e.beginMemorySupportAssessment(s,id(s),candidateId);s=e.attachMemorySupportAssessment(s,id(s),candidateId,{status:'supported',explanation:'单条原文支持完整主张',provider:'isolated-fixture'},e.createMemorySupportBinding(s,id(s),candidateId));}const row=e.getMemoryReviewGate(s,id(s))[index];s=e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reviewHash:row.reviewHash},row.binding);}
  return s;
 }
 test('pending, decided, edited, re-extracted, rejected and accepted memory audit round-trips without alteration',()=>{
@@ -70,7 +70,7 @@ function bulkDraft(state,characters,count,chapterId='ch1') {
 }
 function bulkReview(state,key) {
  let s=e.reviewDraft(state,key);s=e.attachSemanticReview(s,key,{summary:'合成离线夹具',issues:[],checks:[],provider:'offline-fixture',memoryChecks:s.drafts.find(d=>d.id===key).staging.map(c=>({candidateId:c.id,status:'supported',explanation:'offline fixture judgment'}))},e.createReviewBinding(s,key));
- for(const row of e.getMemoryReviewGate(s,key)){s=e.decideMemoryCandidate(s,key,{candidateId:row.candidateId,action:'keep',reviewHash:row.reviewHash},row.binding);parseBackup(JSON.stringify(backup(s)));}
+ for(const candidate of s.drafts.find(d=>d.id===key).staging){s=e.beginMemorySupportAssessment(s,key,candidate.id);s=e.attachMemorySupportAssessment(s,key,candidate.id,{status:'supported',explanation:'offline isolated own-quote judgment',provider:'isolated-fixture'},e.createMemorySupportBinding(s,key,candidate.id));const row=e.getMemoryReviewGate(s,key).find(item=>item.candidateId===candidate.id);s=e.decideMemoryCandidate(s,key,{candidateId:row.candidateId,action:'keep',reviewHash:row.reviewHash},row.binding);parseBackup(JSON.stringify(backup(s)));}
  return s;
 }
 const byteLength=value=>new TextEncoder().encode(JSON.stringify(value)).length;
@@ -81,13 +81,14 @@ test('shared immutable authority bounds every decision, accepted audit and impor
   assert.ok(d.memoryDecisions.every(x=>!Object.hasOwn(x,'binding')&&!Object.hasOwn(x,'reviewSnapshot')&&!Object.hasOwn(x,'candidateSnapshot')));
   s=e.acceptDraft(s,d.id);assert.ok(byteLength(backup(s))<MAX_BACKUP_BYTES);parseBackup(JSON.stringify(backup(s)));
   assert.ok(s.events.every(event=>event.memoryDecision.authorityId===d.memoryAuthorities[0].id));assert.deepEqual(s.commits.at(-1).memoryAuthorityIds,[d.memoryAuthorities[0].id]);
+  const pending=bulkDraft(e.createProjectFromConfig({projectId:'pending-size-fixture'}),characters,count),pendingImported=importBackup(backup(e.createProjectFromConfig({projectId:'pending-target'})),backup(pending),()=> 'pending-imported');assert.ok(byteLength(pendingImported)<MAX_BACKUP_BYTES);assert.deepEqual(pendingImported.state.drafts[0].memorySupport.heads,[]);parseBackup(JSON.stringify(pendingImported,null,2));
   const imported=importBackup(backup(e.createProjectFromConfig({projectId:'target'})),backup(s),()=> 'imported');assert.ok(byteLength(imported)<MAX_BACKUP_BYTES);assert.ok(e.getMemoryReviewGate(imported.state,d.id).every(row=>row.resolved));
  }
 });
 test('two 3000-Han, ten-candidate accepted chapters plus re-review stay saveable with exact retained authority',()=>{
  let s=bulkDraft(e.createProjectFromConfig({projectId:'two-chapter-size'}),3000,10);s=e.acceptDraft(s,s.drafts.at(-1).id);
  s=bulkDraft(s,3000,10,'ch2');const key=s.drafts.at(-1).id,previous=clone(s.drafts.at(-1).memoryAuthorities[0]);s=bulkReview(s,key);
- assert.equal(s.drafts.at(-1).memoryAuthorities.length,2);assert.equal(s.drafts.at(-1).memoryBindingSnapshots.length,1);assert.deepEqual(s.drafts.at(-1).memoryAuthorities[0],previous);
+ assert.equal(s.drafts.at(-1).memorySupport.attempts.length,20);assert.equal(s.drafts.at(-1).memoryAuthorities.length,2);assert.equal(s.drafts.at(-1).memoryBindingSnapshots.length,1);assert.deepEqual(s.drafts.at(-1).memoryAuthorities[0],previous);
  s=e.acceptDraft(s,key);assert.ok(byteLength(backup(s))<1700000);assert.deepEqual(parseBackup(JSON.stringify(backup(s))),backup(s));const exported=JSON.stringify(backup(s),null,2);assert.ok(new TextEncoder().encode(exported).length<MAX_BACKUP_BYTES);assert.deepEqual(parseBackup(exported),backup(s));assert.equal(s.events.length,20);
 });
 test('shared snapshot, authority and decision reference tampering fails closed',()=>{

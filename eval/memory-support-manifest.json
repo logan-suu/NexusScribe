@@ -4,10 +4,15 @@
   "sha256": {
     "eval/MEMORY-SUPPORT-PROTOCOL.md": "8d0983ea20e84816d7e8ae83ef5f035fecfa161794edd51b2b87a3b680d8767e",
     "eval/memory-support-fixtures.mjs": "63332710a25d896652cf6aa9c1a9586581f6cd1511db09b908d56bad853ffe7f",
-    "scripts/memory-support-eval.mjs": "f2a2d01b8e90d46ee28f974e0893f2ad1b853144c9ecb09b384ea446a9937546",
-    "tests/memory-support-eval.test.js": "fca735a907dbead2f2b98eba5660978b33df9832628b8226344f375705cdc63f",
     "eval/history/prose-pipeline-v1/completed-02.json": "6a4a3c11bd369bd5ee055a4cb0c88051aabd4243db525a09e0fa91f96bd07a39",
     "eval/history/prose-pipeline-v1/completed-03.json": "89602c3f3c0bcdccdc67ebf05acb305807124a34d1026171a16a6f990c07f1c1",
-    "server/provider.js": "985797266bcc7289263e1b4192cae14a598538a97415568c805c025397eaa64f"
+    "eval/history/memory-support-v1/provider-source-v1.txt": "985797266bcc7289263e1b4192cae14a598538a97415568c805c025397eaa64f",
+    "eval/history/memory-support-v1/harness-source-v1.txt": "f2a2d01b8e90d46ee28f974e0893f2ad1b853144c9ecb09b384ea446a9937546",
+    "eval/history/memory-support-v1/tests-source-v1.txt": "fca735a907dbead2f2b98eba5660978b33df9832628b8226344f375705cdc63f"
+  },
+  "maintenanceNote": "The v1 run concluded at c139ce3a8bfbbbe7c169c2387a109a2668215acb (37143836878), failing its semantic case then stopping on timeout. Exact original provider, harness and test bytes retain their original hashes in history/memory-support-v1. The current CLI is explicitly retired before any configuration/write/dispatch; injected offline tests remain available. A later provider prompt must not be represented as the v1 experiment.",
+  "maintenanceSha256": {
+    "scripts/memory-support-eval.mjs": "5465420a0ab3340aa77ddf71ba19dc838574cf02ab3e83e42f63b6098934dcea",
+    "tests/memory-support-eval.test.js": "2000c7d5137e17407e9bb572a098bb6ce5e400135d9755f0f7f5e90692ebf2bf"
   }
 }

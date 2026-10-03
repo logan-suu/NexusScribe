@@ -5,7 +5,7 @@
     "eval/PROSE-PIPELINE-PROTOCOL.md": "0943bbbe3b6c97473d1fbef3e134e6fba5a2a54f636610c8b5c089f62f547897",
     "eval/writing-quality-fixtures.mjs": "7ccc665810cf8aa8c101b4615be1bbdabfe802e2020da6ff08170f7bbf6480b4",
     "scripts/prose-pipeline-eval.mjs": "62f263d2e30f64d792c43db0e623db2f1e5d9f892405ae727a16844268eb7d74",
-    "tests/prose-pipeline-eval.test.js": "c060c51d9c999b6331ceb929c18b3101460979f9e3f66fc3be6294b08c03798f"
+    "tests/prose-pipeline-eval.test.js": "cbd5cd8be949f41ce6dc3be6315d4bed7c53530fe4be970213ca72943efe37c6"
   },
-  "maintenanceNote": "Workflow option assertion extended for memory-support scope after the completed prose-pipeline-v1 run. Original preregistration remains at source commit 77def9cb3a49cd6285e1dac116dace3ffea7f9b3; pilot inputs, protocol and harness unchanged."
+  "maintenanceNote": "Workflow option assertion extended for memory-support and isolated-memory-support after the completed prose-pipeline-v1 run. Original preregistration remains at source commit 77def9cb3a49cd6285e1dac116dace3ffea7f9b3; pilot inputs, protocol and harness unchanged."
 }

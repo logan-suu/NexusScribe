@@ -40,3 +40,6 @@ prose-pipeline-evidence/
 
 # Synthetic support audit artifacts are uploaded by allowlist only.
 memory-support-evidence/
+
+# Future isolated support evidence is uploaded only by its reviewed allowlist.
+isolated-memory-support-evidence/

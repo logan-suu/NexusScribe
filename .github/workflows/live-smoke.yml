@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       approve_live_smoke:
-        description: 'Approve selected synthetic test and confirm Use balance OFF (journey cap12, probe cap1, quality-pilot cap6, prose-pipeline cap9, memory-support cap4 at 3000 tokens)'
+        description: 'Approve selected synthetic test and confirm Use balance OFF (journey cap12, probe cap1, quality-pilot cap6, prose-pipeline cap9, memory-support cap4, isolated-memory-support cap4 at 3000 tokens)'
         type: boolean
         required: true
         default: false
       test_scope:
-        description: 'Choose journey, one-call probe, six-call quality pilot, nine-call prose pipeline, or four-call memory support audit'
+        description: 'Choose journey, one-call probe, six-call quality pilot, nine-call prose pipeline, four-call memory support audit, or four-call isolated memory audit'
         type: choice
         required: true
         default: review-probe
-        options: [journey, review-probe, generation-probe, quality-pilot, prose-pipeline, memory-support]
+        options: [journey, review-probe, generation-probe, quality-pilot, prose-pipeline, memory-support, isolated-memory-support]
 
 permissions:
   contents: read
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   live-writing-journey:
-    if: github.event_name == 'workflow_dispatch' && inputs.approve_live_smoke == true && (inputs.test_scope == 'journey' || inputs.test_scope == 'review-probe' || inputs.test_scope == 'generation-probe' || (inputs.test_scope == 'quality-pilot' && github.run_attempt == 1) || (inputs.test_scope == 'prose-pipeline' && github.run_attempt == 1) || (inputs.test_scope == 'memory-support' && github.run_attempt == 1))
+    if: github.event_name == 'workflow_dispatch' && inputs.approve_live_smoke == true && (inputs.test_scope == 'journey' || inputs.test_scope == 'review-probe' || inputs.test_scope == 'generation-probe' || (inputs.test_scope == 'quality-pilot' && github.run_attempt == 1) || (inputs.test_scope == 'prose-pipeline' && github.run_attempt == 1) || (inputs.test_scope == 'memory-support' && github.run_attempt == 1) || (inputs.test_scope == 'isolated-memory-support' && github.run_attempt == 1))
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -162,5 +162,30 @@ jobs:
             memory-support-evidence/completed-02.json
             memory-support-evidence/completed-03.json
             memory-support-evidence/completed-04.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Check frozen isolated memory support audit offline without credentials
+        if: inputs.test_scope == 'isolated-memory-support'
+        run: node --test tests/isolated-memory-support-eval.test.js
+      - name: Run separately approved four-call isolated memory support audit
+        if: inputs.test_scope == 'isolated-memory-support' && github.run_attempt == 1
+        run: node scripts/isolated-memory-support-eval.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_ISOLATED_MEMORY_SUPPORT_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve allowlisted synthetic isolated memory support evidence
+        if: always() && inputs.test_scope == 'isolated-memory-support'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-isolated-memory-support-audit
+          path: |
+            isolated-memory-support-evidence/inputs.json
+            isolated-memory-support-evidence/diagnostics.json
+            isolated-memory-support-evidence/completed-01.json
+            isolated-memory-support-evidence/completed-02.json
+            isolated-memory-support-evidence/completed-03.json
+            isolated-memory-support-evidence/completed-04.json
           if-no-files-found: ignore
           retention-days: 7

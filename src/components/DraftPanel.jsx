@@ -19,8 +19,9 @@ export function MemoryEvidence({item}) {
   <p><strong>候选标签：{item.label}</strong></p>
   <p className="fine">候选记忆 {item.candidateId} · 候选 r{item.binding?.draftRevision??'未知'}{Number.isInteger(item.candidateSnapshot?.sourceParagraphIndex)?` · 段落 ${item.candidateSnapshot.sourceParagraphIndex+1}`:''}{Number.isInteger(item.candidateSnapshot?.sourceStart)?` · 字符位置 ${item.candidateSnapshot.sourceStart}–${item.candidateSnapshot.sourceEnd}`:''}</p>
   <blockquote aria-label="完整候选原文引用">{item.sourceQuote||'缺少可核验的原文引用'}</blockquote>
-  <p className={item.status==='supported'?'success-note':'warning'}>模型逐条判断：{memoryStatusLabels[item.status]||memoryStatusLabels.unknown}</p>
-  <p>{item.explanation||'尚无当前版本的逐条语义判断，请先审查候选稿'}</p>
+  <p className={item.isolatedAssessmentId&&item.status==='supported'?'success-note':'warning'}>独立引文核对：{item.isolatedAssessmentId?(memoryStatusLabels[item.status]||memoryStatusLabels.unknown):memoryStatusLabels.unknown}</p>
+  <p>{item.assessmentOrigin==='historic_combined_unverified'?'此历史记录来自旧版整章判断，未经单条引文独立核对':item.explanation||'尚无当前版本的独立引文判断；普通保留需要单条独立核对'}</p>
+  {item.legacyAssessment&&<div className="legacy-memory-assessment" aria-label="历史整章记忆判断"><p>历史整章判断（未经独立核对，不可据此普通保留）：{memoryStatusLabels[item.legacyAssessment.status]||memoryStatusLabels.unknown}</p><p>{item.legacyAssessment.explanation}</p></div>}
  </div>;
 }
 // Keep keyboard focus inside the decision, and return it to its opener on close.
@@ -38,7 +39,7 @@ export function DecisionDialog({label,title,onClose,children}) {
  }
  return <div className="modal-backdrop"><section ref={container} className="modal memory-decision-modal" role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={keydown}><header><h2>{title}</h2><button className="icon-button" aria-label={`关闭${label}`} onClick={onClose}><X/></button></header>{children}</section></div>;
 }
-export default function DraftPanel({drafts,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,extractionReady={},memoryReviews={},onMemoryDecision,busy=false}) {
+export default function DraftPanel({drafts,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,extractionReady={},memoryReviews={},onMemoryDecision,onMemoryAudit,mode='template',auditBudget=null,auditDisabled=false,busy=false}) {
  const [editing,setEditing]=useState(null),[text,setText]=useState('');
  return <section className="draft-section"><header><h2>下一场景 · 候选稿</h2><span>候选先隔离 · 接受才提交</span></header>
  {drafts.length===0?<p className="empty-note">生成后先审阅，再决定是否接受。候选事件不会进入故事记忆。</p>:drafts.slice().reverse().map(d=>{
@@ -50,18 +51,20 @@ export default function DraftPanel({drafts,onReview,onAccept,onReject,onEdit,fac
    {editing===d.id&&<><textarea className="draft-edit" aria-label="编辑候选稿" value={text} onChange={e=>setText(e.target.value)}/><button onClick={()=>{onEdit(d.id,text);setEditing(null)}}>保存候选稿修改</button></>}
    <div className="staging"><b>候选记忆暂存区</b><span>本稿事件仅在作者接受后成为已确认状态</span></div>
    {d.requiresExtraction&&<div className="extraction-status" aria-label="候选记忆提取状态"><p className={extracted&&!rejected?'success-note':'warning'}>{extractionMessage}</p><p className="fine">正文、提取、审阅分别调用模型。失败不会自动重试；版本、段落位置与原文引用由程序生成。空结果不证明没有遗漏。</p></div>}
+   {active&&memories.length>0&&<div className="memory-audit-budget" aria-label="独立核对调用预算"><p>真实模型每章基础 3 次请求（正文、提取、整章审阅）+ K 次单条独立核对。每次点击仅核对一条，额外 1 次模型请求，不会批量调用或自动重试。</p><p>此前访谈、规划、生成及其他调用也会占用服务端本次进程上限。{auditBudget?`最近一次派发前检查：已用 ${auditBudget.callsUsed} / ${auditBudget.maxCalls} 次；此后用量可能变化。`:'尚无当前预算读数；每次核对前会检查，预算缺失或耗尽时不发送。'}服务端上限最终生效；调用数不是金额上限，账单费用仍未知。</p>{mode!=='server'&&<p>离线模板不发起独立模型核对；可拒绝，或填写理由后由作者例外保留。需要核对时请先明确选择真实模型模式。</p>}</div>}
    <section className="memory-candidates" aria-label="候选记忆逐条选择">
     {memories.map((item,index)=><article className="staged-event" key={item.candidateId} data-candidate-id={item.candidateId} aria-label={`候选记忆 ${index+1}：${item.label}`}>
      <MemoryEvidence item={item}/>
+     {active&&<p className="fine" aria-label={`独立核对状态 ${index+1}`}>{({pending:'尚未收到独立核对结果 · 预算检查或请求未完成',complete:'独立核对已完成 · 判断仍可能有误',failed:'独立核对失败 · 未采用任何新判断，请手动重试',cancelled:'独立核对已取消 · 迟到结果不会采用',stale:'旧独立核对已过期 · 请对当前版本手动核对'})[item.auditState]||'尚未完成当前版本的独立核对'}</p>}
      <p className={item.resolved?'success-note':'warning'}>{item.resolved?(item.decision?.action==='reject'?'作者已拒绝 · 不会提交':item.decision?.action==='override_keep'?'作者例外保留 · 未经模型验证':'作者已选择保留 · 接受稿件后提交'):'尚未决定 · 阻塞接受'}</p>
      {item.decision?.reason&&<p>作者理由：{item.decision.reason}</p>}
-     {active&&<div className="memory-actions"><button disabled={busy||!item.canKeep} aria-label={`保留候选记忆 ${index+1}：${item.label}`} aria-pressed={item.resolved&&item.decision?.action==='keep'} onClick={()=>onMemoryDecision?.(d.id,item.candidateId,'keep')}>保留</button><button disabled={busy||!item.canDecide} aria-label={`拒绝候选记忆 ${index+1}：${item.label}`} aria-pressed={item.resolved&&item.decision?.action==='reject'} onClick={()=>onMemoryDecision?.(d.id,item.candidateId,'reject')}>拒绝</button>{!item.canKeep&&<button disabled={busy||!item.canOverride} aria-label={`例外保留候选记忆 ${index+1}：${item.label}`} onClick={()=>onMemoryDecision?.(d.id,item.candidateId,'override_keep')}>审阅并例外保留</button>}</div>}
+     {active&&<div className="memory-actions"><button disabled={busy||auditDisabled||mode!=='server'||!item.canAudit} aria-label={`独立核对候选记忆 ${index+1}：${item.label}（额外 1 次模型请求）`} onClick={()=>onMemoryAudit?.(d.id,item.candidateId)}>独立核对 · 额外 1 次模型请求</button><button disabled={busy||!item.canKeep} aria-label={`保留候选记忆 ${index+1}：${item.label}`} aria-pressed={item.resolved&&item.decision?.action==='keep'} onClick={()=>onMemoryDecision?.(d.id,item.candidateId,'keep')}>保留</button><button disabled={busy||!item.canDecide} aria-label={`拒绝候选记忆 ${index+1}：${item.label}`} aria-pressed={item.resolved&&item.decision?.action==='reject'} onClick={()=>onMemoryDecision?.(d.id,item.candidateId,'reject')}>拒绝</button>{!item.canKeep&&<button disabled={busy||!item.canOverride} aria-label={`例外保留候选记忆 ${index+1}：${item.label}`} onClick={()=>onMemoryDecision?.(d.id,item.candidateId,'override_keep')}>审阅并例外保留</button>}</div>}
     </article>)}
     {rejected&&<p className="fine" aria-label="候选记忆已归档">此稿已拒绝，原有候选与作者选择仅保留在审计记录中，不会提交为故事记忆。</p>}
     {(emptyExtraction||!d.requiresExtraction&&memories.length===0&&!rejected)&&<p className="fine" aria-label="无候选记忆">{d.requiresExtraction?'提取成功 · 返回 0 条候选记忆。空结果不证明没有遗漏。':'此稿没有候选记忆。'}</p>}
    </section>
    {d.extraction?.reviewNotes?.map((note,i)=><p className="fine" key={i}>{note}</p>)}
-   {active&&!needsExtraction&&<p className="warning" aria-label="候选记忆提交须知">请逐条决定保留或拒绝。接受此版本仅提交明确选中的候选记忆；全部拒绝也可接受正文。模型的逐条判断可能误判，精确引用与格式通过不代表含义正确；例外保留属于作者决定，不是已验证事实。</p>}
+   {active&&!needsExtraction&&<p className="warning" aria-label="候选记忆提交须知">请逐条决定保留或拒绝。接受此版本仅提交明确选中的候选记忆；全部拒绝也可接受正文。整章审阅不会授予记忆保留权限；普通保留须先单条独立核对。独立判断也可能误判，精确引用与格式通过不代表含义正确；例外保留属于作者决定，不是已验证事实。</p>}
    {d.review&&<p className={d.review.valid||d.review.passed?'success-note':'warning'}><ShieldCheck/>{d.review.passed?(d.modelReview?'结构检查通过 · 模型语义建议见下方':d.review.semanticStatus==='not_evaluated'?'结构检查通过 · 语义一致性未评估':'当前版本检查通过'):'审查未通过'} {JSON.stringify(d.review.errors||d.review.issues||[])!=='[]'?(d.review.errors||d.review.issues||[]).map(e=>e.explanation||e.message||e).join('；'):''}</p>}
    {d.modelReview&&<div className="model-review"><h4>模型语义审阅 · 非独立正确性证明</h4><p>{d.modelReview.summary}</p><p className="model-limit">模型判断可能遗漏或误判；逐条核对原文。确认例外只解除本稿的该项阻塞，保留原设定，不会修改故事记忆。</p>{d.modelReview.issues?.map((issue,i)=><p className={issue.severity==='error'?'warning':''} key={i}>{issue.explanation}<br/>依据：{issue.sourceQuote}</p>)}
     <section aria-label="已确认设定逐条审阅"><h4>已确认设定 · 逐条核对</h4>{ledger.length===0?<p>没有需逐条审阅的作者确认设定</p>:ledger.map(item=><article className="fact-review-item" style={{borderTop:'1px solid var(--line)',paddingTop:16,marginTop:16}} key={item.factId} data-fact-id={item.factId}>

@@ -31,7 +31,7 @@ The [evidence directory](history/memory-support-v1/) includes exact fixed inputs
 
 ## Product consequence and integration boundary
 
-Explicit per-candidate author selection, version binding, original evidence retention, reasoned overrides, rejection of all candidates and selected-only commits work as engineering controls. Missing/unsupported model judgments block ordinary keep. **A false `supported` judgment still enables ordinary keep**, and this pilot observed exactly that failure. Final author selection remains required, but it cannot be advertised as an automatic quote-entailment guarantee.
+Explicit per-candidate author selection, version binding, original evidence retention, reasoned overrides, rejection of all candidates and selected-only commits work as engineering controls. Missing/unsupported model judgments block ordinary keep. **At the audited source, a false `supported` judgment still enables ordinary keep**, and this pilot observed exactly that failure. Final author selection remains required, but it cannot be advertised as an automatic quote-entailment guarantee.
 
 The existing review combines whole-prose/canon review with candidate support assessment. Strong instructions did not prevent cross-candidate evidence borrowing in this run. A future design should evaluate genuinely isolated candidate evidence or a better claim/evidence representation, and validate it separately. That could change calls, tokens, latency or author interaction; no extra live experiment is included here.
 
@@ -40,3 +40,7 @@ The existing review combines whole-prose/canon review with candidate support ass
 The initial CI run had 50/54 browser cases pass; four failed only because the shared mounting helper required an intentionally empty candidate container to have visible dimensions. The test now verifies visible prose, attached candidate container and exact candidate count. Runtime safeguards and the failed/rejected-state assertions were unchanged.
 
 **This increment remains in draft PR #9 pending a decision on the failed live criterion.** It has not been merged into `dev_v1.0`, released to `main`, or deployed. The bounded audit is finished at its stopping condition; no further live calls are authorized by this result itself.
+
+## Later offline correction
+
+A subsequent unmerged implementation separates per-candidate auditing into a strict label+own-quote request and removes ordinary-keep authority from old bundled judgments. Its design and costs are documented [separately](../docs/public/ISOLATED-MEMORY-REVIEW.md). The v1 live CLI is retired before configuration or dispatch so it cannot rerun with a changed provider prompt; exact original provider/harness/test sources retain their original hashes in this audit's history. These maintenance changes do not alter the failed output or expectations above, and no isolated live result has been obtained.

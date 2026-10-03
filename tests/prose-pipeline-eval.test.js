@@ -248,7 +248,7 @@ test('frozen protocol, fixtures, harness and tests match separate manifest', asy
 test('new workflow scope is opt-in, no-rerun, credentials-isolated and artifact-allowlisted', async () => {
   const workflow = await readFile(new URL('../.github/workflows/live-smoke.yml', import.meta.url), 'utf8');
   assert.match(workflow, /default: review-probe/); assert.match(workflow, /prose-pipeline' && github.run_attempt == 1/);
-  assert.match(workflow, /options: \[journey, review-probe, generation-probe, quality-pilot, prose-pipeline, memory-support\]/);
+  assert.match(workflow, /options: \[journey, review-probe, generation-probe, quality-pilot, prose-pipeline, memory-support, isolated-memory-support\]/);
   const blocks = workflow.split(/\n      - name:/).slice(1);
   for (const block of blocks) {
     if (block.includes('scripts/prose-pipeline-eval.mjs')) {

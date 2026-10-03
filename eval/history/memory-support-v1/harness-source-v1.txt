@@ -98,13 +98,11 @@ export async function runMemorySupportEval({env=process.env,fetchImpl=globalThis
   throw Error('Memory support audit stopped; no automatic retry');
  }finally{current=null;}
 }
-/** The concluded v1 experiment cannot be dispatched with a later provider prompt. */
-export function assertV1LiveDispatchAllowed(){throw Error('COMPLETED_PROTOCOL_RETIRED');}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const directory='memory-support-evidence';
- try{assertV1LiveDispatchAllowed();approvedConfig(process.env);await mkdir(directory);await runMemorySupportEval({save:async(name,data)=>{
+ try{approvedConfig(process.env);await mkdir(directory);await runMemorySupportEval({save:async(name,data)=>{
   if(!ARTIFACT_NAMES.includes(name))fail('REQUEST_SETTINGS');
   if(name==='diagnostics.json'){await writeFile(`${directory}/.diagnostics.tmp`,JSON.stringify(data,null,2)+'\n');await rename(`${directory}/.diagnostics.tmp`,`${directory}/${name}`);}
   else await writeFile(`${directory}/${name}`,JSON.stringify(data,null,2)+'\n',{flag:'wx'});
- }});}catch(error){if(error?.message==='COMPLETED_PROTOCOL_RETIRED')console.error('memory-support-v1 is retired; no provider requests were sent');process.exitCode=1;}
+ }});}catch{process.exitCode=1;}
 }

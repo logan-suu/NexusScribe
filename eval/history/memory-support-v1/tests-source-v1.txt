@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {approvedConfig,protocol,ARTIFACT_NAMES,assessOutput,runMemorySupportEval,assertV1LiveDispatchAllowed} from '../scripts/memory-support-eval.mjs';
+import {approvedConfig,protocol,ARTIFACT_NAMES,assessOutput,runMemorySupportEval} from '../scripts/memory-support-eval.mjs';
 import {buildSupportFixtures} from '../eval/memory-support-fixtures.mjs';
 import {createAgentService} from '../server/provider.js';
 const env={NEXUS_MEMORY_SUPPORT_APPROVED:'true',NEXUS_LIVE_ENABLED:'true',NEXUS_OVERAGE_CONFIRMED_OFF:'true',NEXUS_API_KEY:'PRIVATE_TEST_KEY',GITHUB_ACTIONS:'true',GITHUB_RUN_ATTEMPT:'1',GITHUB_SHA:'a'.repeat(40),GITHUB_RUN_ID:'123'};
@@ -82,7 +82,7 @@ test('all approvals and first Actions attempt are mandatory; caller cannot chang
 });
 test('frozen audit source hashes and artifact allowlist match preregistration',async()=>{
  const manifest=JSON.parse(await readFile(new URL('../eval/memory-support-manifest.json',import.meta.url),'utf8'));
- for(const [path,sha] of Object.entries({...manifest.sha256,...manifest.maintenanceSha256})){const bytes=await readFile(new URL('../'+path,import.meta.url));assert.equal(createHash('sha256').update(bytes).digest('hex'),sha,path);}
+ for(const [path,sha] of Object.entries(manifest.sha256)){const bytes=await readFile(new URL('../'+path,import.meta.url));assert.equal(createHash('sha256').update(bytes).digest('hex'),sha,path);}
  assert.deepEqual(ARTIFACT_NAMES,['inputs.json','diagnostics.json','completed-01.json','completed-02.json','completed-03.json','completed-04.json']);
 });
 
@@ -94,13 +94,4 @@ test('workflow audit scope is explicit, first-attempt-only and artifact allowlis
  const artifact=workflow.split(/\n      - name:/).find(x=>x.includes('name: synthetic-memory-support-audit'));
  for(const name of ARTIFACT_NAMES)assert.ok(artifact.includes('memory-support-evidence/'+name));
  assert.ok(!artifact.includes('*.json'));assert.ok(!artifact.includes('completed-05'));
-});
-
-test('concluded v1 live entry point refuses dispatch before configuration or output writes',async()=>{
- assert.throws(()=>assertV1LiveDispatchAllowed(),/COMPLETED_PROTOCOL_RETIRED/);
- const source=await readFile(new URL('../scripts/memory-support-eval.mjs',import.meta.url),'utf8');
- const cli=source.slice(source.indexOf("if(process.argv[1]&&import.meta.url"));
- assert.ok(cli.indexOf('assertV1LiveDispatchAllowed();')>=0);
- assert.ok(cli.indexOf('assertV1LiveDispatchAllowed();')<cli.indexOf('approvedConfig(process.env)'));
- assert.match(cli,/no provider requests were sent/);
 });

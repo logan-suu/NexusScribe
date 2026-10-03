@@ -15,7 +15,7 @@ function mock({failAt,malformedAt}={}){
  const calls=[];const fetchImpl=async(url,options)=>{
   const body=JSON.parse(options.body),request=JSON.parse(body.messages[1].content);calls.push({url,options,body,request});
   if(request.action===failAt)throw new Error(`${env.NEXUS_API_KEY} prompt output sensitive upstream error`);
-  return response(request.action===malformedAt?{}:request.action==='reviewChapter'?{...fixtures.reviewChapter,memoryChecks:request.input.memoryCandidates.map(c=>({candidateId:c.candidateId,status:'supported',explanation:'合成夹具确认完整主张有原文支持'}))}:fixtures[request.action]);
+  return response(request.action===malformedAt?{}:fixtures[request.action]);
  };return {calls,fetchImpl};
 }
 test('all approval flags required before any network, missing credentials blocked',async()=>{
@@ -25,7 +25,7 @@ test('all approval flags required before any network, missing credentials blocke
 });
 test('successful smoke performs exactly five sequential validated calls, bounded output and summary-only logs',async()=>{
  const m=mock(),lines=[];const result=await runLiveSmoke({env,fetchImpl:m.fetchImpl,log:s=>lines.push(s)});
- assert.equal(result.passed,true);assert.equal(result.attempts,5);assert.equal(m.calls.length,5);assert.deepEqual(result.domainSummary,{stagedEvents:1,promotedEvents:1,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED',memoryDecisionPolicy:'synthetic-author-supported-only',keptCandidates:1,rejectedCandidates:0,overriddenCandidates:0});
+ assert.equal(result.passed,true);assert.equal(result.attempts,5);assert.equal(m.calls.length,5);assert.deepEqual(result.domainSummary,{stagedEvents:1,promotedEvents:0,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED',memoryDecisionPolicy:'synthetic-author-reject-all-no-isolated-audits',keptCandidates:0,rejectedCandidates:1,overriddenCandidates:0});
  assert.deepEqual(m.calls.map(c=>c.request.action),Object.keys(fixtures));assert.deepEqual(lines.filter(line=>!line.startsWith('domain')),Object.keys(fixtures).map(action=>`${action} PASS`));assert.deepEqual(result.domainResults.map(r=>r.action),['domainStage','domainReject','domainEdit','domainInterpret','domainReview','domainMemoryDecisions','domainAccept','domainUndo']);
  for(const call of m.calls){assert.equal(call.body.max_tokens,900);assert.equal(call.options.headers.Authorization,`Bearer ${env.NEXUS_API_KEY}`);assert.equal(call.options.redirect,'error');}
  const text=JSON.stringify({result,lines});for(const forbidden of [env.NEXUS_API_KEY,env.NEXUS_API_BASE_URL,env.NEXUS_API_MODEL,fixtures.generateChapter.text,'Authorization','messages'])assert.equal(text.includes(forbidden),false);
@@ -94,13 +94,11 @@ test('warning advisory is preserved while domain accept and compensation run wit
 
 test('empty model staging is reported as zero rather than fabricated event promotion',async()=>{
  let calls=0;const lines=[];const fetchImpl=async(url,options)=>{calls++;const {action}=JSON.parse(JSON.parse(options.body).messages[1].content);return response(action==='generateChapter'?{...fixtures.generateChapter,staging:[]}:fixtures[action]);};
- const result=await runLiveSmoke({env,fetchImpl,log:s=>lines.push(s)});assert.equal(calls,5);assert.deepEqual(result.domainSummary,{stagedEvents:0,promotedEvents:0,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED',memoryDecisionPolicy:'synthetic-author-supported-only',keptCandidates:0,rejectedCandidates:0,overriddenCandidates:0});assert.ok(lines.includes('domain METADATA '+JSON.stringify(result.domainSummary)));
+ const result=await runLiveSmoke({env,fetchImpl,log:s=>lines.push(s)});assert.equal(calls,5);assert.deepEqual(result.domainSummary,{stagedEvents:0,promotedEvents:0,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED',memoryDecisionPolicy:'synthetic-author-reject-all-no-isolated-audits',keptCandidates:0,rejectedCandidates:0,overriddenCandidates:0});assert.ok(lines.includes('domain METADATA '+JSON.stringify(result.domainSummary)));
 });
 
 
-test('smoke passes the exact original memory claims to review and explicitly rejects unsupported or missing judgments',async()=>{
- for(const status of ['unsupported','unknown','missing']){
-  let calls=0;const fetchImpl=async(url,options)=>{calls++;const {action,input}=JSON.parse(JSON.parse(options.body).messages[1].content);if(action==='reviewChapter'){assert.deepEqual(input.memoryCandidates,[{candidateId:'staged-1-1',label:'找到纸灯',sourceQuote:'小舟找到一盏纸灯。'}]);return response({...fixtures.reviewChapter,...(status==='missing'?{}:{memoryChecks:[{candidateId:input.memoryCandidates[0].candidateId,status,explanation:'合成夹具的完整主张支持检查'}]})});}return response(fixtures[action]);};
-  const result=await runLiveSmoke({env,fetchImpl,log:()=>{}});assert.equal(calls,5);assert.equal(result.domainSummary.promotedEvents,0);assert.equal(result.domainSummary.keptCandidates,0);assert.equal(result.domainSummary.rejectedCandidates,1);assert.equal(result.domainSummary.overriddenCandidates,0);assert.equal(result.domainSummary.memoryDecisionPolicy,'synthetic-author-supported-only');
- }
+test('historical five-call smoke omits candidates from general review, performs no isolated audit and deliberately rejects every memory',async()=>{
+ let calls=0;const actions=[];const fetchImpl=async(url,options)=>{calls++;const {action,input}=JSON.parse(JSON.parse(options.body).messages[1].content);actions.push(action);if(action==='reviewChapter')assert.equal(Object.hasOwn(input,'memoryCandidates'),false);return response(fixtures[action]);};
+ const result=await runLiveSmoke({env,fetchImpl,log:()=>{}});assert.equal(calls,5);assert.equal(actions.includes('auditMemoryCandidate'),false);assert.equal(result.domainSummary.promotedEvents,0);assert.equal(result.domainSummary.keptCandidates,0);assert.equal(result.domainSummary.rejectedCandidates,1);assert.equal(result.domainSummary.overriddenCandidates,0);assert.equal(result.domainSummary.memoryDecisionPolicy,'synthetic-author-reject-all-no-isolated-audits');
 });

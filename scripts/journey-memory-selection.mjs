@@ -1,6 +1,6 @@
 import {getMemoryReviewGate} from '../src/domain/engine.js';
 
-/** Offline decision plan for the explicitly approved browser journey. Never overrides a judgment. */
+/** Offline decision plan for the explicitly approved browser journey. Never overrides a judgment or adds a model request. Unaudited/bundled-only candidates are rejected. */
 export function planJourneyMemorySelection(state,draftId){
  const items=getMemoryReviewGate(state,draftId);
  if(items.some(item=>!item.canDecide))throw Error('MEMORY_SELECTION_NOT_CURRENT');
