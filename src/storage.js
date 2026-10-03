@@ -1,4 +1,5 @@
-import {createInitialState, getImpacts, getFactReviewGate, validatePatch, validateProseDraftRecord, hash} from './domain/engine.js';
+import {createInitialState, getImpacts, getFactReviewGate, validatePatch, validateProseDraftRecord, validateMemoryDraftRecord, hash} from './domain/engine.js';
+import {archiveMemoryReview, replaceMemoryCandidates} from './domain/memory-review.js';
 export const KEY='nexusscribe.demo.v1', BACKUP_KEY=KEY+'.last-good', QUARANTINE_KEY=KEY+'.preserved';
 export const MAX_BACKUP_BYTES=2*1024*1024;
 const bad=message=>{throw Error(message)};
@@ -30,13 +31,13 @@ function validateProject(p){
  for(const [id,t] of Object.entries(p.editing))if(!s.chapters.some(c=>c.id===id)||(t!==undefined&&!text(t)))bad('暂存正文格式无效');
  for(const k of s.knowledge)if(!Array.isArray(k.supportSets)||k.supportSets.some(a=>!Array.isArray(a)||a.some(x=>!text(x))))bad('认知来源格式无效');
  for(const d of s.drafts){
-  try{validateProseDraftRecord(d);}catch{bad('候选稿正文版本或记忆提取记录无效');}
+  try{validateProseDraftRecord(d);validateMemoryDraftRecord(d);}catch{bad('候选稿正文版本或记忆提取记录无效');}
   if(d.requiresExtraction!==undefined&&typeof d.requiresExtraction!=='boolean')bad('候选稿提取标记无效');
   if(d.requiresExtraction===true){
    if(d.projectId!==s.projectId)bad('候选稿提取记录不属于当前项目');
    for(const source of d.context.sources)if(!s.chapters.some(c=>c.id===source.chapterId&&c.revisions.some(r=>r.revision===source.revision&&r.text===source.text)))bad('候选稿来源正文版本无效');
   }
-  if(!text(d.id)||!text(d.text)||!integer(d.revision)||!object(d.chapterRevisions)||!Array.isArray(d.staging))bad('候选稿格式无效');for(const report of [d.review,d.modelReview])if(report!=null){if(!object(report))bad('审阅记录格式无效');for(const key of ['issues','errors','factLedger','factChecks'])if(report[key]!==undefined&&(!Array.isArray(report[key])||report[key].some(entry=>!(object(entry)||(['issues','errors'].includes(key)&&report===d.review&&text(entry))))))bad('审阅列表格式无效');}if(d.factDecisions!==undefined&&(!Array.isArray(d.factDecisions)||d.factDecisions.some(x=>!object(x))))bad('例外记录格式无效');}
+  if(!text(d.id)||!text(d.text)||!integer(d.revision)||!object(d.chapterRevisions)||!Array.isArray(d.staging))bad('候选稿格式无效');for(const report of [d.review,d.modelReview])if(report!=null){if(!object(report))bad('审阅记录格式无效');for(const key of ['issues','errors','factLedger','factChecks','memoryLedger','memoryChecks'])if(report[key]!==undefined&&(!Array.isArray(report[key])||report[key].some(entry=>!(object(entry)||(['issues','errors'].includes(key)&&report===d.review&&text(entry))))))bad('审阅列表格式无效');}if(d.factDecisions!==undefined&&(!Array.isArray(d.factDecisions)||d.factDecisions.some(x=>!object(x))))bad('例外记录格式无效');}
  if(s.config&&(!object(s.config)||(s.config.outline!==undefined&&(!Array.isArray(s.config.outline)||s.config.outline.some(x=>!object(x)&&!text(x))))))bad('故事约定格式无效');
  if(s.config){for(const key of ['idea','premise','protagonist','pov','tone','goal','boundaries'])if(s.config[key]!==undefined&&!text(s.config[key]))bad('故事约定文本格式无效');if(s.config.constraints!==undefined&&(!Array.isArray(s.config.constraints)||s.config.constraints.some(x=>!text(x))))bad('故事约定限制格式无效');}
  if(p.patch!==null&&p.patch!==undefined){if(!object(p.patch)||!Array.isArray(p.patch.operations)||!Array.isArray(p.patch.questions)||!Array.isArray(p.patch.intents))bad('待决补丁格式无效');displayTypes(p.patch);if(p.patch.operations.some(x=>!object(x))||p.patch.questions.some(x=>!text(x))||p.patch.intents.some(x=>!text(x)))bad('待决补丁内容格式无效');}
@@ -86,8 +87,8 @@ export function importBackup(current,backup,idFactory=()=>`import-${crypto.rando
   for(const d of clone.state.drafts){
    if(d.requiresExtraction&&d.extraction.binding)d.extraction.binding.contextHash=hash(JSON.stringify(d.context));
    if(!['ACCEPTED','REJECTED'].includes(d.status)){
-    d.review=null;d.modelReview=null;d.factDecisions=[];d.status='DRAFT';
-    if(d.requiresExtraction){d.staging=[];d.extraction={status:'pending',attempt:d.extraction.attempt+1,binding:null};}
+    archiveMemoryReview(d,'backup_imported');d.review=null;d.modelReview=null;d.factDecisions=[];d.status='DRAFT';
+    if(d.requiresExtraction){replaceMemoryCandidates(d,[]);d.extraction={status:'pending',attempt:d.extraction.attempt+1,binding:null};}
    }
   }
   return clone;

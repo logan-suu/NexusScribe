@@ -1,6 +1,6 @@
 /** Manual, opt-in network smoke. Never imported by the ordinary test suite to make live calls. */
 import assert from 'node:assert/strict';
-import {createProjectFromConfig,getContext,stageProviderDraft,rejectDraft,editDraft,saveRevision,attachSemanticReview,createReviewBinding,reviewDraft,acceptDraft,undoCommit,hash} from '../src/domain/engine.js';
+import {createProjectFromConfig,getContext,stageProviderDraft,rejectDraft,editDraft,saveRevision,attachSemanticReview,createReviewBinding,reviewDraft,acceptDraft,beginSemanticReview,createMemoryReviewInput,getMemoryReviewGate,decideMemoryCandidate,undoCommit,hash} from '../src/domain/engine.js';
 import {pathToFileURL} from 'node:url';
 import {createAgentService} from '../server/provider.js';
 const SAFE_CODES=new Set(['NOT_CONFIGURED','INVALID_INPUT','INVALID_MODEL_OUTPUT','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','OUTPUT_TRUNCATED','CALL_LIMIT','RATE_LIMIT','CONCURRENT_LIMIT']);
@@ -55,17 +55,22 @@ export async function runLiveSmoke({env=process.env,fetchImpl=globalThis.fetch,l
  const revisionBranch=saveRevision(revisionBase,chapterId,afterText,revisionBase.chapters[0].revision);
  await call(ACTIONS[3],{beforeText:generated.text,afterText,chapterId,context:getContext(revisionBranch)});
  domain('domainInterpret',()=>{assert.equal(JSON.stringify(original),originalSnapshot);assert.equal(JSON.stringify(edited),editedSnapshot);assert.equal(canonical(edited),originalCanon);});
- const expectedReview=createReviewBinding(edited,draftId);
- const modelReview=await call(ACTIONS[4],{text:afterText,chapterId,context:originalContext});
- const reviewed=domain('domainReview',()=>{const d=edited.drafts[0];const attached=attachSemanticReview(edited,draftId,modelReview,expectedReview);const state=reviewDraft(attached,draftId);assert.deepEqual(state.drafts[0].modelReview.issues,modelReview.issues);assert.equal(state.drafts[0].review.passed,true);assert.equal(canonical(state),originalCanon);return state;});
+ const reviewStarted=beginSemanticReview(reviewDraft(edited,draftId),draftId);
+ const expectedReview=createReviewBinding(reviewStarted,draftId);
+ const modelReview=await call(ACTIONS[4],{text:afterText,chapterId,context:originalContext,memoryCandidates:createMemoryReviewInput(reviewStarted,draftId)});
+ const reviewed=domain('domainReview',()=>{const attached=attachSemanticReview(reviewStarted,draftId,modelReview,expectedReview);const state=attached;assert.deepEqual(state.drafts[0].modelReview.issues,modelReview.issues);assert.equal(state.drafts[0].review.passed,true);assert.equal(canonical(state),originalCanon);return state;});
  if(modelReview.issues.some(issue=>issue.severity==='error')){
   domain('domainRejectReview',()=>assert.throws(()=>acceptDraft(reviewed,draftId),{code:'SEMANTIC_REVIEW_ERRORS'}));
   log(`domain METADATA ${JSON.stringify({stagedEvents:reviewed.drafts[0].staging.length,promotedEvents:0,acceptedChapters:0,acceptance:'BLOCKED'})}`);
   stop('domainAccept','DOMAIN_REVIEW_BLOCKED');
  }
- const accepted=domain('domainAccept',()=>{const state=acceptDraft(reviewed,draftId);assert.equal(state.chapters[0].text,afterText);assert.equal(state.drafts[0].status,'ACCEPTED');const supported=reviewed.drafts[0].staging.filter(event=>afterText.includes(event.sourceQuote));assert.equal(state.events.length,original.events.length+supported.length);assert.deepEqual(state.events.map(event=>event.source.quote),supported.map(event=>event.sourceQuote));assert.ok(state.events.every(event=>event.source.chapterId===chapterId&&event.status==='confirmed'&&afterText.includes(event.source.quote)));assert.deepEqual(state.facts,original.facts);assert.equal(JSON.stringify(original),originalSnapshot);return state;});
+ // This invented-story smoke explicitly simulates an author choosing supported originals
+ // and rejecting every unsupported or missing assessment. It never overrides unknown.
+ const decided=domain('domainMemoryDecisions',()=>{let state=reviewed;for(const item of getMemoryReviewGate(state,draftId))state=decideMemoryCandidate(state,draftId,{candidateId:item.candidateId,action:item.canKeep?'keep':'reject',reason:'合成烟测模拟作者逐条选择：仅保留获支持的完整主张，其余全部拒绝',reviewHash:item.reviewHash},item.binding);assert.ok(getMemoryReviewGate(state,draftId).every(item=>item.resolved));return state;});
+ const memoryDecisions=decided.drafts[0].memoryDecisions;
+ const accepted=domain('domainAccept',()=>{const state=acceptDraft(decided,draftId);assert.equal(state.chapters[0].text,afterText);assert.equal(state.drafts[0].status,'ACCEPTED');const supported=decided.drafts[0].staging.filter(event=>memoryDecisions.some(decision=>decision.candidateId===event.id&&decision.action==='keep'));assert.equal(state.events.length,original.events.length+supported.length);assert.deepEqual(state.events.map(event=>event.source.quote),supported.map(event=>event.sourceQuote));assert.ok(state.events.every(event=>event.source.chapterId===chapterId&&event.status==='confirmed'&&afterText.includes(event.source.quote)));assert.deepEqual(state.facts,original.facts);assert.equal(JSON.stringify(original),originalSnapshot);return state;});
  domain('domainUndo',()=>{const commit=accepted.commits.at(-1),state=undoCommit(accepted,commit.id);assert.equal(canonical(state),originalCanon);assert.equal(state.chapters[0].text,afterText);assert.deepEqual(state.chapters[0].revisions,accepted.chapters[0].revisions);assert.equal(state.commits.at(-1).kind,'compensation');assert.equal(state.commits.at(-1).undoes,commit.id);assert.ok(state.commits.some(item=>item.id===commit.id));});
- const domainSummary={stagedEvents:staged.drafts[0].staging.length,promotedEvents:accepted.events.length-original.events.length,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED'};
+ const domainSummary={stagedEvents:staged.drafts[0].staging.length,promotedEvents:accepted.events.length-original.events.length,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED',memoryDecisionPolicy:'synthetic-author-supported-only',keptCandidates:memoryDecisions.filter(item=>item.action==='keep').length,rejectedCandidates:memoryDecisions.filter(item=>item.action==='reject').length,overriddenCandidates:0};
  log(`domain METADATA ${JSON.stringify(domainSummary)}`);
  // Pure in-memory domain checks do not establish independent semantic truth.
  return {kind:'bounded-connectivity-contract-smoke',scope,passed:true,attempts:service.status().callsUsed,results,domainResults,domainSummary};

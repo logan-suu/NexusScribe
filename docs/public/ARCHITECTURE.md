@@ -53,3 +53,13 @@ three-chapter live UI journey with interview, planning and one revision
 interpretation now needs twelve calls if every phase succeeds; the manual journey
 already has a twelve-call explicit cap. The application never silently raises
 that default or starts additional calls to finish a budget-blocked project.
+
+## Candidate-specific support and promotion
+
+`reviewChapter` now receives `memoryCandidates` with program-owned IDs, original labels and exact source quotes, and may return `memoryChecks` (`supported`, `unsupported`, `unknown`). Each complete claim must be judged only against its own quote, without borrowing a neighboring paragraph, planning context or instructions embedded in the story. Server, browser and domain reject foreign/duplicate IDs and malformed checks. Missing/partial checks become unknown; they never imply support.
+
+Every staged candidate needs an explicit keep/reject decision. Ordinary keep requires a current model-supported assessment; a reasoned author override can retain an unsupported/unknown candidate while preserving its original label, evidence and judgment. Offline templates require an explicit override to retain unassessed memory. Successful empty extraction or explicit rejection of every candidate is valid; failed/cancelled extraction is never a valid empty result. The final acceptance confirmation commits only selected candidates. Existing canon-conflict, generic error, source-version and extraction gates remain independent.
+
+Exact snapshot bindings supplement hashes for candidate decisions. Per-draft immutable snapshot/authority records are shared and referenced by identity from decisions, events and commits, rather than duplicating complete text/context/reviews for every click. Re-review, draft edits, re-extraction and import invalidate old active authority; original candidate snapshots and prior decisions remain in the audit. Imported data is still unsigned local JSON, not an authentication or anti-tampering boundary. Historical accepted records remain historical and are not retroactively called semantically verified.
+
+One existing review call is extended, so routine call count is unchanged. This trades more review tokens and author interaction for explicit promotion control. Single-paragraph evidence remains intentionally conservative; no automatic claim splitting, multi-span reconstruction, rewriting or model-based deletion is added. A model-supported label can still be wrong. The [four-call synthetic audit](../../eval/MEMORY-SUPPORT-PROTOCOL.md) is an unblinded pilot, not a precision/recall or literary-quality result.

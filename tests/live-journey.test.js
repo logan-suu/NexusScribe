@@ -31,3 +31,26 @@ test('journey logs only allowlisted validation reason, never model diagnostics',
   await assert.rejects(guard.run('generateChapter',{}));assert.deepEqual(logs,reason==='STAGING_QUOTE_MISMATCH'?['provider INVALID_MODEL_OUTPUT 1','validation STAGING_QUOTE_MISMATCH']:['provider INVALID_MODEL_OUTPUT 1']);
  }
 });
+
+
+// The optional live journey must exercise the same explicit selection and final-confirmation UI.
+import {planJourneyMemorySelection} from '../scripts/journey-memory-selection.mjs';
+import * as engine from '../src/domain/engine.js';
+import {readFileSync} from 'node:fs';
+function memoryFixture(statuses=['supported','unsupported',null]){
+ let state=engine.createProjectFromConfig({projectId:'journey-memory'});state=engine.stageProseDraft(state,{text:'小舟举起纸灯。\n他走向北门。\n风停了。',provider:{id:'mock',isLive:true},context:engine.getContext(state)},'ch1');const id=state.drafts[0].id;state=engine.beginMemoryExtraction(state,id);state=engine.attachMemoryExtraction(state,id,{staging:statuses.map((_,i)=>({label:`候选${i+1}`,sourceParagraphIndex:i})),reviewNotes:[],provider:'mock'},engine.createExtractionBinding(state,id));state=engine.reviewDraft(state,id);const checks=engine.createMemoryReviewInput(state,id).flatMap((c,i)=>statuses[i]?[{candidateId:c.candidateId,status:statuses[i],explanation:'合成测试判断'}]:[]);return engine.attachSemanticReview(state,id,{summary:'合成测试',issues:[],checks:[],factChecks:[],memoryChecks:checks,provider:'mock'},engine.createReviewBinding(state,id));
+}
+test('journey keeps only supported current claims, explicitly rejects unsupported and missing checks, and reports counts',()=>{
+ const state=memoryFixture(),before=structuredClone(state),selection=planJourneyMemorySelection(state,state.drafts[0].id);
+ assert.deepEqual(selection.decisions.map(c=>c.action),['keep','reject','reject']);assert.equal(selection.selected,1);assert.equal(selection.rejected,2);assert.equal(selection.total,3);assert.deepEqual(state,before);
+ assert.deepEqual(selection.decisions.map(c=>c.candidateId),engine.createMemoryReviewInput(state,state.drafts[0].id).map(c=>c.candidateId));assert.ok(selection.decisions.every(c=>c.action!=='override_keep'));
+});
+test('journey supports reject-all and successful empty extraction without inventing selected memory',()=>{
+ for(const statuses of [['unsupported','unknown',null],[]]){const state=memoryFixture(statuses),selection=planJourneyMemorySelection(state,state.drafts[0].id);assert.equal(selection.selected,0);assert.equal(selection.rejected,statuses.length);assert.equal(selection.total,statuses.length)}
+});
+test('journey refuses a stale nonempty decision surface',()=>{
+ const state=memoryFixture();state.version++;assert.throws(()=>planJourneyMemorySelection(state,state.drafts[0].id),/MEMORY_SELECTION_NOT_CURRENT/);
+});
+test('journey uses visible memory choices and final confirmation with no automatic override or extra request',()=>{
+ const source=readFileSync(new URL('../scripts/live-writing-journey.mjs',import.meta.url),'utf8');assert.match(source,/planJourneyMemorySelection/);assert.match(source,/choice.action==='keep'\?'保留':'拒绝'/);assert.match(source,/await click\('确认接受正文与所选记忆'\)/);assert.match(source,/SELECTED_MEMORY/);assert.doesNotMatch(source,/click\('确认作者例外保留'\)/);assert.doesNotMatch(source,/call\('确认接受正文与所选记忆'\)/);
+});

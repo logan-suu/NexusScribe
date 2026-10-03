@@ -18,6 +18,8 @@ const extracted=(s=fresh(),entries=[event])=>{
  s=begin(s);return e.attachMemoryExtraction(s,id(s),report(entries),e.createExtractionBinding(s,id(s)));
 };
 const reviewed=(s=extracted())=>e.reviewDraft(s,id(s));
+
+const selected=s=>{for(const row of e.getMemoryReviewGate(s,id(s)))s=e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action:row.canKeep?'keep':'override_keep',reason:'测试作者明确核对并保留完整候选',reviewHash:row.reviewHash},row.binding);return s;};
 const backup=s=>({format:1,serial:0,state:s,editing:{},patch:null});
 const advisory={summary:'需要作者核对的模型候选审查',checks:[],issues:[],factChecks:[],provider:'fixture-review'};
 
@@ -82,7 +84,7 @@ test('valid empty extraction is complete and can pass review and author acceptan
  assert.equal(s.drafts[0].status,'ACCEPTED');assert.equal(s.events.length,0);assert.equal(s.chapters[0].text,raw);
 });
 test('accepted extraction source matches revision-local paragraph ID and exact offsets',()=>{
- let s=e.acceptDraft(reviewed(),id(reviewed()));const c=s.chapters[0],event=s.events[0],p=c.revisions.at(-1).paragraphs[1];
+ let s=e.acceptDraft(selected(reviewed()),id(reviewed()));const c=s.chapters[0],event=s.events[0],p=c.revisions.at(-1).paragraphs[1];
  assert.equal(event.source.paragraphId,p.id);assert.equal(event.source.quote,p.text);
  assert.equal(c.text.slice(event.source.start,event.source.end),p.text);assert.equal(event.source.start,p.start);
  const patch=e.proposeCustomPatch(s,'ch1',{intent:'author_fact',statement:p.text});
@@ -153,7 +155,7 @@ test('same-text re-extraction invalidates a pending or completed semantic review
  s=e.attachSemanticReview(s,key,advisory,old);s=e.reviewDraft(s,key);s=extracted(s);const current=e.createReviewBinding(s,key);
  assert.notEqual(current.extractionAttempt,old.extractionAttempt);assert.equal(s.drafts[0].modelReview,null);
  assert.throws(()=>e.attachSemanticReview(s,key,advisory,old),{code:'STALE_SEMANTIC_REVIEW'});
- s=e.attachSemanticReview(s,key,advisory,current);s=e.reviewDraft(s,key);assert.equal(e.acceptDraft(s,key).drafts[0].status,'ACCEPTED');
+ s=e.attachSemanticReview(s,key,advisory,current);s=e.reviewDraft(s,key);assert.equal(e.acceptDraft(selected(s),key).drafts[0].status,'ACCEPTED');
 });
 test('new extraction retains mandatory fact-conflict decisions and never changes Canon',()=>{
  let s=e.createProjectFromConfig({projectId:'fact-pipeline',chapters:[{text:'纸灯是蓝色的。'}]});
@@ -172,7 +174,7 @@ test('bypassing extraction flag or tampering staging/paragraph evidence fails cl
 });
 test('backup round-trips pending, failed, complete, accepted and rejected prose snapshots',()=>{
  let s=begin(fresh());const failed=e.markExtractionFailure(s,id(s),e.createExtractionBinding(s,id(s)));
- for(const state of [fresh(),s,failed,extracted(),reviewed(),e.acceptDraft(reviewed(),id(reviewed())),e.rejectDraft(extracted(),id(extracted()))]){
+ for(const state of [fresh(),s,failed,extracted(),reviewed(),e.acceptDraft(selected(reviewed()),id(reviewed())),e.rejectDraft(extracted(),id(extracted()))]){
   const w=backup(state);assert.deepEqual(parseBackup(JSON.stringify(w)),w);
  }
 });
@@ -191,7 +193,7 @@ test('import invalidates all pending extraction/review authority but preserves r
  const retried=extracted(imported.state);assert.equal(e.hasCurrentExtraction(retried,d.id),true);
 });
 test('import preserves accepted historical prose/evidence while remapping its audited origin',()=>{
- const accepted=e.acceptDraft(reviewed(),id(reviewed())),source=backup(accepted),current=backup(e.createProjectFromConfig({projectId:'import-current'}));
+ const accepted=e.acceptDraft(selected(reviewed()),id(reviewed())),source=backup(accepted),current=backup(e.createProjectFromConfig({projectId:'import-current'}));
  const imported=importBackup(current,source,()=> 'historical-prose');
  assert.equal(imported.state.drafts[0].status,'ACCEPTED');assert.equal(imported.state.events[0].source.quote,accepted.events[0].source.quote);
  assert.deepEqual(parseBackup(JSON.stringify(imported)),imported);

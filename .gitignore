@@ -37,3 +37,6 @@ writing-quality-evidence/
 
 # Synthetic bounded prose-pipeline evidence is uploaded by its allowlist only.
 prose-pipeline-evidence/
+
+# Synthetic support audit artifacts are uploaded by allowlist only.
+memory-support-evidence/

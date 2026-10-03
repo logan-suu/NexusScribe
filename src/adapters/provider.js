@@ -20,6 +20,28 @@ export function createInjectedProvider(implementation){return validateProvider(i
 const object=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const nonempty=value=>typeof value==='string'&&value.trim().length>0;
 const safeKey=key=>typeof key==='string'&&/^[A-Za-z][A-Za-z0-9_]*$/.test(key)&&!['__proto__','prototype','constructor'].includes(key);
+// Repeat memory binding validation at the browser boundary. Injected HTTP results
+// must not manufacture positive checks or repair the author's candidate evidence.
+function validateMemoryCandidates(input){
+ if(!object(input)||!Object.hasOwn(input,'memoryCandidates'))return [];
+ const candidates=input.memoryCandidates,seen=new Set();
+ if(!Array.isArray(candidates)||candidates.length>30)throw Error('记忆候选格式或正文来源无效，请重试');
+ for(const candidate of candidates){
+  if(!object(candidate)||Object.keys(candidate).some(key=>!['candidateId','label','sourceQuote'].includes(key))||!nonempty(candidate.candidateId)||candidate.candidateId.length>200||!nonempty(candidate.label)||candidate.label.length>1000||!nonempty(candidate.sourceQuote)||candidate.sourceQuote.length>30000||typeof input.text!=='string'||!input.text.includes(candidate.sourceQuote)||seen.has(candidate.candidateId))throw Error('记忆候选格式或正文来源无效，请重试');
+  seen.add(candidate.candidateId);
+ }
+ return candidates;
+}
+function validateMemoryChecks(output,input){
+ const candidates=validateMemoryCandidates(input);
+ if(!Object.hasOwn(output,'memoryChecks'))return;
+ const checks=output.memoryChecks,seen=new Set();
+ if(!Array.isArray(checks)||checks.length>30)throw Error('记忆支持审查结果格式无效，请重试');
+ for(const check of checks){
+  if(!object(check)||Object.keys(check).some(key=>!['candidateId','status','explanation'].includes(key))||!nonempty(check.candidateId)||check.candidateId.length>200||candidates.filter(candidate=>candidate.candidateId===check.candidateId).length!==1||seen.has(check.candidateId)||!['supported','unsupported','unknown'].includes(check.status)||!nonempty(check.explanation)||check.explanation.length>4000)throw Error('记忆支持审查结果格式或候选标识无效，请重试');
+  seen.add(check.candidateId);
+ }
+}
 export function validateActionOutput(action,output,input){
  if(!object(output))throw Error('生成服务返回了无效结果，请重试');
  if(action==='interview'&&(!Array.isArray(output.questions)||output.questions.length>6||output.questions.some(q=>!object(q)||!safeKey(q.key)||!nonempty(q.title)||(q.options!==undefined&&(!Array.isArray(q.options)||q.options.some(x=>typeof x!=='string'))))))throw Error('访谈结果格式无效，请重试');
@@ -35,7 +57,10 @@ export function validateActionOutput(action,output,input){
   }))throw Error('记忆提取结果格式或正文定位无效；已保存的正文保持不变');
  }
  if(action==='interpretRevision'&&((!Array.isArray(output.operations)&&!Array.isArray(output.suggestedFacts))||!Array.isArray(output.questions)))throw Error('修改解释结果格式无效，请重试');
- if(action==='reviewChapter'&&!Array.isArray(output.issues))throw Error('章节审查结果格式无效，请重试');
+ if(action==='reviewChapter'){
+  if(!Array.isArray(output.issues))throw Error('章节审查结果格式无效，请重试');
+  validateMemoryChecks(output,input);
+ }
  return output;
 }
 export function createServerProvider({fetchImpl=(...args)=>globalThis.fetch(...args),baseUrl='/api',timeoutMs=120000}={}){
@@ -66,6 +91,7 @@ export function createServerProvider({fetchImpl=(...args)=>globalThis.fetch(...a
  }
  const provider={...identity,async getStatus(){const status=await request('/status');if(typeof status?.configured!=='boolean')throw Error('生成服务状态格式无效');return status;}};
  for(const action of CAPABILITIES)provider[action]=async (input,{signal}={})=>{
+  if(action==='reviewChapter'&&!signal?.aborted)validateMemoryCandidates(input);
   const payload=await request('/agent',{action,input},{signal});
   const output=validateActionOutput(action,payload?.output,input);
   if(action==='generateChapter')return {...output,provider:{...identity,...(object(payload.provider)?payload.provider:{}),...(object(output.provider)?output.provider:{}),isLive:true},...(payload.model?{model:payload.model}:{}),status:'candidate',baseVersion:input?.context?.stateVersion??input?.context?.version??null,staging:Array.isArray(output.staging)?output.staging:[]};
