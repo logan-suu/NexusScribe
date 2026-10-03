@@ -8,7 +8,7 @@ NexusScribe is an author-guided fiction-writing workspace built around **version
 
 The current prototype focuses on Chinese fiction and has a Chinese-language interface. It runs locally with an offline template mode and an opt-in, server-side model adapter.
 
-> **Project status:** working prototype. One bounded real-provider test passed all five actions and guarded in-memory acceptance/undo. Desktop/mobile browser tests use a mock provider. A combined live-browser test, literary quality, general semantic reliability, and cost characterization remain unverified. See the [acceptance record](docs/public/ACCEPTANCE.md).
+> **Project status:** working prototype. Historical bounded live tests apply to their recorded revisions. The current prose-first path saves prose before independent extraction; its verification is recorded separately. Literary quality, general semantic reliability and billed cost remain unproven. See the [acceptance record](docs/public/ACCEPTANCE.md).
 
 ## Why narrative memory?
 
@@ -25,12 +25,12 @@ A small edit can change a relationship, invalidate a future scene, or alter what
 
 1. **Explore an idea.** Answer focused interview questions about characters, tone, perspective, goals, and boundaries.
 2. **Agree on the story.** Edit the proposed story agreement and three-chapter outline before confirming them.
-3. **Write a chapter.** Generate a candidate, edit the prose, and inspect proposed events and review results.
+3. **Write a chapter.** Save raw candidate prose first, then explicitly extract proposed memories, inspect their exact evidence, and review. Editing invalidates extraction and review.
 4. **Accept or reject.** Accepted candidates update the story state; rejected candidates stay outside Canon.
 5. **Revise with evidence.** Save manuscript edits, inspect proposed memory updates and their source excerpts, then explicitly confirm the changes.
 6. **Continue and preserve.** Move between chapters and projects, inspect version history, and export manuscript text or a JSON backup.
 
-Offline mode supports the three-chapter template workflow. The server adapter implements five model actions: interview, story planning, chapter generation, revision interpretation, and chapter review. Model output remains a proposal throughout.
+Offline mode supports the three-chapter template workflow. The normal live flow uses interview, planning, prose generation, independent memory extraction, revision interpretation and review. The strict legacy chapter action remains available as a comparator. Writing + extraction + review now requires three model calls per successful chapter, one more than before; no cost or latency savings are promised. Model output remains a proposal throughout.
 
 ## Quick start
 
@@ -176,3 +176,11 @@ Model actions show the action being performed and a waiting/result/failure statu
 Results are bound to the initiating request and exact project, manuscript/draft state, pending edits, chapter selection, and mode. If these change, the response is discarded. Cancelling an older request cannot clear or apply a newer request. Reload does not resume a model request; saved text and pending edits retain their existing persistence behavior. Failure/cancellation never accepts candidate prose or commits story memory.
 
 The task panel displays only numeric token counters reported by the provider through the server. Missing counters, including unavailable usage after cancellation or failure, are shown as unknown. No total is inferred, and no currency cost or billing cap is estimated. These controls and their fake-provider tests do not establish real-model quality or actual billing behavior.
+
+## Prose survives extraction failures
+
+The runtime owns raw draft versions, paragraph IDs, exact offsets and evidence quotes. A separate extractor proposes events; it cannot rewrite prose or accept memories. Failed/cancelled extraction preserves the saved draft and blocks acceptance until a current extraction and review complete. Author-confirmed fact conflict/unknown gates remain enforced. A local save failure retains a new draft in memory with export/retry controls, without claiming durable storage.
+
+The earlier writing-quality pilot still has zero complete pairs. A new [nine-call architecture protocol](eval/PROSE-PIPELINE-PROTOCOL.md) compares the unchanged legacy action with prose + extraction using the same synthetic story input. Protocol success and literary quality are separate outcomes.
+
+The first prose-first architecture pilot stopped at request six with one complete pair. Both new prose/extraction cases passed structure; the second legacy comparator failed JSON parsing. A saved extraction label also overreached its quoted paragraph. See the [full outcome and measured usage/latency](eval/PROSE-PIPELINE-RESULTS.md); no literary superiority or cost saving is established.

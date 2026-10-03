@@ -157,3 +157,33 @@ does not guarantee that provider processing or billing stops. Only provider-repo
 numeric token counters are displayed; missing usage is unknown, totals are not
 inferred, and no price estimate is made. These tests do not establish real-model
 quality, actual billing behavior, or production durability.
+
+## Prose-first implementation checkpoint (2026-10-03)
+
+Source `77def9cb3a49cd6285e1dac116dace3ffea7f9b3`, initially opened as draft
+[PR #8](https://github.com/logan-suu/NexusScribe/pull/8), passed
+[CI 37096242786](https://github.com/logan-suu/NexusScribe/actions/runs/37096242786):
+325 unit/contract tests, seven simulated DOM workflow suites, production build,
+and 32 Chromium scenarios across desktop and mobile. Independent code review
+found and reproduced one evaluation persistence/timeout race; the fix was
+independently rechecked before publication. CodeRabbit was unavailable in the
+files-only cloud workspace, so no CodeRabbit result is claimed.
+
+The new tests cover exact raw prose preservation, deterministic Unicode/CRLF
+paragraph offsets, immutable edited versions, separate extraction, malformed
+and missing extraction, explicit retries, cancelled and stale completions,
+source/context changes, import invalidation, faulted browser storage, model
+review and existing author-fact conflict gates. The unchanged legacy generation
+contract remains independently tested. Desktop/mobile screenshots were inspected
+for the evidence cards and failure status; controls and quotes were readable,
+buttons wrapped on mobile, and the tested overflow assertions passed.
+
+These are engineering checks with synthetic/fake providers. They do not prove
+literary quality, general extraction accuracy, billing behavior, cross-browser
+reliability, production durability or a real-provider end-to-end authoring UI.
+The new bounded live architecture experiment is recorded separately; earlier
+real journeys apply only to their original revisions.
+
+The separately bounded [live architecture pilot](../../eval/PROSE-PIPELINE-RESULTS.md) stopped at request six: five stages succeeded, one of three pairs completed, and legacy warm-fantasy generation failed JSON parsing. Both new prose/extraction cases passed structure; one inspected label overreached its quoted paragraph. No literary score, general semantic accuracy, or cost-saving claim is made.
+
+Semantic acceptance boundary: the current model reviewer receives candidate prose and confirmed facts, not extracted event labels. It does not automatically flag a label that exceeds an otherwise valid paragraph quote. The UI now explicitly tells the author that accepting the version commits the displayed memory proposals and requires their own label/quote inspection. Per-event keep/reject/edit and reliable label-entailment review remain open work; no automated semantic guarantee is claimed.

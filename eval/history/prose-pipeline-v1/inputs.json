@@ -1,0 +1,562 @@
+{
+  "protocol": {
+    "id": "prose-pipeline-v1",
+    "version": 1,
+    "model": "deepseek-v4.1-flash",
+    "temperature": 0.7,
+    "maxTokens": 3000,
+    "maxCalls": 9,
+    "thinking": "disabled",
+    "minimumGapMs": 11000,
+    "target": "450–600 Chinese characters",
+    "seed": null,
+    "arms": {
+      "legacy": [
+        "generateChapter"
+      ],
+      "proseFirst": [
+        "generateProse",
+        "extractMemory"
+      ]
+    },
+    "fixtureOrder": [
+      "mystery",
+      "warm-fantasy",
+      "slice-of-life"
+    ]
+  },
+  "inputs": [
+    {
+      "fixture": "mystery",
+      "input": {
+        "project": {
+          "projectId": "quality-mystery",
+          "title": "雨夜寄存室",
+          "idea": "修表师替邻居寻找一封没有署名的信。",
+          "protagonist": "程岚",
+          "tone": "克制、带一点干涩幽默",
+          "pov": "第三人称限知，只跟随程岚",
+          "goal": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+          "boundaries": "纯虚构。写450–600个汉字的一场戏，4–7段，只写当前场景。人物声音：程岚用简短、实物相关的干涩回应；阿陶着急但不咄咄逼人。阿陶不能无来源知道车票内容；本场景不向他揭露；不能把左耳听声写成真实感知；寄信人保持未知。不写评析。",
+          "constraints": [
+            "阿陶不能无来源知道车票内容；本场景不向他揭露",
+            "不能把左耳听声写成真实感知",
+            "寄信人保持未知"
+          ],
+          "outline": [
+            {
+              "id": "chapter-1",
+              "title": "此前",
+              "goal": "仅作参考"
+            },
+            {
+              "id": "chapter-2",
+              "title": "雨夜寄存室",
+              "goal": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+              "scene": "雨夜，寄存室；程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索；结尾决定明早问管理员"
+            },
+            {
+              "id": "chapter-3",
+              "title": "以后",
+              "goal": "未来计划，不可当作已发生"
+            }
+          ],
+          "chapters": [
+            {
+              "text": "程岚的左耳听不见。她把右耳转向柜门，还是只听到水管响。阿陶说：“你总得问点什么。”她说：“先问这锁，收费低。”阿陶不知道信封里装的是一张旧车票。程岚没有拆穿，只把信封压在修表垫下。"
+            },
+            {
+              "text": "【创作规划，尚非生成正文】雨夜，寄存室；程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索；结尾决定明早问管理员"
+            },
+            {
+              "text": "【创作规划，尚非生成正文】后续发展未定。"
+            }
+          ]
+        },
+        "chapterIndex": 1,
+        "chapterId": "chapter-2",
+        "context": {
+          "constitution": {
+            "title": "雨夜寄存室",
+            "idea": "修表师替邻居寻找一封没有署名的信。",
+            "protagonist": "程岚",
+            "tone": "克制、带一点干涩幽默",
+            "pov": "第三人称限知，只跟随程岚",
+            "goal": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+            "boundaries": "纯虚构。写450–600个汉字的一场戏，4–7段，只写当前场景。人物声音：程岚用简短、实物相关的干涩回应；阿陶着急但不咄咄逼人。阿陶不能无来源知道车票内容；本场景不向他揭露；不能把左耳听声写成真实感知；寄信人保持未知。不写评析。"
+          },
+          "projectId": "quality-mystery",
+          "version": 3,
+          "view": "writer",
+          "sceneTime": 3,
+          "pov": "程岚",
+          "facts": [
+            {
+              "id": "author-fact-author-patch-quality-mystery-ch1-1-1-b127efa7",
+              "projectId": "quality-mystery",
+              "label": "程岚的左耳听不见。",
+              "value": "程岚的左耳听不见。",
+              "predicate": "作者确认的设定",
+              "subject": "作者决定",
+              "status": "confirmed",
+              "authority": "explicit_author_decision",
+              "recordVersion": 1,
+              "recordedFromVersion": 2,
+              "source": {
+                "chapterId": "ch1",
+                "revision": 1,
+                "revisionId": "ch1-r1",
+                "paragraphId": "p1",
+                "quote": "程岚的左耳听不见。",
+                "start": 0,
+                "end": 9
+              }
+            },
+            {
+              "id": "author-fact-author-patch-quality-mystery-ch1-1-2-4d6bb27a",
+              "projectId": "quality-mystery",
+              "label": "阿陶不知道信封里装的是一张旧车票。",
+              "value": "阿陶不知道信封里装的是一张旧车票。",
+              "predicate": "作者确认的设定",
+              "subject": "作者决定",
+              "status": "confirmed",
+              "authority": "explicit_author_decision",
+              "recordVersion": 1,
+              "recordedFromVersion": 3,
+              "source": {
+                "chapterId": "ch1",
+                "revision": 1,
+                "revisionId": "ch1-r1",
+                "paragraphId": "p1",
+                "quote": "阿陶不知道信封里装的是一张旧车票。",
+                "start": 55,
+                "end": 72
+              }
+            }
+          ],
+          "knowledge": [],
+          "forbiddenReveals": [
+            "阿陶不能无来源知道车票内容；本场景不向他揭露",
+            "不能把左耳听声写成真实感知",
+            "寄信人保持未知"
+          ],
+          "plans": [
+            {
+              "id": "outline-1",
+              "title": "此前",
+              "chapter": 1,
+              "description": "仅作参考",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            },
+            {
+              "id": "outline-2",
+              "title": "雨夜寄存室",
+              "chapter": 2,
+              "description": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            },
+            {
+              "id": "outline-3",
+              "title": "以后",
+              "chapter": 3,
+              "description": "未来计划，不可当作已发生",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            }
+          ],
+          "obligations": [],
+          "sources": [
+            {
+              "chapterId": "ch1",
+              "revision": 1,
+              "revisionId": "ch1-r1",
+              "text": "程岚的左耳听不见。她把右耳转向柜门，还是只听到水管响。阿陶说：“你总得问点什么。”她说：“先问这锁，收费低。”阿陶不知道信封里装的是一张旧车票。程岚没有拆穿，只把信封压在修表垫下。",
+              "channel": "original_text"
+            },
+            {
+              "chapterId": "ch2",
+              "revision": 1,
+              "revisionId": "ch2-r1",
+              "text": "【创作规划，尚非生成正文】雨夜，寄存室；程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索；结尾决定明早问管理员",
+              "channel": "original_text"
+            },
+            {
+              "chapterId": "ch3",
+              "revision": 1,
+              "revisionId": "ch3-r1",
+              "text": "【创作规划，尚非生成正文】后续发展未定。",
+              "channel": "original_text"
+            }
+          ],
+          "summaries": [],
+          "support": {
+            "status": "unsupported",
+            "validPaths": [],
+            "sourceIds": []
+          },
+          "staging": []
+        }
+      }
+    },
+    {
+      "fixture": "warm-fantasy",
+      "input": {
+        "project": {
+          "projectId": "quality-warm-fantasy",
+          "title": "炉边借火",
+          "idea": "山村的送信员替一只怕冷的小云找到过夜的地方。",
+          "protagonist": "米禾",
+          "tone": "温暖但不甜腻，有轻微笨拙感",
+          "pov": "第三人称限知，只跟随米禾",
+          "goal": "借到熄火后的面包炉余温；小云决定留下，暴风雪尚未到来",
+          "boundaries": "纯虚构。写450–600个汉字的一场戏，4–7段，只写当前场景。人物声音：米禾用具体小事安慰；老板娘关心人却用做事规矩表达。本场景不能让小云直接接触明火而安然无恙；承诺不能被遗忘、取消或当成已经履行；不引入大战、救世主或新的宏大魔法规则。不写评析。",
+          "constraints": [
+            "本场景不能让小云直接接触明火而安然无恙",
+            "承诺不能被遗忘、取消或当成已经履行",
+            "不引入大战、救世主或新的宏大魔法规则"
+          ],
+          "outline": [
+            {
+              "id": "chapter-1",
+              "title": "此前",
+              "goal": "仅作参考"
+            },
+            {
+              "id": "chapter-2",
+              "title": "炉边借火",
+              "goal": "借到熄火后的面包炉余温；小云决定留下，暴风雪尚未到来",
+              "scene": "面包店打烊后；米禾和老板娘处理炉子的余温，小云用微小动作表示接受；结尾留下清洗烤盘的活"
+            },
+            {
+              "id": "chapter-3",
+              "title": "以后",
+              "goal": "未来计划，不可当作已发生"
+            }
+          ],
+          "chapters": [
+            {
+              "text": "小云碰到明火就会缩成雾，不能直接靠近火焰。米禾把它从灶口捧回来，围裙湿了一片。“别急，”她说，“我们可以借一点不烫的暖。”米禾答应老板娘天亮前把烤盘擦干净。老板娘敲敲最黑的烤盘：“这个也算。”"
+            },
+            {
+              "text": "【创作规划，尚非生成正文】面包店打烊后；米禾和老板娘处理炉子的余温，小云用微小动作表示接受；结尾留下清洗烤盘的活"
+            },
+            {
+              "text": "【创作规划，尚非生成正文】后续发展未定。"
+            }
+          ]
+        },
+        "chapterIndex": 1,
+        "chapterId": "chapter-2",
+        "context": {
+          "constitution": {
+            "title": "炉边借火",
+            "idea": "山村的送信员替一只怕冷的小云找到过夜的地方。",
+            "protagonist": "米禾",
+            "tone": "温暖但不甜腻，有轻微笨拙感",
+            "pov": "第三人称限知，只跟随米禾",
+            "goal": "借到熄火后的面包炉余温；小云决定留下，暴风雪尚未到来",
+            "boundaries": "纯虚构。写450–600个汉字的一场戏，4–7段，只写当前场景。人物声音：米禾用具体小事安慰；老板娘关心人却用做事规矩表达。本场景不能让小云直接接触明火而安然无恙；承诺不能被遗忘、取消或当成已经履行；不引入大战、救世主或新的宏大魔法规则。不写评析。"
+          },
+          "projectId": "quality-warm-fantasy",
+          "version": 3,
+          "view": "writer",
+          "sceneTime": 3,
+          "pov": "米禾",
+          "facts": [
+            {
+              "id": "author-fact-author-patch-quality-warm-fantasy-ch1-1-1-50170677",
+              "projectId": "quality-warm-fantasy",
+              "label": "小云碰到明火就会缩成雾，不能直接靠近火焰。",
+              "value": "小云碰到明火就会缩成雾，不能直接靠近火焰。",
+              "predicate": "作者确认的设定",
+              "subject": "作者决定",
+              "status": "confirmed",
+              "authority": "explicit_author_decision",
+              "recordVersion": 1,
+              "recordedFromVersion": 2,
+              "source": {
+                "chapterId": "ch1",
+                "revision": 1,
+                "revisionId": "ch1-r1",
+                "paragraphId": "p1",
+                "quote": "小云碰到明火就会缩成雾，不能直接靠近火焰。",
+                "start": 0,
+                "end": 21
+              }
+            },
+            {
+              "id": "author-fact-author-patch-quality-warm-fantasy-ch1-1-2-f95d6e1c",
+              "projectId": "quality-warm-fantasy",
+              "label": "米禾答应老板娘天亮前把烤盘擦干净。",
+              "value": "米禾答应老板娘天亮前把烤盘擦干净。",
+              "predicate": "作者确认的设定",
+              "subject": "作者决定",
+              "status": "confirmed",
+              "authority": "explicit_author_decision",
+              "recordVersion": 1,
+              "recordedFromVersion": 3,
+              "source": {
+                "chapterId": "ch1",
+                "revision": 1,
+                "revisionId": "ch1-r1",
+                "paragraphId": "p1",
+                "quote": "米禾答应老板娘天亮前把烤盘擦干净。",
+                "start": 61,
+                "end": 78
+              }
+            }
+          ],
+          "knowledge": [],
+          "forbiddenReveals": [
+            "本场景不能让小云直接接触明火而安然无恙",
+            "承诺不能被遗忘、取消或当成已经履行",
+            "不引入大战、救世主或新的宏大魔法规则"
+          ],
+          "plans": [
+            {
+              "id": "outline-1",
+              "title": "此前",
+              "chapter": 1,
+              "description": "仅作参考",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            },
+            {
+              "id": "outline-2",
+              "title": "炉边借火",
+              "chapter": 2,
+              "description": "借到熄火后的面包炉余温；小云决定留下，暴风雪尚未到来",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            },
+            {
+              "id": "outline-3",
+              "title": "以后",
+              "chapter": 3,
+              "description": "未来计划，不可当作已发生",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            }
+          ],
+          "obligations": [],
+          "sources": [
+            {
+              "chapterId": "ch1",
+              "revision": 1,
+              "revisionId": "ch1-r1",
+              "text": "小云碰到明火就会缩成雾，不能直接靠近火焰。米禾把它从灶口捧回来，围裙湿了一片。“别急，”她说，“我们可以借一点不烫的暖。”米禾答应老板娘天亮前把烤盘擦干净。老板娘敲敲最黑的烤盘：“这个也算。”",
+              "channel": "original_text"
+            },
+            {
+              "chapterId": "ch2",
+              "revision": 1,
+              "revisionId": "ch2-r1",
+              "text": "【创作规划，尚非生成正文】面包店打烊后；米禾和老板娘处理炉子的余温，小云用微小动作表示接受；结尾留下清洗烤盘的活",
+              "channel": "original_text"
+            },
+            {
+              "chapterId": "ch3",
+              "revision": 1,
+              "revisionId": "ch3-r1",
+              "text": "【创作规划，尚非生成正文】后续发展未定。",
+              "channel": "original_text"
+            }
+          ],
+          "summaries": [],
+          "support": {
+            "status": "unsupported",
+            "validPaths": [],
+            "sourceIds": []
+          },
+          "staging": []
+        }
+      }
+    },
+    {
+      "fixture": "slice-of-life",
+      "input": {
+        "project": {
+          "projectId": "quality-slice-of-life",
+          "title": "末班车前",
+          "idea": "社区修鞋摊的学徒第一次独自守摊，邻居送来一只断带凉鞋。",
+          "protagonist": "周小满",
+          "tone": "平实、轻微尴尬，感情藏在动作里",
+          "pov": "第三人称限知，只跟随周小满",
+          "goal": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+          "boundaries": "纯虚构。写450–600个汉字的一场戏，4–7段，只写当前场景。人物声音：周小满回答容易停顿但不自怜；赵姨实际、体贴，不讲人生大道理。修补只能用现有白线，不凭空出现工具或帮手；师傅不在场，不能突然知道断针的事；不可让临时修补成为无缺陷的永久修复。不写评析。",
+          "constraints": [
+            "修补只能用现有白线，不凭空出现工具或帮手",
+            "师傅不在场，不能突然知道断针的事",
+            "不可让临时修补成为无缺陷的永久修复"
+          ],
+          "outline": [
+            {
+              "id": "chapter-1",
+              "title": "此前",
+              "goal": "仅作参考"
+            },
+            {
+              "id": "chapter-2",
+              "title": "末班车前",
+              "goal": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+              "scene": "傍晚社区修鞋摊；末班车快到，周小满修断带；一处动作上的犹豫，结尾约明日再补牢"
+            },
+            {
+              "id": "chapter-3",
+              "title": "以后",
+              "goal": "未来计划，不可当作已发生"
+            }
+          ],
+          "chapters": [
+            {
+              "text": "摊上只剩白色线，不能变出黑线。周小满把线轴转到缺口朝里，赵姨还是看见了。“白的就白的，鞋底谁看。”周小满还没有告诉师傅自己把针折断过一次。她把那截断针裹进纸里，搁在零钱盒旁。"
+            },
+            {
+              "text": "【创作规划，尚非生成正文】傍晚社区修鞋摊；末班车快到，周小满修断带；一处动作上的犹豫，结尾约明日再补牢"
+            },
+            {
+              "text": "【创作规划，尚非生成正文】后续发展未定。"
+            }
+          ]
+        },
+        "chapterIndex": 1,
+        "chapterId": "chapter-2",
+        "context": {
+          "constitution": {
+            "title": "末班车前",
+            "idea": "社区修鞋摊的学徒第一次独自守摊，邻居送来一只断带凉鞋。",
+            "protagonist": "周小满",
+            "tone": "平实、轻微尴尬，感情藏在动作里",
+            "pov": "第三人称限知，只跟随周小满",
+            "goal": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+            "boundaries": "纯虚构。写450–600个汉字的一场戏，4–7段，只写当前场景。人物声音：周小满回答容易停顿但不自怜；赵姨实际、体贴，不讲人生大道理。修补只能用现有白线，不凭空出现工具或帮手；师傅不在场，不能突然知道断针的事；不可让临时修补成为无缺陷的永久修复。不写评析。"
+          },
+          "projectId": "quality-slice-of-life",
+          "version": 3,
+          "view": "writer",
+          "sceneTime": 3,
+          "pov": "周小满",
+          "facts": [
+            {
+              "id": "author-fact-author-patch-quality-slice-of-life-ch1-1-1-5d038518",
+              "projectId": "quality-slice-of-life",
+              "label": "摊上只剩白色线，不能变出黑线。",
+              "value": "摊上只剩白色线，不能变出黑线。",
+              "predicate": "作者确认的设定",
+              "subject": "作者决定",
+              "status": "confirmed",
+              "authority": "explicit_author_decision",
+              "recordVersion": 1,
+              "recordedFromVersion": 2,
+              "source": {
+                "chapterId": "ch1",
+                "revision": 1,
+                "revisionId": "ch1-r1",
+                "paragraphId": "p1",
+                "quote": "摊上只剩白色线，不能变出黑线。",
+                "start": 0,
+                "end": 15
+              }
+            },
+            {
+              "id": "author-fact-author-patch-quality-slice-of-life-ch1-1-2-80542229",
+              "projectId": "quality-slice-of-life",
+              "label": "周小满还没有告诉师傅自己把针折断过一次。",
+              "value": "周小满还没有告诉师傅自己把针折断过一次。",
+              "predicate": "作者确认的设定",
+              "subject": "作者决定",
+              "status": "confirmed",
+              "authority": "explicit_author_decision",
+              "recordVersion": 1,
+              "recordedFromVersion": 3,
+              "source": {
+                "chapterId": "ch1",
+                "revision": 1,
+                "revisionId": "ch1-r1",
+                "paragraphId": "p1",
+                "quote": "周小满还没有告诉师傅自己把针折断过一次。",
+                "start": 49,
+                "end": 69
+              }
+            }
+          ],
+          "knowledge": [],
+          "forbiddenReveals": [
+            "修补只能用现有白线，不凭空出现工具或帮手",
+            "师傅不在场，不能突然知道断针的事",
+            "不可让临时修补成为无缺陷的永久修复"
+          ],
+          "plans": [
+            {
+              "id": "outline-1",
+              "title": "此前",
+              "chapter": 1,
+              "description": "仅作参考",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            },
+            {
+              "id": "outline-2",
+              "title": "末班车前",
+              "chapter": 2,
+              "description": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            },
+            {
+              "id": "outline-3",
+              "title": "以后",
+              "chapter": 3,
+              "description": "未来计划，不可当作已发生",
+              "status": "ready",
+              "condition": "author_outline",
+              "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+            }
+          ],
+          "obligations": [],
+          "sources": [
+            {
+              "chapterId": "ch1",
+              "revision": 1,
+              "revisionId": "ch1-r1",
+              "text": "摊上只剩白色线，不能变出黑线。周小满把线轴转到缺口朝里，赵姨还是看见了。“白的就白的，鞋底谁看。”周小满还没有告诉师傅自己把针折断过一次。她把那截断针裹进纸里，搁在零钱盒旁。",
+              "channel": "original_text"
+            },
+            {
+              "chapterId": "ch2",
+              "revision": 1,
+              "revisionId": "ch2-r1",
+              "text": "【创作规划，尚非生成正文】傍晚社区修鞋摊；末班车快到，周小满修断带；一处动作上的犹豫，结尾约明日再补牢",
+              "channel": "original_text"
+            },
+            {
+              "chapterId": "ch3",
+              "revision": 1,
+              "revisionId": "ch3-r1",
+              "text": "【创作规划，尚非生成正文】后续发展未定。",
+              "channel": "original_text"
+            }
+          ],
+          "summaries": [],
+          "support": {
+            "status": "unsupported",
+            "validPaths": [],
+            "sourceIds": []
+          },
+          "staging": []
+        }
+      }
+    }
+  ],
+  "informationParity": "Both generation arms receive identical input; extraction receives the resulting prose, the same chapterId and context."
+}
