@@ -1,4 +1,4 @@
-# Isolated candidate support: corrective design, not yet live-validated
+# Isolated candidate support: corrective design and bounded pilot
 
 ## Why the first design failed
 
@@ -24,7 +24,7 @@ Before an audit, the UI checks the server's configuration and remaining lifetime
 
 For a successful chapter, writing + extraction + whole-prose/canon review remains **three base calls**; auditing K candidates adds K calls. Interview, planning, revisions, retries explicitly requested by an author, and prior chapters consume additional attempts. The unchanged server default is 10 lifetime attempts and maximum configured value is 30; a fresh three-call chapter leaves at most seven audits, while interview/planning can reduce that further. A 30-candidate schema limit is not a promise that all 30 fit the call allowance.
 
-Token use is the sum of the separate fixed instructions, labels, quotes and responses. Isolation avoids repeatedly sending full chapters to each audit, but adds per-request overhead and may cost more than one bundled review. There is no measured token, currency or latency estimate for this new design. Failed/cancelled dispatched requests may consume allowance or provider work; absent usage stays unknown. No cap, model, credential or balance setting is changed.
+Token use is the sum of the separate fixed instructions, labels, quotes and responses. Isolation avoids repeatedly sending full chapters to each audit, but adds per-request overhead and may cost more than one bundled review. The separately approved four-case synthetic pilot reported 1,533 prompt and 210 completion tokens (1,743 total), with individual request elapsed times of 1.38–2.11 seconds. These short fixed quotes do not estimate chapter-scale token use, cost or latency; currency cost is unmeasured. Failed/cancelled dispatched requests may consume allowance or provider work; absent usage stays unknown. No cap, model, credential or balance setting is changed.
 
 ## Alternatives deliberately deferred
 
@@ -37,4 +37,10 @@ Token use is the sum of the separate fixed instructions, labels, quotes and resp
 
 Offline contracts must establish the exact two-field request, absence of forbidden context sentinels, fresh sessions, original-label preservation, fail-closed legacy migration, independent candidate progress, budget/cancel/stale-result safety, and compact/pretty backup compatibility under the unchanged 2 MiB limit. Hosted browser tests must exercise the visible one-call control and unchanged author/fact gates.
 
-A separate preregistered live audit must retain the original failed label/quote unchanged, include a clear positive control so always-unknown is not a pass, and record all mismatches or timeouts without replacement samples. It requires separate explicit approval; it is not run as part of offline implementation. Isolation removes the demonstrated supplied-evidence borrowing channel, but cannot guarantee that the model will not hallucinate from a label, misread the quote or follow embedded instructions. PR #9 remains unmerged until appropriate semantic acceptance evidence and authorization exist.
+A separate preregistered live audit must retain the original failed label/quote unchanged, include a clear positive control so always-unknown is not a pass, and record all mismatches or timeouts without replacement samples. It requires separate explicit approval; it is not run as part of offline implementation. Isolation removes the demonstrated supplied-evidence borrowing channel, but cannot guarantee that the model will not hallucinate from a label, misread the quote or follow embedded instructions. Integration remains conditional on semantic acceptance evidence, independent review and final CI; model judgments still require explicit author decisions.
+
+## 2026-10-03 bounded live result
+
+The [separately approved isolated pilot](../../eval/ISOLATED-MEMORY-SUPPORT-RESULTS.md) completed four calls on source `e8cd9d6d568cb16e0d09d030de248d29746504a1`, with all four preregistered expectations matched and no retries. The unchanged combined claim was judged unsupported because the reply was absent from its own quote. The literal positive was supported; unproven character belief and explicit negation with an embedded instruction were unsupported. The amended harness stops immediately on semantic as well as transport/schema/persistence failure.
+
+This establishes the narrow four-case acceptance condition, not general entailment accuracy, truth, reliability, literary quality or long-form performance. The first bundled audit remains a failure with its original evidence intact. Engineering checks use mocked judgments and are reported separately.

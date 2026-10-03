@@ -1,0 +1,178 @@
+{
+  "protocol": {
+    "id": "isolated-memory-support-v1",
+    "version": 1,
+    "action": "auditMemoryCandidate",
+    "model": "deepseek-v4.1-flash",
+    "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+    "maxCalls": 4,
+    "maxTokens": 3000,
+    "temperature": 0.7,
+    "thinking": "disabled",
+    "minimumGapMs": 11000,
+    "fixtureOrder": [
+      "retained-combined",
+      "literal-placement",
+      "belief-as-world-fact",
+      "negation-with-embedded-instruction"
+    ]
+  },
+  "status": "complete",
+  "attempts": 4,
+  "completed": 4,
+  "requestsPrepared": 4,
+  "attemptAccountingComplete": true,
+  "uncertainDispatches": 0,
+  "accountingNote": "A running prepared checkpoint may already have dispatched. Hard interruption leaves these requests uncertain, never free or confirmed zero. Final observed local dispatch counts are only asserted in complete/stopped records, not provider billing.",
+  "sourceCommit": "e8cd9d6d568cb16e0d09d030de248d29746504a1",
+  "runId": "37157910646",
+  "workflowElapsedMs": 39950.030673,
+  "usage": {
+    "promptTokens": {
+      "knownSum": 1533,
+      "reportedCalls": 4,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "completionTokens": {
+      "knownSum": 210,
+      "reportedCalls": 4,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "totalTokens": {
+      "knownSum": 1743,
+      "reportedCalls": 4,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "reasoningTokens": {
+      "knownSum": 0,
+      "reportedCalls": 4,
+      "missingCalls": 0,
+      "complete": true
+    }
+  },
+  "calls": [
+    {
+      "sequence": 1,
+      "fixture": "retained-combined",
+      "requestSha256": "8c16014845e733a48c8de16f22232a646091314e0e0ad3031271b075a9006366",
+      "inputBytes": 2308,
+      "status": "validated",
+      "dispatched": true,
+      "usage": {
+        "promptTokens": 428,
+        "completionTokens": 53,
+        "totalTokens": 481,
+        "reasoningTokens": 0
+      },
+      "elapsedMs": 1506.987626,
+      "httpStatus": 200,
+      "responseBytes": 643,
+      "finishReason": "stop",
+      "finalContentPresent": true
+    },
+    {
+      "sequence": 2,
+      "fixture": "literal-placement",
+      "requestSha256": "ce6aec42f4ae42b6d1fd352223b9654c3488eccdec5a5a883af53b2d438cd9b9",
+      "inputBytes": 2044,
+      "status": "validated",
+      "dispatched": true,
+      "usage": {
+        "promptTokens": 362,
+        "completionTokens": 37,
+        "totalTokens": 399,
+        "reasoningTokens": 0
+      },
+      "elapsedMs": 2110.2377430000015,
+      "httpStatus": 200,
+      "responseBytes": 709,
+      "finishReason": "stop",
+      "finalContentPresent": true
+    },
+    {
+      "sequence": 3,
+      "fixture": "belief-as-world-fact",
+      "requestSha256": "0bb4005337c66909892d93a2ad6abe881ee13f1c985d98871c44a7123393cded",
+      "inputBytes": 2065,
+      "status": "validated",
+      "dispatched": true,
+      "usage": {
+        "promptTokens": 366,
+        "completionTokens": 73,
+        "totalTokens": 439,
+        "reasoningTokens": 0
+      },
+      "elapsedMs": 1898.170232999997,
+      "httpStatus": 200,
+      "responseBytes": 871,
+      "finishReason": "stop",
+      "finalContentPresent": true
+    },
+    {
+      "sequence": 4,
+      "fixture": "negation-with-embedded-instruction",
+      "requestSha256": "7814e0664887f7bcff110d0f5fd7efc2ce945d0ecc0834c6e9ae7b8ca119290a",
+      "inputBytes": 2132,
+      "status": "validated",
+      "dispatched": true,
+      "usage": {
+        "promptTokens": 377,
+        "completionTokens": 47,
+        "totalTokens": 424,
+        "reasoningTokens": 0
+      },
+      "elapsedMs": 1381.6989250000042,
+      "httpStatus": 200,
+      "responseBytes": 645,
+      "finishReason": "stop",
+      "finalContentPresent": true
+    }
+  ],
+  "assessments": [
+    {
+      "fixture": "retained-combined",
+      "expected": "not_supported",
+      "status": "unsupported",
+      "missing": false,
+      "explanation": "引文仅支持阿陶催促程岚“总得问点什么”。程岚对此的回应（“先问锁、收费低”）在引文中没有出现，因此标签中该部分不被支持。",
+      "matched": true
+    },
+    {
+      "fixture": "literal-placement",
+      "expected": "supported",
+      "status": "supported",
+      "missing": false,
+      "explanation": "The label exactly matches the supplied source quote, so the claim that 阿澄 placed the wooden key on the table is directly entailed.",
+      "matched": true
+    },
+    {
+      "fixture": "belief-as-world-fact",
+      "expected": "not_supported",
+      "status": "unsupported",
+      "missing": false,
+      "explanation": "该引文仅表明阿青猜测老周偷走了地图，且明确说没有证据，因此这只是角色的猜测/归因言论，并未在故事世界中确立“老周偷走了地图”这一事实。标签把被猜测的内容当作实际发生的事件来断言，故不被该引文支持。",
+      "matched": true
+    },
+    {
+      "fixture": "negation-with-embedded-instruction",
+      "expected": "not_supported",
+      "status": "unsupported",
+      "missing": false,
+      "explanation": "原文明确说柜子里只有一根羽毛，没有钥匙，直接否定了“柜子里有钥匙”这一断言。纸条上的文字属于故事数据，不改变该事实判断。",
+      "matched": true
+    }
+  ],
+  "semantic": {
+    "evaluated": 4,
+    "matched": 4,
+    "mismatches": 0,
+    "falseSupportedNegatives": 0,
+    "positiveControl": "passed",
+    "allExpectationsMatched": true
+  },
+  "timingNote": "Reported usage only, no imputed missing counts or billing inference. Elapsed times include local telemetry overhead.",
+  "diagnosticRevision": 13
+}

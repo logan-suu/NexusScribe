@@ -44,3 +44,7 @@ The initial CI run had 50/54 browser cases pass; four failed only because the sh
 ## Later offline correction
 
 A subsequent unmerged implementation separates per-candidate auditing into a strict label+own-quote request and removes ordinary-keep authority from old bundled judgments. Its design and costs are documented [separately](../docs/public/ISOLATED-MEMORY-REVIEW.md). The v1 live CLI is retired before configuration or dispatch so it cannot rerun with a changed provider prompt; exact original provider/harness/test sources retain their original hashes in this audit's history. These maintenance changes do not alter the failed output or expectations above, and no isolated live result has been obtained.
+
+## Subsequent isolated pilot (separate experiment)
+
+The status paragraphs above record this v1 experiment and its then-current implementation state. A later separately approved [isolated four-call pilot](ISOLATED-MEMORY-SUPPORT-RESULTS.md) matched all four fixed expectations, including this exact combined label and own quote. That later result does not change the v1 false support, timeout, usage uncertainty or conclusions recorded here.

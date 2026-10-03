@@ -1,0 +1,17 @@
+{
+  "fixture": "literal-placement",
+  "sequence": 2,
+  "output": {
+    "status": "supported",
+    "explanation": "The label exactly matches the supplied source quote, so the claim that 阿澄 placed the wooden key on the table is directly entailed."
+  },
+  "assessment": {
+    "fixture": "literal-placement",
+    "expected": "supported",
+    "status": "supported",
+    "missing": false,
+    "explanation": "The label exactly matches the supplied source quote, so the claim that 阿澄 placed the wooden key on the table is directly entailed.",
+    "matched": true
+  },
+  "serviceElapsedMs": 2113.243386
+}
