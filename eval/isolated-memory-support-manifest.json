@@ -2,10 +2,10 @@
   "protocol": "isolated-memory-support-v1",
   "version": 1,
   "sha256": {
-    "eval/ISOLATED-MEMORY-SUPPORT-PROTOCOL.md": "f38ec2e04372f1eb785b7579f4ac88907b5a0bf96ed548a21660830749fa5a81",
+    "eval/ISOLATED-MEMORY-SUPPORT-PROTOCOL.md": "09248c1744d99cdf38e678dc8c14364daf777903847e64824faa46a95bb3f1c1",
     "eval/isolated-memory-support-fixtures.mjs": "c0e8548e3f3c9f9bbe46986d09f525f2c6ce7baa53a5d25cc0b538de3937ac32",
-    "scripts/isolated-memory-support-eval.mjs": "0187566fee2fbae29c9b7a93025c24fb2923639623f8f0f8c8737955b05d2edb",
-    "tests/isolated-memory-support-eval.test.js": "0d3db17ad994396b8ac381eefbad392b96553455b59de89f113ad8239bb0c5aa",
+    "scripts/isolated-memory-support-eval.mjs": "ea1edac06b234f5474d7e45cbfc939dc6fb6c6e818cc5aa423c95295927cb97e",
+    "tests/isolated-memory-support-eval.test.js": "d36d4339eb8f3b6cf8ef22a491cf2066b2ba14aab8ef1541fab02a4f5b6f1ff5",
     "server/provider.js": "8c0ed8c3ae03854f598a15faeebe335d9457577eb61fc0678f50d53f2312cb71"
   },
   "authorization": "Offline-prepared only. No live approval is conferred by this manifest. A future separately approved first-attempt run must use this exact reviewed source freeze."

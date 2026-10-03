@@ -112,21 +112,71 @@ test('reused upstream session is rejected before dispatching the second request'
   assert.equal(h.saved['diagnostics.json'].attempts, 1); assert.equal(h.saved['diagnostics.json'].completed, 1);
 });
 
-test('valid but wrong judgments remain visible and never trigger retries or replacement cases', async () => {
+test('first-negative semantic mismatch is preserved and stops after exactly one request', async () => {
   let calls = 0;
-  const h = setup({ fetchImpl: async () => { calls++; return response({ status: 'supported', explanation: '合成错误判断' }); } });
-  const result = await h.run();
-  assert.equal(calls, 4); assert.equal(result.status, 'complete'); assert.equal(result.semantic.mismatches, 3);
-  assert.equal(result.semantic.falseSupportedNegatives, 3); assert.equal(result.semantic.allExpectationsMatched, false);
+  const output = { status: 'supported', explanation: '合成错误判断' };
+  const h = setup({ fetchImpl: async () => { calls++; return response(output); } });
+  await assert.rejects(h.run(), /no automatic retry/);
+  assert.equal(calls, 1); assert.deepEqual(h.gaps, []);
+  const diagnostics = h.saved['diagnostics.json'];
+  assert.equal(diagnostics.status, 'stopped'); assert.equal(diagnostics.code, 'SEMANTIC_MISMATCH');
+  assert.equal(diagnostics.attempts, 1); assert.equal(diagnostics.completed, 1); assert.equal(diagnostics.calls.length, 1);
+  assert.equal(diagnostics.calls[0].status, 'semantic_mismatch'); assert.equal(diagnostics.calls[0].code, 'SEMANTIC_MISMATCH');
+  assert.equal(diagnostics.semantic.mismatches, 1); assert.equal(diagnostics.semantic.falseSupportedNegatives, 1);
+  assert.equal(diagnostics.semantic.positiveControl, 'not_run'); assert.equal(diagnostics.semantic.allExpectationsMatched, false);
+  assert.deepEqual(h.saved['inputs.json'].fixtures, fixtures);
+  assert.deepEqual(h.saved['completed-01.json'].output, output);
   assert.equal(h.saved['completed-01.json'].assessment.status, 'supported'); assert.equal(h.saved['completed-01.json'].assessment.expected, 'not_supported');
+  assert.equal(h.saved['completed-01.json'].assessment.matched, false);
+  assert.equal(h.saved['completed-02.json'], undefined); assert.equal(h.saved['completed-03.json'], undefined); assert.equal(h.saved['completed-04.json'], undefined);
+  assert.equal(diagnostics.usage.promptTokens.knownSum, 100); assert.equal(diagnostics.usage.completionTokens.knownSum, 20);
+  assert.deepEqual(diagnostics.usage.totalTokens, { knownSum: 120, reportedCalls: 1, missingCalls: 0, complete: true });
+  const outputCheckpoint = h.checkpoints.findIndex(checkpoint => checkpoint.name === 'completed-01.json');
+  const terminalCheckpoint = h.checkpoints.findIndex(checkpoint => checkpoint.name === 'diagnostics.json' && checkpoint.data.status === 'stopped');
+  assert.ok(outputCheckpoint >= 0 && terminalCheckpoint > outputCheckpoint); noPrivate(h.saved); noPrivate(h.logs);
 });
 
-test('always-unknown and always-unsupported fail the mandatory positive control', async () => {
+test('always-unknown and always-unsupported preserve both outputs then stop on positive control at request two', async () => {
   for (const status of ['unknown', 'unsupported']) {
-    const h = setup({ fetchImpl: async () => response({ status, explanation: '合成保守判断' }) }), result = await h.run();
-    assert.equal(result.attempts, 4); assert.equal(result.semantic.mismatches, 1); assert.equal(result.semantic.positiveControl, 'failed');
-    assert.equal(result.semantic.allExpectationsMatched, false); assert.equal(result.assessments[0].status, status);
-    assert.equal(result.assessments[0].matched, true); assert.equal(result.assessments[1].matched, false);
+    let calls = 0;
+    const h = setup({ fetchImpl: async () => { calls++; return response({ status, explanation: '合成保守判断' }); } });
+    await assert.rejects(h.run(), /no automatic retry/);
+    const diagnostics = h.saved['diagnostics.json'];
+    assert.equal(calls, 2); assert.deepEqual(h.gaps, [11000]);
+    assert.equal(diagnostics.status, 'stopped'); assert.equal(diagnostics.code, 'SEMANTIC_MISMATCH');
+    assert.equal(diagnostics.attempts, 2); assert.equal(diagnostics.completed, 2); assert.equal(diagnostics.calls.length, 2);
+    assert.equal(diagnostics.calls[0].status, 'validated'); assert.equal(diagnostics.calls[1].status, 'semantic_mismatch');
+    assert.equal(diagnostics.calls[1].code, 'SEMANTIC_MISMATCH');
+    assert.equal(diagnostics.semantic.mismatches, 1); assert.equal(diagnostics.semantic.positiveControl, 'failed');
+    assert.equal(diagnostics.semantic.allExpectationsMatched, false); assert.equal(diagnostics.assessments[0].status, status);
+    assert.equal(diagnostics.assessments[0].matched, true); assert.equal(diagnostics.assessments[1].matched, false);
+    assert.deepEqual(h.saved['inputs.json'].fixtures, fixtures);
+    assert.equal(h.saved['completed-01.json'].output.status, status); assert.equal(h.saved['completed-02.json'].output.status, status);
+    assert.equal(h.saved['completed-02.json'].output.explanation, '合成保守判断'); assert.equal(h.saved['completed-02.json'].assessment.expected, 'supported');
+    assert.equal(h.saved['completed-03.json'], undefined); assert.equal(h.saved['completed-04.json'], undefined);
+    assert.equal(diagnostics.usage.promptTokens.knownSum, 200); assert.equal(diagnostics.usage.completionTokens.knownSum, 40);
+    assert.deepEqual(diagnostics.usage.totalTokens, { knownSum: 240, reportedCalls: 2, missingCalls: 0, complete: true });
+    const outputCheckpoint = h.checkpoints.findIndex(checkpoint => checkpoint.name === 'completed-02.json');
+    const terminalCheckpoint = h.checkpoints.findIndex(checkpoint => checkpoint.name === 'diagnostics.json' && checkpoint.data.status === 'stopped');
+    assert.ok(outputCheckpoint >= 0 && terminalCheckpoint > outputCheckpoint); noPrivate(h.saved); noPrivate(h.logs);
+  }
+});
+
+test('later negative semantic mismatches also stop immediately with their completed evidence', async () => {
+  for (const failingSequence of [3, 4]) {
+    let calls = 0;
+    const h = setup({ fetchImpl: async (_url, options) => {
+      calls++; return response(calls === failingSequence ? { status: 'supported', explanation: '合成后续错误判断' } : outFor(getInput(options)));
+    } });
+    await assert.rejects(h.run());
+    const diagnostics = h.saved['diagnostics.json'];
+    assert.equal(calls, failingSequence); assert.equal(h.gaps.length, failingSequence - 1);
+    assert.equal(diagnostics.status, 'stopped'); assert.equal(diagnostics.code, 'SEMANTIC_MISMATCH');
+    assert.equal(diagnostics.completed, failingSequence); assert.equal(diagnostics.semantic.mismatches, 1);
+    assert.equal(diagnostics.semantic.positiveControl, 'passed'); assert.equal(diagnostics.semantic.allExpectationsMatched, false);
+    assert.equal(diagnostics.usage.totalTokens.knownSum, 120 * failingSequence);
+    assert.equal(h.saved[`completed-0${failingSequence}.json`].assessment.matched, false);
+    for (let sequence = failingSequence + 1; sequence <= 4; sequence++) assert.equal(h.saved[`completed-0${sequence}.json`], undefined);
   }
 });
 
@@ -311,7 +361,7 @@ test('a provider regression attempting a second request for one candidate stops 
   assert.equal(h.saved['diagnostics.json'].completed, 0);
 });
 
-test('CLI reports semantic mismatches as failure only after preserving the completed run', async () => {
+test('CLI retains a nonzero failure guard while the evaluator stops immediately after mismatch persistence', async () => {
   const source = await read('scripts/isolated-memory-support-eval.mjs');
   assert.match(source, /const result = await runIsolatedMemorySupportEval/);
   assert.match(source, /if \(result.semantic.allExpectationsMatched !== true\) process.exitCode = 1/);
