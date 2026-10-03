@@ -15,7 +15,12 @@ const workspace=state=>({format:1,serial:0,state,editing:{},patch:null,providerM
 const candidate=(page,n)=>page.getByRole('article',{name:new RegExp(`^候选记忆 ${n}：`)});
 const control=(page,action,n)=>page.getByRole('button',{name:new RegExp(`^${action}候选记忆 ${n}：`)});
 const state=page=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)).state,KEY);
-async function mount(page,s=fixture()){await page.addInitScript(({key,data})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(data))},{key:KEY,data:workspace(s)});await page.goto('/');await expect(page).toHaveTitle('NexusScribe · 雾港来信');await expect(page.getByLabel('候选记忆逐条选择')).toBeVisible();await expect(page.locator('vite-error-overlay')).toHaveCount(0)}
+async function mount(page,s=fixture()){
+ await page.addInitScript(({key,data})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(data))},{key:KEY,data:workspace(s)});await page.goto('/');await expect(page).toHaveTitle('NexusScribe · 雾港来信');
+ await expect(page.locator('.draft-prose')).toBeVisible();await expect(page.locator('.draft-prose')).toHaveText(s.drafts[0].text);
+ const candidates=page.getByLabel('候选记忆逐条选择');await expect(candidates).toBeAttached();await expect(candidates.locator('[data-candidate-id]')).toHaveCount(s.drafts[0].staging.length);
+ await expect(page.locator('vite-error-overlay')).toHaveCount(0);
+}
 function health(page){const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});return errors}
 async function evidence(page,testInfo,label){expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);const path=testInfo.outputPath(`${label}.png`);await page.screenshot({path,fullPage:true,animations:'disabled'});await testInfo.attach(label,{path,contentType:'image/png'})}
 async function accept(page){await page.getByRole('button',{name:'接受此版本'}).click();await expect(page.getByRole('dialog',{name:'确认接受候选稿与已选记忆'})).toBeVisible();expect((await state(page)).drafts[0].status).not.toBe('ACCEPTED');await page.getByRole('button',{name:'确认接受正文与所选记忆'}).click();expect((await state(page)).drafts[0].status).toBe('ACCEPTED')}
