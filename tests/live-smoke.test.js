@@ -25,8 +25,8 @@ test('all approval flags required before any network, missing credentials blocke
 });
 test('successful smoke performs exactly five sequential validated calls, bounded output and summary-only logs',async()=>{
  const m=mock(),lines=[];const result=await runLiveSmoke({env,fetchImpl:m.fetchImpl,log:s=>lines.push(s)});
- assert.equal(result.passed,true);assert.equal(result.attempts,5);assert.equal(m.calls.length,5);assert.deepEqual(result.domainSummary,{stagedEvents:1,promotedEvents:1,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED'});
- assert.deepEqual(m.calls.map(c=>c.request.action),Object.keys(fixtures));assert.deepEqual(lines.filter(line=>!line.startsWith('domain')),Object.keys(fixtures).map(action=>`${action} PASS`));assert.deepEqual(result.domainResults.map(r=>r.action),['domainStage','domainReject','domainEdit','domainInterpret','domainReview','domainAccept','domainUndo']);
+ assert.equal(result.passed,true);assert.equal(result.attempts,5);assert.equal(m.calls.length,5);assert.deepEqual(result.domainSummary,{stagedEvents:1,promotedEvents:0,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED',memoryDecisionPolicy:'synthetic-author-reject-all-no-isolated-audits',keptCandidates:0,rejectedCandidates:1,overriddenCandidates:0});
+ assert.deepEqual(m.calls.map(c=>c.request.action),Object.keys(fixtures));assert.deepEqual(lines.filter(line=>!line.startsWith('domain')),Object.keys(fixtures).map(action=>`${action} PASS`));assert.deepEqual(result.domainResults.map(r=>r.action),['domainStage','domainReject','domainEdit','domainInterpret','domainReview','domainMemoryDecisions','domainAccept','domainUndo']);
  for(const call of m.calls){assert.equal(call.body.max_tokens,900);assert.equal(call.options.headers.Authorization,`Bearer ${env.NEXUS_API_KEY}`);assert.equal(call.options.redirect,'error');}
  const text=JSON.stringify({result,lines});for(const forbidden of [env.NEXUS_API_KEY,env.NEXUS_API_BASE_URL,env.NEXUS_API_MODEL,fixtures.generateChapter.text,'Authorization','messages'])assert.equal(text.includes(forbidden),false);
  const revised=m.calls[3].request.input,review=m.calls[4].request.input;
@@ -94,5 +94,11 @@ test('warning advisory is preserved while domain accept and compensation run wit
 
 test('empty model staging is reported as zero rather than fabricated event promotion',async()=>{
  let calls=0;const lines=[];const fetchImpl=async(url,options)=>{calls++;const {action}=JSON.parse(JSON.parse(options.body).messages[1].content);return response(action==='generateChapter'?{...fixtures.generateChapter,staging:[]}:fixtures[action]);};
- const result=await runLiveSmoke({env,fetchImpl,log:s=>lines.push(s)});assert.equal(calls,5);assert.deepEqual(result.domainSummary,{stagedEvents:0,promotedEvents:0,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED'});assert.ok(lines.includes('domain METADATA '+JSON.stringify(result.domainSummary)));
+ const result=await runLiveSmoke({env,fetchImpl,log:s=>lines.push(s)});assert.equal(calls,5);assert.deepEqual(result.domainSummary,{stagedEvents:0,promotedEvents:0,acceptedChapters:1,acceptance:'ACCEPTED_THEN_COMPENSATED',memoryDecisionPolicy:'synthetic-author-reject-all-no-isolated-audits',keptCandidates:0,rejectedCandidates:0,overriddenCandidates:0});assert.ok(lines.includes('domain METADATA '+JSON.stringify(result.domainSummary)));
+});
+
+
+test('historical five-call smoke omits candidates from general review, performs no isolated audit and deliberately rejects every memory',async()=>{
+ let calls=0;const actions=[];const fetchImpl=async(url,options)=>{calls++;const {action,input}=JSON.parse(JSON.parse(options.body).messages[1].content);actions.push(action);if(action==='reviewChapter')assert.equal(Object.hasOwn(input,'memoryCandidates'),false);return response(fixtures[action]);};
+ const result=await runLiveSmoke({env,fetchImpl,log:()=>{}});assert.equal(calls,5);assert.equal(actions.includes('auditMemoryCandidate'),false);assert.equal(result.domainSummary.promotedEvents,0);assert.equal(result.domainSummary.keptCandidates,0);assert.equal(result.domainSummary.rejectedCandidates,1);assert.equal(result.domainSummary.overriddenCandidates,0);assert.equal(result.domainSummary.memoryDecisionPolicy,'synthetic-author-reject-all-no-isolated-audits');
 });

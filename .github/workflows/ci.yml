@@ -72,3 +72,19 @@ jobs:
             playwright-report/
           if-no-files-found: warn
           retention-days: 7
+      - name: Preserve compact desktop memory review screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: memory-review-desktop-screenshots
+          path: test-results/memory-review*-desktop-chromium*/*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve compact mobile memory review screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: memory-review-mobile-screenshots
+          path: test-results/memory-review*-mobile-chromium*/*.png
+          if-no-files-found: warn
+          retention-days: 7

@@ -1,0 +1,102 @@
+{
+  "protocol": {
+    "id": "memory-support-v1",
+    "version": 1,
+    "model": "deepseek-v4.1-flash",
+    "maxCalls": 4,
+    "maxTokens": 3000,
+    "temperature": 0.7,
+    "thinking": "disabled",
+    "minimumGapMs": 11000,
+    "action": "reviewChapter"
+  },
+  "status": "stopped",
+  "attempts": 2,
+  "completed": 1,
+  "requestsPrepared": 2,
+  "attemptAccountingComplete": true,
+  "uncertainDispatches": 0,
+  "accountingNote": "A running prepared checkpoint may already have dispatched. Hard interruption leaves these requests uncertain, never free or confirmed zero. Final attempts are only asserted in complete/stopped records.",
+  "sourceCommit": "c139ce3a8bfbbbe7c169c2387a109a2668215acb",
+  "runId": "37143836878",
+  "code": "UPSTREAM_TIMEOUT",
+  "workflowElapsedMs": 43337.306585,
+  "usage": {
+    "promptTokens": {
+      "knownSum": 1479,
+      "reportedCalls": 1,
+      "missingCalls": 1,
+      "complete": false
+    },
+    "completionTokens": {
+      "knownSum": 282,
+      "reportedCalls": 1,
+      "missingCalls": 1,
+      "complete": false
+    },
+    "totalTokens": {
+      "knownSum": 1761,
+      "reportedCalls": 1,
+      "missingCalls": 1,
+      "complete": false
+    },
+    "reasoningTokens": {
+      "knownSum": 0,
+      "reportedCalls": 1,
+      "missingCalls": 1,
+      "complete": false
+    }
+  },
+  "calls": [
+    {
+      "sequence": 1,
+      "fixture": "retained-cross-paragraph",
+      "requestSha256": "a03cebe3c0f475d8112486bd077412ed0921d901a19e7059b6b84e82bdc9fec2",
+      "inputBytes": 7184,
+      "status": "validated",
+      "dispatched": true,
+      "usage": {
+        "promptTokens": 1479,
+        "completionTokens": 282,
+        "totalTokens": 1761,
+        "reasoningTokens": 0
+      },
+      "elapsedMs": 2322.566174,
+      "httpStatus": 200,
+      "responseBytes": 1591,
+      "finishReason": "stop",
+      "finalContentPresent": true
+    },
+    {
+      "sequence": 2,
+      "fixture": "multiclaim-time",
+      "requestSha256": "9b125a2ea39b46f3739a0d96104c3a9050c20bd3a44a03e2cff74ac46912fcd8",
+      "inputBytes": 5773,
+      "status": "failed",
+      "dispatched": true,
+      "usage": {},
+      "elapsedMs": 30000.721739,
+      "code": "UPSTREAM_TIMEOUT"
+    }
+  ],
+  "assessments": [
+    {
+      "candidateId": "retained-combined",
+      "expected": "not_supported",
+      "status": "supported",
+      "missing": false,
+      "explanation": "该候选的引文包含阿陶说“你总得问点什么”，直接支持“阿陶催促程岚问点什么”；引文本身未包含程岚回应“先问锁、收费低”的内容，但标签后半部分由同一候选的另一引文（retained-reply）支撑，按整段候选文本判断成立。",
+      "matched": false
+    },
+    {
+      "candidateId": "retained-reply",
+      "expected": "supported",
+      "status": "supported",
+      "missing": false,
+      "explanation": "引文“先问这锁。”程岚说，“收费低。”直接、完整地支持标签“程岚回应先问这锁，收费低”，说话人、内容与顺序均一致。",
+      "matched": true
+    }
+  ],
+  "timingNote": "Reported usage only, no imputed missing counts or billing inference. Elapsed times include local telemetry overhead.",
+  "diagnosticRevision": 6
+}

@@ -18,7 +18,7 @@ Edits save independently, then become proposed memory updates. The author explic
 
 ## Model gateway
 
-`POST /api/agent` accepts `{action,input}` and returns `{output}`. Supported actions: interview, planStory, generateProse, extractMemory, interpretRevision, reviewChapter; the legacy generateChapter action remains available for compatibility and independent comparison. `GET /api/status` exposes configuration status and nonsecret call limits only.
+`POST /api/agent` accepts `{action,input}` and returns `{output}`. Supported actions: interview, planStory, generateProse, extractMemory, interpretRevision, reviewChapter and auditMemoryCandidate; the legacy generateChapter action remains available for compatibility and independent comparison. `GET /api/status` exposes configuration status and nonsecret call limits only.
 
 The gateway validates request and response shape, exact evidence excerpts, bounded sizes, local Host/Origin, HTTPS configuration, timeout, concurrency and per-process call count. Upstream redirects and silent template fallbacks are prohibited. This is a local developer gateway, not a production multiuser API.
 
@@ -53,3 +53,15 @@ three-chapter live UI journey with interview, planning and one revision
 interpretation now needs twelve calls if every phase succeeds; the manual journey
 already has a twelve-call explicit cap. The application never silently raises
 that default or starts additional calls to finish a budget-blocked project.
+
+## Candidate-specific support and promotion
+
+The original bundled-review design failed its [retained live counterexample](../../eval/MEMORY-SUPPORT-RESULTS.md). Whole-chapter `reviewChapter.memoryChecks` are now historical/advisory only and cannot grant current ordinary-keep authority. The normal chapter-review request omits memory candidates.
+
+The corrective `auditMemoryCandidate` boundary accepts exactly `{label, sourceQuote}` for one immutable candidate, constructs a fresh isolated request and returns only `{status, explanation}` plus program-owned provider metadata. Reject extra context-bearing fields. No whole prose, neighboring quote, candidate ID, context, prior output or retrieval is sent; use a fresh session identifier per audit. The domain verifies original quote/offset/provenance locally before dispatch and attachment. Application payload isolation is testable, but provider-internal behavior and model entailment accuracy remain unverified.
+
+Authors explicitly request one candidate audit at a time, with cancellable server-budget preflight. There is no automatic fan-out or retry. Each attempt has its own bound head and history; replacing one revokes only that candidate's current support/decision. Edits, re-extraction, re-review, import and other source/version changes prevent stale attachments. Shared exact snapshots keep provenance without per-click full-manuscript duplication.
+
+Every candidate still needs an explicit keep/reject choice. Ordinary keep requires a current isolated supported assessment. A reasoned author override preserves the original unknown/unsupported judgment and evidence, and remains visibly unverified. Successful empty extraction or rejection of every candidate can accept prose alone; failed/cancelled extraction cannot masquerade as empty success. Fact conflicts, generic review errors, source versions, extraction and final selected-count confirmation remain separate gates. Accepted historical records are not retroactively promoted to isolated verification.
+
+Writing + extraction + whole-chapter review remains three base calls; auditing K candidates adds K calls. The existing default10/max30 lifetime limits and rate/concurrency controls are unchanged. Tokens, latency and billing of the isolated design have not been measured. See the [corrective design and acceptance boundary](ISOLATED-MEMORY-REVIEW.md). This implementation is an offline-tested candidate until separately authorized live evidence exists; no semantic guarantee or literary-quality claim follows.

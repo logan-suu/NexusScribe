@@ -42,3 +42,10 @@ failure, cloud backup, atomic multi-window transactions, or production durabilit
 ## Prose-first draft checkpoints
 
 New live drafts include immutable prose versions and deterministic paragraph text/offsets. Import validates those snapshots, extraction attempts/bindings and exact staging evidence. Pending imported drafts lose prior extraction, reviews and author exceptions and require explicit re-extraction. Original history remains in the import audit. New generated prose is retained in memory when storage writes fail; extraction waits for a successful save. This is still bounded localStorage, not durable server persistence.
+
+## Candidate selection audit
+
+Candidate support reports, per-item decisions and original-candidate history are included in backups. New active decisions are bound to exact draft/extraction/review snapshots; pending imports cannot reuse those approvals. Older backups without this feature remain readable, but unfinished drafts require fresh current review and explicit selections before promotion. Accepted historical records are retained without inventing new support judgments. Retaining candidate/audit snapshots consumes more of the unchanged 2 MiB limit; export and local storage remain bounded, unsigned prototype storage.
+
+
+Isolated support attempts use a separate application-owned scope and shared snapshot references. Old bundled assessments and accepted histories are preserved verbatim; they are not relabeled as isolated. Pending bundled-only keep decisions lose ordinary-keep authority. Re-auditing one candidate preserves unrelated completed audits, while imports and changed review/source generations revoke pending authority. Failed/cancelled attempts remain distinct from a model-returned unknown judgment.

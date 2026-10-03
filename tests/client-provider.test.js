@@ -4,10 +4,10 @@ import {createServerProvider,createTemplateAdapter,CAPABILITIES} from '../src/ad
 import {mergeStoryPlan,createProjectConfig} from '../src/authoring/index.js';
 const response=output=>({ok:true,status:200,json:async()=>({output})});
 test('server provider routes legacy and prose-first actions through same-origin without credentials',async()=>{
- const calls=[];const outputs={interview:{questions:[{key:'tone',title:'你希望是什么情绪？'}]},planStory:createProjectConfig({idea:'海上的城堡'}),generateChapter:{text:'新的章节',staging:[]},interpretRevision:{suggestedFacts:[],questions:[]},reviewChapter:{issues:[]},generateProse:{text:'新的章节',chapterId:'chapter-1'},extractMemory:{staging:[],reviewNotes:[]}};
+ const calls=[];const outputs={interview:{questions:[{key:'tone',title:'你希望是什么情绪？'}]},planStory:createProjectConfig({idea:'海上的城堡'}),generateChapter:{text:'新的章节',staging:[]},interpretRevision:{suggestedFacts:[],questions:[]},reviewChapter:{issues:[]},generateProse:{text:'新的章节',chapterId:'chapter-1'},extractMemory:{staging:[],reviewNotes:[]},auditMemoryCandidate:{status:'unknown',explanation:'模型判断不明确'}};
  const provider=createServerProvider({fetchImpl:async(url,options)=>{const body=JSON.parse(options.body);calls.push({url,options,body});return response(outputs[body.action]);}});
- for(const action of CAPABILITIES){const result=await provider[action]({input:{idea:'海上的城堡'},context:{stateVersion:8}});assert.ok(result);}
- assert.equal(calls.length,7);assert.ok(calls.every(c=>c.url==='/api/agent'));
+ for(const action of CAPABILITIES){const result=await provider[action](action==='auditMemoryCandidate'?{label:'海上的城堡',sourceQuote:'海上的城堡'}:{input:{idea:'海上的城堡'},context:{stateVersion:8}});assert.ok(result);}
+ assert.equal(calls.length,8);assert.ok(calls.every(c=>c.url==='/api/agent'));
  assert.deepEqual(calls.map(c=>c.body.action),CAPABILITIES);
  assert.equal(calls[0].body.input.input.idea,'海上的城堡');assert.ok(calls.every(c=>!c.options.headers.Authorization));
 });
@@ -51,7 +51,7 @@ test('all actions support external cancellation, including an uncooperative tran
  for(const action of CAPABILITIES){
   const external=new AbortController();let upstream;
   const provider=createServerProvider({fetchImpl:async(_url,options)=>{upstream=options.signal;return new Promise(()=>{});}});
-  const pending=provider[action]({}, {signal:external.signal});external.abort('PRIVATE cancellation reason');
+  const pending=provider[action](action==='auditMemoryCandidate'?{label:'主张',sourceQuote:'原文'}:{}, {signal:external.signal});external.abort('PRIVATE cancellation reason');
   await assert.rejects(pending,error=>error.name==='AbortError'&&error.code==='REQUEST_CANCELLED'&&!error.message.includes('PRIVATE'));
   assert.equal(upstream.aborted,true);
  }

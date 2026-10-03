@@ -26,11 +26,11 @@ A small edit can change a relationship, invalidate a future scene, or alter what
 1. **Explore an idea.** Answer focused interview questions about characters, tone, perspective, goals, and boundaries.
 2. **Agree on the story.** Edit the proposed story agreement and three-chapter outline before confirming them.
 3. **Write a chapter.** Save raw candidate prose first, then explicitly extract proposed memories, inspect their exact evidence, and review. Editing invalidates extraction and review.
-4. **Accept or reject.** Accepted candidates update the story state; rejected candidates stay outside Canon.
+4. **Select memory, then accept.** Explicitly keep or reject every proposed memory. A separately requested, isolated one-candidate audit judges the label against only its own quote. Unknown/unsupported items require a reasoned author override to keep. Final confirmation commits only selected memories; rejecting all is allowed after a successful extraction.
 5. **Revise with evidence.** Save manuscript edits, inspect proposed memory updates and their source excerpts, then explicitly confirm the changes.
 6. **Continue and preserve.** Move between chapters and projects, inspect version history, and export manuscript text or a JSON backup.
 
-Offline mode supports the three-chapter template workflow. The normal live flow uses interview, planning, prose generation, independent memory extraction, revision interpretation and review. The strict legacy chapter action remains available as a comparator. Writing + extraction + review now requires three model calls per successful chapter, one more than before; no cost or latency savings are promised. Model output remains a proposal throughout.
+Offline mode supports the three-chapter template workflow. The normal live flow uses interview, planning, prose generation, independent memory extraction, revision interpretation, chapter review and separately requested isolated candidate audits. The strict legacy chapter action remains available as a comparator. Writing + extraction + chapter review requires three base model calls per successful chapter, one more than the original structured-writing path; every explicitly requested candidate audit adds another call. No cost or latency savings are promised. Model output remains a proposal throughout.
 
 ## Quick start
 
@@ -100,7 +100,8 @@ Failed provider calls also consume the process allowance. Restarting the server 
 - Exact source excerpts must match current text before a memory update can be confirmed.
 - Authors can explicitly replace an existing fact while preserving its stable ID and earlier versions.
 - Live-model drafts need both structural checks and a model review of the current revision. Error-level issues block acceptance; warnings remain visible for the author.
-- Editing a candidate invalidates its old review. A model review is an unverified advisory, not independent evidence of correctness.
+- Each memory decision is bound to the exact draft, extraction and review; edits, re-extraction and re-review invalidate old approval. Original candidates and decisions remain auditable. A supported judgment is a fallible model assessment, not truth.
+- Missing candidate judgments fail closed. An explicit override records the original judgment, evidence and author reason without rewriting the claim or bypassing fact-conflict and generic-error gates.
 - Saving prose and updating narrative memory are separate steps. Unsupported semantic changes must not silently appear synchronized.
 
 ## Architecture
@@ -184,3 +185,11 @@ The runtime owns raw draft versions, paragraph IDs, exact offsets and evidence q
 The earlier writing-quality pilot still has zero complete pairs. A new [nine-call architecture protocol](eval/PROSE-PIPELINE-PROTOCOL.md) compares the unchanged legacy action with prose + extraction using the same synthetic story input. Protocol success and literary quality are separate outcomes.
 
 The first prose-first architecture pilot stopped at request six with one complete pair. Both new prose/extraction cases passed structure; the second legacy comparator failed JSON parsing. A saved extraction label also overreached its quoted paragraph. See the [full outcome and measured usage/latency](eval/PROSE-PIPELINE-RESULTS.md); no literary superiority or cost saving is established.
+
+## Candidate memory review
+
+The failed bundled-review design is retained as historical evidence. Its `memoryChecks` cannot authorize ordinary keep. The corrective `auditMemoryCandidate` action accepts only one immutable label and its own quote; its result cannot select or commit memory. Every candidate needs a separate author decision; ordinary keep requires model-judged support. Unsupported, unknown and offline-template proposals can be retained only through an explicit reasoned override. Final confirmation shows the selected count; rejection keeps the original extraction and audit rather than deleting evidence to manufacture success.
+
+Writing + extraction + chapter review remains three base calls; explicitly auditing K candidates adds K calls. The UI requests one audit at a time, checks remaining server allowance and never raises the existing limits or automatically audits every candidate. Chapter-scale token use, latency and actual currency cost remain unmeasured; the four-case pilot counters are reported separately. The one-span paragraph representation is deliberately unchanged: authors can reject an overbroad label, edit/re-extract the draft, or explicitly override it. Atomic-claim splitting, multi-span evidence, deduplication, complete recall and general semantic accuracy remain unproven. See the [bounded support audit protocol](eval/MEMORY-SUPPORT-PROTOCOL.md).
+
+The [first live support audit](eval/MEMORY-SUPPORT-RESULTS.md) missed the retained quote-mismatch case, then stopped on request two after a timeout. A false supported judgment enabled ordinary keep at that audited revision. The correction revokes that bundled authority and adds hard request isolation. A separately approved four-call pilot caught the unchanged counterexample and matched all four fixed expectations, including a literal positive control; this is not a general accuracy guarantee. Explicit author selection remains essential. See the [isolated pilot evidence](eval/ISOLATED-MEMORY-SUPPORT-RESULTS.md) and [corrective design](docs/public/ISOLATED-MEMORY-REVIEW.md).

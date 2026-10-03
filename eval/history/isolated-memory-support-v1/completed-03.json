@@ -1,0 +1,17 @@
+{
+  "fixture": "belief-as-world-fact",
+  "sequence": 3,
+  "output": {
+    "status": "unsupported",
+    "explanation": "该引文仅表明阿青猜测老周偷走了地图，且明确说没有证据，因此这只是角色的猜测/归因言论，并未在故事世界中确立“老周偷走了地图”这一事实。标签把被猜测的内容当作实际发生的事件来断言，故不被该引文支持。"
+  },
+  "assessment": {
+    "fixture": "belief-as-world-fact",
+    "expected": "not_supported",
+    "status": "unsupported",
+    "missing": false,
+    "explanation": "该引文仅表明阿青猜测老周偷走了地图，且明确说没有证据，因此这只是角色的猜测/归因言论，并未在故事世界中确立“老周偷走了地图”这一事实。标签把被猜测的内容当作实际发生的事件来断言，故不被该引文支持。",
+    "matched": true
+  },
+  "serviceElapsedMs": 1900.906175
+}

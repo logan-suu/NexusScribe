@@ -1,0 +1,17 @@
+{
+  "fixture": "retained-combined",
+  "sequence": 1,
+  "output": {
+    "status": "unsupported",
+    "explanation": "引文仅支持阿陶催促程岚“总得问点什么”。程岚对此的回应（“先问锁、收费低”）在引文中没有出现，因此标签中该部分不被支持。"
+  },
+  "assessment": {
+    "fixture": "retained-combined",
+    "expected": "not_supported",
+    "status": "unsupported",
+    "missing": false,
+    "explanation": "引文仅支持阿陶催促程岚“总得问点什么”。程岚对此的回应（“先问锁、收费低”）在引文中没有出现，因此标签中该部分不被支持。",
+    "matched": true
+  },
+  "serviceElapsedMs": 1530.03988
+}

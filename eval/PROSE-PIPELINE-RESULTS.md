@@ -51,3 +51,7 @@ Length compliance is another distinct limitation. With the frozen 450–600 Han-
 The implementation passed [CI 37096242786](https://github.com/logan-suu/NexusScribe/actions/runs/37096242786): 325 unit/contract tests, seven DOM suites, build, and 32 desktop/mobile Chromium scenarios. Those tests use synthetic/fake providers. The live pilot exercises actual server actions, not the real browser’s complete review/acceptance journey, and makes no automatic memory commits.
 
 The bounded experiment is finished at its stopping condition. Further live batches are not part of this result. Preserve the failure and successful checkpoints; prioritize semantic event granularity and author control before claiming quality gains or scheduling a new literary comparison.
+
+## Subsequent implementation boundary
+
+The preceding findings describe the recorded pilot revision and remain unchanged. The later candidate-selection increment sends original extracted labels and their quotes to the existing reviewer, requires explicit per-candidate keep/reject decisions, and blocks ordinary keep for unknown/unsupported judgments. Reasoned author overrides preserve the original assessment and evidence. This closes a workflow gap without establishing reliable general entailment detection. The new audit has its own [four-call preregistered protocol](MEMORY-SUPPORT-PROTOCOL.md); it does not rerun or complete the literary comparison above.

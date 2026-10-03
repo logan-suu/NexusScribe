@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createInitialState, generateDraft, proposePatch, createProjectFromConfig, saveRevision, commitPatch, reviewDraft, acceptDraft, NEVER_MET, HAS_MET} from '../src/domain/engine.js';
+import {createInitialState, generateDraft, proposePatch, createProjectFromConfig, saveRevision, commitPatch, reviewDraft, acceptDraft, getMemoryReviewGate, decideMemoryCandidate, NEVER_MET, HAS_MET} from '../src/domain/engine.js';
 import {KEY, BACKUP_KEY, QUARANTINE_KEY, loadWorkspace, persistWorkspace, recoverWorkspace, parseBackup, importBackup} from '../src/storage.js';
 
 const clone = value => structuredClone(value);
@@ -216,6 +216,7 @@ test('backup validation preserves real revision, canon-commit, review and accept
  state=saveRevision(state,'ch2',state.chapters[1].text.replace(NEVER_MET,HAS_MET),1);
  state=commitPatch(state,proposePatch(state,'ch2'));
  state=generateDraft(state); state=reviewDraft(state,state.drafts[0].id);
+ for(const row of getMemoryReviewGate(state,state.drafts[0].id))state=decideMemoryCandidate(state,state.drafts[0].id,{candidateId:row.candidateId,action:'override_keep',reason:'测试作者确认原始候选',reviewHash:row.reviewHash},row.binding);
  state=acceptDraft(state,state.drafts[0].id); value.state=state;
  const raw=JSON.stringify(value); assert.deepEqual(parseBackup(raw),JSON.parse(raw));
 });
