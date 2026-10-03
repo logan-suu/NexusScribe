@@ -15,7 +15,7 @@ const snapshot=s=>JSON.stringify({facts:s.facts,knowledge:s.knowledge,evidence:s
 try {
  const env=journeyConfig(process.env);
  const service=guardJourney(createAgentService({env}),{before(action,input){
-  if(action==='generateChapter'&&input.chapterIndex>0){
+  if(action==='generateProse'&&input.chapterIndex>0){
    check(input.context.facts.some(f=>f.label===fact));
    check(input.context.sources.some(s=>s.chapterId==='ch1'&&s.text.includes(fact)));
   }
@@ -50,6 +50,7 @@ try {
   phase=`chapter-${i+1}`;
   if(i)await page.getByRole('navigation',{name:'章节',exact:true}).getByRole('button').nth(i).click();
   const before=await read();await call('生成当前章');await page.getByRole('button',{name:'审查候选稿',exact:true}).waitFor();check(snapshot(await read())===snapshot(before));
+  await call('提取候选记忆');check(snapshot(await read())===snapshot(before));
   await call('审查候选稿');await expect.poll(async()=>!!(await read()).drafts.at(-1).modelReview,{timeout:10000}).toBe(true);
   if((await read()).drafts.at(-1).modelReview.issues.some(x=>x.severity==='error')){console.log('review BLOCKED');throw Error('SEMANTIC_REVIEW_BLOCKED')}
   await click('接受此版本');await expect.poll(async()=>(await read()).chapters[i].status).toBe('ACCEPTED');await capture(`0${i+2}-chapter-${i+1}`);
@@ -59,7 +60,7 @@ try {
    afterSetting=await read();check(afterSetting.facts.some(f=>f.label===fact));settingCommit=afterSetting.commits.at(-1).id;
   }
  }
- phase='undo';const completed=await read();check(completed.chapters.every(c=>c.status==='ACCEPTED'));assert.deepEqual(service.actions,['interview','planStory','generateChapter','reviewChapter','interpretRevision','generateChapter','reviewChapter','generateChapter','reviewChapter']);
+ phase='undo';const completed=await read();check(completed.chapters.every(c=>c.status==='ACCEPTED'));assert.deepEqual(service.actions,['interview','planStory','generateProse','extractMemory','reviewChapter','interpretRevision','generateProse','extractMemory','reviewChapter','generateProse','extractMemory','reviewChapter']);
  const textBefore=JSON.stringify(completed.chapters.map(c=>({text:c.text,revisions:c.revisions})));
  await click('版本记录');
  const undo=async id=>page.locator('.history-row').filter({has:page.locator('p').filter({hasText:`${id} ·`})}).getByRole('button',{name:'撤销',exact:true}).click();

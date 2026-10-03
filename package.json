@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --test tests/*.test.js",
     "test:ui": "node scripts/test-ui.mjs",
-    "check": "npm test && npm run test:ui && npm run test:ui:live && npm run test:ui:race && npm run test:ui:facts && npm run test:ui:storage && npm run test:ui:controls && npm run build",
+    "check": "npm test && npm run test:ui && npm run test:ui:live && npm run test:ui:race && npm run test:ui:facts && npm run test:ui:storage && npm run test:ui:controls && npm run test:ui:prose && npm run build",
     "server": "node server/index.js",
     "start": "node scripts/start-demo.mjs",
     "test:ui:live": "node scripts/test-ui-live.mjs",
@@ -17,7 +17,8 @@
     "test:ui:race": "node scripts/test-ui-review-race.mjs",
     "test:ui:facts": "node scripts/test-ui-fact-review.mjs",
     "test:ui:controls": "node scripts/test-ui-generation-controls.mjs",
-    "test:ui:storage": "node scripts/test-ui-storage.mjs"
+    "test:ui:storage": "node scripts/test-ui-storage.mjs",
+    "test:ui:prose": "node scripts/test-ui-prose-pipeline.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

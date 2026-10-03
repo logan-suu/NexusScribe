@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       approve_live_smoke:
-        description: 'Approve selected synthetic test and confirm Use balance OFF (journey cap12, probe cap1, quality-pilot cap6 at 3000 tokens)'
+        description: 'Approve selected synthetic test and confirm Use balance OFF (journey cap12, probe cap1, quality-pilot cap6, prose-pipeline cap9 at 3000 tokens)'
         type: boolean
         required: true
         default: false
       test_scope:
-        description: 'Choose journey, one-call contract probe, or six-call synthetic quality pilot'
+        description: 'Choose journey, one-call probe, six-call quality pilot, or nine-call prose pipeline'
         type: choice
         required: true
         default: review-probe
-        options: [journey, review-probe, generation-probe, quality-pilot]
+        options: [journey, review-probe, generation-probe, quality-pilot, prose-pipeline]
 
 permissions:
   contents: read
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   live-writing-journey:
-    if: github.event_name == 'workflow_dispatch' && inputs.approve_live_smoke == true && (inputs.test_scope == 'journey' || inputs.test_scope == 'review-probe' || inputs.test_scope == 'generation-probe' || (inputs.test_scope == 'quality-pilot' && github.run_attempt == 1))
+    if: github.event_name == 'workflow_dispatch' && inputs.approve_live_smoke == true && (inputs.test_scope == 'journey' || inputs.test_scope == 'review-probe' || inputs.test_scope == 'generation-probe' || (inputs.test_scope == 'quality-pilot' && github.run_attempt == 1) || (inputs.test_scope == 'prose-pipeline' && github.run_attempt == 1))
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -105,5 +105,37 @@ jobs:
             writing-quality-evidence/completed-04.json
             writing-quality-evidence/completed-05.json
             writing-quality-evidence/completed-06.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Check frozen prose pipeline offline without credentials
+        if: inputs.test_scope == 'prose-pipeline'
+        run: node --test tests/prose-pipeline-eval.test.js
+      - name: Generate approved nine-call synthetic prose pipeline pilot
+        if: inputs.test_scope == 'prose-pipeline' && github.run_attempt == 1
+        run: node scripts/prose-pipeline-eval.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_PROSE_PIPELINE_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve allowlisted synthetic prose pipeline evidence
+        if: always() && inputs.test_scope == 'prose-pipeline'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-prose-pipeline-pilot
+          path: |
+            prose-pipeline-evidence/inputs.json
+            prose-pipeline-evidence/diagnostics.json
+            prose-pipeline-evidence/blind-pairs.json
+            prose-pipeline-evidence/unblinding.json
+            prose-pipeline-evidence/completed-01.json
+            prose-pipeline-evidence/completed-02.json
+            prose-pipeline-evidence/completed-03.json
+            prose-pipeline-evidence/completed-04.json
+            prose-pipeline-evidence/completed-05.json
+            prose-pipeline-evidence/completed-06.json
+            prose-pipeline-evidence/completed-07.json
+            prose-pipeline-evidence/completed-08.json
+            prose-pipeline-evidence/completed-09.json
           if-no-files-found: ignore
           retention-days: 7

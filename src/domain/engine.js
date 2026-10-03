@@ -1,4 +1,5 @@
 import {buildFactLedger} from './fact-review.js';
+import {segmentProse, MAX_PROSE_LENGTH} from './prose.js';
 /** Deterministic, local demonstration runtime. No LLM is called. */
 export const NEVER_MET = '陈默从未见过死者。';
 export const HAS_MET = '陈默三年前见过死者，但一直隐瞒。';
@@ -31,7 +32,7 @@ export function saveRevision(state,chapterId,text,expectedRevision) {
  const s=copy(state), next=chapter(s,chapterId);next.text=text;next.revision++;next.syncStatus='PENDING';next.revisions.push(revisionRecord(next,text,next.revision));
  s.derived=s.derived.map(x=>x.chapterId===chapterId?{...x,status:'stale'}:x);return s;
 }
-function source(c,quote){const pos=c.text.indexOf(quote);return {chapterId:c.id,revision:c.revision,revisionId:`${c.id}-r${c.revision}`,paragraphId:`p${c.text.slice(0,Math.max(0,pos)).split('\n').length}`,quote,start:pos,end:pos+quote.length};}
+function source(c,quote){const pos=c.text.indexOf(quote),anchor=c.revisions.find(r=>r.revision===c.revision)?.paragraphs.find(p=>Number.isInteger(p.start)&&p.start<=pos&&p.end>=pos+quote.length);return {chapterId:c.id,revision:c.revision,revisionId:`${c.id}-r${c.revision}`,paragraphId:anchor?.id||`p${c.text.slice(0,Math.max(0,pos)).split('\n').length}`,quote,start:pos,end:pos+quote.length};}
 export function proposePatch(state,chapterId) {
  const c=chapter(state,chapterId), prev=c.revisions.find(r=>r.revision===(c.syncedRevision??1))?.text ?? c.text;
  const p={id:`patch-${state.projectId}-${chapterId}-${c.revision}-${state.version}`,projectId:state.projectId,baseVersion:state.version,chapterId,revision:c.revision,textHash:hash(c.text),intents:[],scope:'chapter',status:'proposed',summary:'',operations:[],questions:[],evidence:[]};
@@ -109,19 +110,35 @@ export function generateDraft(state) {
 function issuesFor(s,d){const issues=[];const add=(ruleId,explanation)=>issues.push({ruleId,severity:'error',explanation,certainty:'deterministic',suggestedAction:'修正正文或重新生成并审查'});
  if(d.projectId!==s.projectId)add('PROJECT','草稿不属于当前项目');if(d.baseVersion!==s.version)add('STATE_VERSION','草稿基于旧状态版本');if(s.chapters.some(c=>d.chapterRevisions[c.id]!==c.revision))add('TEXT_VERSION','源正文已变更');if(s.chapters.some(c=>c.syncStatus!=='CLEAN'))add('UNSYNCED','源正文存在未解决的记忆同步');
  if(typeof d.text!=='string'||!d.text.trim())add('EMPTY_TEXT','草稿正文不能为空');if(!s.chapters.some(c=>c.id===(d.chapterId||'ch3')))add('CHAPTER','草稿目标章节不存在');
- for(const event of d.staging??[]){if(typeof event.sourceQuote!=='string'||!event.sourceQuote.trim()||!d.text.includes(event.sourceQuote))add('STAGING_EVIDENCE','暂存事件证据已不在当前正文中，请恢复证据或拒绝此稿后重新生成');else if(Object.hasOwn(event,'sourceParagraphIndex')&&(!Number.isInteger(event.sourceParagraphIndex)||event.sourceParagraphIndex<0||d.text.split('\n')[event.sourceParagraphIndex]!==event.sourceQuote))add('STAGING_ANCHOR','暂存事件段落引用已失效，请恢复段落或拒绝此稿后重新生成');}
+ if(isProseDraft(d)&&!hasCurrentExtraction(s,d.id))add('EXTRACTION_REQUIRED','请对当前已保存正文重新提取候选记忆，再审查与接受');
+ for(const event of d.staging??[]){if(typeof event.sourceQuote!=='string'||!event.sourceQuote.trim()||!d.text.includes(event.sourceQuote))add('STAGING_EVIDENCE','暂存事件证据已不在当前正文中，请恢复证据或拒绝此稿后重新生成');else if(Object.hasOwn(event,'sourceParagraphIndex')&&(!Number.isInteger(event.sourceParagraphIndex)||event.sourceParagraphIndex<0||(isProseDraft(d)?segmentProse(d.text)[event.sourceParagraphIndex]?.text:d.text.split('\n')[event.sourceParagraphIndex])!==event.sourceQuote))add('STAGING_ANCHOR','暂存事件段落引用已失效，请恢复段落或拒绝此稿后重新生成');}
  if(s.mode==='custom')return issues;
  if(d.text.includes('用铜钥匙打开')&&!d.text.includes('取下一把铜钥匙'))add('KEY_SUPPORT','开门动作缺少此前获得钥匙的来源');if(d.text.includes('警方已经知道')||d.text.includes('警方早已知道'))add('KNOWLEDGE_LEAK','警方无来源提前获知秘密');if(relation(s)?.value==='has_met'&&d.text.includes('素未谋面'))add('CANON','草稿仍使用被替代的陌生关系');return issues;}
 export function reviewDraft(state,id){const s=copy(state),d=draft(s,id);if(!['DRAFT','IN_REVIEW'].includes(d.status))fail('DRAFT_STATUS','只能审查待定草稿');const issues=issuesFor(s,d);d.review={stateVersion:s.version,chapterId:d.chapterId||'ch3',stagingHash:hash(JSON.stringify(d.staging)),textHash:hash(d.text),revision:d.revision,issues,passed:!issues.length,checks:s.mode==='custom'?['项目隔离','状态版本','正文版本','目标章节','非空正文']:['状态版本','正文版本','角色知识边界','钥匙获取前置条件','已确认关系'],semanticStatus:s.mode==='custom'?'not_evaluated':'fixture_rules_only',limitations:s.mode==='custom'?['仅通过确定性版本与结构检查；通用语义一致性、角色知识与文风需作者复核']:['预置案例规则审查，不代表通用语义完备性']};d.status='IN_REVIEW';return s;}
-export function editDraft(state,id,text){if(typeof text!=='string'||!text.trim())fail('INVALID_TEXT','正文不能为空');const s=copy(state),d=draft(s,id);if(!['DRAFT','IN_REVIEW'].includes(d.status))fail('DRAFT_STATUS','只能编辑待定草稿');d.text=text;d.textHash=hash(text);d.revision++;d.review=null;d.modelReview=null;d.factDecisions=[];d.status='DRAFT';return s;}
+export function editDraft(state,id,text){
+ if(typeof text!=='string'||!text.trim())fail('INVALID_TEXT','正文不能为空');
+ const s=copy(state),d=draft(s,id);
+ if(!['DRAFT','IN_REVIEW'].includes(d.status))fail('DRAFT_STATUS','只能编辑待定草稿');
+ if(isProseDraft(d)){
+  validateProseDraftRecord(d);
+  if(text.length>MAX_PROSE_LENGTH)fail('INVALID_TEXT','正文超过 30000 字符上限');
+ }
+ d.text=text;d.textHash=hash(text);d.revision++;clearDraftReviews(d);
+ if(isProseDraft(d)){
+  d.proseVersions.push(proseVersion(text,d.revision));
+  d.staging=[];
+  d.extraction={status:'pending',attempt:d.extraction.attempt+1,binding:null};
+ }
+ return s;
+}
 export function acceptDraft(state,id){const original=draft(state,id);if(original.status==='ACCEPTED')return copy(state);if(original.status==='REJECTED')fail('DRAFT_STATUS','拒绝的草稿不能接受');if(!original.review?.passed||original.review.chapterId!==(original.chapterId||'ch3')||original.review.stagingHash!==hash(JSON.stringify(original.staging))||original.review.textHash!==hash(original.text)||original.review.stateVersion!==state.version||original.review.revision!==original.revision||issuesFor(state,original).length)fail('REVIEW_REQUIRED','请对当前正文与当前状态重新审查');
  if(original.requiresSemanticReview&&!currentSemanticReview(state,original))fail('SEMANTIC_REVIEW_REQUIRED','真实模型草稿需要当前版本的模型审查建议；模型审查不是独立真实性证明');
  if(original.requiresSemanticReview&&getFactReviewGate(state,id).some(x=>x.blocking&&!x.resolved))fail('FACT_DECISION_REQUIRED','已确认设定存在冲突或未完成的判断；请修正重审或逐条明确决定');
  if(original.requiresSemanticReview&&original.modelReview.issues.some(i=>i.severity==='error'))fail('SEMANTIC_REVIEW_ERRORS','模型审查发现阻塞问题，请修改并重新审查');
- const s=copy(state),d=draft(s,id),before=snapshot(s);d.status='ACCEPTED';const c=chapter(s,d.chapterId||'ch3');c.text=d.text;c.revision++;c.revisions.push(revisionRecord(c,c.text,c.revision));c.status='ACCEPTED';c.syncStatus='CLEAN';c.syncedRevision=c.revision;s.version++;s.sequence++;
- for(const e of d.staging)s.events.push({...e,status:'confirmed',draftId:id,source:{chapterId:c.id,revision:c.revision,...(Object.hasOwn(e,'sourceParagraphIndex')?{paragraphId:`p${e.sourceParagraphIndex+1}`} : {}),quote:e.sourceQuote}});
+ const s=copy(state),d=draft(s,id),before=snapshot(s);d.status='ACCEPTED';const c=chapter(s,d.chapterId||'ch3');c.text=d.text;c.revision++;c.revisions.push(isProseDraft(d)?{...revisionRecord(c,c.text,c.revision),paragraphs:segmentProse(c.text)}:revisionRecord(c,c.text,c.revision));c.status='ACCEPTED';c.syncStatus='CLEAN';c.syncedRevision=c.revision;s.version++;s.sequence++;
+ for(const e of d.staging)s.events.push({...e,status:'confirmed',draftId:id,source:{chapterId:c.id,revision:c.revision,...(Object.hasOwn(e,'sourceParagraphIndex')?{paragraphId:`p${e.sourceParagraphIndex+1}`} : {}),...(isProseDraft(d)?{start:e.sourceStart,end:e.sourceEnd}:{}),quote:e.sourceQuote}});
  s.commits.push({id:`commit-${s.sequence}`,kind:'draft_accept',draftId:id,version:s.version,summary:'接受经当前版本审查的候选稿',factDecisions:copy(d.factDecisions??[]),before,after:snapshot(s),dependencies:s.commits.filter(x=>x.kind==='patch'&&!s.commits.some(y=>y.undoes===x.id)).map(x=>x.id),chapterId:c.id,revision:c.revision});return s;}
-export function rejectDraft(state,id){const s=copy(state),d=draft(s,id);if(d.status==='ACCEPTED')fail('DRAFT_STATUS','已接受草稿需要补偿撤销');d.status='REJECTED';d.staging=[];return s;}
+export function rejectDraft(state,id){const s=copy(state),d=draft(s,id);if(d.status==='ACCEPTED')fail('DRAFT_STATUS','已接受草稿需要补偿撤销');d.status='REJECTED';d.staging=[];if(isProseDraft(d))d.extraction={status:'cancelled',attempt:d.extraction.attempt+1,binding:null};return s;}
 
 /** Generic projects contain only user-supplied configuration, never demo Canon. */
 export function createProjectFromConfig(config = {}) {
@@ -160,14 +177,135 @@ export function stageProviderDraft(state,result,chapterId) {
  s.drafts.push({id,projectId:s.projectId,chapterId,runId:`run-${s.sequence}`,revision:1,baseVersion:s.version,chapterRevisions:Object.fromEntries(s.chapters.map(c=>[c.id,c.revision])),status:'DRAFT',text:result.text,textHash:hash(result.text),provider:typeof result.provider==='string'?result.provider:(result.provider?.id||'external-provider'),providerInfo:typeof result.provider==='object'&&result.provider?copy(result.provider):null,requiresSemanticReview:Boolean(result.provider?.isLive),modelReview:null,staging,context:copy(context),review:null});return s;
 }
 
+/** The presence of pipeline metadata also gates malformed/forged draft flags. */
+const isProseDraft = d => d.requiresExtraction===true || Object.hasOwn(d,'proseVersions') || Object.hasOwn(d,'extraction');
+const plainObject = x => x!==null && typeof x==='object' && !Array.isArray(x);
+const exactKeys = (value,keys) => plainObject(value) && Object.keys(value).length===keys.length && keys.every(key=>Object.hasOwn(value,key));
+const positiveInteger = x => Number.isSafeInteger(x)&&x>0;
+const revisionMapMatches = (actual,expected) => plainObject(actual)&&plainObject(expected)&&Object.keys(actual).length===Object.keys(expected).length&&Object.entries(expected).every(([id,revision])=>Object.hasOwn(actual,id)&&positiveInteger(revision)&&actual[id]===revision);
+const proseVersion = (text,revision) => ({revision,text,textHash:hash(text),paragraphs:segmentProse(text)});
+function clearDraftReviews(d){d.review=null;d.modelReview=null;d.factDecisions=[];d.status='DRAFT';}
+const validProvider = p => typeof p==='string'&&!!p.trim() || plainObject(p)&&typeof p.id==='string'&&!!p.id.trim();
+const extractionBindingFields=['projectId','draftId','runId','chapterId','stateVersion','draftRevision','textHash','chapterRevisions','contextHash','attempt','requestId','textSnapshot'];
+function extractionBindingMatches(actual,expected){
+ return exactKeys(actual,extractionBindingFields)&&exactKeys(expected,extractionBindingFields)&&extractionBindingFields.filter(k=>k!=='chapterRevisions').every(k=>actual[k]!==undefined&&actual[k]===expected[k])&&revisionMapMatches(actual.chapterRevisions,expected.chapterRevisions);
+}
+function extractionBindingFor(d,stateVersion,chapterRevisions,context){
+ return {projectId:d.projectId,draftId:d.id,runId:d.runId,chapterId:d.chapterId,stateVersion,draftRevision:d.revision,textHash:hash(d.text),chapterRevisions:copy(chapterRevisions),contextHash:hash(JSON.stringify(context)),attempt:d.extraction.attempt,requestId:`${d.runId}-extraction-${d.extraction.attempt}`,textSnapshot:d.text};
+}
+function extractionEventId(d,index){return `extracted-${d.runId}-r${d.revision}-a${d.extraction.attempt}-${index+1}`;}
+function canonicalExtractionStaging(d,entries){
+ if(!Array.isArray(entries)||entries.length>30)fail('INVALID_EXTRACTION','候选记忆必须是至多 30 项的数组');
+ const paragraphs=segmentProse(d.text);
+ return entries.map((entry,index)=>{
+  if(!plainObject(entry)||Object.keys(entry).some(key=>!['label','sourceParagraphIndex','sourceQuote','sourceStart','sourceEnd'].includes(key))||typeof entry.label!=='string'||!entry.label.trim()||entry.label.length>1000||!Number.isSafeInteger(entry.sourceParagraphIndex)||entry.sourceParagraphIndex<0)fail('INVALID_EXTRACTION','候选记忆必须包含合法说明和当前正文段落编号');
+  const paragraph=paragraphs[entry.sourceParagraphIndex];
+  if(!paragraph)fail('INVALID_EXTRACTION','候选记忆引用了不存在的正文段落');
+  for(const [key,value] of Object.entries({sourceQuote:paragraph.text,sourceStart:paragraph.start,sourceEnd:paragraph.end}))if(Object.hasOwn(entry,key)&&entry[key]!==value)fail('INVALID_EXTRACTION','候选记忆原文与已保存正文段落不一致');
+  return {id:extractionEventId(d,index),label:entry.label,sourceParagraphIndex:paragraph.index,sourceParagraphId:paragraph.id,sourceQuote:paragraph.text,sourceStart:paragraph.start,sourceEnd:paragraph.end,status:'proposed'};
+ });
+}
+
+/** Validate persisted pipeline data even for historical drafts, without trusting it. */
+export function validateProseDraftRecord(d){
+ if(!isProseDraft(d))return true;
+ const invalid=()=>fail('INVALID_PROSE_SNAPSHOT','已保存正文版本、提取绑定或原文定位无效');
+ if(d.requiresExtraction!==true||typeof d.requiresSemanticReview!=='boolean'||d.requiresSemanticReview!==Boolean(d.providerInfo?.isLive)||['id','projectId','runId','chapterId'].some(k=>typeof d[k]!=='string'||!d[k].trim())||!positiveInteger(d.baseVersion)||!positiveInteger(d.revision)||typeof d.text!=='string'||!d.text.trim()||d.text.length>MAX_PROSE_LENGTH||d.textHash!==hash(d.text)||!Array.isArray(d.proseVersions)||d.proseVersions.length!==d.revision||!plainObject(d.context)||d.context.projectId!==d.projectId||d.context.version!==d.baseVersion||!Array.isArray(d.context.sources)||!plainObject(d.chapterRevisions)||!Array.isArray(d.staging)||!plainObject(d.extraction))invalid();
+ if(!d.context.sources.some(c=>c.chapterId===d.chapterId)||d.context.sources.length!==Object.keys(d.chapterRevisions).length||new Set(d.context.sources.map(c=>c.chapterId)).size!==d.context.sources.length||d.context.sources.some(c=>!plainObject(c)||typeof c.chapterId!=='string'||typeof c.text!=='string'||!positiveInteger(c.revision)||d.chapterRevisions[c.chapterId]!==c.revision))invalid();
+ for(const [index,version] of d.proseVersions.entries()){
+  if(!exactKeys(version,['revision','text','textHash','paragraphs'])||version.revision!==index+1||typeof version.text!=='string'||!version.text.trim()||version.text.length>MAX_PROSE_LENGTH||version.textHash!==hash(version.text)||JSON.stringify(version.paragraphs)!==JSON.stringify(segmentProse(version.text)))invalid();
+ }
+ const latest=d.proseVersions.at(-1);
+ if(latest.text!==d.text||latest.textHash!==d.textHash)invalid();
+ const x=d.extraction;
+ if(!['pending','complete','failed','cancelled'].includes(x.status)||!Number.isSafeInteger(x.attempt)||x.attempt<0||Object.keys(x).some(k=>!['status','attempt','binding','provider','reviewNotes','stagingHash','error'].includes(k)))invalid();
+ if(x.binding!==null&&(!positiveInteger(x.attempt)||!extractionBindingMatches(x.binding,extractionBindingFor(d,d.baseVersion,d.chapterRevisions,d.context))))invalid();
+ if(x.status==='complete'){
+  if(!x.binding||!validProvider(x.provider)||!Array.isArray(x.reviewNotes)||x.reviewNotes.length>30||x.reviewNotes.some(n=>typeof n!=='string'||!n.trim()||n.length>2000)||x.stagingHash!==hash(JSON.stringify(d.staging))||Object.hasOwn(x,'error'))invalid();
+  let canonical;
+  try{canonical=canonicalExtractionStaging(d,d.staging.map(e=>{if(!exactKeys(e,['id','label','sourceParagraphIndex','sourceParagraphId','sourceQuote','sourceStart','sourceEnd','status']))invalid();return {label:e.label,sourceParagraphIndex:e.sourceParagraphIndex,sourceQuote:e.sourceQuote,sourceStart:e.sourceStart,sourceEnd:e.sourceEnd};}));}catch{invalid();}
+  if(JSON.stringify(canonical)!==JSON.stringify(d.staging))invalid();
+ }else if(d.staging.length||['provider','reviewNotes','stagingHash'].some(k=>Object.hasOwn(x,k))||Object.hasOwn(x,'error')&&(typeof x.error!=='string'||!['候选记忆提取未完成；正文已保留，请重试','候选记忆提取已取消；正文已保留'].includes(x.error)))invalid();
+ return true;
+}
+
+/** Save prose first. A generation response cannot smuggle memory into staging. */
+export function stageProseDraft(state,result,chapterId){
+ if(!result||typeof result.text!=='string'||!result.text.trim()||result.text.length>MAX_PROSE_LENGTH)fail('INVALID_TEXT','模型结果需要 1 至 30000 字符的非空正文');
+ if(result.chapterId!==undefined&&result.chapterId!==chapterId)fail('CHAPTER_MISMATCH','模型正文的目标章节不一致');
+ const s=stageProviderDraft(state,{...result,staging:[]},chapterId),d=s.drafts.at(-1);
+ if(JSON.stringify(result.context)!==JSON.stringify(getContext(state)))fail('STALE_CONTEXT','模型结果的创作上下文已变化');
+ d.requiresExtraction=true;
+ d.proseVersions=[proseVersion(d.text,1)];
+ d.extraction={status:'pending',attempt:0,binding:null};
+ d.factDecisions=[];
+ return s;
+}
+
+/** Pure request binding; call after beginMemoryExtraction has been saved. */
+export function createExtractionBinding(state,draftId){
+ const d=draft(state,draftId);
+ if(!isProseDraft(d))fail('EXTRACTION_NOT_REQUIRED','旧版候选稿没有独立记忆提取步骤');
+ validateProseDraftRecord(d);
+ return extractionBindingFor(d,state.version,Object.fromEntries(state.chapters.map(c=>[c.id,c.revision])),getContext(state));
+}
+function extractionOriginCurrent(state,d){
+ return d.projectId===state.projectId&&d.baseVersion===state.version&&revisionMapMatches(d.chapterRevisions,Object.fromEntries(state.chapters.map(c=>[c.id,c.revision])))&&state.chapters.every(c=>c.syncStatus==='CLEAN')&&JSON.stringify(d.context)===JSON.stringify(getContext(state));
+}
+export function beginMemoryExtraction(state,draftId){
+ const original=draft(state,draftId);
+ if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能提取待定草稿');
+ if(!isProseDraft(original))fail('EXTRACTION_NOT_REQUIRED','旧版候选稿没有独立记忆提取步骤');
+ validateProseDraftRecord(original);
+ if(!extractionOriginCurrent(state,original))fail('STALE_EXTRACTION','草稿对应的项目、故事状态或源正文已变化');
+ const s=copy(state),d=draft(s,draftId);
+ clearDraftReviews(d);d.staging=[];
+ d.extraction={status:'pending',attempt:d.extraction.attempt+1,binding:null};
+ d.extraction.binding=createExtractionBinding(s,draftId);
+ return s;
+}
+export function createExtractionInput(state,draftId){
+ const d=draft(state,draftId);
+ validateProseDraftRecord(d);
+ if(!isProseDraft(d)||!extractionOriginCurrent(state,d))fail('STALE_EXTRACTION','只能提取当前已保存正文');
+ return {text:d.text,chapterId:d.chapterId,context:copy(d.context)};
+}
+function pendingExtractionMatches(state,d,expected){
+ try{return ['DRAFT','IN_REVIEW'].includes(d.status)&&d.extraction?.status==='pending'&&positiveInteger(d.extraction.attempt)&&extractionOriginCurrent(state,d)&&extractionBindingMatches(expected,d.extraction.binding)&&extractionBindingMatches(expected,createExtractionBinding(state,d.id));}catch{return false;}
+}
+export function attachMemoryExtraction(state,draftId,report,expected){
+ const original=draft(state,draftId);
+ if(!pendingExtractionMatches(state,original,expected))fail('STALE_EXTRACTION','提取结果与当前已保存正文或请求批次不一致');
+ if(!plainObject(report)||Object.keys(report).some(k=>!['staging','reviewNotes','provider'].includes(k))||!validProvider(report.provider)||!Array.isArray(report.reviewNotes)||report.reviewNotes.length>30||report.reviewNotes.some(n=>typeof n!=='string'||!n.trim()||n.length>2000))fail('INVALID_EXTRACTION','候选记忆提取报告格式不完整');
+ const staging=canonicalExtractionStaging(original,report.staging);
+ const s=copy(state),d=draft(s,draftId);
+ clearDraftReviews(d);d.staging=staging;
+ d.extraction={status:'complete',attempt:d.extraction.attempt,binding:copy(expected),provider:copy(report.provider),reviewNotes:copy(report.reviewNotes),stagingHash:hash(JSON.stringify(staging))};
+ return s;
+}
+/** Failure/cancellation never stores provider errors or affects a newer attempt. */
+export function markExtractionFailure(state,draftId,expected,status='failed'){
+ const original=draft(state,draftId);
+ if(!pendingExtractionMatches(state,original,expected))return copy(state);
+ if(!['failed','cancelled'].includes(status))fail('INVALID_EXTRACTION_STATUS','提取结束状态无效');
+ const s=copy(state),d=draft(s,draftId);clearDraftReviews(d);d.staging=[];
+ d.extraction={status,attempt:d.extraction.attempt,binding:copy(expected),error:status==='cancelled'?'候选记忆提取已取消；正文已保留':'候选记忆提取未完成；正文已保留，请重试'};
+ return s;
+}
+export function hasCurrentExtraction(state,draftId){
+ const d=draft(state,draftId);
+ if(!isProseDraft(d))return true;
+ try{return validateProseDraftRecord(d)&&d.extraction.status==='complete'&&extractionOriginCurrent(state,d)&&extractionBindingMatches(d.extraction.binding,createExtractionBinding(state,draftId));}catch{return false;}
+}
+
 /** Capture before the asynchronous request; never rebuild this from a response target. */
 export function createReviewBinding(state,draftId) {
  const d=draft(state,draftId);
- return {projectId:state.projectId,draftId:d.id,runId:d.runId,chapterId:d.chapterId||'ch3',stateVersion:state.version,draftRevision:d.revision,textHash:hash(d.text),stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:Object.fromEntries(state.chapters.map(c=>[c.id,c.revision])),contextHash:hash(JSON.stringify(getContext(state)))};
+ return {projectId:state.projectId,draftId:d.id,runId:d.runId,chapterId:d.chapterId||'ch3',stateVersion:state.version,draftRevision:d.revision,textHash:hash(d.text),stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:Object.fromEntries(state.chapters.map(c=>[c.id,c.revision])),contextHash:hash(JSON.stringify(getContext(state))),...(isProseDraft(d)?{extractionAttempt:d.extraction?.attempt,extractionHash:hash(JSON.stringify(d.extraction))}:{})};
 }
 function reviewBindingMatches(actual,expected) {
  if(!actual||!expected)return false;
- const fields=['projectId','draftId','runId','chapterId','stateVersion','draftRevision','textHash','stagingHash','contextHash'];
+ const fields=['projectId','draftId','runId','chapterId','stateVersion','draftRevision','textHash','stagingHash','contextHash',...(Object.hasOwn(expected,'extractionAttempt')?['extractionAttempt','extractionHash']:[])];
  if(fields.some(key=>!Object.hasOwn(actual,key)||actual[key]===undefined||actual[key]!==expected[key]))return false;
  const revisions=actual.chapterRevisions,wanted=expected.chapterRevisions;
  return Boolean(revisions&&typeof revisions==='object'&&!Array.isArray(revisions)&&Object.keys(revisions).length===Object.keys(wanted).length&&Object.entries(wanted).every(([id,revision])=>Object.hasOwn(revisions,id)&&revisions[id]===revision));
@@ -183,6 +321,7 @@ export function attachSemanticReview(state,draftId,report,expected) {
  if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能审查待定草稿');
  if(!reviewBindingMatches(expected,createReviewBinding(state,draftId))||original.baseVersion!==state.version)fail('STALE_SEMANTIC_REVIEW','模型审查结果与当前状态或草稿版本不一致');
  if(original.projectId!==state.projectId||state.chapters.some(c=>original.chapterRevisions?.[c.id]!==c.revision||c.syncStatus!=='CLEAN'))fail('STALE_SEMANTIC_REVIEW','模型审查使用的项目或源正文已变化');
+ if(isProseDraft(original)&&!hasCurrentExtraction(state,draftId))fail('EXTRACTION_REQUIRED','当前正文尚未完成候选记忆提取');
  if(!report||typeof report.summary!=='string'||!Array.isArray(report.issues)||!Array.isArray(report.checks)||report.checks.some(x=>typeof x!=='string')||!(typeof report.provider==='string'&&report.provider.trim()||report.provider&&typeof report.provider==='object'&&typeof report.provider.id==='string'&&report.provider.id.trim()))fail('INVALID_SEMANTIC_REVIEW','模型审查报告格式不完整');
  for(const issue of report.issues){
   if(!issue||typeof issue!=='object'||Array.isArray(issue)||Object.keys(issue).some(k=>!['severity','explanation','sourceQuote'].includes(k))||!['error','warning'].includes(issue.severity)||typeof issue.explanation!=='string'||!issue.explanation.trim()||typeof issue.sourceQuote!=='string'||!issue.sourceQuote.trim()||!original.text.includes(issue.sourceQuote))fail('INVALID_SEMANTIC_REVIEW','每项审查问题必须使用合法级别、说明和当前草稿中的精确原文证据');

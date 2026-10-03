@@ -12,3 +12,5 @@
 @media(max-width:700px){.top-actions{flex-wrap:wrap}.backup-import{max-width:135px}}
 
 .model-task-status{margin:16px 28px;padding:14px 16px;border:1px solid var(--line,#dedbd4);border-radius:10px;background:#f6f8f7;color:#33433c;font-size:13px;overflow-wrap:anywhere}.model-task-status>div{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.model-task-status strong{font-size:14px}.model-task-status p{margin:9px 0 5px}.model-task-status small{line-height:1.6;display:block;color:#626d65}.model-task-status button{margin-left:auto}.ns-wizard .model-task-status{margin:12px 0}@media(max-width:600px){.model-task-status{margin:12px}.model-task-status>div{gap:8px}}
+
+.staged-event{padding:12px 14px;margin:12px 0;border:1px solid var(--line);border-radius:5px;overflow-wrap:anywhere;font-size:12px}.staged-event blockquote{white-space:pre-wrap;margin:8px 0 0;border-left:2px solid #8aa189;padding:10px 12px;background:#f5f7f1;font:13px/1.8 "Noto Serif CJK SC",serif}.extraction-status{margin:10px 0 16px}.draft-actions{flex-wrap:wrap}.draft-prose{overflow-wrap:anywhere}

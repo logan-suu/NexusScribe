@@ -44,3 +44,15 @@ test('failure preserves all story data without retry; reload does not restart',a
 test('wizard close and reopen ignores old interview results',async({page,context})=>{
  const {calls,errors}=await boot(page,context);await page.getByRole('button',{name:'新建故事'}).click();await page.getByLabel(/你的故事灵感/).fill('虚构灯塔在雨中发来消息');await page.getByRole('button',{name:'聊聊这个故事'}).click();await expect.poll(()=>calls.length).toBe(1);await page.getByRole('button',{name:'关闭新建故事'}).click();await calls[0].route.fulfill({json:{output:{questions:[{key:'tone',title:'迟到的虚构问题'}]}}});calls[0].resolve();await page.getByRole('button',{name:'新建故事'}).click();await expect(page.getByLabel(/你的故事灵感/)).toHaveValue('');await expect(page.getByText('迟到的虚构问题')).toHaveCount(0);expect(calls).toHaveLength(1);expect(errors).toEqual([]);
 });
+
+
+test('separate extraction failure and cancelled late results preserve raw prose',async({page,context},info)=>{
+ const {calls,errors}=await boot(page,context,true),text='  小舟来到塔下。\r\n\r\n她点亮纸灯。\n';
+ await page.getByRole('button',{name:'生成当前章'}).click();await expect.poll(()=>calls.length).toBe(1);await release(calls[0],text);await expect(page.getByRole('button',{name:'接受此版本'})).toBeDisabled();expect((await saved(page)).state.drafts[0].text).toBe(text);
+ await page.getByRole('button',{name:'提取候选记忆'}).click();await expect.poll(()=>calls.length).toBe(2);await calls[1].route.fulfill({status:503,json:{error:{message:'合成提取失败'}}});calls[1].resolve();await expect(page.getByLabel('候选记忆提取状态')).toContainText('已保存的正文保留');expect((await saved(page)).state.drafts[0].text).toBe(text);expect((await saved(page)).state.events).toHaveLength(0);await capture(page,info,'extraction-failure-preserved-prose');
+ await page.reload();await expect(page.getByRole('button',{name:'审查候选稿'})).toBeDisabled();expect(calls).toHaveLength(2);
+ await page.getByRole('button',{name:'提取候选记忆'}).click();await expect.poll(()=>calls.length).toBe(3);await page.getByRole('button',{name:'取消请求'}).click();await page.getByRole('button',{name:'提取候选记忆'}).click();await expect.poll(()=>calls.length).toBe(4);
+ const output={staging:[],reviewNotes:[],provider:{id:'fictional-test',isLive:true}};
+ await calls[2].route.fulfill({json:{output}});calls[2].resolve();await expect(page.getByRole('button',{name:'取消请求'})).toBeVisible();await expect(page.getByRole('button',{name:'审查候选稿'})).toBeDisabled();
+ await calls[3].route.fulfill({json:{output}});calls[3].resolve();await expect(page.getByRole('button',{name:'审查候选稿'})).toBeEnabled();expect((await saved(page)).state.drafts[0].text).toBe(text);expect((await saved(page)).state.events).toHaveLength(0);expect(calls).toHaveLength(4);expect(errors).toEqual([]);
+});

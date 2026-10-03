@@ -34,3 +34,6 @@ live-journey-evidence/
 
 # Manual synthetic writing-quality evidence (publish only after review)
 writing-quality-evidence/
+
+# Synthetic bounded prose-pipeline evidence is uploaded by its allowlist only.
+prose-pipeline-evidence/

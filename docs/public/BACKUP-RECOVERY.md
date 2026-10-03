@@ -38,3 +38,7 @@ because its socket operation was denied; local browser verification remains uncl
 All milestone tests used fictional fixtures without live model calls. These bounded
 checks do not establish cross-browser behavior, resilience to every process/storage
 failure, cloud backup, atomic multi-window transactions, or production durability.
+
+## Prose-first draft checkpoints
+
+New live drafts include immutable prose versions and deterministic paragraph text/offsets. Import validates those snapshots, extraction attempts/bindings and exact staging evidence. Pending imported drafts lose prior extraction, reviews and author exceptions and require explicit re-extraction. Original history remains in the import audit. New generated prose is retained in memory when storage writes fail; extraction waits for a successful save. This is still bounded localStorage, not durable server persistence.
