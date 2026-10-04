@@ -43,8 +43,8 @@ The preregistered compression/causal-continuity item remains a recorded failure;
 
 The consumed live entrypoint is retired. Credential-free replay tests remain available. The trial did not generate chapter three or establish multi-chapter quality, general revision reliability, blind human preference, or author acceptance.
 
-## Design consequence and next useful change
+## Historical design consequence
 
 Keep revision as a proposal requiring an author decision. One tightly specified full-chapter rewrite can meet counts and fix a named defect while leaving another action transition in need of editing; adding another broad model judge would not make this case reliable.
 
-The current proposal panel offers compare/adopt/discard, but no author edit before adoption. A useful next iteration is a local author-edit layer on the proposal: keep the exact model output immutable, show author changes and fresh counts, then confirm adoption of that edited text with all existing downstream invalidation. Length targets should produce transparent deterministic warnings, not a quality badge. This would let an author fix this sentence directly without another paid request. It is a recommendation, not a shipped capability or authorization for a new model batch.
+At the time of this trial, the proposal panel offered compare/adopt/discard, but no author edit before adoption. The following recommendation records the response to that trial, not the current implementation state. The recommendation at that time was a local author-edit layer on the proposal: keep the exact model output immutable, show author changes and fresh counts, then confirm adoption of that edited text with all existing downstream invalidation. Length targets should produce transparent deterministic warnings, not a quality badge. That recommendation would let an author fix this sentence directly without another paid request. It did not describe a capability shipped at the time or authorize a new model batch.
