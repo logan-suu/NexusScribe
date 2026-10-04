@@ -4,9 +4,9 @@
   "sha256": {
     "eval/MULTICHAPTER-PROTOCOL.md": "86611d4ec543b987691d1318dc242284e075e6206e95c05f1502f742e28532a8",
     "eval/multichapter-fixtures.mjs": "5f46c2b7a27fc839f1f60cec28679305477d24731f613e163a9a2b27afcfe53e",
-    "scripts/multichapter-eval.mjs": "2402453460472b9a0028d24ecb457d36d813679fa9018cae8172999884886984",
+    "scripts/multichapter-eval.mjs": "1759c15d43fa0e3c87661c9e638641b3d6b34e1e7dae2c7dbc50cefcbd1a5ffc",
     "tests/multichapter-eval.test.js": "bbec880ddd9462d509aedd41dd66444f692834cc591088554572cd83a5005d95",
-    "server/provider.js": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7",
+    "server/provider.js": "cbd2d3ad2123e9ba8cc0fad56443a13e5e73531876b507b111fe1ee0bbe131e7",
     "server/index.js": "d1d63c6636fc43fba2b9e50d6e9d57e4bca738076b9176c0898a3246650d0d72",
     "src/App.jsx": "9aeefaf864bbbad5cd6dc2c144586125937206384764b61722592f0138da1529",
     "src/domain/engine.js": "c858fd2d1ec2bacfd933de4d3f7595f21eb0cff1413964b8b8ba8c79a11f6050",
@@ -34,6 +34,7 @@
     "vite.config.js": "cf5960e8774cfa10916c06661dbb956474538088fdfc5fb2c96fac21b471ec87",
     "package.json": "0e4d4f723407385a8a3db662c5b8f16609a2fb461a847876d819f7555b11f012",
     "package-lock.json": "41f4dafa8e6ba98465d641b6bd86d7ab2755b9a86dd9c528853faddabef1008e",
-    ".github/workflows/live-smoke.yml": "805bc3dd704496a797bef14c523e51e9542ea386fbd950f7e9ba9ce0e7f6401e"
+    ".github/workflows/live-smoke.yml": "805bc3dd704496a797bef14c523e51e9542ea386fbd950f7e9ba9ce0e7f6401e",
+    "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195"
   }
 }

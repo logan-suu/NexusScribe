@@ -20,7 +20,7 @@ export const protocol = Object.freeze({ id: 'multichapter-v1', version: 1,
   actions: Object.freeze(['generateProse', 'extractMemory', 'reviewChapter', 'auditMemoryCandidate']) });
 export const FROZEN_PATHS = Object.freeze([
   'eval/MULTICHAPTER-PROTOCOL.md', 'eval/multichapter-fixtures.mjs', 'scripts/multichapter-eval.mjs',
-  'tests/multichapter-eval.test.js', 'server/provider.js', 'server/index.js', 'src/App.jsx',
+  'tests/multichapter-eval.test.js', 'server/provider.js', 'server/provider-transport.js', 'server/index.js', 'src/App.jsx',
   'src/domain/engine.js', 'src/domain/memory-review.js', 'src/domain/fact-review.js', 'src/domain/prose.js',
   'src/storage.js', 'src/adapters/provider.js', 'src/authoring/live-provider.js',
   'src/components/DraftPanel.jsx', 'src/components/ProviderPanel.jsx', 'src/components/Editor.jsx',

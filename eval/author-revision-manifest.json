@@ -95,9 +95,9 @@
   ],
   "sha256": {
     "eval/AUTHOR-REVISION-PROTOCOL.md": "13c442ac93013e3016c8ca82eb59198eaad43a2335e093efcb2a634beedb2803",
-    "scripts/run-author-revision-eval.mjs": "f51ffb366793182bfdb14a7ba29240ba9ea229ee9ebd8d1a05c053bc046e50e0",
+    "scripts/run-author-revision-eval.mjs": "eec7dcc1b3c136349454c70e159385d54b2803326a5a643d52f3ea6f60664b6e",
     "tests/author-revision-eval.test.js": "5bce12d0f990dfe43b5eff16f7f9ea27d1704bddedf43c62ce11fa1b42bb8102",
-    "server/provider.js": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7",
+    "server/provider.js": "cbd2d3ad2123e9ba8cc0fad56443a13e5e73531876b507b111fe1ee0bbe131e7",
     "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
     "eval/history/multichapter-v1/completed-05.json": "75a1ae40bb15047e7560c99f8d5ea41486a48c22276630ecbabf24698995d1da",
     "eval/history/multichapter-v1/request-05.json": "2b73b05a467ea495c0050704bfafb830862fdf8516961222d9d1bd935d39a694",
@@ -116,7 +116,8 @@
     "eval/history/author-revision-v1/ledger-01.json": "b5ecaefddf966cbbc3a21f36ace26c4b955f3eb7219f4b531c5728d13958f80e",
     "eval/history/author-revision-v1/raw-01.bin": "25f6800dc6de6cfaa0c7a5b5c138970e856c2b960f5e1cf106183cd709ffe0ae",
     "eval/history/author-revision-v1/request-01.json": "6b6e9e896fdb52006e17c5f3a7b10ea83cb45babeeee58b8f8c76f7ad9018b9d",
-    "eval/history/author-revision-v1/source-manifest.json": "bf9124403214583274a2527ec9a704656e98e7cff809d0a844e615c9c51bee1b"
+    "eval/history/author-revision-v1/source-manifest.json": "bf9124403214583274a2527ec9a704656e98e7cff809d0a844e615c9c51bee1b",
+    "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195"
   },
   "retirement": {
     "liveAttempts": 1,

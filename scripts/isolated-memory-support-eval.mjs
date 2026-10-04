@@ -15,7 +15,7 @@ export const protocol = Object.freeze({
 export const ARTIFACT_NAMES = Object.freeze(['inputs.json', 'diagnostics.json', ...Array.from({ length: 4 }, (_, i) => `completed-0${i + 1}.json`)]);
 export const FROZEN_PATHS = Object.freeze([
   'eval/ISOLATED-MEMORY-SUPPORT-PROTOCOL.md', 'eval/isolated-memory-support-fixtures.mjs',
-  'scripts/isolated-memory-support-eval.mjs', 'tests/isolated-memory-support-eval.test.js', 'server/provider.js'
+  'scripts/isolated-memory-support-eval.mjs', 'tests/isolated-memory-support-eval.test.js', 'server/provider.js', 'server/provider-transport.js'
 ]);
 const digest = text => createHash('sha256').update(text).digest('hex');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));

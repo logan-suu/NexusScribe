@@ -22,7 +22,7 @@ export const SOURCE_HASHES = Object.freeze({
 });
 export const FROZEN_PATHS = Object.freeze([
   'eval/AUTHOR-REVISION-PROTOCOL.md', 'scripts/run-author-revision-eval.mjs', 'tests/author-revision-eval.test.js',
-  'server/provider.js', 'src/domain/prose.js',
+  'server/provider.js', 'server/provider-transport.js', 'src/domain/prose.js',
   'scripts/run-author-revision-live.mjs', 'tests/author-revision-live.test.js', '.github/workflows/author-revision-trial.yml',
   'eval/history/multichapter-v1/completed-05.json', 'eval/history/multichapter-v1/request-05.json',
   'eval/history/multichapter-v1/request-06.json', 'eval/history/multichapter-v1/request-07.json',
