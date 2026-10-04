@@ -102,7 +102,7 @@ export function registerMemoryAuthority(draft,binding,review,reviewHash=digest(J
 }
 export function archiveMemoryReview(draft,reason) {
  initializeMemoryReview(draft);
- const changingCandidates=['draft_edited','draft_rejected','extraction_restarted','backup_imported'].includes(reason);
+ const changingCandidates=['draft_edited','draft_rejected','extraction_restarted','backup_imported','manual_extraction_skipped'].includes(reason);
  const hasPriorReview=Boolean(draft.modelReview||draft.memoryDecisions.length);
  if (changingCandidates&&(draft.staging.length||draft.extraction) || hasPriorReview) {
   const authorityIds=[...new Set(draft.memoryDecisions.map(d=>d.authorityId))];
