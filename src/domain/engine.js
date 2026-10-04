@@ -100,8 +100,56 @@ function authorConstitution(config = {}) {
  if (Object.hasOwn(config, 'contract')) constitution.contract = copy(config.contract);
  return constitution;
 }
+const CONTEXT_SCHEMA_VERSION=2, MEMORY_CONTEXT_MAX_BYTES=16*1024, MEMORY_CONTEXT_MAX_ENTRIES=100;
+const contextUpgradeMessage='此候选使用旧版上下文，原文与历史已保留；请明确更新参考上下文，再重新提取与审阅，正文不会自动改写';
+const memoryContextPolicy='Events are a bounded auxiliary projection of explicitly selected draft memories, not independently verified truth or exhaustive story state. Ordinary keep records a fallible model support judgment; override_keep is an author exception, not model-verified support. Rejected or omitted memory labels do not erase facts expressed by the accepted manuscript. Read source roles: planned_content is a plan, not an event that has happened; unaccepted_manuscript is not accepted continuity. Follow input.chapterIndex and project.outline as the generation target. Earlier accepted chapters record prior events; later accepted chapters constrain future continuity, not knowledge already acquired. Advance with a new consequential action rather than replaying prior dialogue or discoveries, unless a purposeful callback is needed. Event source offsets are JavaScript UTF-16 indices into the exact matching sources text. Older-revision memories are excluded until reviewed again; their history is preserved.';
+/** Locate evidence only in the current accepted revision; old history is not current authority. */
+function currentMemorySource(state,event) {
+ const src=event.source,c=state.chapters.find(item=>item.id===src?.chapterId);
+ if(!c||c.status!=='ACCEPTED'||c.syncStatus!=='CLEAN'||src.revision!==c.revision||typeof src.quote!=='string'||!src.quote.trim())return null;
+ const record=c.revisions.find(item=>item.revision===c.revision&&item.text===c.text);
+ if(!record)return null;
+ let start=src.start,end=src.end,paragraph;
+ if(src.paragraphId){
+  paragraph=record.paragraphs.find(item=>item.id===src.paragraphId);
+  if(!paragraph||!paragraph.text.includes(src.quote))return null;
+ }
+ if(start!==undefined||end!==undefined){
+  if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<0||end<=start||c.text.slice(start,end)!==src.quote)return null;
+  if(paragraph&&Number.isInteger(paragraph.start)&&(start<paragraph.start||end>paragraph.end))return null;
+ }else if(paragraph){
+  // Legacy revision records have paragraph IDs but no offsets. Walk in order,
+  // so two identical paragraphs retain the selected paragraph's location.
+  let cursor=0;
+  for(const item of record.paragraphs){const position=c.text.indexOf(item.text,cursor);if(position<0)return null;if(item===paragraph){start=position+item.text.indexOf(src.quote);break}cursor=position+item.text.length;}
+  end=start+src.quote.length;
+ }else{start=c.text.indexOf(src.quote);end=start+src.quote.length;}
+ if(start<0||c.text.slice(start,end)!==src.quote)return null;
+ return {chapterId:c.id,revision:c.revision,...(src.paragraphId?{paragraphId:src.paragraphId}:{}),start,end};
+}
+/** Compact accepted selections, never recursive review bindings or rejected candidates. */
+function acceptedMemoryContext(state) {
+ const events=[],memoryContext={included:0,staleSource:0,unverifiedSelection:0,omittedByLimit:0,maxBytes:MEMORY_CONTEXT_MAX_BYTES,maxEntries:MEMORY_CONTEXT_MAX_ENTRIES,policy:memoryContextPolicy};
+ let bytes=2;const encoder=new TextEncoder(),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ for(const event of state.events){
+  const decision=event.memoryDecision,d=state.drafts.find(item=>item.id===event.draftId),candidate=d?.staging?.find(item=>item.id===event.id);
+  // Match the durable author choice and original candidate rather than trusting
+  // arbitrary event fields imported from a backup. This is structural provenance,
+  // not a new semantic assessment, and deliberately does not call review gates.
+  const anchorMatches=candidate&&event.source&&event.source.paragraphId===(Object.hasOwn(candidate,'sourceParagraphIndex')?`p${candidate.sourceParagraphIndex+1}`:undefined)&&event.source.start===candidate.sourceStart&&event.source.end===candidate.sourceEnd;
+  const selected=event.status==='confirmed'&&d?.status==='ACCEPTED'&&d.projectId===state.projectId&&(d.chapterId||'ch3')===event.source?.chapterId&&d.chapterRevisions[event.source.chapterId]+1===event.source.revision&&memoryCandidatesIntact(d)&&typeof event.label==='string'&&!!event.label.trim()&&candidate?.label===event.label&&candidate.sourceQuote===event.source?.quote&&anchorMatches&&decision?.candidateId===event.id&&decision.authority==='explicit_author_decision'&&['keep','override_keep'].includes(decision.action)&&['supported','unsupported','unknown'].includes(decision.assessment)&&(decision.action!=='keep'||decision.assessment==='supported')&&d.acceptedMemoryDecisions?.some(item=>same(item,decision))&&d.memoryDecisionHistory?.some(item=>same(item,decision));
+  if(!selected){memoryContext.unverifiedSelection++;continue}
+  const source=currentMemorySource(state,event);
+  if(!source){memoryContext.staleSource++;continue}
+  const projected={id:event.id,label:event.label,memoryDecision:{action:decision.action,assessment:decision.assessment},source};
+  const size=encoder.encode(JSON.stringify(projected)).length+(events.length?1:0);
+  if(events.length>=MEMORY_CONTEXT_MAX_ENTRIES||bytes+size>MEMORY_CONTEXT_MAX_BYTES){memoryContext.omittedByLimit++;continue}
+  events.push(projected);bytes+=size;
+ }
+ memoryContext.included=events.length;return {events,memoryContext};
+}
 export function getContext(state) {
- return {...(state.mode==='custom'?{constitution:authorConstitution(state.config??{})}:{}),projectId:state.projectId,version:state.version,view:'writer',sceneTime:3,pov:state.mode==='custom'?(state.config?.protagonist??'主角'):'林夏',facts:copy(state.facts.filter(f=>f.status==='confirmed')),knowledge:copy(state.knowledge),forbiddenReveals:state.mode==='custom'?(state.config?.constraints??[]):['警方不得无来源得知陈默与死者过去相识'],plans:getImpacts(state),obligations:state.mode==='custom'?[]:[{id:'letter-origin',label:'母亲多年收到的旧信：寄信人仍待揭示',status:'OPEN'}],sources:state.chapters.map(c=>({chapterId:c.id,revision:c.revision,revisionId:`${c.id}-r${c.revision}`,text:c.text,channel:'original_text'})),summaries:copy(state.derived.filter(x=>x.status==='valid'&&chapter(state,x.chapterId).revision===x.revision)),support:state.knowledge.some(k=>k.id==='lin-address')?evaluateSupport(state):{status:'unsupported',validPaths:[],sourceIds:[]},staging:[]};
+ return {...(state.mode==='custom'?{constitution:authorConstitution(state.config??{})}:{}),contextSchemaVersion:CONTEXT_SCHEMA_VERSION,projectId:state.projectId,version:state.version,view:'writer',sceneTime:state.mode==='custom'?null:3,pov:state.mode==='custom'?(state.config?.protagonist??'主角'):'林夏',facts:copy(state.facts.filter(f=>f.status==='confirmed')),knowledge:copy(state.knowledge),...acceptedMemoryContext(state),forbiddenReveals:state.mode==='custom'?(state.config?.constraints??[]):['警方不得无来源得知陈默与死者过去相识'],plans:getImpacts(state),obligations:state.mode==='custom'?[]:[{id:'letter-origin',label:'母亲多年收到的旧信：寄信人仍待揭示',status:'OPEN'}],sources:state.chapters.map((c,chapterIndex)=>({chapterId:c.id,chapterIndex,revision:c.revision,revisionId:`${c.id}-r${c.revision}`,text:c.text,channel:c.status==='PLANNED'?'planning_text':'original_text',chapterStatus:c.status,syncStatus:c.syncStatus,role:c.status==='ACCEPTED'&&c.syncStatus==='CLEAN'?'accepted_manuscript':c.status==='PLANNED'?'planned_content':'unaccepted_manuscript'})),summaries:copy(state.derived.filter(x=>x.status==='valid'&&chapter(state,x.chapterId).revision===x.revision)),support:state.knowledge.some(k=>k.id==='lin-address')?evaluateSupport(state):{status:'unsupported',validPaths:[],sourceIds:[]},staging:[]};
 }
 export function generateDraft(state) {
  if(state.mode==='custom')fail('PROVIDER_REQUIRED','自定义项目需要已配置的模型生成结果；预置演示不会冒充通用生成');
@@ -114,7 +162,8 @@ function issuesFor(s,d){const issues=[];const add=(ruleId,explanation)=>issues.p
  if(d.projectId!==s.projectId)add('PROJECT','草稿不属于当前项目');if(d.baseVersion!==s.version)add('STATE_VERSION','草稿基于旧状态版本');if(s.chapters.some(c=>d.chapterRevisions[c.id]!==c.revision))add('TEXT_VERSION','源正文已变更');if(s.chapters.some(c=>c.syncStatus!=='CLEAN'))add('UNSYNCED','源正文存在未解决的记忆同步');
  if(typeof d.text!=='string'||!d.text.trim())add('EMPTY_TEXT','草稿正文不能为空');if(!s.chapters.some(c=>c.id===(d.chapterId||'ch3')))add('CHAPTER','草稿目标章节不存在');
  if(d.memoryReviewSchema!==undefined&&!memoryCandidatesIntact(d))add('MEMORY_CANDIDATES_CHANGED','候选记忆原始主张或证据已变化，请重新提取与审查');
- if(isProseDraft(d)&&!hasCurrentExtraction(s,d.id))add('EXTRACTION_REQUIRED','请对当前已保存正文重新提取候选记忆，再审查与接受');
+ if(isProseDraft(d)&&d.context?.contextSchemaVersion!==CONTEXT_SCHEMA_VERSION)add('CONTEXT_UPGRADE_REQUIRED',contextUpgradeMessage);
+ else if(isProseDraft(d)&&!hasCurrentExtraction(s,d.id))add('EXTRACTION_REQUIRED','请对当前已保存正文重新提取候选记忆，再审查与接受');
  for(const event of d.staging??[]){if(typeof event.sourceQuote!=='string'||!event.sourceQuote.trim()||!d.text.includes(event.sourceQuote))add('STAGING_EVIDENCE','暂存事件证据已不在当前正文中，请恢复证据或拒绝此稿后重新生成');else if(Object.hasOwn(event,'sourceParagraphIndex')&&(!Number.isInteger(event.sourceParagraphIndex)||event.sourceParagraphIndex<0||(isProseDraft(d)?segmentProse(d.text)[event.sourceParagraphIndex]?.text:d.text.split('\n')[event.sourceParagraphIndex])!==event.sourceQuote))add('STAGING_ANCHOR','暂存事件段落引用已失效，请恢复段落或拒绝此稿后重新生成');}
  if(s.mode==='custom')return issues;
  if(d.text.includes('用铜钥匙打开')&&!d.text.includes('取下一把铜钥匙'))add('KEY_SUPPORT','开门动作缺少此前获得钥匙的来源');if(d.text.includes('警方已经知道')||d.text.includes('警方早已知道'))add('KNOWLEDGE_LEAK','警方无来源提前获知秘密');if(relation(s)?.value==='has_met'&&d.text.includes('素未谋面'))add('CANON','草稿仍使用被替代的陌生关系');return issues;}
@@ -233,6 +282,11 @@ export function validateProseDraftRecord(d){
   try{canonical=canonicalExtractionStaging(d,d.staging.map(e=>{if(!exactKeys(e,['id','label','sourceParagraphIndex','sourceParagraphId','sourceQuote','sourceStart','sourceEnd','status']))invalid();return {label:e.label,sourceParagraphIndex:e.sourceParagraphIndex,sourceQuote:e.sourceQuote,sourceStart:e.sourceStart,sourceEnd:e.sourceEnd};}));}catch{invalid();}
   if(JSON.stringify(canonical)!==JSON.stringify(d.staging))invalid();
  }else if(d.staging.length||['provider','reviewNotes','stagingHash','stagingSnapshot'].some(k=>Object.hasOwn(x,k))||Object.hasOwn(x,'error')&&(typeof x.error!=='string'||!['候选记忆提取未完成；正文已保留，请重试','候选记忆提取已取消；正文已保留'].includes(x.error)))invalid();
+ for(const archive of d.memoryArchives??[]){
+  if(archive.reason!=='context_refreshed')continue;
+  const binding=archive.contextBinding,prior=expandMemoryBinding(d,binding);
+  if(!exactKeys(binding,['projectId','baseVersion','chapterRevisions','draftRevision','snapshotId'])||!prior||prior.projectId!==d.projectId||!positiveInteger(prior.baseVersion)||!positiveInteger(prior.draftRevision)||d.proseVersions[prior.draftRevision-1]?.text!==prior.textSnapshot||!plainObject(prior.contextSnapshot)||prior.contextSnapshot.projectId!==d.projectId||prior.contextSnapshot.version!==prior.baseVersion||!Array.isArray(prior.contextSnapshot.sources)||!revisionMapMatches(prior.chapterRevisions,Object.fromEntries(prior.contextSnapshot.sources.map(source=>[source.chapterId,source.revision]))))invalid();
+ }
  return true;
 }
 
@@ -259,11 +313,36 @@ export function createExtractionBinding(state,draftId){
 function extractionOriginCurrent(state,d){
  return d.projectId===state.projectId&&d.baseVersion===state.version&&revisionMapMatches(d.chapterRevisions,Object.fromEntries(state.chapters.map(c=>[c.id,c.revision])))&&state.chapters.every(c=>c.syncStatus==='CLEAN')&&JSON.stringify(d.context)===JSON.stringify(getContext(state));
 }
+/** Read-only UI predicate; context refresh never runs implicitly while loading. */
+export function isDraftContextCurrent(state,draftId){
+ const d=draft(state,draftId);
+ try{return isProseDraft(d)&&validateProseDraftRecord(d)&&extractionOriginCurrent(state,d);}catch{return false;}
+}
+/** Explicit author rebase: keep prose unchanged and revoke every earlier review authority. */
+export function refreshDraftContext(state,draftId){
+ const original=draft(state,draftId);
+ if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能更新待定候选稿的参考上下文');
+ if(!isProseDraft(original))fail('EXTRACTION_NOT_REQUIRED','此旧版候选稿不支持独立正文上下文更新');
+ validateProseDraftRecord(original);
+ if(original.projectId!==state.projectId)fail('PROJECT_MISMATCH','不能更新另一项目的候选稿');
+ chapter(state,original.chapterId);
+ if(state.chapters.some(c=>c.syncStatus!=='CLEAN'))fail('UNSYNCED_TEXT','请先处理源正文与故事记忆的同步问题，再更新候选上下文');
+ if(extractionOriginCurrent(state,original))return copy(state);
+ const s=copy(state),d=draft(s,draftId);
+ const contextBinding=compactMemoryBinding(d,{projectId:d.projectId,baseVersion:d.baseVersion,chapterRevisions:copy(d.chapterRevisions),draftRevision:d.revision,textSnapshot:d.text,stagingSnapshot:copy(d.staging),contextSnapshot:copy(d.context),extractionSnapshot:reviewExtractionSnapshot(d.extraction)});
+ archiveMemoryReview(d,'extraction_restarted');
+ Object.assign(d.memoryArchives.at(-1),{reason:'context_refreshed',contextBinding});
+ clearDraftReviews(d);replaceMemoryCandidates(d,[]);
+ d.baseVersion=s.version;d.chapterRevisions=Object.fromEntries(s.chapters.map(c=>[c.id,c.revision]));d.context=getContext(s);
+ d.extraction={status:'pending',attempt:d.extraction.attempt+1,binding:null};
+ return s;
+}
 export function beginMemoryExtraction(state,draftId){
  const original=draft(state,draftId);
  if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能提取待定草稿');
  if(!isProseDraft(original))fail('EXTRACTION_NOT_REQUIRED','旧版候选稿没有独立记忆提取步骤');
  validateProseDraftRecord(original);
+ if(original.context.contextSchemaVersion!==CONTEXT_SCHEMA_VERSION)fail('CONTEXT_UPGRADE_REQUIRED',contextUpgradeMessage);
  if(!extractionOriginCurrent(state,original))fail('STALE_EXTRACTION','草稿对应的项目、故事状态或源正文已变化');
  const s=copy(state),d=draft(s,draftId);
  archiveMemoryReview(d,'extraction_restarted');clearDraftReviews(d);replaceMemoryCandidates(d,[]);

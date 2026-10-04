@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --test tests/*.test.js",
     "test:ui": "node scripts/test-ui.mjs",
-    "check": "npm test && npm run test:ui && npm run test:ui:live && npm run test:ui:race && npm run test:ui:facts && npm run test:ui:storage && npm run test:ui:controls && npm run test:ui:prose && npm run test:ui:memory && npm run build",
+    "check": "npm test && npm run test:ui && npm run test:ui:live && npm run test:ui:race && npm run test:ui:facts && npm run test:ui:storage && npm run test:ui:controls && npm run test:ui:prose && npm run test:ui:memory && npm run test:ui:multichapter && npm run build",
     "server": "node server/index.js",
     "start": "node scripts/start-demo.mjs",
     "test:ui:live": "node scripts/test-ui-live.mjs",
@@ -19,7 +19,8 @@
     "test:ui:controls": "node scripts/test-ui-generation-controls.mjs",
     "test:ui:storage": "node scripts/test-ui-storage.mjs",
     "test:ui:prose": "node scripts/test-ui-prose-pipeline.mjs",
-    "test:ui:memory": "node scripts/test-ui-memory-review.mjs"
+    "test:ui:memory": "node scripts/test-ui-memory-review.mjs",
+    "test:ui:multichapter": "node scripts/test-ui-multichapter.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

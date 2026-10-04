@@ -331,7 +331,7 @@ test('only the exact current isolated sources and actual provider source form th
 test('workflow isolates manual scope, credentials, first attempt and exact artifact allowlist', async () => {
   const workflow = await read('.github/workflows/live-smoke.yml');
   assert.match(workflow, /isolated-memory-support' && github.run_attempt == 1/); assert.match(workflow, /default: review-probe/);
-  assert.match(workflow, /options: \[[^\n]*, isolated-memory-support\]/);
+  assert.match(workflow, /options: \[[^\n]*, isolated-memory-support, multichapter\]/);
   const blocks = workflow.split(/\n      - name:/);
   const check = blocks.find(block => block.includes('run: node --test tests/isolated-memory-support-eval.test.js'));
   assert.ok(check); assert.ok(!check.includes('NEXUS_API_KEY'));

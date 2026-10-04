@@ -13,14 +13,15 @@ export function FactEvidence({item}) {
   <p>模型判断：{statusLabels[item.status]||item.status} · {item.explanation}</p>
  </div>;
 }
-const memoryStatusLabels={supported:'原文支持',unsupported:'原文不支持',unknown:'未知 / 未判断'};
+const memoryStatusLabels={supported:'模型判断：原文支持（可能误判）',unsupported:'模型判断：原文不支持',unknown:'未知 / 未判断'};
 export function MemoryEvidence({item}) {
  return <div className="memory-evidence">
   <p><strong>候选标签：{item.label}</strong></p>
   <p className="fine">候选记忆 {item.candidateId} · 候选 r{item.binding?.draftRevision??'未知'}{Number.isInteger(item.candidateSnapshot?.sourceParagraphIndex)?` · 段落 ${item.candidateSnapshot.sourceParagraphIndex+1}`:''}{Number.isInteger(item.candidateSnapshot?.sourceStart)?` · 字符位置 ${item.candidateSnapshot.sourceStart}–${item.candidateSnapshot.sourceEnd}`:''}</p>
   <blockquote aria-label="完整候选原文引用">{item.sourceQuote||'缺少可核验的原文引用'}</blockquote>
-  <p className={item.isolatedAssessmentId&&item.status==='supported'?'success-note':'warning'}>独立引文核对：{item.isolatedAssessmentId?(memoryStatusLabels[item.status]||memoryStatusLabels.unknown):memoryStatusLabels.unknown}</p>
+  <p className="warning">独立引文核对：{item.isolatedAssessmentId?(memoryStatusLabels[item.status]||memoryStatusLabels.unknown):memoryStatusLabels.unknown}</p>
   <p>{item.assessmentOrigin==='historic_combined_unverified'?'此历史记录来自旧版整章判断，未经单条引文独立核对':item.explanation||'尚无当前版本的独立引文判断；普通保留需要单条独立核对'}</p>
+  {item.isolatedAssessmentId&&item.status==='supported'&&<p className="warning" aria-label="模型记忆判断风险">模型判断只是建议，真实测试曾在缺少标签细节时误报支持。保留前须由作者核对完整标签与本条引文；这不是已验证事实。</p>}
   {item.legacyAssessment&&<div className="legacy-memory-assessment" aria-label="历史整章记忆判断"><p>历史整章判断（未经独立核对，不可据此普通保留）：{memoryStatusLabels[item.legacyAssessment.status]||memoryStatusLabels.unknown}</p><p>{item.legacyAssessment.explanation}</p></div>}
  </div>;
 }
@@ -39,15 +40,16 @@ export function DecisionDialog({label,title,onClose,children}) {
  }
  return <div className="modal-backdrop"><section ref={container} className="modal memory-decision-modal" role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={keydown}><header><h2>{title}</h2><button className="icon-button" aria-label={`关闭${label}`} onClick={onClose}><X/></button></header>{children}</section></div>;
 }
-export default function DraftPanel({drafts,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,extractionReady={},memoryReviews={},onMemoryDecision,onMemoryAudit,mode='template',auditBudget=null,auditDisabled=false,busy=false}) {
+export default function DraftPanel({drafts,chapterTitle=null,contextCurrent={},onRefreshContext,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,extractionReady={},memoryReviews={},onMemoryDecision,onMemoryAudit,mode='template',auditBudget=null,auditDisabled=false,busy=false}) {
  const [editing,setEditing]=useState(null),[text,setText]=useState('');
- return <section className="draft-section"><header><h2>下一场景 · 候选稿</h2><span>候选先隔离 · 接受才提交</span></header>
+ return <section className="draft-section"><header><h2>{chapterTitle?`${chapterTitle} · 候选稿`:'下一场景 · 候选稿'}</h2><span>候选先隔离 · 接受才提交</span></header>
  {drafts.length===0?<p className="empty-note">生成后先审阅，再决定是否接受。候选事件不会进入故事记忆。</p>:drafts.slice().reverse().map(d=>{
   const ledger=factReviews[d.id]||[],unresolved=ledger.filter(item=>item.blocking&&!item.resolved),memories=memoryReviews[d.id]||[],pendingMemories=memories.filter(item=>!item.resolved),selectedMemories=memories.filter(item=>item.resolved&&['keep','override_keep'].includes(item.decision?.action)),active=!['ACCEPTED','REJECTED'].includes(d.status),needsExtraction=d.requiresExtraction&&active&&!extractionReady[d.id],rejected=d.status==='REJECTED',extracted=d.extraction?.status==='complete'&&(extractionReady[d.id]||d.status==='ACCEPTED'),emptyExtraction=extracted&&d.staging?.length===0&&!rejected;
   const extractionMessage=rejected?'候选稿已拒绝 · 提取已取消；历史提取与选择记录已归档，未提交':d.extraction?.status==='failed'?'提取未完成 · 已保存的正文保留':d.extraction?.status==='cancelled'?'提取已取消 · 已保存的正文保留':extracted?(d.status==='ACCEPTED'?'此版本已接受 · 仅作者选中的记忆已提交':'当前正文的候选记忆已提取 · 尚需核对与审阅'):'正文已保存 · 需要提取当前版本的候选记忆';
   return <article className="draft" key={d.id}>
    <div className="draft-meta"><span><FileText/>{d.id}</span><span>基于 v{d.baseVersion} · 候选 r{d.revision} · {d.requiresSemanticReview?'真实模型':'确定性模板'} · {d.status}</span></div>
    <div className="draft-prose">{d.text}</div>
+   {active&&d.requiresExtraction&&contextCurrent[d.id]===false&&<div className="warning" aria-label="候选参考上下文已过期"><p>参考正文、故事状态或上下文格式已变化。可保留本稿正文并更新参考上下文，再重新提取与审阅；旧批准不能沿用。</p><button disabled={busy} onClick={()=>onRefreshContext?.(d.id)}>更新参考上下文</button></div>}
    {editing===d.id&&<><textarea className="draft-edit" aria-label="编辑候选稿" value={text} onChange={e=>setText(e.target.value)}/><button onClick={()=>{onEdit(d.id,text);setEditing(null)}}>保存候选稿修改</button></>}
    <div className="staging"><b>候选记忆暂存区</b><span>本稿事件仅在作者接受后成为已确认状态</span></div>
    {d.requiresExtraction&&<div className="extraction-status" aria-label="候选记忆提取状态"><p className={extracted&&!rejected?'success-note':'warning'}>{extractionMessage}</p><p className="fine">正文、提取、审阅分别调用模型。失败不会自动重试；版本、段落位置与原文引用由程序生成。空结果不证明没有遗漏。</p></div>}
