@@ -88,7 +88,7 @@ export function importBackup(current,backup,idFactory=()=>`import-${crypto.rando
   for(const d of clone.state.drafts){
    if(d.requiresExtraction&&d.extraction.binding)d.extraction.binding.contextHash=hash(JSON.stringify(d.context));
    if(!['ACCEPTED','REJECTED'].includes(d.status)){
-    for(const proposal of d.revisionProposals||[])if(['requesting','proposed'].includes(proposal.status))proposal.status='stale';
+    for(const proposal of d.revisionProposals||[])if(['requesting','proposed'].includes(proposal.status)){proposal.status='stale';proposal.resultSnapshot=null;}
     archiveMemoryReview(d,'backup_imported');d.review=null;d.modelReview=null;d.factDecisions=[];d.status='DRAFT';
     if(d.requiresExtraction){replaceMemoryCandidates(d,[]);d.extraction={status:'pending',attempt:d.extraction.attempt+1,binding:null};}
    }

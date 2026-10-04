@@ -18,7 +18,7 @@ Edits save independently, then become proposed memory updates. The author explic
 
 ## Model gateway
 
-`POST /api/agent` accepts `{action,input}` and returns `{output}`. Supported actions: interview, planStory, generateProse, extractMemory, interpretRevision, reviewChapter and auditMemoryCandidate; the legacy generateChapter action remains available for compatibility and independent comparison. `GET /api/status` exposes configuration status and nonsecret call limits only.
+`POST /api/agent` accepts `{action,input}` and returns `{output}`. Supported actions: interview, planStory, generateProse, reviseProse, extractMemory, interpretRevision, reviewChapter and auditMemoryCandidate; the legacy generateChapter action remains available for compatibility and independent comparison. `GET /api/status` exposes configuration status and nonsecret call limits only.
 
 The gateway validates request and response shape, exact evidence excerpts, bounded sizes, local Host/Origin, HTTPS configuration, timeout, concurrency and per-process call count. Upstream redirects and silent template fallbacks are prohibited. This is a local developer gateway, not a production multiuser API.
 
@@ -72,4 +72,6 @@ Writing + extraction + whole-chapter review remains three base calls; auditing K
 
 A proposal never changes the accepted manuscript or memory by itself. Explicit adoption appends a draft revision through the existing edit operation, preserving original text/provider provenance while archiving old extraction, structural/model reviews, Canon exceptions and memory decisions. Every later extraction/review/acceptance remains separately initiated. Manual-origin snapshots and accepted drafts are excluded.
 
-The browser checks process budget and durable workspace before dispatch; server limits remain authoritative. A received proposal survives a failed save in current-window state for export/retry-save. Stale results, instruction changes (even away and back), cancellation, reload/import and confirmation races cannot silently acquire adoption authority. These are workflow properties; neither author choice, model review nor count compliance certifies literary quality.
+The browser checks process budget before storing a request proposal, then rechecks the durable workspace before dispatch. Proposals reference deduplicated exact source/context snapshots; terminal records keep their result once, and active proposal currency is evaluated in one pass per draft. The 2 MiB workspace limit still bounds genuinely new retained content; no audit history is silently deleted. Server limits remain authoritative.
+
+A received proposal survives a failed save in current-window state for export/retry-save. Stale results, instruction changes (even away and back), cancellation, reload/import and confirmation races cannot silently acquire adoption authority. These are workflow properties; neither author choice, model review nor count compliance certifies literary quality.

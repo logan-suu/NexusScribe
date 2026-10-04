@@ -203,6 +203,7 @@ test('a broken response stream preserves received bytes and consumes its uncerta
     cancel: async () => {},
   }) } }) });
   const result = await h.run(), files = await h.files();
+  assert.equal(result.stages[0].error, 'UPSTREAM_ERROR');
   assert.equal(h.calls.length, 1); assert.equal(result.attempts, 1); assert.equal(result.status, 'stopped');
   assert.equal(files['raw-01.bin'].toString('utf8'), partial.toString('utf8'));
   assert.equal(result.stages[0].rawComplete, false); assert.equal(files['completed-01.json'], undefined);
@@ -213,6 +214,7 @@ test('a broken response stream preserves received bytes and consumes its uncerta
 test('uncertain fetch failure consumes its stage and a repeated dispatch is denied', async () => {
   const h = setup({ fetchImpl: async () => { throw Error('uncertain network delivery'); } });
   const result = await h.run();
+  assert.equal(result.stages[0].error, 'UPSTREAM_ERROR');
   assert.equal(h.calls.length, 1); assert.equal(result.attempts, 1); assert.equal(result.status, 'stopped');
   assert.equal(result.stages[0].dispatched, true); assert.equal(result.stages[0].rawComplete, false);
   const rerun = setup({ env: { ...environment('revise'), GITHUB_RUN_ATTEMPT: '2' } });
@@ -640,4 +642,23 @@ test('a partially persisted raw append failure is terminal and cannot duplicate 
   assert.equal(ledger.stages[0].rawBytes, 17); assert.equal(ledger.stages[0].error, 'EVIDENCE_FAILED');
   assert.deepEqual(files['raw-01.bin'], Buffer.from(h.raw).subarray(0, 17));
   assert.equal(files['completed-01.json'], undefined);
+});
+
+
+test('transport and stream failures are upstream errors, while raw persistence failures stay evidence errors', async () => {
+  const brokenReaders = [
+    { getReader() { throw new TypeError('Synthetic reader creation failure'); } },
+    { getReader: () => ({ read: async () => { throw new TypeError('Synthetic stream read failure'); }, cancel: async () => {} }) },
+  ];
+  for (const body of brokenReaders) {
+    const h = setup({ fetchImpl: async () => ({ ok: true, status: 200, body }) });
+    const result = await h.run();
+    assert.equal(result.status, 'stopped'); assert.equal(result.attempts, 1); assert.equal(h.calls.length, 1);
+    assert.equal(result.stages[0].error, 'UPSTREAM_ERROR');
+    assert.equal((await h.files())['completed-01.json'], undefined);
+  }
+  const io = memoryEvidence({ before: async (method) => { if (method === 'appendRaw') throw new TypeError('Synthetic disk write failure'); } });
+  const h = setup({ io }), result = await h.run();
+  assert.equal(result.status, 'stopped'); assert.equal(result.stages[0].error, 'EVIDENCE_FAILED');
+  assert.equal(result.attempts, 1); assert.equal(h.calls.length, 1);
 });

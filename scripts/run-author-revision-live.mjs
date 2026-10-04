@@ -167,13 +167,13 @@ export async function runStage({stage,env,trial,runs,ciRun,priorFiles={},closeRe
     ensureActive(options.signal);
     // The immutable intent and request already exist. This local flag is not independent billing proof.
     record.dispatched=true;record.status='attempted';ledger.attempts++;record.requestSha256=digest(serialized);
-    const response=await fetchImpl(url,{...options,body:serialized});
+    let response;try{response=await fetchImpl(url,{...options,body:serialized});}catch{ensureActive(options.signal);stop('UPSTREAM_ERROR');}
     ensureActive(options.signal);
-    const reader=response.body?.getReader();if(!reader)stop('RESPONSE_INVALID');
+    let reader;try{reader=response.body?.getReader();}catch{ensureActive(options.signal);stop('UPSTREAM_ERROR');}if(!reader)stop('RESPONSE_INVALID');
     record.httpStatus=response.status;let received=0;const chunks=[];
     const onAbort=()=>{void reader.cancel().catch(()=>{});};options.signal.addEventListener('abort',onAbort,{once:true});
     try{for(;;){
-      ensureActive(options.signal);const part=await reader.read();ensureActive(options.signal);if(part.done)break;
+      ensureActive(options.signal);let part;try{part=await reader.read();}catch{ensureActive(options.signal);stop('UPSTREAM_ERROR');}ensureActive(options.signal);if(part.done)break;
       const chunk=Buffer.from(part.value);chunks.push(chunk);received+=chunk.length;rawPending=Buffer.concat([rawPending,chunk]);
       const scan=secretScan(rawPending,env);if(scan!=='clear'){record.secretEchoWithheld=scan==='secret';record.secretScanUncertain=scan==='uncertain';record.rawComplete=false;stop(scan==='secret'?'SECRET_ECHO':'SECRET_SCAN_UNCERTAIN');}
       if(received>128*1024)stop('RESPONSE_TOO_LARGE');

@@ -6,6 +6,7 @@ import {mkdir, symlink} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import * as engine from '../src/domain/engine.js';
+import {getRevisionSource} from '../src/domain/author-revision.js';
 import {parseBackup, KEY} from '../src/storage.js';
 
 const out = '/tmp/nexusscribe-ui-author-revision';
@@ -37,6 +38,7 @@ const saved = () => JSON.parse(localStorage.getItem(KEY));
 const state = () => saved().state;
 const draft = () => state().drafts[0];
 const proposal = () => draft().revisionProposals.at(-1);
+function noRevisionAttempts() {assert.deepEqual(draft().revisionProposals, []); assert.deepEqual(draft().revisionSnapshots, []);}
 const workspace = (state, providerMode = 'server') => ({format:1, serial:0, state, editing:{}, patch:null, providerMode});
 function base({reviewed = false} = {}) {
   let s = engine.createProjectFromConfig({projectId:'author-revision-dom', title:'钟楼来信', protagonist:'陆遥'});
@@ -123,6 +125,10 @@ assert.deepEqual(draft().factDecisions, original.factDecisions);
 assert.deepEqual(draft().memoryDecisions, original.memoryDecisions);
 assert.equal(state().events.length, 0);
 const advice = structuredClone(proposal()), beforeConfirm = structuredClone(saved());
+assert.equal(draft().revisionSnapshots.length, 1);
+assert.equal(Object.hasOwn(advice.binding, 'textSnapshot'), false);
+assert.equal(Object.hasOwn(advice.binding, 'contextSnapshot'), false);
+assert.deepEqual(getRevisionSource(draft(), advice), {id:advice.binding.snapshotId, textSnapshot:BEFORE, contextSnapshot:paid()[0].input.context});
 await user.click(button(names.adopt));
 const dialog = screen.getByRole('dialog', {name:'确认采用改稿建议'});
 assert.match(dialog.textContent, /旧提取、整章审阅、设定例外与记忆选择全部失效/);
@@ -147,6 +153,8 @@ assert.deepEqual(draft().proseVersions.map(version => version.text), [BEFORE, AF
 assert.equal(proposal().adoptedRevision, draft().revision);
 assert.equal(draft().proseVersions.find(version => version.revision === proposal().adoptedRevision).text, advice.result.text);
 assert.equal(proposal().status, 'adopted');
+assert.equal(proposal().resultSnapshot, null);
+assert.equal(getRevisionSource(draft(), proposal()).textSnapshot, BEFORE);
 assert.deepEqual(proposal().binding, advice.binding);
 assert.deepEqual(proposal().result, advice.result);
 assert.deepEqual(proposal().result.provider, advice.result.provider);
@@ -165,6 +173,7 @@ const kept = structuredClone(draft());
 await request();
 await user.click(button(names.discard));
 assert.equal(proposal().status, 'discarded');
+assert.equal(proposal().resultSnapshot, null);
 for (const key of ['text','revision','extraction','review','modelReview','staging','memoryDecisions','factDecisions','proseVersions']) assert.deepEqual(draft()[key], kept[key]);
 assert.equal(paid().length, 1);
 assert.equal(screen.getByLabelText('改稿建议正文').textContent, AFTER);
@@ -173,14 +182,20 @@ assert.equal(screen.getByLabelText('改稿建议正文').textContent, AFTER);
 for (const status of [
   {...budget, callsUsed:10}, {...budget, callsUsed:-1}, {...budget, callsUsed:1.5},
   {...budget, maxCalls:0}, {...budget, maxCalls:31}, {...budget, maxCalls:'10'},
-  {configured:true, liveEnabled:true}, {...budget, configured:false}, {...budget, liveEnabled:false}
+  {configured:true, liveEnabled:true}, {...budget, configured:false}, {...budget, liveEnabled:false},
+  {error:{message:'Synthetic budget read failure'}}, {...budget, configured:'true'}
 ]) {
   boot(); responder = () => response(status); instruction();
-  await user.click(button(names.request));
-  await waitFor(() => assert.equal(proposal().status, 'failed'));
+  const beforePreflight = structuredClone(saved());
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await user.click(button(names.request));
+    await waitFor(() => assert.match(screen.getByLabelText('模型任务状态').textContent, /请求失败/));
+    noRevisionAttempts();
+    assert.deepEqual(saved(), beforePreflight, 'Blocked budget checks cannot allocate history, snapshots or storage serials');
+  }
   assert.equal(paid().length, 0);
   assert.equal(draft().text, BEFORE);
-  assert.equal(calls.length, 1);
+  assert.equal(calls.length, 3);
 }
 for (const failure of [response({error:{message:'Synthetic upstream failed'}}, 502), response({output:{text:'', chapterId:'ch1'}}), response({output:{text:AFTER, chapterId:'ch2'}}), response({output:{text:AFTER, chapterId:'ch1', staging:[]}})]) {
   boot(); responder = call => call.url === '/api/status' ? response(budget) : failure;
@@ -189,19 +204,21 @@ for (const failure of [response({error:{message:'Synthetic upstream failed'}}, 5
   assert.equal(draft().text, BEFORE); assert.equal(paid().length, 1);
   assert.equal(screen.queryByLabelText('改稿建议正文'), null);
 }
-console.log('PASS author revision UI: invalid/exhausted budget, server disabled, malformed/upstream failures have no implicit retries or fallback');
+console.log('PASS author revision UI: blocked/cancelled budget preflight creates no history or snapshots; malformed/upstream paid failures have no implicit retries or fallback');
 
 // Cancellation before dispatch, and cancellation after dispatch with a late result.
 for (const phase of ['budget','paid']) {
   boot(); let release;
   responder = call => phase === 'budget' || call.method === 'POST' ? new Promise(resolve => {release = resolve;}) : response(budget);
-  instruction(); await user.click(button(names.request));
+  instruction(); const beforePreflight = structuredClone(saved());
+  await user.click(button(names.request));
   await waitFor(() => assert.equal(typeof release, 'function'));
+  if (phase === 'budget') {noRevisionAttempts(); assert.deepEqual(saved(), beforePreflight);}
   await user.click(button('取消请求'));
   await act(async () => release(phase === 'budget' ? response(budget) : result(AFTER)));
-  assert.equal(proposal().status, 'cancelled');
+  if (phase === 'budget') {noRevisionAttempts(); assert.deepEqual(saved(), beforePreflight);}
+  else {assert.equal(proposal().status, 'cancelled'); assert.equal(proposal().result, null);}
   assert.equal(draft().text, BEFORE);
-  assert.equal(proposal().result, null);
   assert.equal(paid().length, phase === 'budget' ? 0 : 1);
 }
 boot(); let pending = [];
@@ -218,6 +235,9 @@ assert.equal(proposal().status, 'proposed');
 assert.equal(draft().revisionProposals[0].result, null);
 assert.equal(proposal().result.text, AFTER);
 assert.equal(paid().length, 2);
+assert.equal(draft().revisionSnapshots.length, 1, 'Same source/context must reuse one shared snapshot across requests');
+assert.equal(draft().revisionProposals[0].binding.snapshotId, proposal().binding.snapshotId);
+assert.equal(getRevisionSource(draft(), proposal()).textSnapshot, BEFORE);
 
 // Both durable changes and unsaved author edits invalidate advice authority.
 for (const change of ['instruction','source']) {
@@ -259,14 +279,38 @@ for (const interruption of ['edit','cross-tab','cancel']) {
   responder = () => new Promise(resolve => {release = resolve;});
   instruction(); await user.click(button(names.request));
   await waitFor(() => assert.equal(typeof release, 'function'));
+  noRevisionAttempts();
   if (interruption === 'edit') fireEvent.change(screen.getByLabelText('章节正文'), {target:{value:FACT+'未保存修改'}});
   if (interruption === 'cancel') await user.click(button('取消请求'));
   if (interruption === 'cross-tab') {const external = saved(); external.serial++; external.state.title = '另一窗口版本'; localStorage.setItem(KEY, JSON.stringify(external));}
   await act(async () => release(response(budget)));
   assert.equal(paid().length, 0);
+  noRevisionAttempts();
   assert.equal(draft().text, BEFORE);
   if (interruption === 'cross-tab') assert.equal(state().title, '另一窗口版本');
 }
+// A valid budget cannot authorize a paid call if recording its request fails.
+boot(); let releaseBeforeWrite;
+responder = call => call.method === 'GET' ? new Promise(resolve => {releaseBeforeWrite = resolve;}) : result(AFTER);
+instruction(); const beforeRequestWrite = structuredClone(saved());
+await user.click(button(names.request));
+await waitFor(() => assert.equal(typeof releaseBeforeWrite, 'function'));
+const originalRequestWrite = dom.window.Storage.prototype.setItem;
+try {
+  dom.window.Storage.prototype.setItem = function(key, value) {
+    if (key === KEY) throw new DOMException('synthetic pre-dispatch quota failure', 'QuotaExceededError');
+    return originalRequestWrite.call(this, key, value);
+  };
+  await act(async () => releaseBeforeWrite(response(budget)));
+  assert.match(screen.getByRole('alert').textContent, /尚未安全保存/);
+  noRevisionAttempts();
+  assert.deepEqual(saved(), beforeRequestWrite);
+  assert.equal(paid().length, 0);
+} finally {dom.window.Storage.prototype.setItem = originalRequestWrite;}
+await user.click(button('重试保存'));
+noRevisionAttempts();
+assert.equal(calls.length, 1, 'Retry-save must not dispatch a revision after a pre-dispatch write failure');
+
 console.log('PASS author revision UI: budget and paid cancellation, late replay isolation, changed source/instruction/workspace and stale confirmation gates');
 
 // Paid outputs remain exportable in memory when storage fails; retry is a write only.
@@ -306,7 +350,7 @@ for (const pendingStatus of ['proposed','requesting']) {
   boot();
   if (pendingStatus === 'proposed') await request();
   else {
-    responder = () => new Promise(() => {});
+    responder = call => call.url === '/api/status' ? response(budget) : new Promise(() => {});
     instruction(); await user.click(button(names.request));
     await waitFor(() => assert.equal(proposal().status, 'requesting'));
   }
@@ -323,7 +367,7 @@ for (const pendingStatus of ['proposed','requesting']) {
     assert.equal(proposal().status, 'requesting');
     await user.click(button('取消中断的改稿请求'));
     assert.equal(proposal().status, 'cancelled');
-    assert.equal(calls.length, 1);
+    assert.equal(calls.length, 2);
     assert.equal(button(names.request).disabled, false);
   }
   assert.equal(draft().text, BEFORE);
@@ -333,7 +377,7 @@ for (const pendingStatus of ['proposed','requesting']) {
   assert.equal(proposal().status, 'stale');
   assert.equal(draft().text, BEFORE);
   if (pendingStatus === 'proposed') assert.equal(button(names.adopt).disabled, true);
-  assert.equal(paid().length, pendingStatus === 'proposed' ? 1 : 0);
+  assert.equal(paid().length, 1);
 }
 
 // Manual, accepted, and offline/template paths expose no usable paid revision action.

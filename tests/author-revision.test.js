@@ -19,8 +19,8 @@ test('counts explicitly use Han codepoints, all codepoints and nonblank physical
 });
 test('one request makes a separate immutable bound proposal without altering manuscript or memory',()=>{
  const original=fresh(),s=begin(original),p=last(s),input=r.createRevisionInput(s,id(s),p.id),n=completed(s);
- assert.equal(p.binding.textSnapshot,BEFORE);assert.deepEqual(input,{text:BEFORE,instruction:s.drafts[0].revisionInstruction,chapterId:'ch1',context:e.getContext(s)});
- input.context.constitution.tone='tampered';assert.notEqual(p.binding.contextSnapshot.constitution.tone,'tampered');
+ assert.equal(r.getRevisionSource(s.drafts[0],p).textSnapshot,BEFORE);assert.deepEqual(input,{text:BEFORE,instruction:s.drafts[0].revisionInstruction,chapterId:'ch1',context:e.getContext(s)});
+ input.context.constitution.tone='tampered';assert.notEqual(r.getRevisionSource(s.drafts[0],p).contextSnapshot.constitution.tone,'tampered');
  assert.equal(n.drafts[0].text,BEFORE);assert.deepEqual(n.chapters,original.chapters);assert.deepEqual(n.facts,original.facts);assert.deepEqual(n.events,original.events);assert.deepEqual(n.drafts[0].proseVersions,original.drafts[0].proseVersions);
  assert.equal(last(n).status,'proposed');assert.equal(last(n).result.text,AFTER);assert.deepEqual(last(n).afterCounts,r.proseCounts(AFTER));assert.equal(r.isRevisionCurrent(n,id(n),p.id),true);
  assert.throws(()=>r.beginDraftRevision(s,id(s)),/已有改稿请求/);
@@ -29,7 +29,7 @@ test('adoption preserves original/proposal and invalidates extraction, structura
  let s=fresh();s=e.beginMemoryExtraction(s,id(s));s=e.attachMemoryExtraction(s,id(s),{staging:[{label:'她没有打开盒子',sourceParagraphIndex:1}],reviewNotes:[],provider},e.createExtractionBinding(s,id(s)));s=e.reviewDraft(s,id(s));s=e.attachSemanticReview(s,id(s),{summary:'合成建议',checks:[],issues:[],factChecks:[],provider:'fixture'},e.createReviewBinding(s,id(s)));
  const item=e.getMemoryReviewGate(s,id(s))[0];s=e.decideMemoryCandidate(s,id(s),{candidateId:item.candidateId,action:'keep_quote',reviewHash:item.reviewHash},item.binding);
  const old=copy(s);s=completed(begin(s));const p=copy(last(s)),n=r.adoptDraftRevision(s,id(s),p.id,p),d=n.drafts[0];
- assert.equal(d.text,AFTER);assert.equal(d.revision,2);assert.equal(d.proseVersions[0].text,BEFORE);assert.equal(last(n).binding.textSnapshot,BEFORE);assert.equal(last(n).status,'adopted');assert.equal(last(n).adoptedRevision,2);
+ assert.equal(d.text,AFTER);assert.equal(d.revision,2);assert.equal(d.proseVersions[0].text,BEFORE);assert.equal(r.getRevisionSource(n.drafts[0],last(n)).textSnapshot,BEFORE);assert.equal(last(n).status,'adopted');assert.equal(last(n).adoptedRevision,2);
  assert.equal(d.extraction.status,'pending');assert.deepEqual(d.staging,[]);assert.equal(d.review,null);assert.equal(d.modelReview,null);assert.deepEqual(d.factDecisions,[]);assert.deepEqual(d.memoryDecisions,[]);assert.ok(d.memoryArchives.length>old.drafts[0].memoryArchives.length);
  assert.deepEqual(n.chapters,old.chapters);assert.deepEqual(n.events,old.events);assert.deepEqual(n.facts,old.facts);assert.throws(()=>e.acceptDraft(n,id(n)),/重新审查/);assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(n))));
  assert.throws(()=>r.adoptDraftRevision(n,id(n),p.id,p));
@@ -73,4 +73,25 @@ for(const [label,change] of [
 
 test('stored revision history cannot be relabeled as offline or manual-origin metadata',()=>{
  for(const mutate of [d=>{d.providerInfo.isLive=false;d.requiresSemanticReview=false},d=>{d.provider='author-manuscript'},d=>{d.manualSource=null}]){const s=completed();mutate(s.drafts[0]);assert.throws(()=>parseBackup(JSON.stringify(backup(s))));assert.throws(()=>r.validateDraftRevisions(s.drafts[0]));}
+});
+
+test('repeated cancelled/failed requests share exact source snapshots and remain under bounded backup growth',()=>{
+ const large='长'.repeat(4000);let s=e.createProjectFromConfig({projectId:'large-revisions',chapters:[{text:large},{text:large},{text:large}]});s=e.stageProseDraft(s,{text:large,chapterId:'ch1',context:e.getContext(s),provider},'ch1');s=r.setRevisionInstruction(s,id(s),'保留内容并精简');
+ const beforeBytes=Buffer.byteLength(JSON.stringify(backup(s)));
+ for(let i=0;i<80;i++){s=r.beginDraftRevision(s,id(s));s=r.markRevisionFailure(s,id(s),last(s).id,i%2?'failed':'cancelled');}
+ assert.equal(s.drafts[0].revisionSnapshots.length,1);assert.equal(s.drafts[0].revisionProposals.length,80);assert.ok(s.drafts[0].revisionProposals.every(p=>p.binding.snapshotId==='revision-source-1'&&!Object.hasOwn(p.binding,'textSnapshot')&&!Object.hasOwn(p.binding,'contextSnapshot')));
+ const bytes=Buffer.byteLength(JSON.stringify(backup(s)));assert.ok(bytes-beforeBytes<110000,`${bytes-beforeBytes} incremental bytes`);assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(s))));
+ const current=r.getRevisionCurrency(s,id(s));assert.equal(Object.values(current).filter(Boolean).length,0);
+ const next=completed(r.beginDraftRevision(s,id(s)),large+'新');assert.equal(next.drafts[0].revisionSnapshots.length,1);assert.equal(r.getRevisionCurrency(next,id(next))[last(next).id],true);
+});
+test('terminal proposals retain exact results once and shared sources survive reload/import',()=>{
+ let s=completed(),p=last(s);s=r.discardDraftRevision(s,id(s),p.id);assert.equal(last(s).result.text,AFTER);assert.equal(last(s).resultSnapshot,null);
+ assert.deepEqual(r.getRevisionSource(s.drafts[0],last(s)).textSnapshot,BEFORE);assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(s))));
+ const imported=importBackup(backup(e.createInitialState()),backup(s),()=> 'compact-import').state;assert.equal(r.getRevisionSource(imported.drafts[0],last(imported)).textSnapshot,BEFORE);
+ for(const mutate of [d=>d.revisionSnapshots.pop(),d=>d.revisionSnapshots.push(copy(d.revisionSnapshots[0])),d=>d.revisionSnapshots[0].textSnapshot='wrong',d=>d.revisionProposals[0].binding.snapshotId='missing']){const t=copy(s);mutate(t.drafts[0]);assert.throws(()=>parseBackup(JSON.stringify(backup(t))));}
+});
+test('one-pass currency matches individual gates across mixed terminal and active history',()=>{
+ let s=completed();s=r.discardDraftRevision(s,id(s),last(s).id);s=completed(r.beginDraftRevision(s,id(s)));s=r.setRevisionInstruction(s,id(s),'另一条意见');s=completed(r.beginDraftRevision(s,id(s)));
+ const values=r.getRevisionCurrency(s,id(s));assert.deepEqual(Object.values(values),[false,false,true]);
+ for(const p of s.drafts[0].revisionProposals)assert.equal(r.isRevisionCurrent(s,id(s),p.id),values[p.id]);
 });

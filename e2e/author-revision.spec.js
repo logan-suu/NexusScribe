@@ -2,7 +2,7 @@
 // nonlocal traffic is blocked. No paid model call or literary-quality claim.
 import {test, expect} from '@playwright/test';
 import * as engine from '../src/domain/engine.js';
-import * as revisions from '../src/domain/author-revision.js';
+import {getRevisionSource} from '../src/domain/author-revision.js';
 import {KEY, parseBackup} from '../src/storage.js';
 
 const BEFORE = '  陆遥展开信纸。🙂\n\n“别去钟楼。”她轻声读出这句话。\n';
@@ -104,6 +104,10 @@ test('explicit revision preserves exact original, compares counts, then adopts o
   await expect(button(page, names.request)).toBeDisabled();
   await request(page);
   const advice = await proposal(page);
+  expect((await draft(page)).revisionSnapshots).toHaveLength(1);
+  expect(advice.binding).not.toHaveProperty('textSnapshot');
+  expect(advice.binding).not.toHaveProperty('contextSnapshot');
+  expect(getRevisionSource(await draft(page), advice)).toEqual({id:advice.binding.snapshotId, textSnapshot:BEFORE, contextSnapshot:engine.getContext(initial)});
   expect(mock.calls.map(call => [call.url, call.method])).toEqual([['/api/status','GET'], ['/api/agent','POST']]);
   expect(mock.paid()[0].action).toBe('reviseProse');
   expect(mock.paid()[0].input).toEqual({text:BEFORE, instruction:INSTRUCTION, chapterId:'ch1', context:engine.getContext(initial)});
@@ -140,7 +144,7 @@ test('explicit revision preserves exact original, compares counts, then adopts o
   expect(next.extraction.status).toBe('pending');
   for (const key of ['review','modelReview']) expect(next[key]).toBeNull();
   for (const key of ['staging','factDecisions','memoryDecisions']) expect(next[key]).toEqual([]);
-  expect(next.revisionProposals[0]).toEqual({...advice, status:'adopted', adoptedRevision:next.revision});
+  expect(next.revisionProposals[0]).toEqual({...advice, status:'adopted', adoptedRevision:next.revision, resultSnapshot:null});
   expect(next.memoryArchives.some(archive => archive.reason === 'draft_edited' && archive.decisions.length === 1)).toBe(true);
   expect(nextState.chapters).toEqual(initial.chapters);
   expect(nextState.facts).toEqual(initial.facts);
@@ -160,6 +164,7 @@ test('discard preserves original prose, reviews and author choices without anoth
   await button(page, names.discard).click();
   const next = await draft(page);
   expect((await proposal(page)).status).toBe('discarded');
+  expect((await proposal(page)).resultSnapshot).toBeNull();
   for (const key of ['text','revision','proseVersions','review','modelReview','extraction','memoryDecisions','factDecisions']) expect(next[key]).toEqual(initial.drafts[0][key]);
   expect(await page.getByLabel('改稿建议正文', {exact:true}).textContent()).toBe(AFTER);
   expect(mock.paid()).toHaveLength(1);
@@ -169,14 +174,22 @@ test('discard preserves original prose, reviews and author choices without anoth
 for (const [label, status] of [
   ['missing',{configured:true, liveEnabled:true}], ['exhausted',{...BUDGET,callsUsed:10}],
   ['invalid',{...BUDGET,maxCalls:31}], ['disabled',{...BUDGET,liveEnabled:false}],
-  ['unconfigured',{...BUDGET,configured:false}]
+  ['unconfigured',{...BUDGET,configured:false}],
+  ['failed-status',{error:{message:'Synthetic budget read failure'}}],
+  ['malformed-status',{...BUDGET,configured:'true'}]
 ]) test(`${label} budget fails closed without a paid request`, async ({page, context}) => {
   const mock = await boot(page, context);
   mock.respond(() => ({json:status}));
   await page.getByLabel('改稿意见', {exact:true}).fill(INSTRUCTION);
-  await button(page, names.request).click();
-  await expect.poll(async () => (await proposal(page)).status).toBe('failed');
-  expect(mock.calls).toHaveLength(1);
+  const beforePreflight = await stored(page);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await button(page, names.request).click();
+    await expect(page.getByLabel('模型任务状态')).toContainText('请求失败');
+    expect((await draft(page)).revisionProposals).toEqual([]);
+    expect((await draft(page)).revisionSnapshots).toEqual([]);
+    expect(await stored(page)).toEqual(beforePreflight);
+  }
+  expect(mock.calls).toHaveLength(2);
   expect(mock.paid()).toEqual([]);
   expect((await draft(page)).text).toBe(BEFORE);
   noUnexpected(mock);
@@ -201,6 +214,9 @@ test('double-click dispatches once; cancellation cannot replay a late result int
   const proposals = (await draft(page)).revisionProposals;
   expect(proposals[0].result).toBeNull();
   expect(proposals[1].result.text).toBe(AFTER);
+  expect((await draft(page)).revisionSnapshots).toHaveLength(1);
+  expect(proposals[0].binding.snapshotId).toBe(proposals[1].binding.snapshotId);
+  expect(getRevisionSource(await draft(page), proposals[1]).textSnapshot).toBe(BEFORE);
   expect((await draft(page)).text).toBe(BEFORE);
   expect(mock.calls).toHaveLength(4);
   noUnexpected(mock);
@@ -212,14 +228,41 @@ for (const interruption of ['cancel','edit','cross-tab']) test(`${interruption} 
   await page.getByLabel('改稿意见', {exact:true}).fill(INSTRUCTION);
   await button(page, names.request).click();
   await expect.poll(() => mock.calls.length).toBe(1);
+  expect((await draft(page)).revisionProposals).toEqual([]);
+  expect((await draft(page)).revisionSnapshots).toEqual([]);
   if (interruption === 'cancel') await button(page, '取消请求').click();
   if (interruption === 'edit') await page.getByLabel('章节正文').fill(FACT+'未保存修改');
   if (interruption === 'cross-tab') await page.evaluate(key => {const saved = JSON.parse(localStorage.getItem(key)); saved.serial++; saved.state.title = '另一窗口版本'; localStorage.setItem(key, JSON.stringify(saved));}, KEY);
   gate.resolve({json:BUDGET});
   await expect(page.getByLabel('模型任务状态')).not.toContainText('等待结果与格式校验');
   expect(mock.paid()).toEqual([]);
+  expect((await draft(page)).revisionProposals).toEqual([]);
+  expect((await draft(page)).revisionSnapshots).toEqual([]);
   expect((await draft(page)).text).toBe(BEFORE);
   if (interruption === 'cross-tab') await expect(page.getByRole('alert')).toContainText('另一窗口');
+  noUnexpected(mock);
+});
+
+test('request persistence failure after valid preflight prevents paid dispatch and history allocation', async ({page, context}) => {
+  const mock = await boot(page, context), gate = deferred();
+  mock.respond(call => call.method === 'GET' ? gate.promise : output(AFTER));
+  await page.getByLabel('改稿意见', {exact:true}).fill(INSTRUCTION);
+  const before = await stored(page);
+  await button(page, names.request).click();
+  await expect.poll(() => mock.calls.length).toBe(1);
+  await page.evaluate(key => {window.revisionOriginalSet = Storage.prototype.setItem; Storage.prototype.setItem = function(k, value) {if (k === key) throw new DOMException('synthetic pre-dispatch quota failure', 'QuotaExceededError'); return window.revisionOriginalSet.call(this, k, value);};}, KEY);
+  gate.resolve({json:BUDGET});
+  await expect(page.getByRole('alert')).toContainText('尚未安全保存');
+  expect(await stored(page)).toEqual(before);
+  expect((await draft(page)).revisionProposals).toEqual([]);
+  expect((await draft(page)).revisionSnapshots).toEqual([]);
+  expect(mock.paid()).toEqual([]);
+  await page.evaluate(() => {Storage.prototype.setItem = window.revisionOriginalSet;});
+  await button(page, '重试保存').click();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  expect((await draft(page)).revisionProposals).toEqual([]);
+  expect((await draft(page)).revisionSnapshots).toEqual([]);
+  expect(mock.calls).toHaveLength(1);
   noUnexpected(mock);
 });
 
@@ -310,18 +353,23 @@ test('reload preserves completed advice but requires a new confirmation; import 
   noUnexpected(mock);
 });
 
-test('reloaded interrupted request needs explicit zero-call cancellation before a new attempt', async ({page, context}) => {
-  let initial = base(), id = initial.drafts[0].id;
-  initial = revisions.setRevisionInstruction(initial, id, INSTRUCTION);
-  initial = revisions.beginDraftRevision(initial, id);
-  const mock = await boot(page, context, initial);
+test('reloaded interrupted paid request needs explicit local cancellation before a new attempt', async ({page, context}) => {
+  const mock = await boot(page, context), gate = deferred();
+  mock.respond(call => call.method === 'GET' ? {json:BUDGET} : mock.paid().length === 1 ? gate.promise : output(AFTER));
+  await page.getByLabel('改稿意见', {exact:true}).fill(INSTRUCTION);
+  await button(page, names.request).click();
+  await expect.poll(() => mock.paid().length).toBe(1);
+  expect((await proposal(page)).status).toBe('requesting');
+  await page.reload();
+  gate.resolve(output('重载前的迟到结果不得恢复授权'));
   await button(page, '取消中断的改稿请求').click();
   expect((await proposal(page)).status).toBe('cancelled');
-  expect(mock.calls).toEqual([]);
+  expect(mock.calls).toHaveLength(2);
   await request(page);
   expect((await draft(page)).revisionProposals).toHaveLength(2);
   expect((await draft(page)).revisionProposals[0].result).toBeNull();
-  expect(mock.paid()).toHaveLength(1);
+  expect((await draft(page)).revisionSnapshots).toHaveLength(1);
+  expect(mock.paid()).toHaveLength(2);
   noUnexpected(mock);
 });
 

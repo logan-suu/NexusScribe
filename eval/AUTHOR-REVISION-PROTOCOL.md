@@ -87,7 +87,7 @@ If all pass, lock the record before extraction. The reviewer may not rewrite the
 
 ### First-failure rule
 
-Stop before the next stage on the first failing objective or semantic check, transport/provider error, timeout, incomplete response, truncation, schema/reference failure, protocol/settings/hash mismatch, permission failure, cancellation, or evidence-write failure. Preserve the attempted stage's full received output, including invalid content, and all prior evidence. Record the failed check and stop reason; mark unattempted stages `not_run`. Failed, uncertain, and interrupted stages are never rerun under this trial. A quality failure cannot be relabeled an engineering success, although transport/schema results can be reported separately.
+Stop before the next stage on the first failing objective or semantic check, transport/provider error, timeout, incomplete response, truncation, schema/reference failure, protocol/settings/hash mismatch, permission failure, cancellation, or evidence-write failure. Preserve the attempted stage's full received output, including invalid content, and all prior evidence. Record the failed check and stop reason; mark unattempted stages `not_run`. Fetch and response-stream exceptions are `UPSTREAM_ERROR` with delivery/usage uncertain; file persistence exceptions remain `EVIDENCE_FAILED`. Neither classification permits a retry. Failed, uncertain, and interrupted stages are never rerun under this trial. A quality failure cannot be relabeled an engineering success, although transport/schema results can be reported separately.
 
 ## Evidence retention and reporting
 

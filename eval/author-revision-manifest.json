@@ -94,7 +94,7 @@
     }
   ],
   "sha256": {
-    "eval/AUTHOR-REVISION-PROTOCOL.md": "e0d2ae1101ae20fe29202550927e88b7be638f0750bb910cb00cbd422bef064f",
+    "eval/AUTHOR-REVISION-PROTOCOL.md": "dea73020569b7660a9cf0c709fd52304a52ccd87b38fb64c44b62a0804525b2d",
     "scripts/run-author-revision-eval.mjs": "48312459a95c3e3ce3526a7e57d4d60c4b51b3af914260926edb02c9008bb35a",
     "tests/author-revision-eval.test.js": "3b2623141159f4a5c040fef87750b923bfc51bedf755c7e63a181a76b0a0f5fd",
     "server/provider.js": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7",
@@ -106,8 +106,8 @@
     "eval/history/multichapter-v1/source-manifest.json": "ce336473b0c9076d67a8e1c1befd53bb75feb5dde7250f49fe839b884e4e94c8",
     "eval/history/multichapter-v1/artifact-index.json": "d9cb3e816017897a67c0a3d79aa548f4bd01bc0ebcc4ccf4b79be27c3f8a2072",
     "eval/MULTICHAPTER-RESULTS.md": "00e6a844b8aa26cd2c3e6e66f87453f58a73d33974aa387ef9d7eb4ca46e3f73",
-    "scripts/run-author-revision-live.mjs": "8097c05afb3a8b1e467e3963c9e3787c100f0cff49e271022715722f80ad51f3",
-    "tests/author-revision-live.test.js": "7911f9b0e3fdedc0c70df8c6f9bbb8c8ba859b09f443514265a4dd917ed6682d",
+    "scripts/run-author-revision-live.mjs": "605c871eb8bba74af2f9ea8bd5d3cbf71c648c059a66f9e0856ec55c42181cc4",
+    "tests/author-revision-live.test.js": "a9e2425f641956aabcd51ffdead66e7209254adfff8c617e35a68874a7a92ac9",
     ".github/workflows/author-revision-trial.yml": "43417161a3c6370c8f97151d97b69aa9d486a1fb2e2f3c1caeba9800d0ca6911"
   }
 }
