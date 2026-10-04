@@ -56,6 +56,8 @@ async function boot(page, context, initial = base(), mode = 'server') {
     const call = {url:new URL(request.url()).pathname, method:request.method(), ...(request.postData() ? request.postDataJSON() : {})};
     calls.push(call);
     expect(['/api/status','/api/agent']).toContain(call.url);
+    expect(call.method).toBe(call.url === '/api/status' ? 'GET' : 'POST');
+    if (call.url === '/api/agent') expect(call.action).toBe('reviseProse');
     const answer = await responder(call);
     // A cancelled request may already have disconnected from this local route.
     try {await route.fulfill(answer);} catch (error) {if (!/closed|handled|Invalid InterceptionId/i.test(error.message)) throw error;}

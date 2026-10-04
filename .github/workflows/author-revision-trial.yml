@@ -1,0 +1,113 @@
+name: Frozen author revision trial
+run-name: author-revision-v1/${{ inputs.stage }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      approve_trial:
+        description: 'Approved one lifetime <=3-call trial; Use balance OFF; no retry or new batch'
+        type: boolean
+        required: true
+        default: false
+      stage:
+        description: 'Run only the next preregistered stage; report revision before any followup'
+        type: choice
+        required: true
+        options: [revise, extract, review]
+      ci_run_id:
+        description: 'Successful ci.yml run for this exact frozen source SHA'
+        type: string
+        required: true
+      prior_run_id:
+        description: 'Previous successful trial stage run ID; leave empty for revise'
+        type: string
+        required: false
+      close_read_json:
+        description: 'Locked full close-read JSON bound to revision hash; required for extract/review'
+        type: string
+        required: false
+      extraction_gate_json:
+        description: 'Locked new continuation inspection bound to extraction output hash; required for review'
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: author-revision-v1-lifetime
+  cancel-in-progress: false
+
+jobs:
+  trial-stage:
+    if: inputs.approve_trial == true && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact frozen source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Verify protocol and fake-transport guards without credentials
+        run: node --test tests/author-revision-eval.test.js tests/author-revision-live.test.js
+      - name: Download exact previous immutable trial artifact
+        if: inputs.stage != 'revise'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: author-revision-v1-${{ inputs.stage == 'extract' && 'revise' || 'extract' }}
+          path: author-revision-prior
+          run-id: ${{ inputs.prior_run_id }}
+          github-token: ${{ github.token }}
+      - name: Run exactly one separately gated trial stage
+        run: node scripts/run-author-revision-live.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_AUTHOR_REVISION_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+          NEXUS_AUTHOR_REVISION_STAGE: ${{ inputs.stage }}
+          NEXUS_CI_RUN_ID: ${{ inputs.ci_run_id }}
+          NEXUS_PRIOR_RUN_ID: ${{ inputs.prior_run_id }}
+          NEXUS_CLOSE_READ_JSON: ${{ inputs.close_read_json }}
+          NEXUS_EXTRACTION_GATE_JSON: ${{ inputs.extraction_gate_json }}
+      - name: Preserve synthetic stage evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: author-revision-v1-${{ inputs.stage }}
+          if-no-files-found: ignore
+          retention-days: 30
+          overwrite: false
+          path: |
+            author-revision-evidence/intent-01.json
+            author-revision-evidence/intent-02.json
+            author-revision-evidence/intent-03.json
+            author-revision-evidence/request-01.json
+            author-revision-evidence/request-02.json
+            author-revision-evidence/request-03.json
+            author-revision-evidence/raw-01.bin
+            author-revision-evidence/raw-02.bin
+            author-revision-evidence/raw-03.bin
+            author-revision-evidence/completed-01.json
+            author-revision-evidence/completed-02.json
+            author-revision-evidence/completed-03.json
+            author-revision-evidence/dispatch-01.json
+            author-revision-evidence/dispatch-02.json
+            author-revision-evidence/dispatch-03.json
+            author-revision-evidence/close-read-attempt-02.json
+            author-revision-evidence/close-read-attempt-03.json
+            author-revision-evidence/blocked-stage.json
+            author-revision-evidence/extraction-gate.json
+            author-revision-evidence/close-read.json
+            author-revision-evidence/ledger-01.json
+            author-revision-evidence/ledger-02.json
+            author-revision-evidence/ledger-03.json
+            author-revision-evidence/index-01.json
+            author-revision-evidence/index-02.json
+            author-revision-evidence/index-03.json

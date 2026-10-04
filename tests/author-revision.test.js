@@ -70,3 +70,7 @@ test('reload preserves proposal and exact provenance; import removes pending ado
 for(const [label,change] of [
  ['result',p=>p.result.text='tamper'],['counts',p=>p.beforeCounts.han++],['original text',p=>p.binding.textSnapshot='different'],['chapter',p=>p.binding.chapterId='ch2'],['instruction counter',p=>p.binding.instructionVersion=999],['status',p=>p.status='accepted'],['snapshot',p=>p.resultSnapshot.provider.id='different']
 ])test(`backup rejects malformed revision ${label}`,()=>{const s=completed();change(last(s));assert.throws(()=>parseBackup(JSON.stringify(backup(s))));});
+
+test('stored revision history cannot be relabeled as offline or manual-origin metadata',()=>{
+ for(const mutate of [d=>{d.providerInfo.isLive=false;d.requiresSemanticReview=false},d=>{d.provider='author-manuscript'},d=>{d.manualSource=null}]){const s=completed();mutate(s.drafts[0]);assert.throws(()=>parseBackup(JSON.stringify(backup(s))));assert.throws(()=>r.validateDraftRevisions(s.drafts[0]));}
+});

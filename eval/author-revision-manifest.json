@@ -1,8 +1,8 @@
 {
   "protocol": "author-revision-v1",
   "version": 1,
-  "status": "offline_preparation_only",
-  "authorization": "Offline preparation only. No live requests, paid runner, dispatch, retry, accepted-state mutation, or reuse of the consumed multichapter trial is authorized.",
+  "status": "preregistered_staged_trial",
+  "authorization": "One separately approved lifetime trial, at most three attempted requests in frozen revise/extract/review order, after exact-SHA successful CI and independent review. The revision is reported and close-read before extraction; a new extraction continuation decision gates review. No retries, extra batch, fallback, acceptance, or reuse of consumed multichapter allowance.",
   "hashEncoding": {
     "files": "SHA-256 of exact file bytes",
     "strings": "SHA-256 of UTF-8 string, no trimming or normalization",
@@ -11,7 +11,7 @@
   "settings": {
     "id": "author-revision-v1",
     "version": 1,
-    "mode": "offline_preparation_only",
+    "mode": "preregistered_staged_trial",
     "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
     "model": "deepseek-v4.1-flash",
     "maxCalls": 3,
@@ -90,12 +90,12 @@
       "sequence": 3,
       "action": "reviewChapter",
       "maxCalls": 1,
-      "requires": "Stage 2 nonempty extraction with exact source binding; no candidate feedback or acceptance"
+      "requires": "Stage 2 nonempty extraction with exact source binding plus new locked extraction-output-hash-bound continuation gate; no candidate feedback or acceptance"
     }
   ],
   "sha256": {
-    "eval/AUTHOR-REVISION-PROTOCOL.md": "62ad37286149f2a1fb66dab0c85202d918ec814b273b595b6cdc755160c036da",
-    "scripts/run-author-revision-eval.mjs": "574cd13f3f2dff10c085442e2f8fe2e9872d9ff724ae6de18a7bc365f0d3fa12",
+    "eval/AUTHOR-REVISION-PROTOCOL.md": "e0d2ae1101ae20fe29202550927e88b7be638f0750bb910cb00cbd422bef064f",
+    "scripts/run-author-revision-eval.mjs": "48312459a95c3e3ce3526a7e57d4d60c4b51b3af914260926edb02c9008bb35a",
     "tests/author-revision-eval.test.js": "3b2623141159f4a5c040fef87750b923bfc51bedf755c7e63a181a76b0a0f5fd",
     "server/provider.js": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7",
     "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
@@ -105,6 +105,9 @@
     "eval/history/multichapter-v1/request-07.json": "ddf8a7235aa6d3265478b0cd9f13d4e6b72a22ebb63e61a9db417b9fa9e698e4",
     "eval/history/multichapter-v1/source-manifest.json": "ce336473b0c9076d67a8e1c1befd53bb75feb5dde7250f49fe839b884e4e94c8",
     "eval/history/multichapter-v1/artifact-index.json": "d9cb3e816017897a67c0a3d79aa548f4bd01bc0ebcc4ccf4b79be27c3f8a2072",
-    "eval/MULTICHAPTER-RESULTS.md": "00e6a844b8aa26cd2c3e6e66f87453f58a73d33974aa387ef9d7eb4ca46e3f73"
+    "eval/MULTICHAPTER-RESULTS.md": "00e6a844b8aa26cd2c3e6e66f87453f58a73d33974aa387ef9d7eb4ca46e3f73",
+    "scripts/run-author-revision-live.mjs": "8097c05afb3a8b1e467e3963c9e3787c100f0cff49e271022715722f80ad51f3",
+    "tests/author-revision-live.test.js": "7911f9b0e3fdedc0c70df8c6f9bbb8c8ba859b09f443514265a4dd917ed6682d",
+    ".github/workflows/author-revision-trial.yml": "43417161a3c6370c8f97151d97b69aa9d486a1fb2e2f3c1caeba9800d0ca6911"
   }
 }

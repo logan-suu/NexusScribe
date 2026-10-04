@@ -26,6 +26,7 @@ function binding(state,draft) {
 export function validateDraftRevisions(draft) {
  if (!Object.hasOwn(draft,'revisionProposals') && !Object.hasOwn(draft,'revisionInstruction') && !Object.hasOwn(draft,'revisionInstructionVersion')) return true;
  const invalid = () => fail('改稿指令、原稿、结果或来源记录无效');
+ if (draft.requiresExtraction !== true || draft.providerInfo?.isLive !== true || Object.hasOwn(draft,'manualSource') || draft.provider === 'author-manuscript' || draft.providerInfo?.id === 'author-manuscript') invalid();
  if (typeof draft.revisionInstruction !== 'string' || draft.revisionInstruction.length > MAX_REVISION_INSTRUCTION || !integer(draft.revisionInstructionVersion) || !Array.isArray(draft.revisionProposals)) invalid();
  const ids = new Set();
  for (const proposal of draft.revisionProposals) {

@@ -47,3 +47,7 @@ isolated-memory-support-evidence/
 # Synthetic multi-chapter validation is published only through a reviewed allowlist.
 multichapter-evidence/
 multichapter-offline-evidence/
+
+# One-shot author revision stage artifacts; publish only after explicit evidence review.
+author-revision-evidence/
+author-revision-prior/

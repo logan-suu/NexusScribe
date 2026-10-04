@@ -62,6 +62,8 @@ globalThis.fetch = async (url, options = {}) => {
   assert.ok(['/api/status','/api/agent'].includes(url), `Blocked unexpected network: ${url}`);
   const call = {url, method:options.method, ...(options.body ? JSON.parse(options.body) : {})};
   calls.push(call);
+  assert.equal(call.method, url === '/api/status' ? 'GET' : 'POST');
+  if (url === '/api/agent') assert.equal(call.action, 'reviseProse', 'No auto extraction, review, generation or fallback call');
   return responder(call);
 };
 URL.createObjectURL = blob => {exportedBlob = blob; return 'blob:author-revision';};

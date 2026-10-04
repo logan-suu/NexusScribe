@@ -69,7 +69,7 @@ export default function App(){const [{workspace:boot,error:bootError}]=useState(
    const stale=taskSnapshot()!==run.basis;
    const attached=revisions.attachDraftRevision(ref.current.state,id,proposalId,output,expected,{stale});
    if(retainModelState(attached))notify(stale?'改稿结果已保留，但工作区已变化，旧建议不能采用':'改稿建议已单独保存，请比较前后正文，再采用或放弃；原稿与记忆未改变');
-   else notify('已付费改稿结果保留在本窗口，尚未安全保存。请导出当前内容或重试保存；重试保存不会再次调用模型',true);
+   else notify('已收到的改稿结果保留在本窗口，尚未安全保存。请导出当前内容或重试保存；重试保存不会再次调用模型',true);
    task.finish(run,stale?'stale':'complete',output);
   }catch(e){if(!run||task.current(run)){stop(e.code==='AUDIT_STORAGE_UNSAFE'?'cancelled':'failed');if(run)task.finish(run,'error');notify(`改稿未完成，原稿保留。${e.message}`,true)}}
  }

@@ -7,7 +7,7 @@ import { segmentProse } from '../src/domain/prose.js';
 import { validateInput, validateOutput } from '../server/provider.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const protocol = Object.freeze({ id: 'author-revision-v1', version: 1, mode: 'offline_preparation_only',
+export const protocol = Object.freeze({ id: 'author-revision-v1', version: 1, mode: 'preregistered_staged_trial',
   endpoint: 'https://opencode.ai/zen/go/v1/chat/completions', model: 'deepseek-v4.1-flash',
   maxCalls: 3, maxTokens: 3000, maxOutputTokens: 9000, temperature: 0.7, thinking: 'disabled', minimumGapMs: 11000,
   actions: Object.freeze(['reviseProse', 'extractMemory', 'reviewChapter']),
@@ -23,6 +23,7 @@ export const SOURCE_HASHES = Object.freeze({
 export const FROZEN_PATHS = Object.freeze([
   'eval/AUTHOR-REVISION-PROTOCOL.md', 'scripts/run-author-revision-eval.mjs', 'tests/author-revision-eval.test.js',
   'server/provider.js', 'src/domain/prose.js',
+  'scripts/run-author-revision-live.mjs', 'tests/author-revision-live.test.js', '.github/workflows/author-revision-trial.yml',
   'eval/history/multichapter-v1/completed-05.json', 'eval/history/multichapter-v1/request-05.json',
   'eval/history/multichapter-v1/request-06.json', 'eval/history/multichapter-v1/request-07.json',
   'eval/history/multichapter-v1/source-manifest.json', 'eval/history/multichapter-v1/artifact-index.json',
@@ -160,9 +161,9 @@ export function assessStage(action, output, { trial, text, closeRead } = {}) {
 export async function main(args = process.argv.slice(2)) {
   if (args.length > 1 || (args.length === 1 && args[0] !== '--offline')) fail('OFFLINE_ONLY_NO_DISPATCH');
   const trial = await loadFrozenTrial();
-  return { protocol: protocol.id, mode: protocol.mode, sourceVerified: true, sourceStats: proseStats(trial.text),
-    revisionInputSha256: digest(buildRevisionInput(trial)), liveCalls: 0, nextStage: 'separate_approval_required',
-    note: 'No live runner is implemented. One revision call would be followed by a mandatory close-read gate.' };
+  return { protocol: protocol.id, mode: 'offline_preparation_only', sourceVerified: true, sourceStats: proseStats(trial.text),
+    revisionInputSha256: digest(buildRevisionInput(trial)), liveCalls: 0, nextStage: 'exact_source_ci_and_review_required',
+    note: 'This command never dispatches. The separate staged runner requires exact-source CI, history, evidence, and continuation gates.' };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try { console.log(JSON.stringify(await main(), null, 2)); }
