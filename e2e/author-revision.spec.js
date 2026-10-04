@@ -109,8 +109,8 @@ const boundNames = ['汉字下限','汉字上限','段数下限','段数上限']
 async function fillBounds(page, values = {}) {
   for (const name of boundNames) await adoptionDialog(page).getByLabel(name, {exact:true}).fill(values[name] ?? '');
 }
-function adoptionRecord(text, lengthBounds = {}, authority = text === AFTER ? 'explicit_model_adoption' : 'explicit_author_edit') {
-  return {authority, textHash:engine.hash(text), counts:proseCounts(text), lengthBounds};
+function adoptionRecord(text, lengthBounds = {}, authority = text === AFTER ? 'explicit_model_adoption' : 'explicit_author_edit', modelResult = {text:AFTER, chapterId:'ch1', provider}) {
+  return {modelResultHash:engine.hash(JSON.stringify(modelResult)), authority, textHash:engine.hash(text), counts:proseCounts(text), lengthBounds};
 }
 function expectRawProposal(next, raw) {
   for (const key of ['binding','beforeCounts','afterCounts','result']) expect(next[key]).toEqual(raw[key]);
@@ -265,7 +265,7 @@ test('offline correction of the historical contradiction is an author edit, not 
   expect(next.status).toBe('DRAFT');
   expect(next.modelReview).toBeNull();
   expect(next.extraction.status).toBe('pending');
-  expect(accepted.adoption).toEqual(adoptionRecord(corrected, {}, 'explicit_author_edit'));
+  expect(accepted.adoption).toEqual(adoptionRecord(corrected, {}, 'explicit_author_edit', raw.result));
   expectRawProposal(accepted, raw);
   expect(accepted.result.text).toContain(contradiction);
   expect(next.text).not.toContain('许宁没再敲');

@@ -29,7 +29,8 @@ export function parseRevisionLengthBounds(fields = {}) {
  return bounds;
 }
 function validateLengthBounds(bounds) {
- if (!object(bounds) || Object.values(bounds).some(value => !integer(value)) || !same(bounds,parseRevisionLengthBounds(bounds))) fail('篇幅范围记录无效');
+ if (!object(bounds) || Object.values(bounds).some(value => !integer(value))) fail('篇幅范围记录无效');
+ parseRevisionLengthBounds(bounds);
 }
 export function revisionLengthWarnings(value, bounds = {}) {
  validateLengthBounds(bounds);
@@ -90,7 +91,7 @@ export function validateDraftRevisions(draft) {
    if (!integer(proposal.adoptedRevision) || proposal.adoptedRevision <= b.draftRevision || !text(finalText)) invalid();
    if (Object.hasOwn(proposal,'adoption')) {
     const a = proposal.adoption;
-    if (!object(a) || Object.keys(a).length !== 4 || a.authority !== (finalText === proposal.result.text ? 'explicit_model_adoption' : 'explicit_author_edit') || a.textHash !== engine.hash(finalText) || !same(a.counts,proseCounts(finalText))) invalid();
+    if (!object(a) || Object.keys(a).length !== 5 || a.authority !== (finalText === proposal.result.text ? 'explicit_model_adoption' : 'explicit_author_edit') || a.modelResultHash !== engine.hash(JSON.stringify(proposal.result)) || a.textHash !== engine.hash(finalText) || !same(a.counts,proseCounts(finalText))) invalid();
     validateLengthBounds(a.lengthBounds);
    } else if (finalText !== proposal.result.text) invalid(); // Legacy, unedited adoption.
   } else if (Object.hasOwn(proposal,'adoption') || Object.hasOwn(proposal,'adoptedRevision')) invalid();
@@ -176,6 +177,6 @@ export function adoptDraftRevision(state,id,proposalId,expected,options = {}) {
  // and does not perform extraction, review, acceptance or a provider invocation.
  const s = engine.editDraft(state,id,finalText), next = get(s,id), adopted = next.revisionProposals.find(item => item.id === proposalId);
  adopted.status = 'adopted'; adopted.adoptedRevision = next.revision; adopted.resultSnapshot=null;
- adopted.adoption = {authority:finalText === p.result.text ? 'explicit_model_adoption' : 'explicit_author_edit', textHash:engine.hash(finalText), counts:proseCounts(finalText), lengthBounds:copy(lengthBounds)};
+ adopted.adoption = {modelResultHash:engine.hash(JSON.stringify(p.result)), authority:finalText === p.result.text ? 'explicit_model_adoption' : 'explicit_author_edit', textHash:engine.hash(finalText), counts:proseCounts(finalText), lengthBounds:copy(lengthBounds)};
  validateDraftRevisions(next); return s;
 }

@@ -103,7 +103,7 @@ test('author may edit only the adoption buffer; raw model provenance and histori
  assert.equal(s.drafts[0].text,BEFORE);assert.deepEqual(last(s),p);
  assert.equal(n.drafts[0].text,finalText);assert.equal(r.getRevisionAdoptedText(n.drafts[0],last(n)),finalText);
  assert.deepEqual(last(n).result,p.result);assert.deepEqual(last(n).beforeCounts,p.beforeCounts);assert.deepEqual(last(n).afterCounts,p.afterCounts);
- assert.deepEqual(last(n).adoption,{authority:'explicit_author_edit',textHash:e.hash(finalText),counts:r.proseCounts(finalText),lengthBounds:bounds});
+ assert.deepEqual(last(n).adoption,{modelResultHash:e.hash(JSON.stringify(p.result)),authority:'explicit_author_edit',textHash:e.hash(finalText),counts:r.proseCounts(finalText),lengthBounds:bounds});
  assert.equal(n.drafts[0].proseVersions.length,2);assert.deepEqual(n.chapters,s.chapters);assert.deepEqual(n.facts,s.facts);assert.deepEqual(n.events,s.events);
  assert.equal(n.drafts[0].extraction.status,'pending');assert.throws(()=>e.acceptDraft(n,id(n)));
  assert.equal(r.revisionLengthWarnings(finalText,bounds).length,2,'Length warnings do not block explicit author adoption');
@@ -146,4 +146,19 @@ for(const [label,change] of [
 test('pending and discarded proposals cannot claim adoption provenance',()=>{
  const s=completed();last(s).adoption={authority:'explicit_author_edit',textHash:e.hash(AFTER),counts:r.proseCounts(AFTER),lengthBounds:{}};
  assert.throws(()=>parseBackup(JSON.stringify(backup(s))));
+});
+
+test('edited adoption detects raw text and provider drift even when prose counts match',()=>{
+ const s=completed(begin(),'模型原文。'),n=r.adoptDraftRevision(s,id(s),last(s).id,last(s),{text:'作者的修改稿。'});
+ for(const mutate of [p=>p.result.text='篡改原文。',p=>p.result.provider.model='other',p=>delete p.adoption.modelResultHash]){
+  const bad=copy(n);mutate(last(bad));assert.throws(()=>parseBackup(JSON.stringify(backup(bad))));
+ }
+ assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(n))));
+});
+test('valid numeric bounds are independent of object property order',()=>{
+ const bounds={paragraphsMax:5,hanMax:100,paragraphsMin:1,hanMin:2};
+ assert.deepEqual(r.revisionLengthWarnings(AFTER,bounds),[]);
+ const s=completed(),n=r.adoptDraftRevision(s,id(s),last(s).id,last(s),{text:'作者的修改稿。',lengthBounds:bounds});
+ assert.deepEqual(last(n).adoption.lengthBounds,bounds);
+ assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(n))));
 });

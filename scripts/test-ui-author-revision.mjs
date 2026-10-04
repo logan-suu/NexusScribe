@@ -428,7 +428,7 @@ await user.click(button(names.confirm));
 assert.equal(draft().text, EDITED);
 assert.deepEqual(proposal().result, rawAdvice.result);
 assert.deepEqual(proposal().afterCounts, rawAdvice.afterCounts);
-assert.deepEqual(proposal().adoption, {authority:'explicit_author_edit',textHash:engine.hash(EDITED),counts:{han:15,characters:23,paragraphs:2},lengthBounds:{hanMin:100}});
+assert.deepEqual(proposal().adoption, {modelResultHash:engine.hash(JSON.stringify(rawAdvice.result)),authority:'explicit_author_edit',textHash:engine.hash(EDITED),counts:{han:15,characters:23,paragraphs:2},lengthBounds:{hanMin:100}});
 assert.equal(draft().modelReview, null); assert.equal(draft().extraction.status, 'pending');
 assert.deepEqual(draft().factDecisions, []); assert.deepEqual(draft().memoryDecisions, []);
 assert.equal(screen.getByLabelText('已采用版本正文').textContent, EDITED);
