@@ -184,8 +184,13 @@ test('manual preparation rejects pending edits and same-text patch, then require
   const old = await draft(page);
   await classify(page, REVISED);
   await button(page, '确认并提交状态').click();
-  await button(page, '审查候选稿').click();
+  // The saved source changed, so its earlier explicit skip no longer applies.
+  // Retained review history must not let this obsolete snapshot be reviewed or accepted.
+  await expect(button(page, '审查候选稿')).toBeDisabled();
   const staleState = await state(page);
+  expect(staleState.drafts.at(-1).review).toEqual(old.review);
+  expect(staleState.drafts.at(-1).modelReview).toBeNull();
+  expect(engine.hasCurrentExtraction(staleState, staleState.drafts.at(-1).id)).toBe(false);
   expect(() => engine.acceptDraft(staleState, staleState.drafts.at(-1).id)).toThrow(/重新审查|变化|过期/);
   await acceptanceBlocked(page);
   expect((await draft(page)).text).toBe(MANUAL);

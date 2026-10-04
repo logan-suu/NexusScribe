@@ -98,6 +98,16 @@ jobs:
           path: test-results/multichapter*/*.png
           if-no-files-found: warn
           retention-days: 7
+      - name: Preserve compact manual acceptance screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: manual-acceptance-screenshots
+          path: |
+            test-results/manual-chapter*/manual-zero-memory-confirmation.png
+            test-results/manual-chapter*/manual-accepted-exact-author-chapter.png
+          if-no-files-found: warn
+          retention-days: 7
       - name: Preserve offline multi-chapter harness evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
