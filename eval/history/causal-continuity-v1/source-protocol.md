@@ -1,7 +1,3 @@
-# Retired execution protocol
-
-Consumed on 4 October 2026 by one HTTP-400 attempt. No remaining live allowance. [Results and compatibility diagnosis](CAUSAL-CONTINUITY-RESULTS.md). The unchanged preregistration used at dispatch is preserved in [source-protocol.md](history/causal-continuity-v1/source-protocol.md). The text below is historical, not permission to execute.
-
 # Causal continuity v1: approved, bounded diagnostic
 
 Preregistered 4 October 2026 before any new provider dispatch. Baseline repository: `6421f04630e7208d8203793affd03e0e6e91ce73` on `dev_v1.0`. All 208 tracked cloud-mirror blobs matched the remote Git object hashes before additions. Application code and production writer prompts are unchanged. This is synthetic fixed-context prose generation, not a whole-novel chain or revision-reliability test.

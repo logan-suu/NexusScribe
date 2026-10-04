@@ -1,0 +1,49 @@
+{
+  "protocol": "causal-continuity-v1",
+  "sourceSha": "ac2ada602243623db4a002fe346c86d92cab7cf2",
+  "manifestSha256": "b1887299d1c14915dae9acaf606f89aaafa4db02684eaa40820e449327512f15",
+  "ciRunId": "37221072369",
+  "status": "stopped",
+  "attempts": 1,
+  "stages": [
+    {
+      "sequence": 1,
+      "runId": "37221574803",
+      "dispatched": true,
+      "status": "failed",
+      "usage": {},
+      "requestSha256": "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+      "httpStatus": 400,
+      "finishReason": "unknown",
+      "error": "UPSTREAM_ERROR",
+      "receivedBytes": 195,
+      "elapsedMs": 174
+    }
+  ],
+  "usage": {
+    "promptTokens": {
+      "knownSum": null,
+      "reportedCalls": 0,
+      "missingCalls": 1,
+      "complete": false
+    },
+    "completionTokens": {
+      "knownSum": null,
+      "reportedCalls": 0,
+      "missingCalls": 1,
+      "complete": false
+    },
+    "totalTokens": {
+      "knownSum": null,
+      "reportedCalls": 0,
+      "missingCalls": 1,
+      "complete": false
+    },
+    "reasoningTokens": {
+      "knownSum": null,
+      "reportedCalls": 0,
+      "missingCalls": 1,
+      "complete": false
+    }
+  }
+}

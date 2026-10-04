@@ -1,8 +1,9 @@
-/** Consumed and retired after one HTTP-400 attempt. Explicit fake replay only; no live CLI. */
-import { readFile } from 'node:fs/promises';
+/** One registered, six-attempt maximum trial. Never imported by the application. */
+import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import { segmentProse } from '../src/domain/prose.js';
 import { validateInput } from '../server/provider.js';
 import { secretScan, createDiskEvidence, aggregateUsage } from './run-author-revision-live.mjs';
@@ -10,7 +11,7 @@ export const ID='causal-continuity-v1';
 export const WORKFLOW='causal-continuity-trial.yml';
 export const ENDPOINT='https://opencode.ai/zen/go/v1/chat/completions';
 export const FREEZE_SHA='5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73';
-export const FROZEN_PATHS=['scripts/inspect-causal-transport.mjs','tests/causal-transport-compatibility.test.js','eval/CAUSAL-CONTINUITY-RESULTS.md','eval/history/causal-continuity-v1/dispatch-01.json','eval/history/causal-continuity-v1/index-01.json','eval/history/causal-continuity-v1/intent-01.json','eval/history/causal-continuity-v1/ledger-01.json','eval/history/causal-continuity-v1/outcome.json','eval/history/causal-continuity-v1/response-meta-01.json','eval/history/causal-continuity-v1/source-manifest.json','eval/history/causal-continuity-v1/source-protocol.md','eval/history/causal-continuity-v1/source-runner.mjs','eval/history/causal-continuity-v1/source-workflow.yml','eval/history/causal-continuity-v1/transport-compatibility.json','eval/history/causal-continuity-v1/artifact-index.json','scripts/run-causal-continuity.mjs','.github/workflows/causal-continuity-trial.yml','eval/CAUSAL-CONTINUITY-PROTOCOL.md','eval/causal-continuity-requests.json','tests/causal-continuity.test.js','scripts/run-author-revision-live.mjs','scripts/run-author-revision-eval.mjs','server/provider.js','src/domain/prose.js','eval/history/prose-pipeline-v1/inputs.json','eval/history/multichapter-v1/request-05.json','eval/writing-quality-fixtures.mjs'];
+export const FROZEN_PATHS=['scripts/run-causal-continuity.mjs','.github/workflows/causal-continuity-trial.yml','eval/CAUSAL-CONTINUITY-PROTOCOL.md','eval/causal-continuity-requests.json','tests/causal-continuity.test.js','scripts/run-author-revision-live.mjs','scripts/run-author-revision-eval.mjs','server/provider.js','src/domain/prose.js','eval/history/prose-pipeline-v1/inputs.json','eval/history/multichapter-v1/request-05.json','eval/writing-quality-fixtures.mjs'];
 export const DIMENSIONS=['new_scene_change','physical_prerequisites_custody','temporal_causal_sequence','motivation_obligation','knowledge_pov_attribution','voice_economy_agency','delivery_contract'];
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const digest=x=>createHash('sha256').update(typeof x==='string'||Buffer.isBuffer(x)?x:JSON.stringify(x)).digest('hex');
@@ -49,7 +50,7 @@ export function validateFreeze(bytes){
 }
 export async function loadFrozen(root=ROOT){
  const m=parse(await readFile(resolve(root,'eval/causal-continuity-manifest.json')));
- if(m.protocol!==ID||m.status!=='retired_consumed_offline_replay'||m.stop!=='any_arm_failure_or_uncertain'||m.maxAttempts!==6||m.maxOutputTokens!==18000)fail('FREEZE_INVALID');
+ if(m.protocol!==ID||m.status!=='approved_once'||m.stop!=='any_arm_failure_or_uncertain'||m.maxAttempts!==6||m.maxOutputTokens!==18000)fail('FREEZE_INVALID');
  if(!object(m.sha256)||!same(Object.keys(m.sha256).sort(),[...FROZEN_PATHS].sort()))fail('FREEZE_INVALID');
  for(const [p,h]of Object.entries(m.sha256)){if(p.includes('..')||digest(await readFile(resolve(root,p)))!==h)fail('FREEZE_INVALID');}
  return {freeze:validateFreeze(await readFile(resolve(root,'eval/causal-continuity-requests.json'))),manifest:m};
@@ -98,8 +99,7 @@ export function finalizeTrial({files,env,trial,gates}){
 }
 const safeUsage=d=>Object.fromEntries(Object.entries({promptTokens:d?.usage?.prompt_tokens,completionTokens:d?.usage?.completion_tokens,totalTokens:d?.usage?.total_tokens,reasoningTokens:d?.usage?.completion_tokens_details?.reasoning_tokens}).filter(([,v])=>Number.isSafeInteger(v)&&v>=0));
 /** One and only one transport call. Per-call output awaits a separate locked reading. */
-export async function runOne({n,env,trial,runs,ci,priorFiles={},gates=null,io,fetchImpl,sleep=ms=>new Promise(r=>setTimeout(r,ms)),timeoutMs=120000,offlineReplay=false}){
- if(offlineReplay!==true||typeof fetchImpl!=='function'||fetchImpl===globalThis.fetch)fail('RETIRED');
+export async function runOne({n,env,trial,runs,ci,priorFiles={},gates=null,io,fetchImpl,sleep=ms=>new Promise(r=>setTimeout(r,ms)),timeoutMs=120000}){
  const prior=verifyPrior(priorFiles,n,env,trial,gates);history({env,n,runs,ci,prior});
  if(!nonempty(env.NEXUS_API_KEY)||/[\r\n]/.test(env.NEXUS_API_KEY)||env.NEXUS_API_KEY.length>4096)fail('NOT_CONFIGURED');
  for(const [p,b]of Object.entries(priorFiles)){if(!scan(b,env))fail('SECRET_ECHO');await io.write(p,Buffer.from(b));}
@@ -142,6 +142,14 @@ export async function runOne({n,env,trial,runs,ci,priorFiles={},gates=null,io,fe
  }
  return ledger;
 }
-/** Retirement precedes all environment/credential access, history reads and transport. */
-export async function main(){fail('RETIRED');}
+async function api(path,env){const r=await fetch('https://api.github.com/repos/'+env.GITHUB_REPOSITORY+path,{redirect:'error',headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${env.GH_TOKEN}`},signal:AbortSignal.timeout(30000)});if(!r.ok)fail('HISTORY_INVALID');return r.json();}
+export async function main(env=process.env){
+ const n=Number(env.NEXUS_CALL);approved(env,n);const trial=await loadFrozen();if(!env.GH_TOKEN)fail('HISTORY_INVALID');
+ const runs=[];let total;for(let page=1;page<=100;page++){const d=await api(`/actions/workflows/${WORKFLOW}/runs?per_page=100&page=${page}`,env);if(!Number.isSafeInteger(d.total_count)||!Array.isArray(d.workflow_runs)||total!==undefined&&total!==d.total_count)fail('HISTORY_INVALID');total=d.total_count;runs.push(...d.workflow_runs);if(runs.length===total)break;if(!d.workflow_runs.length||runs.length>total||page===100)fail('HISTORY_INVALID');}
+ const ci=await api('/actions/runs/'+env.NEXUS_CI_RUN_ID,env);let files={},gates=null;
+ if(n>1){if(!/^\d+$/.test(env.NEXUS_PRIOR_RUN_ID||''))fail('PRIOR_INVALID');try{execFileSync('gh',['run','download',env.NEXUS_PRIOR_RUN_ID,'--repo',env.GITHUB_REPOSITORY,'--name',`${ID}-call-${n-1}`,'--dir','causal-prior'],{stdio:'ignore',timeout:60000,env});for(const p of await readdir('causal-prior'))files[p]=await readFile(resolve('causal-prior',p));gates=JSON.parse(env.NEXUS_GATES_JSON);}catch{fail('PRIOR_INVALID');}}
+ const io=await createDiskEvidence('causal-evidence');
+ const result=await runOne({n,env,trial,runs,ci,priorFiles:files,gates,io,fetchImpl:fetch});
+ console.log(JSON.stringify({protocol:ID,sequence:n,status:result.status,attempts:result.attempts,error:result.stages.at(-1).error||null}));if(result.status==='stopped')process.exitCode=1;
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){try{await main();}catch(e){console.error(JSON.stringify({status:'blocked',code:code(e)}));process.exitCode=1;}}
