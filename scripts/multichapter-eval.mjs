@@ -1,4 +1,4 @@
-/** Opt-in single synthetic browser journey. Never retries or dispatches on import. */
+/** Credential-free maintenance replay of the retired live journey. Optional model judgments are mocked; quote selection does not depend on them. Never retries or dispatches on import. */
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile, mkdir, writeFile, unlink } from 'node:fs/promises';
 import { renameSync } from 'node:fs';
@@ -261,15 +261,15 @@ export async function browserJourney({ page, controller, screenshot, baseURL = '
     if (getFactReviewGate(workspace.state, draft.id).some(x => x.blocking && !x.resolved) || draft.modelReview.issues.some(x => x.severity === 'error')) fail('BLOCKING_REVIEW');
     const first = draft.staging[0]; if (!first || extraction.staging.length !== draft.staging.length) fail('EMPTY_EXTRACTION');
     await perform('auditMemoryCandidate', { label: first.label, sourceQuote: first.sourceQuote }, /^独立核对候选记忆 1：/, w => w.state.drafts.at(-1)?.memorySupport?.attempts?.at(-1)?.state === 'complete');
-    await page.getByRole('button', { name: /^保留候选记忆 1：/ }).click();
+    await page.getByRole('button', { name: /^保留原文摘录候选记忆 1：/ }).click();
     for (let i = 1; i < draft.staging.length; i++) await page.getByRole('button', { name: new RegExp(`^拒绝候选记忆 ${i + 1}：`) }).click();
     await page.getByRole('button', { name: '接受此版本', exact: true }).click();
     await page.getByRole('button', { name: '确认接受正文与所选记忆', exact: true }).click();
     await waitState(w => w.state.drafts.at(-1)?.status === 'ACCEPTED');
     workspace = await readWorkspace(); draft = workspace.state.drafts.at(-1);
     const ownEvents = workspace.state.events.filter(e => e.draftId === draft.id);
-    if (ownEvents.length !== 1 || ownEvents[0].label !== first.label || draft.text !== prose.text || draft.acceptedMemoryDecisions.filter(d => d.action === 'keep').length !== 1) fail('UI_STATE');
-    retained.push({ text: prose.text, eventId: ownEvents[0].id, label: first.label, rejectedLabels: draft.staging.slice(1).map(c => c.label) });
+    if (ownEvents.length !== 1 || ownEvents[0].originalLabel !== first.label || ownEvents[0].source.quote !== first.sourceQuote || ownEvents[0].memoryKind !== 'textual_excerpt' || draft.text !== prose.text || draft.acceptedMemoryDecisions.filter(d => d.action === 'keep_quote').length !== 1) fail('UI_STATE');
+    retained.push({ text: prose.text, eventId: ownEvents[0].id, label: ownEvents[0].label, rejectedLabels: draft.staging.slice(1).map(c => c.label) });
     await screenshot(`chapter-${index + 1}.png`);
     if (index === 0) {
       const before = controller.attempts;

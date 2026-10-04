@@ -56,10 +56,10 @@ try {
   if((await read()).drafts.at(-1).modelReview.issues.some(x=>x.severity==='error')){console.log('review BLOCKED');throw Error('SEMANTIC_REVIEW_BLOCKED')}
   // Each choice uses its visible, candidate-specific control. No model status is overridden.
   const reviewed=await read(),draft=reviewed.drafts.at(-1),selection=planJourneyMemorySelection(reviewed,draft.id);
-  for(const choice of selection.decisions)await click(`${choice.action==='keep'?'保留':'拒绝'}候选记忆 ${choice.index+1}：${choice.label}`);
+  for(const choice of selection.decisions)await click(`拒绝候选记忆 ${choice.index+1}：${choice.label}`);
   const decided=await read();check(snapshot(decided)===snapshot(before));
   check(decided.drafts.at(-1).memoryDecisions.length===selection.total);
-  check(decided.drafts.at(-1).memoryDecisions.every(choice=>choice.action==='keep'||choice.action==='reject'));
+  check(decided.drafts.at(-1).memoryDecisions.every(choice=>choice.action==='reject'));
   await expect(page.getByRole('button',{name:'接受此版本',exact:true})).toBeEnabled();await click('接受此版本');
   await expect(page.getByRole('dialog',{name:'确认接受候选稿与已选记忆'})).toContainText(`已选的 ${selection.selected} / ${selection.total} 条记忆`);
   check((await read()).drafts.at(-1).status!=='ACCEPTED');await click('确认接受正文与所选记忆');

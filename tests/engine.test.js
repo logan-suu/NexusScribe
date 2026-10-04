@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createInitialState,saveRevision,proposePatch,validatePatch,commitPatch,undoCommit,generateDraft,reviewDraft,acceptDraft,rejectDraft,getContext,getImpacts,evaluateSupport,editDraft,createProjectFromConfig,proposeCustomPatch,stageProviderDraft,attachSemanticReview,createReviewBinding,getMemoryReviewGate,decideMemoryCandidate,hash,NEVER_MET,HAS_MET,PHONE,PAPER} from '../src/domain/engine.js';
+import {createInitialState,saveRevision,proposePatch,validatePatch,commitPatch,undoCommit,generateDraft,reviewDraft,acceptDraft,rejectDraft,getContext,getImpacts,evaluateSupport,editDraft,createProjectFromConfig,proposeCustomPatch,stageProviderDraft,attachSemanticReview,createReviewBinding,getMemoryReviewGate,decideMemoryCandidate,MEMORY_ATTESTATION_STATEMENT,hash,NEVER_MET,HAS_MET,PHONE,PAPER} from '../src/domain/engine.js';
 
 // Legacy fixture acceptance is now an explicit per-candidate author decision.
-function selectOriginalMemories(state) {let s=state;for(const row of getMemoryReviewGate(s,s.drafts[0].id)){if(!row.resolved)s=decideMemoryCandidate(s,s.drafts[0].id,{candidateId:row.candidateId,action:row.canKeep?'keep':'override_keep',reason:'测试作者逐条核对后保留原始候选',reviewHash:row.reviewHash},row.binding);}return s;}
+function selectOriginalMemories(state) {let s=state;for(const row of getMemoryReviewGate(s,s.drafts[0].id)){if(!row.resolved)s=decideMemoryCandidate(s,s.drafts[0].id,{candidateId:row.candidateId,action:'attest_keep',attestation:{protocol:'quote-grounded-memory-v1',accepted:true,statement:MEMORY_ATTESTATION_STATEMENT},reason:'测试作者逐条核对后保留原始候选',reviewHash:row.reviewHash},row.binding);}return s;}
 const initial=()=>createInitialState();
 const edit=(s,id,fn)=>{const c=s.chapters.find(c=>c.id===id);return saveRevision(s,id,fn(c.text),c.revision);};
 const changed=()=>edit(initial(),'ch2',t=>t.replace(NEVER_MET,HAS_MET));

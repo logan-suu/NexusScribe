@@ -1,5 +1,7 @@
 # Demo acceptance record
 
+> Historical design and validation record. Current selection authority is defined by [quote-grounded memory](QUOTE-GROUNDED-MEMORY.md): model support never authorizes a new paraphrase; explicit informed author attestation is required. Original experiment results below remain unchanged.
+
 Date: 2026-10-02. This is a bounded prototype acceptance record, not a production or literary-quality certification.
 
 ## Real provider and domain checkpoint

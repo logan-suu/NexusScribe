@@ -11,7 +11,7 @@ function fixture({live=true}={}) {
  s=e.attachMemoryExtraction(s,id(s),{staging:[{label:'阿岚保管信件',sourceParagraphIndex:0},{label:'阿岚离开房间',sourceParagraphIndex:1}],reviewNotes:[],provider:'extractor'},e.createExtractionBinding(s,id(s)));
  s=e.reviewDraft(s,id(s));
  s=e.attachSemanticReview(s,id(s),{summary:'保存模型判断',issues:[],checks:[],provider:'reviewer',memoryChecks:s.drafts[0].staging.map(c=>({candidateId:c.id,status:'supported',explanation:'完整主张有原文支持'}))},e.createReviewBinding(s,id(s)));
- for(const [index,action] of [[0,'keep'],[1,'reject']]){if(action==='keep'){const candidateId=s.drafts[0].staging[index].id;s=e.beginMemorySupportAssessment(s,id(s),candidateId);s=e.attachMemorySupportAssessment(s,id(s),candidateId,{status:'supported',explanation:'单条原文支持完整主张',provider:'isolated-fixture'},e.createMemorySupportBinding(s,id(s),candidateId));}const row=e.getMemoryReviewGate(s,id(s))[index];s=e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reviewHash:row.reviewHash},row.binding);}
+ for(const [index,action] of [[0,'keep_quote'],[1,'reject']]){if(action==='keep_quote'){const candidateId=s.drafts[0].staging[index].id;s=e.beginMemorySupportAssessment(s,id(s),candidateId);s=e.attachMemorySupportAssessment(s,id(s),candidateId,{status:'supported',explanation:'单条原文支持完整主张',provider:'isolated-fixture'},e.createMemorySupportBinding(s,id(s),candidateId));}const row=e.getMemoryReviewGate(s,id(s))[index];s=e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reviewHash:row.reviewHash},row.binding);}
  return s;
 }
 test('pending, decided, edited, re-extracted, rejected and accepted memory audit round-trips without alteration',()=>{
@@ -55,9 +55,9 @@ test('import invalidates pending candidate/review/decision authority while prese
  d.memoryDecisions=clone(before.state.drafts[0].memoryDecisions);assert.throws(()=>e.acceptDraft(imported.state,d.id),{code:'REVIEW_REQUIRED'});
 });
 test('import keeps accepted event decisions, original unsupported assessment and all original audit',()=>{
- let state=fixture();const row=e.getMemoryReviewGate(state,id(state))[1];state=e.decideMemoryCandidate(state,id(state),{candidateId:row.candidateId,action:'override_keep',reason:'作者明确保留完整候选',reviewHash:row.reviewHash},row.binding);
+ let state=fixture();const row=e.getMemoryReviewGate(state,id(state))[1];state=e.decideMemoryCandidate(state,id(state),{candidateId:row.candidateId,action:'attest_keep',attestation:{protocol:'quote-grounded-memory-v1',accepted:true,statement:e.MEMORY_ATTESTATION_STATEMENT},reason:'作者明确保留完整候选',reviewHash:row.reviewHash},row.binding);
  state=e.acceptDraft(state,id(state));const source=backup(state),current=backup(e.createProjectFromConfig({projectId:'import-target'})),imported=importBackup(current,source,()=> 'historical-memory');
- assert.equal(imported.state.drafts[0].status,'ACCEPTED');assert.equal(imported.state.events.length,2);assert.equal(imported.state.events[1].memoryDecision.action,'override_keep');assert.equal(imported.state.events[1].memoryDecision.reason,'作者明确保留完整候选');
+ assert.equal(imported.state.drafts[0].status,'ACCEPTED');assert.equal(imported.state.events.length,2);assert.equal(imported.state.events[1].memoryDecision.action,'attest_keep');assert.equal(imported.state.events[1].memoryDecision.reason,'作者明确保留完整候选');
  assert.deepEqual(imported.state.importOrigin.original.state,state);assert.ok(e.getMemoryReviewGate(imported.state,id(imported.state)).every(row=>row.historical&&row.resolved));assert.deepEqual(parseBackup(JSON.stringify(imported)),imported);
 });
 
@@ -70,7 +70,7 @@ function bulkDraft(state,characters,count,chapterId='ch1') {
 }
 function bulkReview(state,key) {
  let s=e.reviewDraft(state,key);s=e.attachSemanticReview(s,key,{summary:'合成离线夹具',issues:[],checks:[],provider:'offline-fixture',memoryChecks:s.drafts.find(d=>d.id===key).staging.map(c=>({candidateId:c.id,status:'supported',explanation:'offline fixture judgment'}))},e.createReviewBinding(s,key));
- for(const candidate of s.drafts.find(d=>d.id===key).staging){s=e.beginMemorySupportAssessment(s,key,candidate.id);s=e.attachMemorySupportAssessment(s,key,candidate.id,{status:'supported',explanation:'offline isolated own-quote judgment',provider:'isolated-fixture'},e.createMemorySupportBinding(s,key,candidate.id));const row=e.getMemoryReviewGate(s,key).find(item=>item.candidateId===candidate.id);s=e.decideMemoryCandidate(s,key,{candidateId:row.candidateId,action:'keep',reviewHash:row.reviewHash},row.binding);parseBackup(JSON.stringify(backup(s)));}
+ for(const candidate of s.drafts.find(d=>d.id===key).staging){s=e.beginMemorySupportAssessment(s,key,candidate.id);s=e.attachMemorySupportAssessment(s,key,candidate.id,{status:'supported',explanation:'offline isolated own-quote judgment',provider:'isolated-fixture'},e.createMemorySupportBinding(s,key,candidate.id));const row=e.getMemoryReviewGate(s,key).find(item=>item.candidateId===candidate.id);s=e.decideMemoryCandidate(s,key,{candidateId:row.candidateId,action:'keep_quote',reviewHash:row.reviewHash},row.binding);parseBackup(JSON.stringify(backup(s)));}
  return s;
 }
 const byteLength=value=>new TextEncoder().encode(JSON.stringify(value)).length;

@@ -13,6 +13,7 @@ const provider = {id:'multichapter-mock', isLive:true};
 const unsupported = retainedExtraction.staging[1];
 const kept = retainedExtraction.staging[8];
 const second = '第二天，程岚带着装纸屑的空表壳找到管理员。管理员说：“昨夜没有开过门。”\n\n程岚把押金条压在登记簿旁，请他核对昨晚的记录。阿陶站在门外，没有看见表壳里的纸屑。\n\n管理员翻到空白的一页，没有回答。';
+const quoteLabel = index => `原文摘录 · 第 ${index+1} 段`;
 const revisedSecond = second.replace('昨夜没有开过门', '昨夜开过一次南门');
 const third = '程岚沿登记簿指向的南门走去，把空表壳留在自己口袋里。她没有告诉阿陶管理员改了口。\n\n南门内侧压着一条湿纸带。程岚没有把它和表壳里的纸屑拼在一起，只先记下纸带的位置。\n\n门外响起脚步声。她关上登记簿，等那人先开口。';
 const state = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)).state, KEY);
@@ -42,7 +43,7 @@ function extraction(text, chapterId) {
 
 const review = {summary:'合成整章审阅：未报告阻塞；不构成语义质量证据', issues:[], checks:[], factChecks:[], provider};
 
-async function boot(page, context, initial = project()) {
+async function boot(page, context, initial = project(), replay = null) {
   const errors = [], calls = [], delayed = [];
   let failExtraction = false, delayExtraction = false, delayReview = false;
   page.on('pageerror', error => errors.push(error.message));
@@ -59,9 +60,9 @@ async function boot(page, context, initial = project()) {
     calls.push(request);
     const {action, input} = request;
     let output;
-    if (action === 'generateProse') output = {text:[retained.text, second, third][input.chapterIndex], chapterId:input.project.outline[input.chapterIndex].id};
+    if (action === 'generateProse') output = {text:(replay?.texts || [retained.text, second, third])[input.chapterIndex], chapterId:input.project.outline[input.chapterIndex].id};
     else if (action === 'extractMemory') {
-      output = extraction(input.text, input.chapterId);
+      output = replay ? replay.extractions[Number(input.chapterId.slice(2))-1] : extraction(input.text, input.chapterId);
       if (failExtraction) {failExtraction = false; await route.fulfill({status:503, json:{error:{message:'合成提取失败；无真实调用'}}}); return;}
       if (delayExtraction) {delayExtraction = false; await new Promise(resolve => delayed.push(resolve));}
     } else if (action === 'reviewChapter') {
@@ -70,7 +71,7 @@ async function boot(page, context, initial = project()) {
       if (delayReview) {delayReview = false; await new Promise(resolve => delayed.push(resolve));}
     } else if (action === 'auditMemoryCandidate') {
       expect(Object.keys(input).sort()).toEqual(['label','sourceQuote']);
-      output = {status:input.label === unsupported.label ? 'unsupported' : 'supported', explanation:'合成单条判断，仅测试隔离权限与作者选择'};
+      output = replay?.audit || {status:input.label === unsupported.label ? 'unsupported' : 'supported', explanation:'合成单条判断，仅测试隔离权限与作者选择'};
     } else if (action === 'interpretRevision') output = {summary:'作者修改原文，仍需明确分类', suggestedFacts:[], operations:[], questions:[]};
     else throw Error(`Unexpected mock action: ${action}`);
     await route.fulfill({json:{output:{...output, provider}}});
@@ -106,7 +107,7 @@ async function reviewCurrent(page) {
 async function audit(page, n, status = 'supported') {
   await choice(page, '独立核对', n).click();
   await expect(candidate(page, n).getByLabel(`独立核对状态 ${n}`)).toContainText('独立核对已完成');
-  await expect(choice(page, '保留', n))[status === 'supported' ? 'toBeEnabled' : 'toBeDisabled']();
+  await expect(choice(page, '保留原文摘录', n)).toBeEnabled();
   if (status === 'supported') {await expect(candidate(page, n).getByLabel('模型记忆判断风险')).toBeVisible(); await expect(candidate(page, n)).toContainText('模型判断：原文支持（可能误判）');}
 }
 async function accept(page, chapterIndex, selectedCount) {
@@ -152,30 +153,30 @@ test('three-chapter prose-first journey keeps memory current, explicit, and chap
   mock.delayed[0]();
   await reviewCurrent(page);
   expect((await state(page)).drafts[0].extraction.attempt).toBe(currentAttempt);
-  await expect(choice(page, '保留', 1)).toBeDisabled();
-  await expect(choice(page, '保留', 2)).toBeDisabled();
+  await expect(choice(page, '保留原文摘录', 1)).toBeEnabled();
+  await expect(choice(page, '保留原文摘录', 2)).toBeEnabled();
   await audit(page, 1, 'unsupported');
   await choice(page, '拒绝', 1).click();
   await audit(page, 2);
-  await choice(page, '保留', 2).click();
+  await choice(page, '保留原文摘录', 2).click();
   expect((await state(page)).events).toEqual([]);
   await capture(page, info, '01-retained-evidence-explicit-selection');
   await accept(page, 0, 1);
   const acceptedFirst = await state(page);
-  expect(acceptedFirst.events.map(event => event.label)).toEqual([kept.label]);
+  expect(acceptedFirst.events.map(event => event.label)).toEqual([quoteLabel(kept.sourceParagraphIndex)]);
   expect(acceptedFirst.events[0].source.quote).toBe(kept.sourceQuote);
 
   await chapter(page, 1);
   await expect(article(page)).toHaveCount(0);
   await generate(page, second);
   const secondRequest = mock.calls.filter(call => call.action === 'generateProse').at(-1);
-  expect(secondRequest.input.context.events.map(event => event.label)).toEqual([kept.label]);
+  expect(secondRequest.input.context.events.map(event => event.label)).toEqual([quoteLabel(kept.sourceParagraphIndex)]);
   expect(secondRequest.input.context.sources.find(source => source.chapterId === 'ch1').text).toBe(retained.text);
   await expect(article(page)).toHaveCount(1);
   await extract(page);
   await reviewCurrent(page);
   await audit(page, 1);
-  await choice(page, '保留', 1).click();
+  await choice(page, '保留原文摘录', 1).click();
   const beforeEdit = (await state(page)).drafts.at(-1);
   await page.getByRole('button', {name:'编辑此稿'}).click();
   await page.getByLabel('编辑候选稿').fill(revisedSecond);
@@ -190,21 +191,21 @@ test('three-chapter prose-first journey keeps memory current, explicit, and chap
   await extract(page);
   await reviewCurrent(page);
   await audit(page, 1);
-  await choice(page, '保留', 1).click();
+  await choice(page, '保留原文摘录', 1).click();
   await capture(page, info, '02-author-revision-new-evidence');
   await accept(page, 1, 1);
-  expect((await state(page)).events.map(event => event.label)).toEqual([kept.label, '管理员说昨夜开过一次南门']);
+  expect((await state(page)).events.map(event => event.label)).toEqual([quoteLabel(kept.sourceParagraphIndex), quoteLabel(0)]);
 
   await chapter(page, 2);
   await expect(article(page)).toHaveCount(0);
   await generate(page, third);
   const thirdRequest = mock.calls.filter(call => call.action === 'generateProse').at(-1);
-  expect(thirdRequest.input.context.events.map(event => event.label)).toEqual([kept.label, '管理员说昨夜开过一次南门']);
+  expect(thirdRequest.input.context.events.map(event => event.label)).toEqual([quoteLabel(kept.sourceParagraphIndex), quoteLabel(0)]);
   expect(JSON.stringify(thirdRequest.input.context)).not.toContain('管理员说昨夜没有开过门');
   await extract(page);
   await reviewCurrent(page);
   await audit(page, 1);
-  await choice(page, '保留', 1).click();
+  await choice(page, '保留原文摘录', 1).click();
   await accept(page, 2, 1);
   await page.reload();
   const complete = await state(page);
@@ -231,7 +232,7 @@ function preparedDraft(s, chapterId, text, staging) {
     s = engine.beginMemorySupportAssessment(s, id, item.candidateId);
     s = engine.attachMemorySupportAssessment(s, id, item.candidateId, {status:'supported', explanation:'合成预置审阅', provider}, engine.createMemorySupportBinding(s, id, item.candidateId));
     const gate = engine.getMemoryReviewGate(s, id).find(candidate => candidate.candidateId === item.candidateId);
-    s = engine.decideMemoryCandidate(s, id, {candidateId:item.candidateId, action:'keep', reviewHash:gate.reviewHash}, gate.binding);
+    s = engine.decideMemoryCandidate(s, id, {candidateId:item.candidateId, action:'keep_quote', reviewHash:gate.reviewHash}, gate.binding);
   }
   return s;
 }
@@ -284,9 +285,9 @@ test('revising accepted source preserves history but excludes stale memory and g
   expect(rebased.staging).toEqual([]);
   await extract(page);
   await reviewCurrent(page);
-  await expect(choice(page, '保留', 1)).toBeDisabled();
+  await expect(choice(page, '保留原文摘录', 1)).toBeEnabled();
   await audit(page, 1);
-  await choice(page, '保留', 1).click();
+  await choice(page, '保留原文摘录', 1).click();
   expect((await state(page)).events).toEqual(initial.events);
   await accept(page, 1, 1);
   expect(mock.calls.map(call => call.action)).toEqual(['interpretRevision','extractMemory','reviewChapter','auditMemoryCandidate']);
@@ -324,7 +325,7 @@ test('exported multi-chapter backup imports separately and cannot reuse pending 
   const initial = acceptedWithPending();
   const mock = await boot(page, context, initial);
   await chapter(page, 1);
-  await expect(choice(page, '保留', 1)).toBeEnabled();
+  await expect(choice(page, '保留原文摘录', 1)).toBeEnabled();
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', {name:'导出项目备份'}).click();
   const download = await downloadPromise;
@@ -340,7 +341,7 @@ test('exported multi-chapter backup imports separately and cannot reuse pending 
   const imported = await state(page);
   expect(imported.projectId).not.toBe(initial.projectId);
   expect(imported.importOrigin.original.state).toEqual(backup.state);
-  expect(imported.events.map(event => event.label)).toEqual([kept.label]);
+  expect(imported.events.map(event => event.label)).toEqual([quoteLabel(kept.sourceParagraphIndex)]);
   const pending = imported.drafts.at(-1);
   expect(pending.memoryDecisions).toEqual([]);
   expect(pending.staging).toEqual([]);
@@ -353,9 +354,9 @@ test('exported multi-chapter backup imports separately and cannot reuse pending 
   expect(mock.calls).toHaveLength(0);
   await extract(page);
   await reviewCurrent(page);
-  await expect(choice(page, '保留', 1)).toBeDisabled();
+  await expect(choice(page, '保留原文摘录', 1)).toBeEnabled();
   await audit(page, 1);
-  await choice(page, '保留', 1).click();
+  await choice(page, '保留原文摘录', 1).click();
   await accept(page, 1, 1);
   await capture(page, info, '05-backup-import-reaudited');
   await page.getByLabel('切换项目').selectOption(initial.projectId);
@@ -363,4 +364,26 @@ test('exported multi-chapter backup imports separately and cannot reuse pending 
   expect((await state(page)).events).toEqual(initial.events);
   expect(mock.calls.map(call => call.action)).toEqual(['extractMemory','reviewChapter','auditMemoryCandidate']);
   expect(mock.errors).toEqual([]);
+});
+
+
+// There is no retained live chapter 3. Only the first two prose/extraction
+// outputs and first advisory audit below are historical bytes; all routing is mocked.
+test('retained chapter 1 and 2 plus explicit synthetic chapter 3 use quote-only next-chapter context',async({page,context},info)=>{
+  const read=sequence=>JSON.parse(readFileSync(new URL(`../eval/history/multichapter-v1/completed-${String(sequence).padStart(2,'0')}.json`,import.meta.url),'utf8')).output;
+  const syntheticThird='【合成第三章工作流夹具】许宁把工具袋往肩上提了提，和阿青在檐下核对明早九点的约定。纸盒仍在袋里，旧记录尚未拿到。\n\n他们决定先把纸盒原样收好，再等管理员明早查记录。';
+  const paragraph=segmentProse(syntheticThird)[0],replay={texts:[read(1).text,read(5).text,syntheticThird],extractions:[read(2),read(6),{staging:[{label:'许宁和阿青已经拿到全部旧记录',sourceParagraphIndex:0,sourceQuote:paragraph.text,sourceStart:paragraph.start,sourceEnd:paragraph.end}],reviewNotes:['Synthetic chapter 3; deliberately unsupported paraphrase']}],audit:read(4)};
+  const counterexamples=JSON.parse(readFileSync(new URL('../eval/multichapter-counterexamples.json',import.meta.url),'utf8'));
+  const mock=await boot(page,context,project(),replay);
+  for(let index=0;index<3;index++){
+    await chapter(page,index);await generate(page,replay.texts[index]);
+    const generation=mock.calls.filter(call=>call.action==='generateProse').at(-1),current=await state(page);
+    for(const event of generation.input.context.events){expect(event.kind).toBe('textual_excerpt');expect(event.trust).toBe('textual_presence_only');expect(event.memoryDecision).toEqual(expect.objectContaining({action:'keep_quote',advisory:true}));expect(event).not.toHaveProperty('originalLabel');const source=generation.input.context.sources.find(item=>item.chapterId===event.source.chapterId);expect(source.text.slice(event.source.start,event.source.end)).toBe(current.events.find(item=>item.id===event.id).source.quote)}
+    if(index<2){expect(replay.extractions[index].staging[0].label).toBe(counterexamples[index].label);expect(replay.extractions[index].staging[0].sourceQuote).toBe(counterexamples[index].sourceQuote)}
+    await extract(page);await reviewCurrent(page);let staged=await state(page);let gate=engine.getMemoryReviewGate(staged,staged.drafts.at(-1).id)[0];expect(gate.canKeep).toBe(false);expect(gate.canKeepQuote).toBe(true);await expect(candidate(page,1).getByLabel('完整来源段落')).toHaveText(gate.quoteCard.text);
+    if(index===0){await audit(page,1);staged=await state(page);gate=engine.getMemoryReviewGate(staged,staged.drafts.at(-1).id)[0];expect(gate.status).toBe('supported');expect(gate.canKeep).toBe(false);expect(gate.canOverride).toBe(false)}
+    await choice(page,'保留原文摘录',1).click();for(let n=2;n<=replay.extractions[index].staging.length;n++)await choice(page,'拒绝',n).click();if(index<2)await capture(page,info,`retained-${counterexamples[index].id}-quote-only`);await accept(page,index,1);
+    const saved=await state(page),event=saved.events.at(-1),decision=saved.drafts.at(-1).memoryDecisions.find(item=>item.action==='keep_quote');expect(event.label).toBe(quoteLabel(gate.quoteCard.paragraphIndex));expect(event.originalLabel).toBe(replay.extractions[index].staging[0].label);expect(event.source.quote).toBe(gate.quoteCard.text);expect(event.memoryKind).toBe('textual_excerpt');expect(event.memoryTrust).toBe('textual_presence_only');expect(decision.selectionProtocol).toBe('quote-grounded-memory-v1');expect(decision.quoteSnapshot).toEqual(expect.objectContaining({start:gate.quoteCard.start,end:gate.quoteCard.end}));
+  }
+  expect(mock.calls).toHaveLength(10);expect(mock.calls.filter(call=>call.action==='auditMemoryCandidate')).toHaveLength(1);await page.reload();expect((await state(page)).chapters.map(item=>item.text)).toEqual(replay.texts);expect((await state(page)).events).toHaveLength(3);await capture(page,info,'07-real-ch1-ch2-synthetic-ch3-quote-protocol');expect(mock.errors).toEqual([]);
 });

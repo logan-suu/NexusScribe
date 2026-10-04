@@ -19,7 +19,7 @@ const extracted=(s=fresh(),entries=[event])=>{
 };
 const reviewed=(s=extracted())=>e.reviewDraft(s,id(s));
 
-const selected=s=>{for(const row of e.getMemoryReviewGate(s,id(s)))s=e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action:row.canKeep?'keep':'override_keep',reason:'测试作者明确核对并保留完整候选',reviewHash:row.reviewHash},row.binding);return s;};
+const selected=s=>{for(const row of e.getMemoryReviewGate(s,id(s)))s=e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action:'attest_keep',attestation:{protocol:'quote-grounded-memory-v1',accepted:true,statement:e.MEMORY_ATTESTATION_STATEMENT},reason:'测试作者明确核对并保留完整候选',reviewHash:row.reviewHash},row.binding);return s;};
 const backup=s=>({format:1,serial:0,state:s,editing:{},patch:null});
 const advisory={summary:'需要作者核对的模型候选审查',checks:[],issues:[],factChecks:[],provider:'fixture-review'};
 
