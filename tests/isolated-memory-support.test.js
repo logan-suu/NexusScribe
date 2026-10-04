@@ -19,14 +19,14 @@ function begin(s,index=0){return e.beginMemorySupportAssessment(s,id(s),candidat
 function audit(s,index=0,status='supported',explanation='本条完整标签可由本条引文支持') {
  s=begin(s,index);return e.attachMemorySupportAssessment(s,id(s),candidate(s,index),{status,explanation,provider},e.createMemorySupportBinding(s,id(s),candidate(s,index)));
 }
-function decide(s,index=0,action='keep',reason) {
- const row=e.getMemoryReviewGate(s,id(s))[index];return e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reason,reviewHash:row.reviewHash},row.binding);
+function decide(s,index=0,action='attest_keep',reason='作者逐条确认主张并承担其解释责任') {
+ const row=e.getMemoryReviewGate(s,id(s))[index];return e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reason,...(action==='attest_keep'?{attestation:{protocol:'quote-grounded-memory-v1',accepted:true,statement:e.MEMORY_ATTESTATION_STATEMENT}}:{}),reviewHash:row.reviewHash},row.binding);
 }
 
 test('legacy bundled supported, including the retained sibling-borrowing failure, cannot authorize ordinary keep',()=>{
  const s=fixture(),row=e.getMemoryReviewGate(s,id(s))[0];assert.equal(row.status,'unknown');assert.equal(row.canKeep,false);assert.equal(row.auditState,'not_started');assert.equal(row.legacyAssessment.status,'supported');assert.equal(row.legacyAssessment.assessmentOrigin,'legacy_combined_unverified');
- assert.throws(()=>decide(s),{code:'MEMORY_DECISION_REQUIRED'});
- const overridden=decide(s,0,'override_keep','作者知道尚无单条引文核验，明确保留');assert.equal(e.getMemoryReviewGate(overridden,id(s))[0].decision.assessment,'unknown');
+ assert.throws(()=>decide(s,0,'keep'),{code:'MEMORY_DECISION_REQUIRED'});
+ const overridden=decide(s,0,'attest_keep','作者知道尚无单条引文核验，明确保留');assert.equal(e.getMemoryReviewGate(overridden,id(s))[0].decision.assessment,'unknown');
 });
 test('network input is only the exact immutable original label and its own quote',()=>{
  const s=begin(fixture()),input=e.createMemorySupportInput(s,id(s),candidate(s));assert.deepEqual(Object.keys(input),['label','sourceQuote']);assert.equal(input.label,s.drafts[0].staging[0].label);assert.equal(input.sourceQuote,'阿陶说：“你总得问点什么。”');
@@ -34,12 +34,12 @@ test('network input is only the exact immutable original label and its own quote
  input.label='caller mutation';assert.notEqual(s.drafts[0].staging[0].label,input.label);
  assert.throws(()=>e.createMemorySupportInput(fixture(),id(s),candidate(s)),{code:'STALE_MEMORY_SUPPORT'});
 });
-test('one isolated audit enables only its target and preserves original claim/evidence',()=>{
- const original=fixture(),s=audit(original,1),rows=e.getMemoryReviewGate(s,id(s));assert.equal(rows[0].canKeep,false);assert.equal(rows[1].canKeep,true);assert.equal(rows[1].assessmentOrigin,'isolated-own-quote-v1');assert.equal(s.drafts[0].memorySupport.attempts.length,1);assert.deepEqual(s.drafts[0].staging,original.drafts[0].staging);
+test('one isolated audit remains target-scoped advisory and preserves original claim/evidence',()=>{
+ const original=fixture(),s=audit(original,1),rows=e.getMemoryReviewGate(s,id(s));assert.equal(rows[0].canKeep,false);assert.equal(rows[1].canKeep,false);assert.equal(rows[1].canAttest,true);assert.equal(rows[1].assessmentOrigin,'isolated-own-quote-v1');assert.equal(s.drafts[0].memorySupport.attempts.length,1);assert.deepEqual(s.drafts[0].staging,original.drafts[0].staging);
  let accepted=decide(s,1);accepted=decide(accepted,0,'reject');accepted=e.acceptDraft(accepted,id(s));assert.equal(accepted.events.length,1);assert.equal(accepted.events[0].label,original.drafts[0].staging[1].label);assert.equal(accepted.events[0].memoryDecision.supportAttemptId,rows[1].isolatedAssessmentId);
 });
-test('isolated unsupported or unknown cannot enable ordinary keep but remains explicit override evidence',()=>{
- for(const status of ['unsupported','unknown']){const s=audit(fixture(),0,status,'本条引文没有回应内容，不能借用另一条引文');assert.throws(()=>decide(s),{code:'MEMORY_DECISION_REQUIRED'});const next=decide(s,0,'override_keep','作者理解单条引文不足，明确承担此例外');const row=e.getMemoryReviewGate(next,id(next))[0];assert.equal(row.status,status);assert.equal(row.decision.assessment,status);assert.ok(row.decision.supportAttemptId);}
+test('isolated unsupported or unknown cannot enable ordinary keep but remains explicit attestation evidence',()=>{
+ for(const status of ['unsupported','unknown']){const s=audit(fixture(),0,status,'本条引文没有回应内容，不能借用另一条引文');assert.throws(()=>decide(s,0,'keep'),{code:'MEMORY_DECISION_REQUIRED'});const next=decide(s,0,'attest_keep','作者理解单条引文不足，明确承担此例外');const row=e.getMemoryReviewGate(next,id(next))[0];assert.equal(row.status,status);assert.equal(row.decision.assessment,status);assert.ok(row.decision.supportAttemptId);}
 });
 test('isolated response schema rejects model-supplied identities, scope stamps and bundled checks',()=>{
  const s=begin(fixture()),key=id(s),cid=candidate(s),binding=e.createMemorySupportBinding(s,key,cid),valid={status:'supported',explanation:'核验说明',provider};
@@ -54,8 +54,8 @@ test('all local request identity and exact binding fields are enforced without b
  assert.throws(()=>e.attachMemorySupportAssessment(s,key,cid,report,{...binding,extra:true}),{code:'STALE_MEMORY_SUPPORT'});
 });
 test('candidate re-audit invalidates its decision immediately without changing review epoch or other decisions',()=>{
- let s=audit(audit(fixture(),0,'unsupported'),1);s=decide(s,0,'override_keep','作者例外');s=decide(s,1);const before=clone(s),epoch=s.drafts[0].memoryReviewEpoch,facts=clone(s.drafts[0].factDecisions);
- s=begin(s,0);const rows=e.getMemoryReviewGate(s,id(s));assert.equal(s.drafts[0].memoryReviewEpoch,epoch);assert.deepEqual(s.drafts[0].factDecisions,facts);assert.equal(rows[0].resolved,false);assert.equal(rows[0].auditState,'pending');assert.equal(rows[1].resolved,true);assert.equal(rows[1].canKeep,true);assert.deepEqual(s.drafts[0].memoryDecisionHistory,before.drafts[0].memoryDecisionHistory);
+ let s=audit(audit(fixture(),0,'unsupported'),1);s=decide(s,0,'attest_keep','作者例外');s=decide(s,1);const before=clone(s),epoch=s.drafts[0].memoryReviewEpoch,facts=clone(s.drafts[0].factDecisions);
+ s=begin(s,0);const rows=e.getMemoryReviewGate(s,id(s));assert.equal(s.drafts[0].memoryReviewEpoch,epoch);assert.deepEqual(s.drafts[0].factDecisions,facts);assert.equal(rows[0].resolved,false);assert.equal(rows[0].auditState,'pending');assert.equal(rows[1].resolved,true);assert.equal(rows[1].canKeep,false);assert.equal(rows[1].canAttest,true);assert.deepEqual(s.drafts[0].memoryDecisionHistory,before.drafts[0].memoryDecisionHistory);
 });
 test('same-candidate replacement, cancellation, failure and replay never revive prior support',()=>{
  let s=decide(audit(fixture(),0)),key=id(s),cid=candidate(s);s=begin(s);const old=e.createMemorySupportBinding(s,key,cid);s=begin(s);const current=e.createMemorySupportBinding(s,key,cid),report={status:'supported',explanation:'核验',provider};
@@ -69,9 +69,9 @@ test('parallel explicitly started different-candidate assessments do not stale e
  assert.deepEqual(e.getMemoryReviewGate(s,id(s)).map(row=>row.status),['unsupported','supported']);
 });
 test('open keep/override decisions expire at audit begin and at result completion',()=>{
- let s=fixture(),old=e.getMemoryReviewGate(s,id(s))[0];s=begin(s);assert.throws(()=>e.decideMemoryCandidate(s,id(s),{candidateId:old.candidateId,action:'override_keep',reason:'旧视图',reviewHash:old.reviewHash},old.binding),{code:'STALE_MEMORY_DECISION'});
+ let s=fixture(),old=e.getMemoryReviewGate(s,id(s))[0];s=begin(s);assert.throws(()=>e.decideMemoryCandidate(s,id(s),{candidateId:old.candidateId,action:'attest_keep',reason:'旧视图',reviewHash:old.reviewHash},old.binding),{code:'STALE_MEMORY_DECISION'});
  const pending=e.getMemoryReviewGate(s,id(s))[0],binding=e.createMemorySupportBinding(s,id(s),candidate(s));s=e.attachMemorySupportAssessment(s,id(s),candidate(s),{status:'unknown',explanation:'新结果',provider},binding);
- assert.throws(()=>e.decideMemoryCandidate(s,id(s),{candidateId:pending.candidateId,action:'override_keep',reason:'等待中视图',reviewHash:pending.reviewHash},pending.binding),{code:'STALE_MEMORY_DECISION'});
+ assert.throws(()=>e.decideMemoryCandidate(s,id(s),{candidateId:pending.candidateId,action:'attest_keep',reason:'等待中视图',reviewHash:pending.reviewHash},pending.binding),{code:'STALE_MEMORY_DECISION'});
 });
 test('review, edit, extraction, rejection, state/context changes invalidate late isolated results and retain attempts',()=>{
  const s=begin(fixture()),key=id(s),cid=candidate(s),binding=e.createMemorySupportBinding(s,key,cid),report={status:'supported',explanation:'核验',provider};
@@ -97,12 +97,12 @@ test('restoring an older supported head after failed re-audit is rejected rather
 });
 test('legacy pending keep decisions remain readable but cannot promote; historic accepted keeps remain explicitly unverified',()=>{
  let s=decide(audit(fixture(),1),1);s=decide(s,0,'reject');
- const downgrade=d=>{delete d.memorySupport;for(const record of [...d.memoryDecisions,...d.memoryDecisionHistory])for(const key of ['supportAttemptId','supportState','supportResultHash'])delete record[key];};
+ const downgrade=d=>{delete d.memorySupport;for(const record of [...d.memoryDecisions,...d.memoryDecisionHistory]){if(record.action==='attest_keep')record.action='keep';for(const key of ['supportAttemptId','supportState','supportResultHash','selectionProtocol','attestation','quoteSnapshot'])delete record[key];}};
  const pending=clone(s);downgrade(pending.drafts[0]);const restored=parseBackup(JSON.stringify(envelope(pending))).state;assert.equal(e.getMemoryReviewGate(restored,id(restored))[1].canKeep,false);assert.equal(e.getMemoryReviewGate(restored,id(restored))[1].resolved,false);assert.throws(()=>e.acceptDraft(restored,id(restored)),{code:'MEMORY_DECISION_REQUIRED'});
- s=e.acceptDraft(s,id(s));downgrade(s.drafts[0]);const historical=parseBackup(JSON.stringify(envelope(s))).state,row=e.getMemoryReviewGate(historical,id(historical))[1];assert.equal(row.historical,true);assert.equal(row.assessmentOrigin,'historic_combined_unverified');assert.equal(row.resolved,true);assert.equal(row.canKeep,false);assert.equal(e.acceptDraft(historical,id(historical)).drafts[0].status,'ACCEPTED');
+ s=e.acceptDraft(s,id(s));downgrade(s.drafts[0]);for(const record of [...s.drafts[0].acceptedMemoryDecisions,...s.events.map(event=>event.memoryDecision)]){if(record.action==='attest_keep')record.action='keep';for(const field of ['supportAttemptId','supportState','supportResultHash','selectionProtocol','attestation','quoteSnapshot'])delete record[field];}for(const event of s.events){delete event.memoryKind;delete event.memoryTrust;delete event.originalLabel;}const historical=parseBackup(JSON.stringify(envelope(s))).state,row=e.getMemoryReviewGate(historical,id(historical))[1];assert.equal(row.historical,true);assert.equal(row.assessmentOrigin,'historic_combined_unverified');assert.equal(row.resolved,true);assert.equal(row.canKeep,false);assert.equal(e.acceptDraft(historical,id(historical)).drafts[0].status,'ACCEPTED');
 });
 test('a scope stamp on a legacy combined model report does not upgrade it to isolated authority',()=>{
- const s=fixture();s.drafts[0].modelReview.assessmentOrigin='isolated-own-quote-v1';s.drafts[0].modelReview.protocol='isolated-own-quote-v1';const row=e.getMemoryReviewGate(s,id(s))[0];assert.equal(row.canKeep,false);assert.equal(row.isolatedAssessmentId,null);assert.equal(row.assessmentOrigin,'not_audited');assert.throws(()=>decide(s),{code:'MEMORY_DECISION_REQUIRED'});
+ const s=fixture();s.drafts[0].modelReview.assessmentOrigin='isolated-own-quote-v1';s.drafts[0].modelReview.protocol='isolated-own-quote-v1';const row=e.getMemoryReviewGate(s,id(s))[0];assert.equal(row.canKeep,false);assert.equal(row.isolatedAssessmentId,null);assert.equal(row.assessmentOrigin,'not_audited');assert.throws(()=>decide(s,0,'keep'),{code:'MEMORY_DECISION_REQUIRED'});
 });
 
 test('a one-candidate audit preserves an already explicit fact exception and its exact review generation',()=>{
@@ -113,5 +113,5 @@ test('a one-candidate audit preserves an already explicit fact exception and its
 });
 test('exact result snapshots reject a changed pending dialog even when the legacy hash collides',()=>{
  let s=audit(fixture(),1,'supported','😀');const row=e.getMemoryReviewGate(s,id(s))[1],attempt=s.drafts[0].memorySupport.attempts[0];assert.equal(e.hash('😀'),e.hash('😁'));attempt.result.explanation='😁';attempt.resultSnapshot.explanation='😁';
- assert.throws(()=>e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action:'override_keep',reason:'旧结果视图',reviewHash:row.reviewHash},row.binding),{code:'STALE_MEMORY_DECISION'});
+ assert.throws(()=>e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action:'attest_keep',reason:'旧结果视图',reviewHash:row.reviewHash},row.binding),{code:'STALE_MEMORY_DECISION'});
 });

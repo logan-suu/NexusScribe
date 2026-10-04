@@ -1,5 +1,7 @@
 # Isolated candidate support: corrective design and bounded pilot
 
+> Historical design and validation record. Current selection authority is defined by [quote-grounded memory](QUOTE-GROUNDED-MEMORY.md): model support never authorizes a new paraphrase; explicit informed author attestation is required. Original experiment results below remain unchanged.
+
 ## Why the first design failed
 
 The [v1 live audit](../../eval/MEMORY-SUPPORT-RESULTS.md) returned a false `supported` judgment on the retained combined claim. The model acknowledged that the candidate's own quote omitted the reply, then borrowed another candidate's evidence from the same request. Stronger wording inside that shared full-chapter review is not an isolation boundary.

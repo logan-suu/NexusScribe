@@ -17,7 +17,7 @@ function report(s,statuses=['supported','unsupported','supported']) {
 function auditFixture(s,index,status,explanation='对完整原始主张逐项检查'){const candidateId=s.drafts[0].staging[index].id;s=e.beginMemorySupportAssessment(s,id(s),candidateId);return e.attachMemorySupportAssessment(s,id(s),candidateId,{status,explanation,provider:'isolated-fixture'},e.createMemorySupportBinding(s,id(s),candidateId));}
 // Explicit offline isolated-result fixtures keep these prior gate tests focused.
 function review(s=extracted(),r=report(s)) {s=e.reviewDraft(s,id(s));s=e.attachSemanticReview(s,id(s),r,e.createReviewBinding(s,id(s)));for(const [index,candidate] of s.drafts[0].staging.entries()){const check=r.memoryChecks?.find(c=>c.candidateId===candidate.id);if(check)s=auditFixture(s,index,check.status,check.explanation);}return s;}
-function decide(s,index,action='keep',reason) {const row=e.getMemoryReviewGate(s,id(s))[index];return e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reason,reviewHash:row.reviewHash},row.binding);}
+function decide(s,index,action='attest_keep',reason='作者逐条确认此主张并承担其解释责任') {const row=e.getMemoryReviewGate(s,id(s))[index];return e.decideMemoryCandidate(s,id(s),{candidateId:row.candidateId,action,reason,...(action==='attest_keep'?{attestation:{protocol:'quote-grounded-memory-v1',accepted:true,statement:e.MEMORY_ATTESTATION_STATEMENT}}:{}),reviewHash:row.reviewHash},row.binding);}
 function selected(s=review()) {s=decide(s,0);s=decide(s,1,'reject');return decide(s,2);}
 
 test('review input contains every exact original claim and quote, independently of decisions',()=>{
@@ -29,20 +29,20 @@ test('review input contains every exact original claim and quote, independently 
 test('partial-support multiclause claim cannot be kept unchanged by ordinary keep or implicit acceptance',()=>{
  let s=review(),key=id(s);const row=e.getMemoryReviewGate(s,key)[1];
  assert.equal(row.status,'unsupported');assert.equal(row.canKeep,false);assert.equal(row.resolved,false);
- assert.throws(()=>decide(s,1),{code:'MEMORY_DECISION_REQUIRED'});
+ assert.throws(()=>decide(s,1,'keep'),{code:'MEMORY_DECISION_REQUIRED'});
  s=decide(s,0);s=decide(s,2);assert.throws(()=>e.acceptDraft(s,key),{code:'MEMORY_DECISION_REQUIRED'});assert.deepEqual(s.events,[]);
  const accepted=e.acceptDraft(decide(s,1,'reject'),key);
  assert.deepEqual(accepted.events.map(v=>v.label),[entries[0].label,entries[2].label]);
  assert.equal(accepted.drafts[0].staging[1].label,entries[1].label);
  assert.equal(accepted.commits.at(-1).memoryCandidateIds[1],accepted.drafts[0].staging[1].id);
  assert.equal(accepted.commits.at(-1).memoryDecisions.find(d=>d.candidateId===row.candidateId).action,'reject');
- assert.equal(accepted.events[0].memoryDecision.action,'keep');
+ assert.equal(accepted.events[0].memoryDecision.action,'attest_keep');
  assert.ok(e.getMemoryReviewGate(accepted,key).every(row=>row.resolved));
 });
-test('author override is scoped, reasoned, bound and visibly preserves unsupported assessment',()=>{
- let s=review(),key=id(s);assert.throws(()=>decide(s,1,'override_keep','  '),{code:'MEMORY_DECISION_REQUIRED'});
- assert.throws(()=>decide(s,1,'override_keep','x'.repeat(2001)),{code:'MEMORY_DECISION_REQUIRED'});
- s=decide(s,1,'override_keep','作者有意保留推断，知道原文未完全支持');
+test('author attestation is scoped, reasoned, bound and visibly preserves unsupported assessment',()=>{
+ let s=review(),key=id(s);assert.throws(()=>decide(s,1,'attest_keep','  '),{code:'MEMORY_DECISION_REQUIRED'});
+ assert.throws(()=>decide(s,1,'attest_keep','x'.repeat(2001)),{code:'MEMORY_DECISION_REQUIRED'});
+ s=decide(s,1,'attest_keep','作者有意保留推断，知道原文未完全支持');
  const row=e.getMemoryReviewGate(s,key)[1];assert.equal(row.status,'unsupported');assert.equal(row.decision.assessment,'unsupported');assert.equal(row.canKeep,false);assert.equal(row.resolved,true);
  assert.throws(()=>e.acceptDraft(s,key),{code:'MEMORY_DECISION_REQUIRED'});
  s=decide(s,0,'reject');s=decide(s,2,'reject');s=e.acceptDraft(s,key);
@@ -55,23 +55,23 @@ test('rejecting every candidate accepts prose without promoting any memory',()=>
 test('missing checks and missing per-candidate checks are explicit unknown and never ordinary keep',()=>{
  for(const checks of [undefined,[],[report(extracted()).memoryChecks[0]]]){
   const source=extracted(),r=report(source);r.memoryChecks=checks;const s=review(source,r),rows=e.getMemoryReviewGate(s,id(s));
-  assert.equal(rows[1].status,'unknown');assert.equal(rows[1].assessmentOrigin,'not_audited');assert.throws(()=>decide(s,1),{code:'MEMORY_DECISION_REQUIRED'});
+  assert.equal(rows[1].status,'unknown');assert.equal(rows[1].assessmentOrigin,'not_audited');assert.throws(()=>decide(s,1,'keep'),{code:'MEMORY_DECISION_REQUIRED'});
  }
 });
 test('duplicate, foreign, unsupported statuses and malformed memory checks fail closed',()=>{
  const s=extracted(),r=report(s),check=r.memoryChecks[0];
  for(const memoryChecks of [null,{},[check,check],[{...check,candidateId:'foreign'}],[{...check,status:'probably'}],[{...check,explanation:''}],[{...check,explanation:'x'.repeat(4001)}],[{...check,severity:'warning'}],[{...check,label:'replacement'}]])assert.throws(()=>review(s,{...r,memoryChecks}),{code:'INVALID_MEMORY_REVIEW'});
 });
-test('offline fixture offers explicit unknown override or reject but cannot silently keep',()=>{
+test('offline fixture offers explicit unknown attestation or reject but cannot silently keep',()=>{
  let s=e.reviewDraft(extracted({live:false}),id(extracted({live:false})));const rows=e.getMemoryReviewGate(s,id(s));
- assert.equal(rows[0].canKeep,false);assert.equal(rows[0].canOverride,true);assert.throws(()=>decide(s,0),{code:'MEMORY_DECISION_REQUIRED'});
- s=decide(s,0,'override_keep','作者人工核对完整主张及对应原文');s=decide(s,1,'reject');s=decide(s,2,'reject');s=e.acceptDraft(s,id(s));
+ assert.equal(rows[0].canKeep,false);assert.equal(rows[0].canOverride,false);assert.equal(rows[0].canAttest,true);assert.throws(()=>decide(s,0,'keep'),{code:'MEMORY_DECISION_REQUIRED'});
+ s=decide(s,0,'attest_keep','作者人工核对完整主张及对应原文');s=decide(s,1,'reject');s=decide(s,2,'reject');s=e.acceptDraft(s,id(s));
  assert.equal(s.events.length,1);assert.equal(s.events[0].memoryDecision.assessment,'unknown');
 });
-test('live override needs current semantic review; reject can be staged after structural review',()=>{
+test('live attestation needs current semantic review; reject can be staged after structural review',()=>{
  let s=extracted();assert.throws(()=>decide(s,0,'reject'),{code:'STALE_MEMORY_DECISION'});
  s=e.reviewDraft(s,id(s));assert.equal(e.getMemoryReviewGate(s,id(s))[0].canOverride,false);
- assert.throws(()=>decide(s,0,'override_keep','确认'),{code:'MEMORY_DECISION_REQUIRED'});
+ assert.throws(()=>decide(s,0,'attest_keep','确认'),{code:'MEMORY_DECISION_REQUIRED'});
  s=decide(s,0,'reject');assert.equal(e.getMemoryReviewGate(s,id(s))[0].resolved,true);
  assert.throws(()=>e.acceptDraft(s,id(s)),{code:'SEMANTIC_REVIEW_REQUIRED'});
 });
@@ -87,10 +87,10 @@ test('starting a review revokes old authority even before new response or after 
  const before=selected(),key=id(before),row=e.getMemoryReviewGate(before,key)[0],s=e.beginSemanticReview(before,key);
  assert.equal(s.drafts[0].modelReview,null);assert.deepEqual(s.drafts[0].memoryDecisions,[]);assert.equal(s.drafts[0].memoryDecisionHistory.length,3);
  assert.throws(()=>e.acceptDraft(s,key),{code:'SEMANTIC_REVIEW_REQUIRED'});
- assert.throws(()=>e.decideMemoryCandidate(s,key,{candidateId:row.candidateId,action:'keep',reviewHash:row.reviewHash},row.binding),{code:'STALE_MEMORY_DECISION'});
+ assert.throws(()=>e.decideMemoryCandidate(s,key,{candidateId:row.candidateId,action:'keep_quote',reviewHash:row.reviewHash},row.binding),{code:'STALE_MEMORY_DECISION'});
 });
 test('all binding fields, exact snapshots and unexpected extra keys are checked for decisions',()=>{
- const s=review(),key=id(s),row=e.getMemoryReviewGate(s,key)[0],instruction={candidateId:row.candidateId,action:'keep',reviewHash:row.reviewHash};
+ const s=review(),key=id(s),row=e.getMemoryReviewGate(s,key)[0],instruction={candidateId:row.candidateId,action:'keep_quote',reviewHash:row.reviewHash};
  for(const field of Object.keys(row.binding)){
   const missing=clone(row.binding);delete missing[field];assert.throws(()=>e.decideMemoryCandidate(s,key,instruction,missing),{code:'STALE_MEMORY_DECISION'});
  }
@@ -140,4 +140,4 @@ test('legacy live provider provenance cannot be downgraded to the offline overri
 
 test('an explicit offline structural re-review revokes prior memory authority without deleting audit',()=>{let s=extracted({live:false});s=e.reviewDraft(s,id(s));for(let i=0;i<3;i++)s=decide(s,i,'reject');const before=clone(s.drafts[0].memoryDecisionHistory);s=e.reviewDraft(s,id(s));assert.equal(s.drafts[0].memoryDecisions.length,0);assert.deepEqual(s.drafts[0].memoryDecisionHistory,before);assert.throws(()=>e.acceptDraft(s,id(s)),{code:'MEMORY_DECISION_REQUIRED'});});
 
-test('offline re-review invalidates an open override dialog even before any decision was recorded',()=>{let s=extracted({live:false});s=e.reviewDraft(s,id(s));const previous=e.getMemoryReviewGate(s,id(s))[0],epoch=s.drafts[0].memoryReviewEpoch;assert.equal(s.drafts[0].memoryDecisions.length,0);s=e.reviewDraft(s,id(s));assert.equal(s.drafts[0].memoryReviewEpoch,epoch+1);assert.throws(()=>e.decideMemoryCandidate(s,id(s),{candidateId:previous.candidateId,action:'override_keep',reason:'旧对话框的理由',reviewHash:previous.reviewHash},previous.binding),{code:'STALE_MEMORY_DECISION'});s=decide(s,0,'override_keep','重新查看当前结构审阅后确认');assert.equal(e.getMemoryReviewGate(s,id(s))[0].resolved,true);});
+test('offline re-review invalidates an open override dialog even before any decision was recorded',()=>{let s=extracted({live:false});s=e.reviewDraft(s,id(s));const previous=e.getMemoryReviewGate(s,id(s))[0],epoch=s.drafts[0].memoryReviewEpoch;assert.equal(s.drafts[0].memoryDecisions.length,0);s=e.reviewDraft(s,id(s));assert.equal(s.drafts[0].memoryReviewEpoch,epoch+1);assert.throws(()=>e.decideMemoryCandidate(s,id(s),{candidateId:previous.candidateId,action:'attest_keep',reason:'旧对话框的理由',reviewHash:previous.reviewHash},previous.binding),{code:'STALE_MEMORY_DECISION'});s=decide(s,0,'attest_keep','重新查看当前结构审阅后确认');assert.equal(e.getMemoryReviewGate(s,id(s))[0].resolved,true);});

@@ -14,7 +14,7 @@ function inspect(value,depth=0,budget={nodes:0}){
  else if(object(value))for(const [key,v] of Object.entries(value)){if(['__proto__','prototype','constructor'].includes(key))bad('备份包含不安全字段');inspect(v,depth+1,budget);}
 }
 function records(items,label){if(!Array.isArray(items)||items.some(x=>!object(x)))bad(label+'格式无效');const ids=items.filter(x=>x.id!==undefined).map(x=>x.id);if(ids.some(x=>!text(x)||!x)||new Set(ids).size!==ids.length)bad(label+' ID 冲突');}
-const stringFields=['kind','type','op','id','title','text','label','statement','description','proposition','quote','status','condition','reason','summary','explanation','sourceQuote','factLabel','factId','chapterId','paragraphId','draftId','runId','projectId','holder','subject','predicate','authority','value','mode','syncStatus','semanticStatus'];
+const stringFields=['kind','type','op','id','title','text','label','originalLabel','statement','description','proposition','quote','status','condition','reason','summary','explanation','sourceQuote','factLabel','factId','chapterId','paragraphId','candidateId','decisionId','draftId','runId','projectId','holder','subject','predicate','authority','value','mode','syncStatus','semanticStatus'];
 const numberFields=['revision','version','baseVersion','recordVersion','syncedRevision','draftRevision','stateVersion','toVersion'];
 function displayTypes(value){if(Array.isArray(value))value.forEach(displayTypes);else if(object(value)){for(const [k,v] of Object.entries(value)){if(stringFields.includes(k)&&v!==null&&!text(v))bad('备份文本字段格式无效：'+k);if(numberFields.includes(k)&&v!==null&&!integer(v))bad('备份版本字段格式无效：'+k);displayTypes(v);}}}
 function validateProject(p){

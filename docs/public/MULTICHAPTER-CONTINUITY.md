@@ -2,7 +2,7 @@
 
 ## What changes
 
-The next writer context carries a bounded projection of author-selected accepted event memory, alongside the unchanged full manuscript sources. Each projected item keeps its selection kind, fallible assessment and precise source anchor. Author overrides remain distinguishable from model-supported selections. Rejected labels do not enter this auxiliary representation; rejecting a label does **not** delete or negate what the accepted prose says.
+The next writer context carries a bounded projection of author-selected accepted event memory, alongside the unchanged full manuscript sources. Each projected item keeps its selection kind, fallible assessment and precise source anchor. Schema 3 distinguishes text-only excerpts, explicitly author-attested unverified paraphrases and historical unverified selections; model support is advisory only. See [the current selection boundary](QUOTE-GROUNDED-MEMORY.md). Rejected labels do not enter this auxiliary representation; rejecting a label does **not** delete or negate what the accepted prose says.
 
 Only selections whose original candidate, decision and exact current source still agree can enter the projection. Editing or replacing a source chapter makes its earlier selected events ineligible until newly established. Stored event history and earlier prose versions remain intact. Context diagnostics report exclusions and capacity omissions; missing projected memory never means that an event is false or that nothing important happened. The projection is limited to 100 entries and 16 KiB, separately from the server's unchanged overall request limit.
 

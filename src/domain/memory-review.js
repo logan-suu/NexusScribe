@@ -1,9 +1,56 @@
-/** Candidate evidence is model-assessed, never inferred from keyword presence. */
+import {segmentProse} from './prose.js';
+/** Model verdicts are advice; deterministic excerpts prove textual presence only. */
+export const MEMORY_SELECTION_PROTOCOL='quote-grounded-memory-v1';
+export const MEMORY_ATTESTATION_STATEMENT='我已核对原始标签、引文和上下文，理解此转述未经验证；模型支持不代表事实或完整含义正确。我明确选择让它以作者确认的未验证转述进入后续上下文。';
 const copy = value => structuredClone(value);
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const text = value => typeof value === 'string' && Boolean(value.trim());
 const same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
 const invalid = (message='候选记忆审查格式无效') => { const error = Error(message); error.code='INVALID_MEMORY_REVIEW'; throw error; };
+/** A card always retains the complete paragraph and adjacent paragraphs. No semantic claim is inferred.
+ * Modern paragraph indexes use segmentProse; legacy indexes refer to physical newline positions.
+ * Unanchored repeated evidence is ambiguous and fails closed instead of selecting its first occurrence.
+ */
+export function deriveQuoteCard(draft,candidate) {
+ if(!candidate||typeof draft.text!=='string'||!text(candidate.sourceQuote))return null;
+ const paragraphs=segmentProse(draft.text),modern=draft.requiresExtraction===true;
+ const paragraphQuote=!modern&&Object.hasOwn(candidate,'sourceParagraphIndex')?candidate.sourceQuote.replace(/\r$/,''):candidate.sourceQuote;
+ let matches=paragraphs.filter(p=>p.text.includes(paragraphQuote));
+ if(Object.hasOwn(candidate,'sourceParagraphIndex')){
+  if(!Number.isSafeInteger(candidate.sourceParagraphIndex)||candidate.sourceParagraphIndex<0)return null;
+  if(modern)matches=matches.filter(p=>p.index===candidate.sourceParagraphIndex&&p.text===candidate.sourceQuote);
+  else{
+   const lines=draft.text.split('\n'),index=candidate.sourceParagraphIndex;
+   if(lines[index]!==candidate.sourceQuote)return null;
+   const start=lines.slice(0,index).reduce((n,line)=>n+line.length+1,0);
+   matches=matches.filter(p=>p.start===start&&p.text===candidate.sourceQuote.replace(/\r$/,''));
+  }
+ }
+ if(Object.hasOwn(candidate,'sourceStart')||Object.hasOwn(candidate,'sourceEnd')){
+  if(!Number.isSafeInteger(candidate.sourceStart)||!Number.isSafeInteger(candidate.sourceEnd)||candidate.sourceStart<0||candidate.sourceEnd<=candidate.sourceStart||candidate.sourceEnd>draft.text.length||draft.text.slice(candidate.sourceStart,candidate.sourceEnd)!==candidate.sourceQuote)return null;
+  matches=matches.filter(p=>p.start<=candidate.sourceStart&&p.end>=candidate.sourceEnd);
+ }
+ if(matches.length!==1)return null;
+ const paragraph=matches[0],paragraphId=p=>modern?p.id:`p${draft.text.slice(0,p.start).split('\n').length}`,anchor=p=>p?{paragraphId:paragraphId(p),start:p.start,end:p.end,text:p.text}:null;
+ return {protocol:MEMORY_SELECTION_PROTOCOL,trust:'textual_presence_only',chapterId:draft.chapterId||'ch3',draftId:draft.id,draftRevision:draft.revision,paragraphId:paragraphId(paragraph),paragraphIndex:paragraph.index,start:paragraph.start,end:paragraph.end,text:paragraph.text,before:anchor(paragraphs[paragraph.index-1]),after:anchor(paragraphs[paragraph.index+1])};
+}
+export function compactQuoteCard(card) {
+ if(!card)return null;
+ const value=copy(card);delete value.text;
+ for(const key of ['before','after'])if(value[key])delete value[key].text;
+ return value;
+}
+export function validMemoryAttestation(value) {
+ return object(value)&&Object.keys(value).length===3&&value.protocol===MEMORY_SELECTION_PROTOCOL&&value.accepted===true&&value.statement===MEMORY_ATTESTATION_STATEMENT;
+}
+export function memorySelectionValid(draft,decision,candidate,binding) {
+ if(decision?.selectionProtocol!==MEMORY_SELECTION_PROTOCOL)return false;
+ if(decision.action==='reject')return !Object.hasOwn(decision,'quoteSnapshot')&&!Object.hasOwn(decision,'attestation');
+ if(decision.action==='attest_keep')return text(decision.reason)&&validMemoryAttestation(decision.attestation)&&!Object.hasOwn(decision,'quoteSnapshot');
+ if(decision.action!=='keep_quote'||Object.hasOwn(decision,'attestation')||!binding)return false;
+ const card=deriveQuoteCard({...draft,text:binding.textSnapshot,revision:binding.draftRevision},candidate);
+ return Boolean(card&&same(decision.quoteSnapshot,compactQuoteCard(card)));
+}
 export function initializeMemoryReview(draft) {
  if (draft.memoryReviewSchema === undefined) {
   draft.memoryReviewSchema=1;
@@ -97,7 +144,13 @@ export function validateMemoryDraftRecord(draft) {
  for(const authority of draft.memoryAuthorities)if(!object(authority)||!text(authority.id)||!object(authority.binding)||!object(authority.reviewSnapshot)||!text(authority.reviewHash)||!Array.isArray(expandMemoryBinding(draft,authority.binding)?.stagingSnapshot))invalid('候选记忆授权快照无效');
  if(new Set(draft.memoryAuthorities.map(a=>a.id)).size!==draft.memoryAuthorities.length)invalid('候选记忆授权身份重复');
  for (const decision of [...draft.memoryDecisions,...draft.memoryDecisionHistory]) {
-  if (!object(decision)||!text(decision.decisionId)||!text(decision.candidateId)||!['keep','reject','override_keep'].includes(decision.action)||typeof decision.reason!=='string'||decision.reason.length>2000||decision.action==='override_keep'&&!text(decision.reason)||!text(decision.authorityId)||!draft.memoryAuthorities.some(a=>a.id===decision.authorityId&&a.reviewHash===decision.reviewHash&&expandMemoryBinding(draft,a.binding)?.stagingSnapshot?.some(c=>c.id===decision.candidateId))||!text(decision.reviewHash)||!['supported','unsupported','unknown'].includes(decision.assessment)||!text(decision.explanation)||decision.authority!=='explicit_author_decision') invalid('候选记忆决定审计无效');
+  if (!object(decision)||!text(decision.decisionId)||!text(decision.candidateId)||!['keep','reject','override_keep','keep_quote','attest_keep'].includes(decision.action)||typeof decision.reason!=='string'||decision.reason.length>2000||['override_keep','attest_keep'].includes(decision.action)&&!text(decision.reason)||!text(decision.authorityId)||!draft.memoryAuthorities.some(a=>a.id===decision.authorityId&&a.reviewHash===decision.reviewHash&&expandMemoryBinding(draft,a.binding)?.stagingSnapshot?.some(c=>c.id===decision.candidateId))||!text(decision.reviewHash)||!['supported','unsupported','unknown'].includes(decision.assessment)||!text(decision.explanation)||decision.authority!=='explicit_author_decision') invalid('候选记忆决定审计无效');
+ }
+ for(const decision of [...draft.memoryDecisions,...draft.memoryDecisionHistory]) {
+  if(Object.hasOwn(decision,'selectionProtocol')||['keep_quote','attest_keep'].includes(decision.action)){
+   const authority=draft.memoryAuthorities.find(item=>item.id===decision.authorityId),binding=expandMemoryBinding(draft,authority?.binding),candidate=binding?.stagingSnapshot?.find(item=>item.id===decision.candidateId);
+   if(!memorySelectionValid(draft,decision,candidate,binding))invalid('原文摘录或作者未验证转述确认无效');
+  }
  }
  for(const decision of [...draft.memoryDecisions,...draft.memoryDecisionHistory])if(Object.hasOwn(decision,'supportAttemptId')){
   if(decision.supportAttemptId!==null&&!text(decision.supportAttemptId)||!['not_started','pending','complete','failed','cancelled','stale'].includes(decision.supportState)||decision.supportResultHash!==null&&!text(decision.supportResultHash))invalid('作者决定的单条核验引用无效');

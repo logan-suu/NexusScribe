@@ -33,6 +33,7 @@ const retained = JSON.parse(readFileSync(new URL('../eval/history/prose-pipeline
 const extracted = JSON.parse(readFileSync(new URL('../eval/history/prose-pipeline-v1/completed-03.json', import.meta.url), 'utf8'));
 const unsupported = extracted.staging[1], kept = extracted.staging[8];
 const second = '第二天，程岚带着装纸屑的空表壳找到管理员。管理员说：“昨夜没有开过门。”\n\n程岚把押金条压在登记簿旁，请他核对昨晚的记录。阿陶站在门外，没有看见表壳里的纸屑。\n\n管理员翻到空白的一页，没有回答。';
+const quoteLabel = index => `原文摘录 · 第 ${index+1} 段`;
 const revisedSecond = second.replace('昨夜没有开过门', '昨夜开过一次南门');
 const third = '程岚沿登记簿指向的南门走去，把空表壳留在自己口袋里。她没有告诉阿陶管理员改了口。\n\n南门内侧压着一条湿纸带。程岚没有把它和表壳里的纸屑拼在一起，只先记下纸带的位置。\n\n门外响起脚步声。她关上登记簿，等那人先开口。';
 const report = {summary:'合成整章审阅，不是语义正确性证据', issues:[], checks:[], factChecks:[], provider};
@@ -99,7 +100,7 @@ async function audit(n, status = 'supported') {
   const call = await request('auditMemoryCandidate', new RegExp(`^独立核对候选记忆 ${n}：`));
   assert.deepEqual(call.body.input, {label:expected.label, sourceQuote:expected.sourceQuote});
   await reply(call, {status, explanation:'合成独立判断，仅验证工作流'});
-  assert.equal(control('保留', n).disabled, status !== 'supported');
+  assert.equal(control('保留原文摘录', n).disabled, false, 'Optional audit judgments never authorize paraphrase or block quote selection');
 }
 async function accept(index) {
   const before = structuredClone(state().events);
@@ -135,21 +136,21 @@ const afterRetry = structuredClone(state());
 await reply(cancelled, extraction(retained.text, 'ch1'));
 assert.deepEqual(state(), afterRetry);
 await review();
-assert.equal(control('保留', 1).disabled, true);
-assert.equal(control('保留', 2).disabled, true);
+assert.equal(control('保留原文摘录', 1).disabled, false);
+assert.equal(control('保留原文摘录', 2).disabled, false);
 await audit(1, 'unsupported'); await user.click(control('拒绝', 1));
-await audit(2); await user.click(control('保留', 2));
+await audit(2); await user.click(control('保留原文摘录', 2));
 assert.deepEqual(state().events, []); await accept(0);
 const acceptedFirst = structuredClone(state());
-assert.deepEqual(state().events.map(event => event.label), [kept.label]);
+assert.deepEqual(state().events.map(event => event.label), [quoteLabel(kept.sourceParagraphIndex)]);
 assert.equal(state().events[0].source.quote, kept.sourceQuote);
 
 await chapter(1);
 assert.equal(drafts().length, 0, 'Chapter 2 must not display chapter 1 draft controls');
 const secondRequest = await generate(1, second);
-assert.deepEqual(secondRequest.body.input.context.events.map(event => event.label), [kept.label]);
+assert.deepEqual(secondRequest.body.input.context.events.map(event => event.label), [quoteLabel(kept.sourceParagraphIndex)]);
 assert.equal(secondRequest.body.input.context.sources[0].text, retained.text);
-await extract(); await review(); await audit(1); await user.click(control('保留', 1));
+await extract(); await review(); await audit(1); await user.click(control('保留原文摘录', 1));
 const oldDraft = structuredClone(state().drafts.at(-1));
 await user.click(screen.getByRole('button', {name:'编辑此稿'}));
 fireEvent.change(screen.getByLabelText('编辑候选稿'), {target:{value:revisedSecond}});
@@ -161,12 +162,12 @@ assert.deepEqual(edited.memoryDecisions, []);
 assert.equal(edited.modelReview, null);
 assert.ok(edited.memoryArchives.some(archive => archive.candidates.some(item => item.id === oldDraft.staging[0].id)));
 assert.equal(screen.getByRole('button', {name:'接受此版本'}).disabled, true);
-await extract(); await review(); await audit(1); await user.click(control('保留', 1)); await accept(1);
+await extract(); await review(); await audit(1); await user.click(control('保留原文摘录', 1)); await accept(1);
 await chapter(2); assert.equal(drafts().length, 0);
 const thirdRequest = await generate(2, third);
-assert.deepEqual(thirdRequest.body.input.context.events.map(event => event.label), [kept.label, '管理员说昨夜开过一次南门']);
+assert.deepEqual(thirdRequest.body.input.context.events.map(event => event.label), [quoteLabel(kept.sourceParagraphIndex), quoteLabel(0)]);
 assert.equal(JSON.stringify(thirdRequest.body.input.context).includes('管理员说昨夜没有开过门'), false);
-await extract(); await review(); await audit(1); await user.click(control('保留', 1)); await accept(2);
+await extract(); await review(); await audit(1); await user.click(control('保留原文摘录', 1)); await accept(2);
 assert.deepEqual(state().chapters.map(item => item.status), ['ACCEPTED','ACCEPTED','ACCEPTED']);
 assert.equal(state().events.length, 3);
 assert.equal(calls.length, 18);
@@ -186,7 +187,7 @@ function pendingAfterFirst() {
   s = engine.beginMemorySupportAssessment(s, id, candidateId);
   s = engine.attachMemorySupportAssessment(s, id, candidateId, {status:'supported', explanation:'合成预置独立核对', provider}, engine.createMemorySupportBinding(s, id, candidateId));
   const gate = engine.getMemoryReviewGate(s, id)[0];
-  return engine.decideMemoryCandidate(s, id, {candidateId, action:'keep', reviewHash:gate.reviewHash}, gate.binding);
+  return engine.decideMemoryCandidate(s, id, {candidateId, action:'keep_quote', reviewHash:gate.reviewHash}, gate.binding);
 }
 
 // 2. Editing accepted prose leaves audit history intact but must not continue
@@ -226,8 +227,8 @@ assert.equal(state().drafts.at(-1).context.sources[0].text, revisedFirst);
 assert.deepEqual(state().drafts.at(-1).memoryDecisions, []);
 assert.deepEqual(state().drafts.at(-1).staging, []);
 await extract(); await review();
-assert.equal(control('保留', 1).disabled, true);
-await audit(1); await user.click(control('保留', 1));
+assert.equal(control('保留原文摘录', 1).disabled, false);
+await audit(1); await user.click(control('保留原文摘录', 1));
 assert.deepEqual(state().events, initial.events);
 await accept(1);
 assert.deepEqual(calls.map(call => call.body.action), ['interpretRevision','extractMemory','reviewChapter','auditMemoryCandidate']);
@@ -246,7 +247,7 @@ await waitFor(() => assert.ok(screen.getByRole('dialog', {name:'备份导入预�
 await user.click(screen.getByRole('button', {name:'确认作为新项目导入'}));
 assert.notEqual(state().projectId, initial.projectId);
 assert.deepEqual(state().importOrigin.original.state, backup.state);
-assert.deepEqual(state().events.map(event => event.label), [kept.label]);
+assert.deepEqual(state().events.map(event => event.label), [quoteLabel(kept.sourceParagraphIndex)]);
 assert.deepEqual(state().drafts.at(-1).staging, []);
 assert.deepEqual(state().drafts.at(-1).memoryDecisions, []);
 assert.equal(state().drafts.at(-1).modelReview, null);
@@ -255,8 +256,8 @@ assert.equal(screen.getByRole('heading', {level:1}).textContent, '第二章 次�
 assert.equal(screen.getByRole('button', {name:'接受此版本'}).disabled, true);
 assert.equal(calls.length, 0);
 await extract(); await review();
-assert.equal(control('保留', 1).disabled, true);
-await audit(1); await user.click(control('保留', 1)); await accept(1);
+assert.equal(control('保留原文摘录', 1).disabled, false);
+await audit(1); await user.click(control('保留原文摘录', 1)); await accept(1);
 await user.selectOptions(screen.getByLabelText('切换项目'), initial.projectId);
 assert.deepEqual(state().drafts.at(-1), initial.drafts.at(-1));
 assert.deepEqual(state().events, initial.events);
@@ -288,3 +289,38 @@ for (const stage of ['extractMemory','reviewChapter']) {
 }
 cleanup();
 console.log('PASS extraction/review persistence retry: returned result survives quota failure, retry and reload with zero additional provider requests');
+
+// 5. Replay both actually retained live chapters exactly, then a clearly synthetic
+// third chapter. No real chapter 3 exists in this record; nothing is a new live run.
+const retainedRun = sequence => JSON.parse(readFileSync(new URL(`../eval/history/multichapter-v1/completed-${String(sequence).padStart(2,'0')}.json`, import.meta.url), 'utf8')).output;
+const retainedPair = [retainedRun(1), retainedRun(5)];
+const retainedExtractions = [retainedRun(2), retainedRun(6)];
+const retainedCounterexamples=JSON.parse(readFileSync(new URL('../eval/multichapter-counterexamples.json',import.meta.url),'utf8'));
+const syntheticThird = '【合成第三章工作流夹具】许宁把工具袋往肩上提了提，和阿青在檐下核对明早九点的约定。纸盒仍在袋里，旧记录尚未拿到。\n\n他们决定先把纸盒原样收好，再等管理员明早查记录。';
+const replayTexts = [...retainedPair.map(item => item.text), syntheticThird];
+await boot();
+for (let index=0; index<3; index++) {
+  await chapter(index);
+  const generated = await generate(index, replayTexts[index]);
+  for (const event of generated.body.input.context.events) {
+    assert.equal(event.kind,'textual_excerpt');assert.equal(event.trust,'textual_presence_only');assert.equal(event.memoryDecision.action,'keep_quote');assert.equal(event.memoryDecision.advisory,true);
+    const source=generated.body.input.context.sources.find(item=>item.chapterId===event.source.chapterId);
+    assert.ok(source);assert.equal(source.text.slice(event.source.start,event.source.end),state().events.find(item=>item.id===event.id).source.quote);
+    assert.equal(Object.hasOwn(event,'originalLabel'),false,'Model paraphrases are not sent as asserted memory');
+  }
+  const extractionCall=await request('extractMemory','提取候选记忆');
+  const output=index<2?retainedExtractions[index]:{staging:[{label:'许宁和阿青已经拿到全部旧记录',sourceParagraphIndex:0,sourceQuote:segmentProse(syntheticThird)[0].text,sourceStart:0,sourceEnd:segmentProse(syntheticThird)[0].end}],reviewNotes:['Synthetic third chapter only; intentionally unsupported paraphrase']};
+  if(index<2){assert.equal(output.staging[0].label,retainedCounterexamples[index].label);assert.equal(output.staging[0].sourceQuote,retainedCounterexamples[index].sourceQuote)}
+  await reply(extractionCall,output);await review();
+  const first=engine.getMemoryReviewGate(state(),state().drafts.at(-1).id)[0];
+  assert.equal(first.canKeep,false);assert.equal(first.canKeepQuote,true);assert.equal(first.canAttest,true);
+  assert.equal(within(candidate(1)).getByLabelText('完整来源段落').textContent,first.quoteCard.text);
+  if(index===0){const auditCall=await request('auditMemoryCandidate',/^独立核对候选记忆 1：/);await reply(auditCall,retainedRun(4));assert.equal(engine.getMemoryReviewGate(state(),state().drafts.at(-1).id)[0].canKeep,false,'Retained false-positive supported must not authorize paraphrase')}
+  await user.click(control('保留原文摘录',1));
+  for(let n=2;n<=output.staging.length;n++)await user.click(control('拒绝',n));
+  await accept(index);
+  const event=state().events.at(-1),decision=state().drafts.at(-1).memoryDecisions.find(item=>item.action==='keep_quote');
+  assert.equal(event.label,quoteLabel(first.quoteCard.paragraphIndex));assert.equal(event.originalLabel,output.staging[0].label);assert.equal(event.source.quote,first.quoteCard.text);assert.equal(event.memoryKind,'textual_excerpt');assert.equal(event.memoryTrust,'textual_presence_only');assert.equal(decision.selectionProtocol,'quote-grounded-memory-v1');assert.ok(decision.quoteSnapshot);assert.equal(decision.quoteSnapshot.start,first.quoteCard.start);assert.equal(decision.quoteSnapshot.end,first.quoteCard.end);
+}
+assert.deepEqual(state().chapters.map(item=>item.text),replayTexts);assert.equal(calls.length,10,'Three stages per chapter plus one optional retained advisory audit');reload();assert.equal(state().events.length,3);assert.deepEqual(state().chapters.map(item=>item.text),replayTexts);cleanup();
+console.log('PASS quote-grounded replay: real retained chapter 1+2 verbatim, explicitly synthetic chapter 3; 10 mocked requests, optional false-supported audit cannot promote paraphrase, exact full quote and typed advisory context, reload');
