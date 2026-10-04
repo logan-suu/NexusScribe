@@ -116,6 +116,14 @@ jobs:
           path: test-results/author-revision*/*.png
           if-no-files-found: warn
           retention-days: 7
+      - name: Preserve compact prose-only acceptance screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: prose-only-acceptance-screenshots
+          path: test-results/prose-only*/*.png
+          if-no-files-found: warn
+          retention-days: 7
       - name: Preserve offline multi-chapter harness evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
