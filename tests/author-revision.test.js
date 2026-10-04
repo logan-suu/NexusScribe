@@ -95,3 +95,70 @@ test('one-pass currency matches individual gates across mixed terminal and activ
  const values=r.getRevisionCurrency(s,id(s));assert.deepEqual(Object.values(values),[false,false,true]);
  for(const p of s.drafts[0].revisionProposals)assert.equal(r.isRevisionCurrent(s,id(s),p.id),values[p.id]);
 });
+
+test('author may edit only the adoption buffer; raw model provenance and historical version remain exact',()=>{
+ const s=completed(),p=copy(last(s)),finalText='  作者确认要保留的新措辞。🙂\n\n这仍未经过语义验证。\n';
+ const bounds={hanMin:100,hanMax:200,paragraphsMin:1,paragraphsMax:1};
+ const n=r.adoptDraftRevision(s,id(s),p.id,p,{text:finalText,lengthBounds:bounds});
+ assert.equal(s.drafts[0].text,BEFORE);assert.deepEqual(last(s),p);
+ assert.equal(n.drafts[0].text,finalText);assert.equal(r.getRevisionAdoptedText(n.drafts[0],last(n)),finalText);
+ assert.deepEqual(last(n).result,p.result);assert.deepEqual(last(n).beforeCounts,p.beforeCounts);assert.deepEqual(last(n).afterCounts,p.afterCounts);
+ assert.deepEqual(last(n).adoption,{modelResultHash:e.hash(JSON.stringify(p.result)),authority:'explicit_author_edit',textHash:e.hash(finalText),counts:r.proseCounts(finalText),lengthBounds:bounds});
+ assert.equal(n.drafts[0].proseVersions.length,2);assert.deepEqual(n.chapters,s.chapters);assert.deepEqual(n.facts,s.facts);assert.deepEqual(n.events,s.events);
+ assert.equal(n.drafts[0].extraction.status,'pending');assert.throws(()=>e.acceptDraft(n,id(n)));
+ assert.equal(r.revisionLengthWarnings(finalText,bounds).length,2,'Length warnings do not block explicit author adoption');
+ const parsed=parseBackup(JSON.stringify(backup(n)));assert.deepEqual(parsed.state,n);
+ const imported=importBackup(backup(e.createInitialState()),parsed,()=> 'edited-import').state;
+ assert.equal(r.getRevisionAdoptedText(imported.drafts[0],last(imported)),finalText);assert.deepEqual(last(imported).adoption,last(n).adoption);
+ assert.deepEqual(imported.importOrigin.original.state,n);
+ const changed=e.editDraft(n,id(n),finalText+'后来再次编辑。');
+ assert.equal(r.getRevisionAdoptedText(changed.drafts[0],last(changed)),finalText,'Adoption points to its version, not current text');
+ assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(changed))));
+});
+test('unchanged and legacy adoption remain readable without author-edit attribution',()=>{
+ const s=completed(),p=last(s),n=r.adoptDraftRevision(s,id(s),p.id,p);
+ assert.equal(last(n).adoption.authority,'explicit_model_adoption');
+ const legacy=copy(n);delete last(legacy).adoption;
+ assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(legacy))));
+ assert.equal(r.getRevisionAdoptedText(legacy.drafts[0],last(legacy)),AFTER);
+});
+test('adoption rejects blank, overlong, malformed edits and altered/stale expected proposal',()=>{
+ const s=completed(),p=copy(last(s));
+ for(const options of [null,[],{text:''},{text:' \n'},{text:12},{text:'长'.repeat(30001)},{text:AFTER,authority:'explicit_author_edit'},{lengthBounds:null},{lengthBounds:{hanMin:'2'}},{lengthBounds:{hanMin:3,hanMax:2}}])assert.throws(()=>r.adoptDraftRevision(s,id(s),p.id,p,options));
+ assert.throws(()=>r.adoptDraftRevision(s,id(s),p.id,{...p,status:'discarded'},{text:'作者编辑'}));
+ const stale=r.setRevisionInstruction(s,id(s),'新意见');assert.throws(()=>r.adoptDraftRevision(stale,id(s),p.id,p,{text:'作者编辑'}));
+ assert.equal(s.drafts[0].revision,1);assert.deepEqual(last(s),p);
+});
+test('only explicit integer bounds produce deterministic advisory warnings',()=>{
+ assert.deepEqual(r.parseRevisionLengthBounds({hanMin:'',hanMax:'002',paragraphsMin:'0'}),{hanMax:2,paragraphsMin:0});
+ assert.deepEqual(r.revisionLengthWarnings('汉A😀\n\n 𠀀'),[]);
+ assert.deepEqual(r.revisionLengthWarnings('汉A😀\n\n 𠀀',{hanMin:3,paragraphsMax:1}),['汉字 2 低于作者下限 3','段数 2 高于作者上限 1']);
+ assert.deepEqual(r.revisionLengthWarnings('汉A😀\n\n 𠀀',{hanMax:1,paragraphsMin:3}),['汉字 2 高于作者上限 1','段数 2 低于作者下限 3']);
+ assert.deepEqual(r.revisionLengthWarnings('汉\n字',{hanMin:2,hanMax:2,paragraphsMin:2,paragraphsMax:2}),[]);
+ for(const bad of [null,[],{unknown:1},{hanMin:-1},{hanMin:1.5},{hanMin:NaN},{hanMin:Infinity},{hanMin:Number.MAX_SAFE_INTEGER+1},{hanMin:'1e2'},{hanMin:'2.0'},{hanMin:' '},{hanMin:true},{paragraphsMin:3,paragraphsMax:2}])assert.throws(()=>r.parseRevisionLengthBounds(bad));
+ assert.deepEqual(r.parseRevisionLengthBounds(),{});
+});
+for(const [label,change] of [
+ ['authority',p=>p.adoption.authority='explicit_model_adoption'],['counts',p=>p.adoption.counts.han++],['hash',p=>p.adoption.textHash='changed'],['version',p=>p.adoptedRevision=1],['limit',p=>p.adoption.lengthBounds.hanMin=-1],['relabelled model',p=>{p.result.text='作者新正文';p.afterCounts=r.proseCounts(p.result.text)}],['removed authorship',p=>delete p.adoption]
+])test(`edited adoption backup rejects inconsistent ${label}`,()=>{
+ const s=completed(),n=r.adoptDraftRevision(s,id(s),last(s).id,last(s),{text:'作者新正文'});change(last(n));assert.throws(()=>parseBackup(JSON.stringify(backup(n))));
+});
+test('pending and discarded proposals cannot claim adoption provenance',()=>{
+ const s=completed();last(s).adoption={authority:'explicit_author_edit',textHash:e.hash(AFTER),counts:r.proseCounts(AFTER),lengthBounds:{}};
+ assert.throws(()=>parseBackup(JSON.stringify(backup(s))));
+});
+
+test('edited adoption detects raw text and provider drift even when prose counts match',()=>{
+ const s=completed(begin(),'模型原文。'),n=r.adoptDraftRevision(s,id(s),last(s).id,last(s),{text:'作者的修改稿。'});
+ for(const mutate of [p=>p.result.text='篡改原文。',p=>p.result.provider.model='other',p=>delete p.adoption.modelResultHash]){
+  const bad=copy(n);mutate(last(bad));assert.throws(()=>parseBackup(JSON.stringify(backup(bad))));
+ }
+ assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(n))));
+});
+test('valid numeric bounds are independent of object property order',()=>{
+ const bounds={paragraphsMax:5,hanMax:100,paragraphsMin:1,hanMin:2};
+ assert.deepEqual(r.revisionLengthWarnings(AFTER,bounds),[]);
+ const s=completed(),n=r.adoptDraftRevision(s,id(s),last(s).id,last(s),{text:'作者的修改稿。',lengthBounds:bounds});
+ assert.deepEqual(last(n).adoption.lengthBounds,bounds);
+ assert.doesNotThrow(()=>parseBackup(JSON.stringify(backup(n))));
+});

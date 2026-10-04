@@ -396,5 +396,73 @@ assert.equal(calls.length, 0);
 boot(base(), 'template'); instruction();
 assert.equal(button(names.request).disabled, true);
 assert.equal(calls.length, 0);
+// Author edits are a local adoption buffer, never a replacement of raw model output.
+boot(base({reviewed:true})); await request();
+const rawAdvice = structuredClone(proposal()), editBaseline = structuredClone(saved());
+const EDITED = '  陆遥把信压在杯底。🙂\n\n她等到钟声停下。\n';
+await user.click(button(names.adopt));
+fireEvent.change(screen.getByLabelText('待采用正文', {exact:true}), {target:{value:EDITED}});
+fireEvent.change(screen.getByLabelText('汉字下限'), {target:{value:'100'}});
+fireEvent.change(screen.getByLabelText('段数上限'), {target:{value:'1'}});
+assert.match(screen.getByLabelText('篇幅提醒').textContent, /低于作者下限 100/);
+assert.match(screen.getByLabelText('篇幅提醒').textContent, /高于作者上限 1/);
+assert.equal(button(names.confirm).disabled, false, 'Length warnings are advisory');
+assert.deepEqual(saved(), editBaseline);
+assert.equal(screen.getByLabelText('采用窗口模型原文').textContent, AFTER);
+await user.keyboard('{Escape}');
+await user.click(button(names.adopt));
+assert.equal(screen.getByLabelText('待采用正文', {exact:true}).value, AFTER);
+assert.equal(screen.getByLabelText('汉字下限').value, '');
+for (const invalid of ['-1','1.5','1e2','9007199254740992']) {
+  fireEvent.change(screen.getByLabelText('汉字下限'), {target:{value:invalid}});
+  assert.equal(button(names.confirm).disabled, true);
+}
+fireEvent.change(screen.getByLabelText('汉字下限'), {target:{value:'100'}});
+fireEvent.change(screen.getByLabelText('汉字上限'), {target:{value:'99'}});
+assert.equal(button(names.confirm).disabled, true);
+fireEvent.change(screen.getByLabelText('汉字上限'), {target:{value:''}});
+fireEvent.change(screen.getByLabelText('待采用正文', {exact:true}), {target:{value:' \n'}});
+assert.equal(button(names.confirm).disabled, true);
+fireEvent.change(screen.getByLabelText('待采用正文', {exact:true}), {target:{value:EDITED}});
+await user.click(button(names.confirm));
+assert.equal(draft().text, EDITED);
+assert.deepEqual(proposal().result, rawAdvice.result);
+assert.deepEqual(proposal().afterCounts, rawAdvice.afterCounts);
+assert.deepEqual(proposal().adoption, {modelResultHash:engine.hash(JSON.stringify(rawAdvice.result)),authority:'explicit_author_edit',textHash:engine.hash(EDITED),counts:{han:15,characters:23,paragraphs:2},lengthBounds:{hanMin:100}});
+assert.equal(draft().modelReview, null); assert.equal(draft().extraction.status, 'pending');
+assert.deepEqual(draft().factDecisions, []); assert.deepEqual(draft().memoryDecisions, []);
+assert.equal(screen.getByLabelText('已采用版本正文').textContent, EDITED);
+assert.match(screen.getByLabelText('采用来源记录').textContent, /explicit_author_edit/);
+assert.equal(paid().length, 1);
+reload(); assert.equal(draft().text, EDITED);
+const editedBackup = saved(); await importData(editedBackup);
+assert.equal(draft().text, EDITED); assert.equal(proposal().adoption.authority, 'explicit_author_edit');
+assert.deepEqual(state().importOrigin.original.state, editedBackup.state);
+console.log('PASS edited revision UI: local-only buffer, immutable raw output, explicit author-edit provenance, optional strict numeric bounds, advisory counts, Escape/reload/import and old-gate invalidation');
+
+for (const errorName of ['QuotaExceededError','SecurityError']) {
+  boot(); await request(); await user.click(button(names.adopt));
+  fireEvent.change(screen.getByLabelText('待采用正文', {exact:true}), {target:{value:EDITED}});
+  const beforeWrite = structuredClone(saved()), setItem = dom.window.Storage.prototype.setItem;
+  try {
+    dom.window.Storage.prototype.setItem = function(key, value) {
+      if (key === KEY) throw new DOMException('synthetic edited adoption save failure', errorName);
+      return setItem.call(this, key, value);
+    };
+    await user.click(button(names.confirm));
+    assert.deepEqual(saved(), beforeWrite);
+    assert.equal(screen.getByLabelText('待采用正文', {exact:true}).value, EDITED);
+    assert.equal(proposal().result.text, AFTER); assert.equal(draft().text, BEFORE);
+    assert.equal(button(names.confirm).disabled, true);
+    await user.click(button('导出待采用正文')); assert.equal(await exportedBlob.text(), EDITED);
+  } finally {dom.window.Storage.prototype.setItem = setItem;}
+  await user.click(button('重试保存当前工作区'));
+  assert.equal(draft().text, BEFORE, 'Retry-save must not adopt');
+  await user.click(button(names.confirm));
+  assert.equal(draft().text, EDITED); assert.equal(proposal().adoption.authority, 'explicit_author_edit');
+  assert.equal(paid().length, 1); assert.equal(calls.length, 2);
+}
+console.log('PASS edited revision UI: quota/security failures retain exportable local edits and immutable paid proposal; recovery is an explicit local write and fresh confirmation, no requests');
+
 cleanup();
 console.log('PASS author revision UI: reload requires fresh confirmation/interrupted cancellation, import revokes pending authority; manual, accepted and template flows cannot request revisions. No live calls or browser launched.');

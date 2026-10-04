@@ -34,3 +34,7 @@
 .revision-comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 .revision-comparison pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.9;margin:0;padding:12px;background:rgba(127,127,127,.05);border-radius:8px}
 @media(max-width:700px){.revision-comparison{grid-template-columns:minmax(0,1fr)}.revision-panel{padding:12px}.revision-panel button{max-width:100%;white-space:normal}}
+
+.revision-original pre,.revision-adopted pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.8;padding:12px;background:rgba(127,127,127,.05);border-radius:8px}
+.revision-length-bounds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-width:0;border:1px solid var(--line);border-radius:8px}
+.revision-length-bounds input{min-width:0;width:100%;box-sizing:border-box}
