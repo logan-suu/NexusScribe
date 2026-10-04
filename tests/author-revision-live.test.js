@@ -2,10 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, mkdtemp, mkdir, writeFile, stat, readdir, rm, open } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { segmentProse } from '../src/domain/prose.js';
 import { protocol, CLOSE_READ_ITEMS, SOURCE_HASHES, digest, loadFrozenTrial } from '../scripts/run-author-revision-eval.mjs';
-import { STAGES, approvedConfig, validateRunHistory, verifyPriorFiles, validateExtractionGate, loadRunHistory, createDiskEvidence, runStage } from '../scripts/run-author-revision-live.mjs';
+import { STAGES, approvedConfig, validateRunHistory, verifyPriorFiles, validateExtractionGate, loadRunHistory, createDiskEvidence, runStage, main } from '../scripts/run-author-revision-live.mjs';
 
 // These fixtures test guards only; repetitive prose and fabricated attestations
 // are deliberately not literary-quality claims, author approval, or a close read.
@@ -81,7 +82,7 @@ function setup({ stage = 'revise', priorFiles = {}, closeRead = closeReadRecord(
   env = environment(stage), runs = history(stage), ciRun = ci(), raw, fetchImpl, trial: frozen = trial, extractionGate } = {}) {
   const calls = [], gaps = [];
   const responseRaw = raw ?? envelope(stage === 'revise' ? candidate : JSON.stringify(stage === 'extract' ? extraction() : review(frozen)));
-  const options = { stage, env, trial: frozen, runs, ciRun, priorFiles, closeRead, io,
+  const options = { offlineReplay: true, stage, env, trial: frozen, runs, ciRun, priorFiles, closeRead, io,
     extractionGate: extractionGate === undefined && stage === 'review' && priorFiles['completed-02.json'] ? continuationGate(fromBytes(priorFiles['completed-02.json']).output) : extractionGate,
     sleep: async ms => { gaps.push(ms); }, now: () => 1000,
     fetchImpl: async (url, request) => {
@@ -414,24 +415,27 @@ test('history retrieval fetches every page and fails closed on incomplete, unsta
   assert.equal(callsWithoutToken, 0);
 });
 
-test('workflow is explicit-only, serialized, immutable-artifact preserving, and tests before secret injection', async () => {
+test('retired workflow cannot reach checkout, credentials, history, artifacts or live execution', async () => {
   const workflow = await readFile(new URL('../.github/workflows/author-revision-trial.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /run-name: author-revision-v1\/\$\{\{ inputs\.stage \}\}/);
-  assert.match(workflow, /workflow_dispatch:/); assert.doesNotMatch(workflow, /^\s*(?:push|pull_request|schedule|workflow_run):/m);
-  assert.match(workflow, /default: false/); assert.match(workflow, /options: \[revise, extract, review\]/);
-  assert.match(workflow, /inputs\.approve_trial == true && github\.run_attempt == 1/);
-  assert.match(workflow, /group: author-revision-v1-lifetime/); assert.match(workflow, /cancel-in-progress: false/);
-  assert.match(workflow, /persist-credentials: false/); assert.match(workflow, /overwrite: false/); assert.match(workflow, /if: always\(\)/);
-  const guardsAt = workflow.indexOf('node --test tests/author-revision-eval.test.js tests/author-revision-live.test.js');
-  assert.ok(guardsAt > 0 && guardsAt < workflow.indexOf('NEXUS_API_KEY:'), 'Credential-free guard tests precede secret injection');
-  const uses = [...workflow.matchAll(/uses: ([^\s]+)/g)].map(m => m[1]);
-  assert.ok(uses.length >= 4); assert.ok(uses.every(action => /^[^@]+@[a-f0-9]{40}$/.test(action)), 'Actions must use exact commit pins');
-  assert.match(workflow, /run-id: \$\{\{ inputs\.prior_run_id \}\}/);
-  assert.match(workflow, /NEXUS_EXTRACTION_GATE_JSON: \$\{\{ inputs\.extraction_gate_json \}\}/);
-  assert.doesNotMatch(workflow, /continue-on-error:\s*true|actions:\s*write|contents:\s*write/);
-  const { files } = await through('review');
-  for (const name of Object.keys(files)) assert.ok(workflow.includes(`author-revision-evidence/${name}`), `Upload allowlist must retain cumulative ${name}`);
-  assert.ok(!workflow.includes('author-revision-evidence/**'), 'Artifact publication is an explicit allowlist');
+  assert.match(workflow, /name: Retired author revision trial/);
+  assert.match(workflow, /if: \$\{\{ false \}\}/);
+  assert.match(workflow, /permissions: \{\}/);
+  assert.doesNotMatch(workflow, /uses:|secrets\.|github\.token|NEXUS_API_KEY|node scripts|approve_trial|prior_run_id/);
+});
+
+test('retired main and CLI reject before environment, credentials, API, files or transport', async () => {
+  const env = new Proxy({}, { get() { throw Error('Environment must not be inspected'); } });
+  await assert.rejects(main(env), error => error.code === 'PROTOCOL_RETIRED');
+  await assert.rejects(runStage({ env }), error => error.code === 'PROTOCOL_RETIRED');
+  await assert.rejects(loadRunHistory(env), error => error.code === 'PROTOCOL_RETIRED');
+  const root = await mkdtemp(join(tmpdir(), 'nexus-retired-cli-'));
+  try {
+    const cli = spawnSync(process.execPath, [new URL('../scripts/run-author-revision-live.mjs', import.meta.url).pathname],
+      { cwd: root, encoding: 'utf8', env: { ...environment('revise'), GH_TOKEN: 'OFFLINE_GITHUB_SENTINEL' } });
+    assert.equal(cli.status, 1); assert.equal(JSON.parse(cli.stderr).code, 'PROTOCOL_RETIRED');
+    assert.equal(cli.stdout, ''); assert.doesNotMatch(cli.stderr, /PRIVATE_FAKE_TEST_KEY|OFFLINE_GITHUB_SENTINEL/);
+    assert.deepEqual(await readdir(root), []);
+  } finally { await rm(root, { recursive: true, force: true }); }
 });
 
 test('timeout retains partial safe bytes and late transport completion cannot modify final evidence', async t => {

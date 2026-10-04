@@ -1,0 +1,116 @@
+{
+  "protocol": "author-revision-v1",
+  "reviewerType": "assistant",
+  "reviewer": "NexusScribe recorded non-blind close read",
+  "nonBlind": true,
+  "fullCandidateRead": true,
+  "textSha256": "71dffb6a68d42c2fee674fc4d64019e678f5bf730173e9cc75ea6925e2195ce3",
+  "locked": true,
+  "items": [
+    {
+      "id": "physical_visibility_and_custody",
+      "status": "pass",
+      "explanation": "The opaque box is opened before the scraps are observed, and Xu Ning then closes and re-bands it before storing it in his bag. Four scraps, cabinet seventeen and its locked condition are preserved; opening the box is not confused with opening the cabinet.",
+      "evidence": [
+        {
+          "start": 184,
+          "end": 212,
+          "quote": "解下橡皮筋，掀开盒盖，托到老周面前。四片暗色纸屑躺在盒底"
+        },
+        {
+          "start": 346,
+          "end": 373,
+          "quote": "许宁合上盒盖，重新箍好橡皮筋，把纸盒放回工具袋最里层。"
+        },
+        {
+          "start": 329,
+          "end": 343,
+          "quote": "纸屑原样收着，柜子别自己开。"
+        }
+      ]
+    },
+    {
+      "id": "time_and_obligation",
+      "status": "pass",
+      "explanation": "The next-morning inquiry and 8:45 arrival remain. Looking at the old records is deferred and the next meeting remains tomorrow at nine; the candidate does not obtain records or fulfill the appointment. This chronology pass does not endorse the unchanged weak explanation for the delay, evaluated below.",
+      "evidence": [
+        {
+          "start": 0,
+          "end": 9,
+          "quote": "次日上午九点差一刻"
+        },
+        {
+          "start": 316,
+          "end": 329,
+          "quote": "明天上午我翻，你们九点来。"
+        },
+        {
+          "start": 373,
+          "end": 383,
+          "quote": "“明天九点。”他说。"
+        }
+      ]
+    },
+    {
+      "id": "knowledge_and_viewpoint",
+      "status": "pass",
+      "explanation": "The whole candidate was read against the original accepted chapter and three confirmed author facts. No left-ear hearing, repaired bell, disclosure of the old ticket to A Qing, identified sender or omniscient assertion was found. The ordinary chair/slipper sounds do not specify hearing in the deaf ear. These negative findings are fallible reader judgments; the quoted observations show the focal scene, not proof of all possible absences.",
+      "evidence": [
+        {
+          "start": 113,
+          "end": 128,
+          "quote": "里面椅子腿蹭地，拖鞋声由远及近"
+        },
+        {
+          "start": 463,
+          "end": 483,
+          "quote": "许宁低头看了一眼那片水痕，转身往街上走。"
+        }
+      ]
+    },
+    {
+      "id": "voice_and_professional_detail",
+      "status": "pass",
+      "explanation": "The voices remain economical: Xu Ning names the physical evidence, A Qing expresses impatience without aggression, and Old Zhou expresses care through handling rules. Opening, inspecting and re-securing the four scraps is a consequential physical-detail sequence rather than an expository occupation label. The revision no longer mentions tweezers or the hairspring box, so occupational specificity is weaker; this is a trade-off, not a claim of improved voice.",
+      "evidence": [
+        {
+          "start": 221,
+          "end": 248,
+          "quote": "“十七号柜底缝里夹出来的。”许宁说，“想问问旧记录。”"
+        },
+        {
+          "start": 329,
+          "end": 343,
+          "quote": "纸屑原样收着，柜子别自己开。"
+        },
+        {
+          "start": 400,
+          "end": 426,
+          "quote": "阿青把伞尖在石阶上磕了两下，说：“所以明天才知道。”"
+        }
+      ]
+    },
+    {
+      "id": "compression_without_flattening",
+      "status": "fail",
+      "explanation": "Compression introduces an immediate action contradiction: Xu Ning did not knock again, yet in the same sentence steps back and knocks three times. The original intervening inspection has been removed. This fails causal continuity despite meeting the count targets. The old assertion that last year’s records are boxed up and cannot be found today is repeated without making tomorrow’s availability more credible. Rain/bag beats are reduced but remain in the ending. No correction or second sample is allowed in this trial.",
+      "evidence": [
+        {
+          "start": 88,
+          "end": 113,
+          "quote": "许宁没再敲，退后半步，用指节在铁门下半部敲了三下。"
+        },
+        {
+          "start": 302,
+          "end": 322,
+          "quote": "去年的封箱了，今天翻不出来。明天上午我翻"
+        },
+        {
+          "start": 426,
+          "end": 463,
+          "quote": "许宁提了提工具袋。“明天才知道。”他重复。檐水还在滴，砸在石阶同一个位置。"
+        }
+      ]
+    }
+  ]
+}

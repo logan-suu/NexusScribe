@@ -1,0 +1,48 @@
+{
+  "sequence": 1,
+  "stage": "revise",
+  "action": "reviseProse",
+  "output": {
+    "text": "次日上午九点差一刻，雨停了，檐口还在滴水。许宁和阿青到寄存室时，铁门从里面拴着。窗玻璃上贴着一张手写纸条，字被雨水洇开一半，只认得“上午”和“稍候”。\n\n阿青说敲过了，没动静。许宁没再敲，退后半步，用指节在铁门下半部敲了三下。里面椅子腿蹭地，拖鞋声由远及近，门拉开一条缝，管理员老周探出半张脸，头发还压着睡痕。\n\n“寄存室九点开。”老周说。许宁从工具袋里取出那只纸盒，解下橡皮筋，掀开盒盖，托到老周面前。四片暗色纸屑躺在盒底，最大不过指甲盖。“十七号柜底缝里夹出来的。”许宁说，“想问问旧记录。”\n\n老周从门后取下老花镜架上，凑近看了几秒，没伸手碰。“十七号。”他重复一遍，“这排柜子的登记本在里屋柜顶，去年的封箱了，今天翻不出来。明天上午我翻，你们九点来。纸屑原样收着，柜子别自己开。”\n\n许宁合上盒盖，重新箍好橡皮筋，把纸盒放回工具袋最里层。“明天九点。”他说。老周点点头，门合拢，拴销落进槽里。阿青把伞尖在石阶上磕了两下，说：“所以明天才知道。”许宁提了提工具袋。“明天才知道。”他重复。檐水还在滴，砸在石阶同一个位置。许宁低头看了一眼那片水痕，转身往街上走。",
+    "chapterId": "ch2"
+  },
+  "outputSha256": "9ba2f81710cb941460eccc0679f2b35e034e7081f8d82775743a4deca3f29412",
+  "assessment": {
+    "status": "pass",
+    "checks": [
+      {
+        "id": "PRODUCTION_OUTPUT_SCHEMA",
+        "status": "pass"
+      },
+      {
+        "id": "PROSE_NONEMPTY_BOUNDED",
+        "status": "pass"
+      },
+      {
+        "id": "PROSE_NO_CODE_FENCES",
+        "status": "pass"
+      },
+      {
+        "id": "PROSE_NOT_JSON_WRAPPED",
+        "status": "pass"
+      },
+      {
+        "id": "HAN_350_500",
+        "status": "pass"
+      },
+      {
+        "id": "PARAGRAPHS_4_7",
+        "status": "pass"
+      }
+    ],
+    "stopReason": null,
+    "stats": {
+      "characters": 483,
+      "hanCharacters": 396,
+      "paragraphs": 5
+    },
+    "textSha256": "71dffb6a68d42c2fee674fc4d64019e678f5bf730173e9cc75ea6925e2195ce3",
+    "nextStage": "await_close_read",
+    "semanticStatus": "not_evaluated"
+  }
+}

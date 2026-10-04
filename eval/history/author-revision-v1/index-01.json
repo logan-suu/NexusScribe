@@ -1,0 +1,13 @@
+{
+  "protocol": "author-revision-v1",
+  "sourceSha": "780b0b576b66869b3f9b3cd52bebe642a14ca4ad",
+  "stage": "revise",
+  "sha256": {
+    "intent-01.json": "aa8f15a3c9de1485327385445c195aeb98aa49a6eb917cdc6c580dc2df6df930",
+    "request-01.json": "6b6e9e896fdb52006e17c5f3a7b10ea83cb45babeeee58b8f8c76f7ad9018b9d",
+    "raw-01.bin": "25f6800dc6de6cfaa0c7a5b5c138970e856c2b960f5e1cf106183cd709ffe0ae",
+    "dispatch-01.json": "4c71739ce39218e0b220aa5a84ac7ba8bbdafa723ba2dfeaa6cfcf2cc95bc7e1",
+    "completed-01.json": "5d7b427f52d13dbf55b1e5e53934b978962eaebee72f793df660a17740546571",
+    "ledger-01.json": "b5ecaefddf966cbbc3a21f36ace26c4b955f3eb7219f4b531c5728d13958f80e"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "protocol": "author-revision-v1",
+  "status": "stopped_after_close_read",
+  "recordedAt": "2026-10-04T06:46:40Z",
+  "sourceSha": "780b0b576b66869b3f9b3cd52bebe642a14ca4ad",
+  "sourceManifestFileSha256": "bf9124403214583274a2527ec9a704656e98e7cff809d0a844e615c9c51bee1b",
+  "sourceManifestObjectSha256": "061ae16da854ca476f80a8fd03e90f00f3dafaa68191ff154593fcb5f83170fb",
+  "ciRunId": "37183364576",
+  "runId": "37183679916",
+  "workflowUrl": "https://github.com/logan-suu/NexusScribe/actions/runs/37183679916",
+  "artifactId": 11295499600,
+  "artifactArchiveSha256": "184f37f1c2284c908e47ed4ee806a2703d9fe71c2039e5ad10c0a1793aa833bd",
+  "lifetimeAttemptLimit": 3,
+  "attemptedCalls": 1,
+  "stageStates": {
+    "revise": "received_objective_pass_reader_fail",
+    "extract": "not_run",
+    "review": "not_run"
+  },
+  "firstStopReason": "CLOSE_READ_compression_without_flattening",
+  "runtimeLedgerStatusPreserved": "awaiting_close_read",
+  "objectiveChecks": "pass",
+  "closeRead": "fail",
+  "qualityConclusion": "Targeted length/paragraph and visibility improvements, with a new causal contradiction; no literary-quality pass",
+  "authorAccepted": false,
+  "acceptedStateChanged": false,
+  "model": "deepseek-v4.1-flash",
+  "maxTokensPerRequest": 3000,
+  "thinking": "disabled",
+  "providerReportedUsage": {
+    "promptTokens": 3455,
+    "completionTokens": 369,
+    "totalTokens": 3824,
+    "reasoningTokens": 0
+  },
+  "elapsedMs": 3262.913649,
+  "monetaryCost": "unknown",
+  "retryAllowed": false,
+  "remainingNominalSlotsAuthorizeCalls": false,
+  "originalTextSha256": "6a58486c108fe32ac376f3d4f5bbd96483b7367300fa61c549aa5fca30142046",
+  "revisedTextSha256": "71dffb6a68d42c2fee674fc4d64019e678f5bf730173e9cc75ea6925e2195ce3",
+  "before": {
+    "hanCharacters": 691,
+    "characters": 833,
+    "paragraphs": 8
+  },
+  "after": {
+    "characters": 483,
+    "hanCharacters": 396,
+    "paragraphs": 5
+  }
+}

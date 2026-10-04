@@ -155,7 +155,7 @@ test('frozen manifest rejects altered files before any dispatch exists', async (
 test('CLI and public main remain credential-free read-only preflight; live/restart flags reject', async () => {
   for (const args of [['--live'], ['--offline', '--live'], ['--resume'], ['evidence-dir']])
     await assert.rejects(main(args), /OFFLINE_ONLY_NO_DISPATCH/);
-  const result = await main(['--offline']); assert.equal(result.liveCalls, 0); assert.equal(result.mode, 'offline_preparation_only');
+  const result = await main(['--offline']); assert.equal(result.liveCalls, 0); assert.equal(result.mode, 'offline_preparation_only'); assert.equal(result.liveRetired, true); assert.equal(result.historicalLiveAttempts, 1); assert.equal(result.additionalLiveAllowance, 0); assert.equal(result.nextStage, 'none_retired');
   const source = await readFile(resolve(root, 'scripts/run-author-revision-eval.mjs'), 'utf8');
   assert.doesNotMatch(source, /\bfetch\s*\(|createAgentService\s*\(|process\.env|writeFile\s*\(/);
   const cli = spawnSync(process.execPath, ['scripts/run-author-revision-eval.mjs', '--offline'], { cwd: root, encoding: 'utf8', env: {} });

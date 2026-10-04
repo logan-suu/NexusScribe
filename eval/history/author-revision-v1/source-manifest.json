@@ -1,8 +1,8 @@
 {
   "protocol": "author-revision-v1",
   "version": 1,
-  "status": "retired_consumed_offline_replay",
-  "authorization": "CONSUMED AND RETIRED. Exactly one live reviseProse request was followed by a failed mandatory close read. No extraction, review, retry, rerun, or new batch is authorized. Current sources support credential-free offline validation and explicitly injected fake replay only.",
+  "status": "preregistered_staged_trial",
+  "authorization": "One separately approved lifetime trial, at most three attempted requests in frozen revise/extract/review order, after exact-SHA successful CI and independent review. The revision is reported and close-read before extraction; a new extraction continuation decision gates review. No retries, extra batch, fallback, acceptance, or reuse of consumed multichapter allowance.",
   "hashEncoding": {
     "files": "SHA-256 of exact file bytes",
     "strings": "SHA-256 of UTF-8 string, no trimming or normalization",
@@ -11,7 +11,7 @@
   "settings": {
     "id": "author-revision-v1",
     "version": 1,
-    "mode": "retired_consumed_offline_replay",
+    "mode": "preregistered_staged_trial",
     "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
     "model": "deepseek-v4.1-flash",
     "maxCalls": 3,
@@ -94,9 +94,9 @@
     }
   ],
   "sha256": {
-    "eval/AUTHOR-REVISION-PROTOCOL.md": "13c442ac93013e3016c8ca82eb59198eaad43a2335e093efcb2a634beedb2803",
-    "scripts/run-author-revision-eval.mjs": "f51ffb366793182bfdb14a7ba29240ba9ea229ee9ebd8d1a05c053bc046e50e0",
-    "tests/author-revision-eval.test.js": "5bce12d0f990dfe43b5eff16f7f9ea27d1704bddedf43c62ce11fa1b42bb8102",
+    "eval/AUTHOR-REVISION-PROTOCOL.md": "dea73020569b7660a9cf0c709fd52304a52ccd87b38fb64c44b62a0804525b2d",
+    "scripts/run-author-revision-eval.mjs": "48312459a95c3e3ce3526a7e57d4d60c4b51b3af914260926edb02c9008bb35a",
+    "tests/author-revision-eval.test.js": "3b2623141159f4a5c040fef87750b923bfc51bedf755c7e63a181a76b0a0f5fd",
     "server/provider.js": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7",
     "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
     "eval/history/multichapter-v1/completed-05.json": "75a1ae40bb15047e7560c99f8d5ea41486a48c22276630ecbabf24698995d1da",
@@ -106,34 +106,8 @@
     "eval/history/multichapter-v1/source-manifest.json": "ce336473b0c9076d67a8e1c1befd53bb75feb5dde7250f49fe839b884e4e94c8",
     "eval/history/multichapter-v1/artifact-index.json": "d9cb3e816017897a67c0a3d79aa548f4bd01bc0ebcc4ccf4b79be27c3f8a2072",
     "eval/MULTICHAPTER-RESULTS.md": "00e6a844b8aa26cd2c3e6e66f87453f58a73d33974aa387ef9d7eb4ca46e3f73",
-    "scripts/run-author-revision-live.mjs": "f3edc9097bd880256175e2f12a7743aa0260cbb1b983d93c94d64acb8e0dfc55",
-    "tests/author-revision-live.test.js": "608ad26a74b2b37ed1e0ecc8af3c49c0aed738cf7bb537d17da4f351d6e7635c",
-    ".github/workflows/author-revision-trial.yml": "0a297ff7e5d1f72945f80a5eb4a1443c02f36578edb76b15795efb8f1e136990",
-    "eval/history/author-revision-v1/completed-01.json": "5d7b427f52d13dbf55b1e5e53934b978962eaebee72f793df660a17740546571",
-    "eval/history/author-revision-v1/dispatch-01.json": "4c71739ce39218e0b220aa5a84ac7ba8bbdafa723ba2dfeaa6cfcf2cc95bc7e1",
-    "eval/history/author-revision-v1/index-01.json": "42735742fb8cc7013b328c1d4d3ec0169f25210119fcb1892fe0522becec2968",
-    "eval/history/author-revision-v1/intent-01.json": "aa8f15a3c9de1485327385445c195aeb98aa49a6eb917cdc6c580dc2df6df930",
-    "eval/history/author-revision-v1/ledger-01.json": "b5ecaefddf966cbbc3a21f36ace26c4b955f3eb7219f4b531c5728d13958f80e",
-    "eval/history/author-revision-v1/raw-01.bin": "25f6800dc6de6cfaa0c7a5b5c138970e856c2b960f5e1cf106183cd709ffe0ae",
-    "eval/history/author-revision-v1/request-01.json": "6b6e9e896fdb52006e17c5f3a7b10ea83cb45babeeee58b8f8c76f7ad9018b9d",
-    "eval/history/author-revision-v1/source-manifest.json": "bf9124403214583274a2527ec9a704656e98e7cff809d0a844e615c9c51bee1b"
-  },
-  "retirement": {
-    "liveAttempts": 1,
-    "additionalLiveAllowance": 0,
-    "completedLiveActions": [
-      "reviseProse"
-    ],
-    "notRun": [
-      "extractMemory",
-      "reviewChapter"
-    ],
-    "stop": "mandatory_close_read_failed",
-    "sourceSha": "780b0b576b66869b3f9b3cd52bebe642a14ca4ad",
-    "runId": "37183679916",
-    "ciRunId": "37183364576",
-    "historicalManifestPath": "eval/history/author-revision-v1/source-manifest.json",
-    "historicalManifestFileSha256": "bf9124403214583274a2527ec9a704656e98e7cff809d0a844e615c9c51bee1b",
-    "historicalManifestObjectSha256": "061ae16da854ca476f80a8fd03e90f00f3dafaa68191ff154593fcb5f83170fb"
+    "scripts/run-author-revision-live.mjs": "605c871eb8bba74af2f9ea8bd5d3cbf71c648c059a66f9e0856ec55c42181cc4",
+    "tests/author-revision-live.test.js": "a9e2425f641956aabcd51ffdead66e7209254adfff8c617e35a68874a7a92ac9",
+    ".github/workflows/author-revision-trial.yml": "43417161a3c6370c8f97151d97b69aa9d486a1fb2e2f3c1caeba9800d0ca6911"
   }
 }
