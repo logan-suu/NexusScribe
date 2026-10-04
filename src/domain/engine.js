@@ -12,7 +12,8 @@ export function hash(text) { let n = 2166136261; for (const c of text) n = Math.
 const fail = (code, message) => { const e = new Error(message); e.code = code; throw e; };
 const chapter = (s,id) => s.chapters.find(c=>c.id===id) || fail('NOT_FOUND','章节不存在');
 const draft = (s,id) => s.drafts.find(d=>d.id===id) || fail('NOT_FOUND','草稿不存在');
-const needsSemanticReview = d => d.requiresSemanticReview===true || d.providerInfo?.isLive===true;
+const isManualDraft = d => Object.hasOwn(d,'manualSource')||d.provider==='author-manuscript'||d.providerInfo?.id==='author-manuscript';
+const needsSemanticReview = d => d.requiresSemanticReview===true || d.providerInfo?.isLive===true || Boolean(isManualDraft(d)&&d.context?.facts?.length);
 const relation = (s) => s.facts.find(f=>f.id==='relationship');
 const snapshot = (s) => copy({facts:s.facts,knowledge:s.knowledge,evidence:s.evidence,plans:s.plans,events:s.events,disclosures:s.disclosures});
 function revisionRecord(c,text,revision) {return {id:`${c.id}-r${revision}`,revision,text,hash:hash(text),paragraphs:text.split('\n').map((text,i)=>({id:`p${i+1}`,text}))};}
@@ -33,6 +34,8 @@ export function saveRevision(state,chapterId,text,expectedRevision) {
  const c=chapter(state,chapterId); if(expectedRevision!==c.revision) fail('STALE_REVISION','正文版本已变化，请重新加载');
  if(typeof text!=='string'||!text.trim()) fail('INVALID_TEXT','正文不能为空'); if(text===c.text)return copy(state);
  const s=copy(state), next=chapter(s,chapterId);next.text=text;next.revision++;next.syncStatus='PENDING';next.revisions.push(revisionRecord(next,text,next.revision));
+ const acceptance=state.commits.findLast(item=>item.kind==='draft_accept'&&item.chapterId===chapterId&&!state.commits.some(later=>later.undoes===item.id));
+ if(acceptance?.manualSource)next.status='DRAFT';
  s.derived=s.derived.map(x=>x.chapterId===chapterId?{...x,status:'stale'}:x);return s;
 }
 function source(c,quote){const pos=c.text.indexOf(quote),anchor=c.revisions.find(r=>r.revision===c.revision)?.paragraphs.find(p=>Number.isInteger(p.start)&&p.start<=pos&&p.end>=pos+quote.length);return {chapterId:c.id,revision:c.revision,revisionId:`${c.id}-r${c.revision}`,paragraphId:anchor?.id||`p${c.text.slice(0,Math.max(0,pos)).split('\n').length}`,quote,start:pos,end:pos+quote.length};}
@@ -72,7 +75,7 @@ export function commitPatch(state,p) {
  const prior=state.commits.find(c=>c.patchId===p.id);if(prior){if(prior.patchHash!==hash(JSON.stringify(p)))fail('IDEMPOTENCY_CONFLICT','同一操作 ID 对应不同补丁');return copy(state);}
  const check=validatePatch(state,p);if(!check.valid)fail('INVALID_PATCH',check.errors.join('；'));if(p.status==='noop')return copy(state);
  const s=copy(state),before=snapshot(s);applyOperations(s,p);s.version++;chapter(s,p.chapterId).syncStatus='CLEAN';chapter(s,p.chapterId).syncedRevision=p.revision;s.sequence++;
- s.commits.push({id:`commit-${s.sequence}`,kind:'patch',patchId:p.id,patchHash:hash(JSON.stringify(p)),version:s.version,summary:p.summary,chapterId:p.chapterId,revision:p.revision,before,after:snapshot(s),dependencies:[],operations:copy(p.operations)});return s;
+ s.commits.push({id:`commit-${s.sequence}`,kind:'patch',patchId:p.id,patchHash:hash(JSON.stringify(p)),version:s.version,summary:p.summary,chapterId:p.chapterId,revision:p.revision,...(p.authorInstruction?{authorInstruction:copy(p.authorInstruction),authority:'explicit_author_decision',authorTextHash:p.textHash,authorTextSnapshot:chapter(state,p.chapterId).text}:{}),before,after:snapshot(s),dependencies:[],operations:copy(p.operations)});return s;
 }
 export function undoCommit(state,commitId) {
  const c=state.commits.find(c=>c.id===commitId);if(!c)fail('NOT_FOUND','提交不存在');if(state.commits.some(x=>x.undoes===commitId))return copy(state);
@@ -80,7 +83,7 @@ export function undoCommit(state,commitId) {
  const later=state.commits.filter(x=>x.version>c.version&&!state.commits.some(y=>y.undoes===x.id));if(later.some(x=>x.dependencies?.includes(commitId))||JSON.stringify(snapshot(state))!==JSON.stringify(c.after))fail('DEPENDENT_COMMIT','后续提交依赖或改变了这份状态，不能直接逆操作');
  const s=copy(state),before=snapshot(s);Object.assign(s,copy(c.before));s.version++;s.sequence++;
  s.commits.push({id:`commit-${s.sequence}`,kind:'compensation',undoes:commitId,version:s.version,summary:'补偿撤销：保留全部正文和提交历史',before,after:snapshot(s),dependencies:[]});
- if(c.chapterId){chapter(s,c.chapterId).syncStatus='NEEDS_REVIEW';chapter(s,c.chapterId).syncedRevision=Math.max(1,(c.revision??2)-1);}return s;
+ if(c.chapterId){chapter(s,c.chapterId).syncStatus='NEEDS_REVIEW';chapter(s,c.chapterId).syncedRevision=Math.max(1,(c.revision??2)-1);if(c.kind==='draft_accept'&&c.manualSource)chapter(s,c.chapterId).status='DRAFT';}return s;
 }
 /** Author intent remains separate from world Canon; preserve saved values and provenance. */
 function authorConstitution(config = {}) {
@@ -167,6 +170,7 @@ export function generateDraft(state) {
 function issuesFor(s,d){const issues=[];const add=(ruleId,explanation)=>issues.push({ruleId,severity:'error',explanation,certainty:'deterministic',suggestedAction:'修正正文或重新生成并审查'});
  if(d.projectId!==s.projectId)add('PROJECT','草稿不属于当前项目');if(d.baseVersion!==s.version)add('STATE_VERSION','草稿基于旧状态版本');if(s.chapters.some(c=>d.chapterRevisions[c.id]!==c.revision))add('TEXT_VERSION','源正文已变更');if(s.chapters.some(c=>c.syncStatus!=='CLEAN'))add('UNSYNCED','源正文存在未解决的记忆同步');
  if(typeof d.text!=='string'||!d.text.trim())add('EMPTY_TEXT','草稿正文不能为空');if(!s.chapters.some(c=>c.id===(d.chapterId||'ch3')))add('CHAPTER','草稿目标章节不存在');
+ if(isManualDraft(d)){try{validateManualDraftSource(s,d);if(!manualSourceCurrent(s,d))add('MANUAL_SOURCE_CHANGED','已保存手写正文已变化，请拒绝此稿并从当前正文重新准备');if(s.pendingPatches.length)add('PENDING_PATCH','仍有待决补丁');if(s.chapters.slice(0,s.chapters.findIndex(c=>c.id===d.chapterId)).some(c=>c.status!=='ACCEPTED'))add('PREVIOUS_CHAPTER','请先明确接受前一章');}catch{add('MANUAL_SOURCE','手写稿来源或作者分类记录无效');}}
  if(d.memoryReviewSchema!==undefined&&!memoryCandidatesIntact(d))add('MEMORY_CANDIDATES_CHANGED','候选记忆原始主张或证据已变化，请重新提取与审查');
  if(isProseDraft(d)&&d.context?.contextSchemaVersion!==CONTEXT_SCHEMA_VERSION)add('CONTEXT_UPGRADE_REQUIRED',contextUpgradeMessage);
  else if(isProseDraft(d)&&!hasCurrentExtraction(s,d.id))add('EXTRACTION_REQUIRED','请对当前已保存正文重新提取候选记忆，再审查与接受');
@@ -178,6 +182,7 @@ export function editDraft(state,id,text){
  if(typeof text!=='string'||!text.trim())fail('INVALID_TEXT','正文不能为空');
  const s=copy(state),d=draft(s,id);
  if(!['DRAFT','IN_REVIEW'].includes(d.status))fail('DRAFT_STATUS','只能编辑待定草稿');
+ if(isManualDraft(d))fail('MANUAL_SOURCE_IMMUTABLE','手写候选保留原正文快照；请在章节编辑器修改并重新分类，再拒绝旧稿、重新准备');
  if(isProseDraft(d)){
   validateProseDraftRecord(d);
   if(text.length>MAX_PROSE_LENGTH)fail('INVALID_TEXT','正文超过 30000 字符上限');
@@ -191,9 +196,10 @@ export function editDraft(state,id,text){
  return s;
 }
 export function acceptDraft(state,id){const original=draft(state,id);if(original.status==='ACCEPTED')return copy(state);if(original.status==='REJECTED')fail('DRAFT_STATUS','拒绝的草稿不能接受');if(!currentStructuralReview(state,original)||!original.review?.passed||original.review.chapterId!==(original.chapterId||'ch3')||original.review.stagingHash!==hash(JSON.stringify(original.staging))||original.review.textHash!==hash(original.text)||original.review.stateVersion!==state.version||original.review.revision!==original.revision||issuesFor(state,original).length)fail('REVIEW_REQUIRED','请对当前正文与当前状态重新审查');
- if(needsSemanticReview(original)&&!currentSemanticReview(state,original))fail('SEMANTIC_REVIEW_REQUIRED','真实模型草稿需要当前版本的模型审查建议；模型审查不是独立真实性证明');
+ if(needsSemanticReview(original)&&!currentSemanticReview(state,original))fail('SEMANTIC_REVIEW_REQUIRED','此候选需要当前版本的模型审查建议；手写稿也须保留已确认设定门禁，模型审查不是独立真实性证明');
  if((needsSemanticReview(original)||original.modelReview)&&getFactReviewGate(state,id).some(x=>x.blocking&&!x.resolved))fail('FACT_DECISION_REQUIRED','已确认设定存在冲突或未完成的判断；请修正重审或逐条明确决定');
  if((needsSemanticReview(original)||original.modelReview)&&original.modelReview?.issues.some(i=>i.severity==='error'))fail('SEMANTIC_REVIEW_ERRORS','模型审查发现阻塞问题，请修改并重新审查');
+ if(isManualDraft(original))validateManualDraftSource(state,original);
  const memoryGate=getMemoryReviewGate(state,id);
  if(memoryGate.some(item=>!item.resolved))fail('MEMORY_DECISION_REQUIRED','每条候选记忆都需要当前审查下的原文摘录选择、拒绝或明确知情的未验证转述确认');
  const selectedIds=new Set(memoryGate.filter(item=>['keep_quote','attest_keep'].includes(item.decision?.action)).map(item=>item.candidateId));
@@ -203,7 +209,7 @@ export function acceptDraft(state,id){const original=draft(state,id);if(original
   s.events.push({...event,...(card?{label:`原文摘录 · 第 ${card.paragraphIndex+1} 段`,originalLabel:e.label,memoryKind:'textual_excerpt',memoryTrust:'textual_presence_only'}:{memoryKind:'author_attested_paraphrase',memoryTrust:'author_attested_unverified'}),status:'confirmed',draftId:id,memoryDecision:copy(decision),source:{chapterId:c.id,revision:c.revision,...(card?{paragraphId:card.paragraphId,start:card.start,end:card.end,quote:card.text}:{...(Object.hasOwn(e,'sourceParagraphIndex')?{paragraphId:`p${e.sourceParagraphIndex+1}`} : {}),...(isProseDraft(d)?{start:e.sourceStart,end:e.sourceEnd}:{}),quote:e.sourceQuote})}});
  }
 
- s.commits.push({id:`commit-${s.sequence}`,kind:'draft_accept',draftId:id,version:s.version,summary:'接受经当前版本审查的候选稿',factDecisions:copy(d.factDecisions??[]),memoryDecisions:copy(d.memoryDecisions??[]),memoryCandidateIds:d.staging.map(candidate=>candidate.id),memoryAuthorityIds:[...new Set((d.memoryDecisions??[]).map(decision=>decision.authorityId))],before,after:snapshot(s),dependencies:s.commits.filter(x=>x.kind==='patch'&&!s.commits.some(y=>y.undoes===x.id)).map(x=>x.id),chapterId:c.id,revision:c.revision});return s;}
+ s.commits.push({id:`commit-${s.sequence}`,kind:'draft_accept',draftId:id,version:s.version,summary:d.manualSource?'作者明确接受手写稿 · 未证明语义正确':'接受经当前版本审查的候选稿',...(d.manualSource?{manualSource:copy(d.manualSource),acceptance:{protocol:'manual-chapter-v1',authority:'explicit_author_decision',draftRevision:d.revision,textHash:hash(d.text),textSnapshot:d.text,sourceRevision:d.manualSource.revision,memoryExtraction:d.extraction.status,semanticStatus:d.modelReview?'model_reviewed_unverified':'not_evaluated'}}:{}),factDecisions:copy(d.factDecisions??[]),memoryDecisions:copy(d.memoryDecisions??[]),memoryCandidateIds:d.staging.map(candidate=>candidate.id),memoryAuthorityIds:[...new Set((d.memoryDecisions??[]).map(decision=>decision.authorityId))],before,after:snapshot(s),dependencies:s.commits.filter(x=>x.kind==='patch'&&!s.commits.some(y=>y.undoes===x.id)).map(x=>x.id),chapterId:c.id,revision:c.revision});return s;}
 export function rejectDraft(state,id){const s=copy(state),d=draft(s,id);if(d.status==='ACCEPTED')fail('DRAFT_STATUS','已接受草稿需要补偿撤销');archiveMemoryReview(d,'draft_rejected');clearDraftReviews(d);d.status='REJECTED';replaceMemoryCandidates(d,[]);if(isProseDraft(d))d.extraction={status:'cancelled',attempt:d.extraction.attempt+1,binding:null};return s;}
 
 /** Generic projects contain only user-supplied configuration, never demo Canon. */
@@ -276,7 +282,7 @@ function canonicalExtractionStaging(d,entries){
 export function validateProseDraftRecord(d){
  if(!isProseDraft(d))return true;
  const invalid=()=>fail('INVALID_PROSE_SNAPSHOT','已保存正文版本、提取绑定或原文定位无效');
- if(d.requiresExtraction!==true||typeof d.requiresSemanticReview!=='boolean'||d.requiresSemanticReview!==Boolean(d.providerInfo?.isLive)||['id','projectId','runId','chapterId'].some(k=>typeof d[k]!=='string'||!d[k].trim())||!positiveInteger(d.baseVersion)||!positiveInteger(d.revision)||typeof d.text!=='string'||!d.text.trim()||d.text.length>MAX_PROSE_LENGTH||d.textHash!==hash(d.text)||!Array.isArray(d.proseVersions)||d.proseVersions.length!==d.revision||!plainObject(d.context)||d.context.projectId!==d.projectId||d.context.version!==d.baseVersion||!Array.isArray(d.context.sources)||!plainObject(d.chapterRevisions)||!Array.isArray(d.staging)||!plainObject(d.extraction))invalid();
+ if(d.requiresExtraction!==true||typeof d.requiresSemanticReview!=='boolean'||d.requiresSemanticReview!==Boolean(d.providerInfo?.isLive||isManualDraft(d)&&d.context?.facts?.length)||['id','projectId','runId','chapterId'].some(k=>typeof d[k]!=='string'||!d[k].trim())||!positiveInteger(d.baseVersion)||!positiveInteger(d.revision)||typeof d.text!=='string'||!d.text.trim()||d.text.length>MAX_PROSE_LENGTH||d.textHash!==hash(d.text)||!Array.isArray(d.proseVersions)||d.proseVersions.length!==d.revision||!plainObject(d.context)||d.context.projectId!==d.projectId||d.context.version!==d.baseVersion||!Array.isArray(d.context.sources)||!plainObject(d.chapterRevisions)||!Array.isArray(d.staging)||!plainObject(d.extraction))invalid();
  if(!d.context.sources.some(c=>c.chapterId===d.chapterId)||d.context.sources.length!==Object.keys(d.chapterRevisions).length||new Set(d.context.sources.map(c=>c.chapterId)).size!==d.context.sources.length||d.context.sources.some(c=>!plainObject(c)||typeof c.chapterId!=='string'||typeof c.text!=='string'||!positiveInteger(c.revision)||d.chapterRevisions[c.chapterId]!==c.revision))invalid();
  for(const [index,version] of d.proseVersions.entries()){
   if(!exactKeys(version,['revision','text','textHash','paragraphs'])||version.revision!==index+1||typeof version.text!=='string'||!version.text.trim()||version.text.length>MAX_PROSE_LENGTH||version.textHash!==hash(version.text)||JSON.stringify(version.paragraphs)!==JSON.stringify(segmentProse(version.text)))invalid();
@@ -284,8 +290,11 @@ export function validateProseDraftRecord(d){
  const latest=d.proseVersions.at(-1);
  if(latest.text!==d.text||latest.textHash!==d.textHash)invalid();
  const x=d.extraction;
- if(!['pending','complete','failed','cancelled'].includes(x.status)||!Number.isSafeInteger(x.attempt)||x.attempt<0||Object.keys(x).some(k=>!['status','attempt','binding','provider','reviewNotes','stagingHash','stagingSnapshot','error'].includes(k)))invalid();
+ if(!['pending','complete','failed','cancelled','skipped'].includes(x.status)||!Number.isSafeInteger(x.attempt)||x.attempt<0||Object.keys(x).some(k=>!['status','attempt','binding','provider','reviewNotes','stagingHash','stagingSnapshot','error','authority'].includes(k)))invalid();
  if(x.binding!==null&&(!positiveInteger(x.attempt)||!extractionBindingMatches(x.binding,extractionBindingFor(d,d.baseVersion,d.chapterRevisions,d.context))))invalid();
+ if(x.status==='skipped'){
+  if(!d.manualSource||x.authority!=='explicit_author_decision'||!x.binding||d.staging.length||Object.keys(x).some(k=>!['status','attempt','binding','authority'].includes(k)))invalid();
+ }else if(Object.hasOwn(x,'authority'))invalid();
  if(x.status==='complete'){
   if(!x.binding||!validProvider(x.provider)||!Array.isArray(x.reviewNotes)||x.reviewNotes.length>30||x.reviewNotes.some(n=>typeof n!=='string'||!n.trim()||n.length>2000)||x.stagingHash!==hash(JSON.stringify(d.staging))||(Object.hasOwn(x,'stagingSnapshot')&&JSON.stringify(x.stagingSnapshot)!==JSON.stringify(d.staging))||Object.hasOwn(x,'error'))invalid();
   let canonical;
@@ -313,6 +322,49 @@ export function stageProseDraft(state,result,chapterId){
  return s;
 }
 
+/** Validate an author-selected manuscript's immutable origin against retained revisions and audit. */
+export function validateManualDraftSource(state,d){
+ if(!isManualDraft(d))return true;
+ const origin=d.manualSource,c=state.chapters.find(item=>item.id===d.chapterId);
+ const invalid=()=>fail('INVALID_MANUAL_SOURCE','手写稿需要可追溯的已保存正文与作者分类提交');
+ if(!exactKeys(origin,['protocol','authority','projectId','chapterId','revision','textHash','textSnapshot','patchId'])||origin.protocol!=='manual-chapter-v1'||origin.authority!=='explicit_author_selection'||origin.projectId!==state.projectId||origin.chapterId!==d.chapterId||!positiveInteger(origin.revision)||origin.textHash!==hash(origin.textSnapshot)||!c?.revisions.some(r=>r.revision===origin.revision&&r.text===origin.textSnapshot)||d.proseVersions?.[0]?.text!==origin.textSnapshot||d.text!==origin.textSnapshot||d.revision!==1||d.proseVersions?.length!==1||d.provider!=='author-manuscript'||d.providerInfo?.isLive!==false)invalid();
+ const commit=state.commits.find(item=>item.patchId===origin.patchId&&item.kind==='patch'&&item.chapterId===origin.chapterId&&item.revision===origin.revision);
+ if(!commit||commit.authority!=='explicit_author_decision'||!['local_prose','author_fact'].includes(commit.authorInstruction?.intent)||commit.authorTextHash!==origin.textHash||commit.authorTextSnapshot!==origin.textSnapshot)invalid();
+ return true;
+}
+function manualSourceCurrent(state,d){const c=chapter(state,d.chapterId),commit=state.commits.find(item=>item.patchId===d.manualSource.patchId);return Boolean(commit&&!state.commits.some(item=>item.undoes===commit.id)&&c.revision===d.manualSource.revision&&c.text===d.manualSource.textSnapshot);}
+/** Explicitly stage the exact author-classified saved manuscript, with zero new memories. */
+export function stageManualDraft(state,chapterId){
+ if(state.mode!=='custom')fail('PROJECT_MODE','手写稿入口仅用于自定义项目');
+ const c=chapter(state,chapterId);
+ if(state.pendingPatches.length)fail('PENDING_PATCH','请先处理待决补丁');
+ if(state.chapters.slice(0,state.chapters.findIndex(item=>item.id===chapterId)).some(item=>item.status!=='ACCEPTED'))fail('PREVIOUS_CHAPTER','请先明确接受前一章');
+ if(state.chapters.some(item=>item.syncStatus!=='CLEAN'))fail('UNSYNCED_TEXT','请先保存并按作者分类提交所有正文修改');
+ if(state.drafts.some(d=>d.chapterId===chapterId&&!['ACCEPTED','REJECTED'].includes(d.status)))fail('PENDING_DRAFT','本章已有待定候选，请先处理或拒绝；不能用新手写稿绕过旧审阅');
+ const authorCommit=state.commits.findLast(item=>item.kind==='patch'&&item.chapterId===chapterId&&item.revision===c.revision&&item.authority==='explicit_author_decision'&&['local_prose','author_fact'].includes(item.authorInstruction?.intent)&&item.authorTextHash===hash(c.text)&&item.authorTextSnapshot===c.text&&!state.commits.some(later=>later.undoes===item.id));
+ if(!authorCommit)fail('AUTHOR_CLASSIFICATION_REQUIRED','请先按作者分类保存并提交当前正文版本，再准备手写稿');
+ let s=stageProseDraft(state,{text:c.text,context:getContext(state),provider:{id:'author-manuscript',isLive:false}},chapterId);
+ const d=s.drafts.at(-1);
+ d.manualSource={protocol:'manual-chapter-v1',authority:'explicit_author_selection',projectId:s.projectId,chapterId,revision:c.revision,textHash:hash(c.text),textSnapshot:c.text,patchId:authorCommit.patchId};
+ d.requiresSemanticReview=Boolean(d.context.facts.length);
+ return skipManualMemoryExtraction(s,d.id);
+}
+/** Zero-memory is an explicit author choice, never a forged successful extraction. */
+export function skipManualMemoryExtraction(state,id){
+ const original=draft(state,id);
+ if(!original.manualSource)fail('MANUAL_DRAFT_REQUIRED','只有作者明确准备的手写稿可选择不提取记忆');
+ if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能修改待定手写稿的记忆选择');
+ validateManualDraftSource(state,original);validateProseDraftRecord(original);
+ if(!manualSourceCurrent(state,original))fail('MANUAL_SOURCE_CHANGED','已保存正文已变化，请拒绝旧手写稿并重新准备');
+ if(!extractionOriginCurrent(state,original))fail('STALE_EXTRACTION','请先更新手写稿的参考上下文，再明确选择不提取记忆');
+ const s=copy(state),d=draft(s,id);
+ archiveMemoryReview(d,'manual_extraction_skipped');clearDraftReviews(d);replaceMemoryCandidates(d,[]);
+ d.extraction={status:'skipped',attempt:d.extraction.attempt+1,binding:null,authority:'explicit_author_decision'};
+ // Build the binding directly: the skipped record is validated once its binding exists.
+ d.extraction.binding=extractionBindingFor(d,s.version,d.chapterRevisions,d.context);
+ return s;
+}
+
 /** Pure request binding; call after beginMemoryExtraction has been saved. */
 export function createExtractionBinding(state,draftId){
  const d=draft(state,draftId);
@@ -336,6 +388,7 @@ export function refreshDraftContext(state,draftId){
  validateProseDraftRecord(original);
  if(original.projectId!==state.projectId)fail('PROJECT_MISMATCH','不能更新另一项目的候选稿');
  chapter(state,original.chapterId);
+ if(original.manualSource&&!manualSourceCurrent(state,original))fail('MANUAL_SOURCE_CHANGED','已保存正文已变化，请拒绝旧手写稿并重新准备；更新参考上下文不会覆盖新正文');
  if(state.chapters.some(c=>c.syncStatus!=='CLEAN'))fail('UNSYNCED_TEXT','请先处理源正文与故事记忆的同步问题，再更新候选上下文');
  if(extractionOriginCurrent(state,original))return copy(state);
  const s=copy(state),d=draft(s,draftId);
@@ -344,6 +397,7 @@ export function refreshDraftContext(state,draftId){
  Object.assign(d.memoryArchives.at(-1),{reason:'context_refreshed',contextBinding});
  clearDraftReviews(d);replaceMemoryCandidates(d,[]);
  d.baseVersion=s.version;d.chapterRevisions=Object.fromEntries(s.chapters.map(c=>[c.id,c.revision]));d.context=getContext(s);
+ if(d.manualSource)d.requiresSemanticReview=Boolean(d.context.facts.length);
  d.extraction={status:'pending',attempt:d.extraction.attempt+1,binding:null};
  return s;
 }
@@ -391,7 +445,7 @@ export function markExtractionFailure(state,draftId,expected,status='failed'){
 export function hasCurrentExtraction(state,draftId){
  const d=draft(state,draftId);
  if(!isProseDraft(d))return true;
- try{return validateProseDraftRecord(d)&&d.extraction.status==='complete'&&extractionOriginCurrent(state,d)&&extractionBindingMatches(d.extraction.binding,createExtractionBinding(state,draftId));}catch{return false;}
+ try{return validateProseDraftRecord(d)&&['complete','skipped'].includes(d.extraction.status)&&extractionOriginCurrent(state,d)&&extractionBindingMatches(d.extraction.binding,createExtractionBinding(state,draftId));}catch{return false;}
 }
 
 function reviewExtractionSnapshot(extraction){const value=copy(extraction);if(value)delete value.stagingSnapshot;return value;}

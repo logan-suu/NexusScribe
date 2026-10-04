@@ -23,3 +23,6 @@
 @media(max-width:650px){.sidebar .side-bottom{display:block;margin-top:12px;padding:10px 2px 0}.sidebar .side-bottom p{display:none}.sidebar .side-bottom .text-button{min-height:36px;padding:6px 0}}
 
 .quote-card{margin:16px 0;padding:14px;border:1px solid #a4b7a2;border-radius:5px;background:#f4f7f0}.quote-card h4,.memory-model-advice h4{margin:0 0 10px;font-size:13px}.quote-card .quote-context{border-left:2px solid #d4dbcf;padding-left:10px}.quote-card .quote-context blockquote{background:#f7f8f3;border-left:0;font-size:12px;color:#596357}.memory-paraphrase{padding-bottom:8px;border-bottom:1px solid var(--line)}.memory-model-advice{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px}.memory-attestation{display:flex;align-items:flex-start;gap:10px;margin:18px 0;padding:14px;background:#fff0db;border:1px solid #dbc49f;border-radius:5px;font-size:13px;line-height:1.8;cursor:pointer}.memory-attestation input{flex:0 0 auto;width:18px;height:18px;margin:4px 0 0}.accepted-memory-list{padding-left:20px}.accepted-memory-list>li{margin:16px 0}.memory-actions .primary[aria-pressed="true"]{color:var(--pine)}
+
+/* Author-owned actions remain reachable beside the existing editor controls. */
+.editor-actions{flex-wrap:wrap}.editor-actions button{max-width:100%;white-space:normal}.draft-meta,.draft .fine{overflow-wrap:anywhere}
