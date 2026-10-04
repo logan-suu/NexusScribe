@@ -5,8 +5,9 @@
     "eval/ISOLATED-MEMORY-SUPPORT-PROTOCOL.md": "09248c1744d99cdf38e678dc8c14364daf777903847e64824faa46a95bb3f1c1",
     "eval/isolated-memory-support-fixtures.mjs": "c0e8548e3f3c9f9bbe46986d09f525f2c6ce7baa53a5d25cc0b538de3937ac32",
     "scripts/isolated-memory-support-eval.mjs": "ea1edac06b234f5474d7e45cbfc939dc6fb6c6e818cc5aa423c95295927cb97e",
-    "tests/isolated-memory-support-eval.test.js": "d36d4339eb8f3b6cf8ef22a491cf2066b2ba14aab8ef1541fab02a4f5b6f1ff5",
+    "tests/isolated-memory-support-eval.test.js": "18324c012f6248c2d72ed8e40dca118eb7d95fc129b7b983f08964c89fe5e95a",
     "server/provider.js": "8c0ed8c3ae03854f598a15faeebe335d9457577eb61fc0678f50d53f2312cb71"
   },
-  "authorization": "Offline-prepared only. No live approval is conferred by this manifest. A future separately approved first-attempt run must use this exact reviewed source freeze."
+  "authorization": "Offline-prepared only. No live approval is conferred by this manifest. A future separately approved first-attempt run must use this exact reviewed source freeze.",
+  "maintenanceNote": "Workflow option assertion extended for the separately authorized multichapter scope after this completed pilot. Original frozen run sources and evidence remain unchanged at the commits recorded in its results; this maintenance update grants no live-run authorization."
 }
