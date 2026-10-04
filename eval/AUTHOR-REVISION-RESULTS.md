@@ -1,8 +1,17 @@
 # Author-directed revision: one call, stopped at close read
 
+## Erratum — 4 October 2026
+
+This source-based correction supersedes two interpretations in the [original report at `e898f67`](https://github.com/logan-suu/NexusScribe/blob/e898f67f44d3da7777ed6b28ec39f3e8c32091c9/eval/AUTHOR-REVISION-RESULTS.md). The analysis below is updated openly; the raw responses, request bodies, normalized prose, checkpoints, locked close read, terminal outcome, artifact index and their hashes are unchanged.
+
+1. **Occupational-detail attribution:** The tweezers and the box formerly used for a hairspring occur in [chapter 1, paragraph 3](history/multichapter-v1/completed-01.json) (`/output/text`), including `右手从工具袋里取出一把镊子，又摸出一只装过游丝的空纸盒`. Neither reference appears in [the original chapter 2](history/multichapter-v1/completed-05.json) (`/output/text`), which is the revision target. Their absence from the revised chapter cannot establish detail lost during this revision. The revised scene adds little occupation-specific detail, but repeating chapter-1 props is not itself a quality requirement.
+2. **Knocking-sequence interpretation:** The original chapter 2, paragraphs 2–3, separates `许宁没去敲门。` from `“他应该在里屋。”许宁说。` with inspection of the note and window before he knocks. The [revision, paragraph 2](history/author-revision-v1/revised-chapter-2.txt), compresses the sequence to `许宁没再敲，退后半步，用指节在铁门下半部敲了三下。` This is an apparent contradiction and an unclear transition, not incontrovertible proof of a logical contradiction: a charitable reader can infer a brief pause or a changed knocking position. The original report overstated the certainty of this interpretation.
+
+The historical `compression_without_flattening` failure and stop remain valid at the trial's acceptance threshold: the [frozen first-stage rule](history/author-revision-v1/source-manifest.json) stops on a failed **or uncertain** close read. The current reading is a causal-clarity/needs-edit judgment, not a semantic proof or a literary-quality pass. The stronger wording in [`close-read.json`](history/author-revision-v1/close-read.json) (`voice_and_professional_detail` and `compression_without_flattening`) and [`outcome.json`](history/author-revision-v1/outcome.json) (`qualityConclusion`) is retained as the original assessment and must be read with this erratum. No new model request, replacement sample, extraction, review or acceptance was performed for this correction.
+
 ## Result
 
-The one-shot `author-revision-v1` trial stopped after its first model request. It repaired the opaque-box action and met the requested length/paragraph bounds, but introduced a direct action contradiction. **No literary-quality pass.** Extraction and review were not run, no second draft was requested, and neither the chapter nor any memory was accepted.
+The one-shot `author-revision-v1` trial stopped after its first model request. It repaired the opaque-box action and met the requested length/paragraph bounds, but left the compressed knocking sequence causally unclear. **No literary-quality pass.** Extraction and review were not run, no second draft was requested, and neither the chapter nor any memory was accepted.
 
 | Measure | Original | Revised | Target |
 | --- | ---: | ---: | --- |
@@ -15,12 +24,12 @@ The [exact revised text](history/author-revision-v1/revised-chapter-2.txt) is un
 ## What improved, and what failed
 
 - The paper box is explicitly opened before Old Zhou sees the scraps, then closed, re-banded and returned to Xu Ning's bag. Four scraps, cabinet seventeen, the locked cabinet and tomorrow's nine-o'clock appointment remain
-- Compression creates this adjacent contradiction: `许宁没再敲，退后半步，用指节在铁门下半部敲了三下。` It says he did not knock again and then has him knock three times in the same sentence. This is the blocking causal-continuity failure
+- Compression creates an apparent contradiction in `许宁没再敲，退后半步，用指节在铁门下半部敲了三下。` The sentence does not clearly bridge refraining from knocking and then knocking three times. A pause or changed knocking position is inferable, so this remains a blocking causal-clarity/needs-edit judgment under the frozen threshold, not proof of an impossible action
 - The previous weak delay explanation, `去年的封箱了，今天翻不出来`, remains without explaining why tomorrow changes availability. Meeting the numeric bounds did not repair this weakness
 - The non-blind assistant reading found no added left-ear hearing, working broken bell, old-ticket disclosure or identified sender. This is a fallible whole-text reading, not independent proof of semantic consistency
-- Concrete box handling still serves the scene and dialogue remains economical. Occupational specificity is weaker after removing the tweezers/hairspring-box references; the report does not call that an improvement
+- Concrete box handling still serves the scene and dialogue remains economical. The revision adds little occupation-specific detail. The tweezers/hairspring-box references belong to chapter 1, not the original chapter 2; their absence is not evidence of detail removed by this revision
 
-The preregistered compression/causal-continuity item failed. No later model self-review was used to override it, and no keyword or schema check was treated as semantic truth.
+The preregistered compression/causal-continuity item remains a recorded failure; the revised interpretation above still does not meet its pass threshold. No later model self-review was used to override it, and no keyword or schema check was treated as semantic truth.
 
 ## Exact execution and retention
 
@@ -36,6 +45,6 @@ The consumed live entrypoint is retired. Credential-free replay tests remain ava
 
 ## Design consequence and next useful change
 
-Keep revision as a proposal requiring an author decision. One tightly specified full-chapter rewrite can meet counts and fix a named defect while creating a new contradiction elsewhere; adding another broad model judge would not make this case reliable.
+Keep revision as a proposal requiring an author decision. One tightly specified full-chapter rewrite can meet counts and fix a named defect while leaving another action transition in need of editing; adding another broad model judge would not make this case reliable.
 
 The current proposal panel offers compare/adopt/discard, but no author edit before adoption. A useful next iteration is a local author-edit layer on the proposal: keep the exact model output immutable, show author changes and fresh counts, then confirm adoption of that edited text with all existing downstream invalidation. Length targets should produce transparent deterministic warnings, not a quality badge. This would let an author fix this sentence directly without another paid request. It is a recommendation, not a shipped capability or authorization for a new model batch.
