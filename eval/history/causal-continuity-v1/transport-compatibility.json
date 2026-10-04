@@ -1,0 +1,63 @@
+{
+  "protocol": "causal-continuity-v1",
+  "inspection": "offline_injected_fakes_only",
+  "realNetworkCalls": 0,
+  "fakeTransportCalls": 2,
+  "priorSuccessfulRun": "37183679916",
+  "currentFailedRun": "37221574803",
+  "endpointIdentical": true,
+  "priorNonMessageSettings": {
+    "model": "deepseek-v4.1-flash",
+    "max_tokens": 3000,
+    "thinking": {
+      "type": "disabled"
+    },
+    "temperature": 0.7
+  },
+  "currentNonMessageSettings": {
+    "model": "deepseek-v4.1-flash",
+    "max_tokens": 3000,
+    "thinking": {
+      "type": "disabled"
+    },
+    "temperature": 0.7
+  },
+  "nonMessageSettingsIdentical": true,
+  "messageDifferences": {
+    "priorAction": "reviseProse",
+    "currentAction": "generateProse",
+    "systemIdentical": false,
+    "userIdentical": false,
+    "priorBodyUtf8Bytes": 14797,
+    "currentBodyUtf8Bytes": 6713
+  },
+  "transportDifferences": {
+    "priorProviderExplicitHeaders": [
+      "content-type",
+      "user-agent",
+      "x-opencode-session"
+    ],
+    "newTrialExplicitHeaders": [
+      "content-type"
+    ],
+    "missingExplicitHeaders": [
+      "user-agent",
+      "x-opencode-session"
+    ],
+    "priorUserAgent": "NexusScribe-demo/0.1",
+    "priorSessionIsUuid": true,
+    "methodIdentical": true,
+    "redirectIdentical": true,
+    "contentTypeIdentical": true,
+    "authorizationValuesInspected": false
+  },
+  "providerSourceSha256": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7",
+  "errorBodyRetained": false,
+  "safeFailureMetadata": {
+    "httpStatus": 400,
+    "finishReason": "unknown",
+    "usage": {},
+    "receivedBytes": 195
+  },
+  "conclusion": "The new harness omitted explicit User-Agent and x-opencode-session headers used by successful transports. Missing session metadata is a plausible compatibility cause, not established as the HTTP 400 cause because the provider error body was not retained. The runner used Node fetch, so an implementation default User-Agent may still have been sent. No retry or model-quality inference."
+}

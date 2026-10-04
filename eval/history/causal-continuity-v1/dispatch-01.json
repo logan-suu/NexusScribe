@@ -1,0 +1,8 @@
+{
+  "protocol": "causal-continuity-v1",
+  "sequence": 1,
+  "runId": "37221574803",
+  "requestSha256": "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+  "attemptedOrUncertain": true,
+  "cumulativeAttempts": 1
+}

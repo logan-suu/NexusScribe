@@ -1,0 +1,11 @@
+{
+  "protocol": "causal-continuity-v1",
+  "sourceSha": "ac2ada602243623db4a002fe346c86d92cab7cf2",
+  "sequence": 1,
+  "sha256": {
+    "intent-01.json": "7ca6c64a9be4a21901f4ad4a0819da5e5132f5c88cbbc8818dbe6135a4287f7f",
+    "dispatch-01.json": "940699db5b9050f86d4a0a5c3734a29a7c90e8c97e429fed2acd9a239d7066e0",
+    "response-meta-01.json": "5050edbecbd1620cc8a763ba48ef9c1213d0c206d2569784d1e778d5cfe8ea7a",
+    "ledger-01.json": "4b0406178d9fb8039cbc30cafd5590e565746dfefb7cde5257b7499ac1ca9130"
+  }
+}

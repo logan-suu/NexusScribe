@@ -1,72 +1,13 @@
-name: One-shot causal continuity comparison
-run-name: causal-continuity-v1/call-${{ inputs.call }}
+name: Retired causal continuity comparison
+run-name: causal-continuity-v1/retired
+# Consumed by run 37221574803 at ac2ada602243623db4a002fe346c86d92cab7cf2.
+# First request returned HTTP 400. No retries, continuation or new batch.
 on:
   workflow_dispatch:
-    inputs:
-      call:
-        description: Frozen call number, consecutive once only
-        type: choice
-        options: ['1', '2', '3', '4', '5', '6']
-        required: true
-      ci_run:
-        description: Successful CI run for this exact source SHA
-        type: string
-        required: true
-      prior_run:
-        description: Previous successful trial run (empty for call 1)
-        type: string
-        required: false
-      gates_json:
-        description: Locked masked individual and applicable pairwise reading JSON
-        type: string
-        required: false
-      approved:
-        description: User-approved single lifetime max-six protocol, any failure stops
-        type: boolean
-        default: false
-        required: true
-      balance_off:
-        description: Existing user confirmation that Go Use balance is OFF still applies
-        type: boolean
-        default: false
-        required: true
-permissions:
-  contents: read
-  actions: read
-concurrency:
-  group: causal-continuity-v1-lifetime
-  cancel-in-progress: false
+permissions: {}
 jobs:
-  one-call:
-    if: ${{ inputs.approved && inputs.balance_off && github.run_attempt == 1 }}
+  retired:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 6
     steps:
-      - name: Check out frozen source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          persist-credentials: false
-      - name: Set up Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '22'
-      - name: Execute at most one frozen request
-        env:
-          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-          GH_TOKEN: ${{ github.token }}
-          NEXUS_CAUSAL_APPROVED: ${{ inputs.approved }}
-          NEXUS_OVERAGE_CONFIRMED_OFF: ${{ inputs.balance_off }}
-          NEXUS_CALL: ${{ inputs.call }}
-          NEXUS_CI_RUN_ID: ${{ inputs.ci_run }}
-          NEXUS_PRIOR_RUN_ID: ${{ inputs.prior_run }}
-          NEXUS_GATES_JSON: ${{ inputs.gates_json }}
-        run: node scripts/run-causal-continuity.mjs
-      - name: Preserve immutable synthetic evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: causal-continuity-v1-call-${{ inputs.call }}
-          path: causal-evidence/
-          if-no-files-found: warn
-          retention-days: 30
-          overwrite: false
+      - run: echo 'RETIRED - no remaining live authorization'

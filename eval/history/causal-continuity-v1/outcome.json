@@ -1,0 +1,22 @@
+{
+  "protocol": "causal-continuity-v1",
+  "status": "retired_operational_failure",
+  "liveAttempts": 1,
+  "remainingLiveAllowance": 0,
+  "completedPairs": 0,
+  "maskedReads": 0,
+  "sourceSha": "ac2ada602243623db4a002fe346c86d92cab7cf2",
+  "reviewedPrHead": "0c3547fbe5a72a09cc9dfe75821eaf63ff0b4fef",
+  "runId": "37221574803",
+  "ciRunId": "37221072369",
+  "stop": "HTTP_400_UPSTREAM_ERROR",
+  "qualityConclusion": "No retained or evaluated prose and no comparison; intervention untested",
+  "usage": "unknown, not zero",
+  "currencyCost": "unknown, not zero",
+  "errorBodyRetained": false,
+  "transportDiscrepancy": "New harness omitted explicit User-Agent and x-opencode-session headers from successful provider transport",
+  "causeEstablished": false,
+  "nextLiveAuthorization": false,
+  "retainedProseOutputs": 0,
+  "providerSideGeneration": "unknown"
+}

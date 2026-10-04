@@ -1,0 +1,17 @@
+{
+  "protocol": "causal-continuity-v1",
+  "sourceSha": "ac2ada602243623db4a002fe346c86d92cab7cf2",
+  "sha256": {
+    "dispatch-01.json": "940699db5b9050f86d4a0a5c3734a29a7c90e8c97e429fed2acd9a239d7066e0",
+    "index-01.json": "38519c7817d8bb8e01a09644848e21e907c45b157e7eff2350b8e5d38cdcb1b7",
+    "intent-01.json": "7ca6c64a9be4a21901f4ad4a0819da5e5132f5c88cbbc8818dbe6135a4287f7f",
+    "ledger-01.json": "4b0406178d9fb8039cbc30cafd5590e565746dfefb7cde5257b7499ac1ca9130",
+    "outcome.json": "a9d5cc7b2d38cd2cdc59c8c96c09ec7dedb0f01679c379592e3d7741757df5ff",
+    "response-meta-01.json": "5050edbecbd1620cc8a763ba48ef9c1213d0c206d2569784d1e778d5cfe8ea7a",
+    "source-manifest.json": "c9d91f02bbc532d5679fded6feb4155820619f286e39b73a62123aad7c1ab943",
+    "source-protocol.md": "f68338be208efef92b9dac9b0121fedf3affb51e02c7ccdc4704560f16db1e47",
+    "source-runner.mjs": "99e7b6e5b63039981a950ac676276cf4b911250be57d45af2b4dc4e08a79741d",
+    "source-workflow.yml": "c14894c8ef448da8eeed3f33b3765017a17e68a4c8cf756ae13f1ff4f0b07415",
+    "transport-compatibility.json": "8a3338e568736aa6fd4bc50c1115671d380033369b03f45850abc75fc38f1f33"
+  }
+}
