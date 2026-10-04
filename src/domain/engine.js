@@ -35,7 +35,7 @@ export function saveRevision(state,chapterId,text,expectedRevision) {
  if(typeof text!=='string'||!text.trim()) fail('INVALID_TEXT','正文不能为空'); if(text===c.text)return copy(state);
  const s=copy(state), next=chapter(s,chapterId);next.text=text;next.revision++;next.syncStatus='PENDING';next.revisions.push(revisionRecord(next,text,next.revision));
  const acceptance=state.commits.findLast(item=>item.kind==='draft_accept'&&item.chapterId===chapterId&&!state.commits.some(later=>later.undoes===item.id));
- if(acceptance?.manualSource)next.status='DRAFT';
+ if(acceptance?.manualSource||acceptance?.acceptance?.protocol==='prose-only-v1')next.status='DRAFT';
  s.derived=s.derived.map(x=>x.chapterId===chapterId?{...x,status:'stale'}:x);return s;
 }
 function source(c,quote){const pos=c.text.indexOf(quote),anchor=c.revisions.find(r=>r.revision===c.revision)?.paragraphs.find(p=>Number.isInteger(p.start)&&p.start<=pos&&p.end>=pos+quote.length);return {chapterId:c.id,revision:c.revision,revisionId:`${c.id}-r${c.revision}`,paragraphId:anchor?.id||`p${c.text.slice(0,Math.max(0,pos)).split('\n').length}`,quote,start:pos,end:pos+quote.length};}
@@ -83,7 +83,7 @@ export function undoCommit(state,commitId) {
  const later=state.commits.filter(x=>x.version>c.version&&!state.commits.some(y=>y.undoes===x.id));if(later.some(x=>x.dependencies?.includes(commitId))||JSON.stringify(snapshot(state))!==JSON.stringify(c.after))fail('DEPENDENT_COMMIT','后续提交依赖或改变了这份状态，不能直接逆操作');
  const s=copy(state),before=snapshot(s);Object.assign(s,copy(c.before));s.version++;s.sequence++;
  s.commits.push({id:`commit-${s.sequence}`,kind:'compensation',undoes:commitId,version:s.version,summary:'补偿撤销：保留全部正文和提交历史',before,after:snapshot(s),dependencies:[]});
- if(c.chapterId){chapter(s,c.chapterId).syncStatus='NEEDS_REVIEW';chapter(s,c.chapterId).syncedRevision=Math.max(1,(c.revision??2)-1);if(c.kind==='draft_accept'&&c.manualSource)chapter(s,c.chapterId).status='DRAFT';}return s;
+ if(c.chapterId){chapter(s,c.chapterId).syncStatus='NEEDS_REVIEW';chapter(s,c.chapterId).syncedRevision=Math.max(1,(c.revision??2)-1);if(c.kind==='draft_accept'&&(c.manualSource||c.acceptance?.protocol==='prose-only-v1'))chapter(s,c.chapterId).status='DRAFT';}return s;
 }
 /** Author intent remains separate from world Canon; preserve saved values and provenance. */
 function authorConstitution(config = {}) {
@@ -173,7 +173,7 @@ function issuesFor(s,d){const issues=[];const add=(ruleId,explanation)=>issues.p
  if(isManualDraft(d)){try{validateManualDraftSource(s,d);if(!manualSourceCurrent(s,d))add('MANUAL_SOURCE_CHANGED','已保存手写正文已变化，请拒绝此稿并从当前正文重新准备');if(s.pendingPatches.length)add('PENDING_PATCH','仍有待决补丁');if(s.chapters.slice(0,s.chapters.findIndex(c=>c.id===d.chapterId)).some(c=>c.status!=='ACCEPTED'))add('PREVIOUS_CHAPTER','请先明确接受前一章');}catch{add('MANUAL_SOURCE','手写稿来源或作者分类记录无效');}}
  if(d.memoryReviewSchema!==undefined&&!memoryCandidatesIntact(d))add('MEMORY_CANDIDATES_CHANGED','候选记忆原始主张或证据已变化，请重新提取与审查');
  if(isProseDraft(d)&&d.context?.contextSchemaVersion!==CONTEXT_SCHEMA_VERSION)add('CONTEXT_UPGRADE_REQUIRED',contextUpgradeMessage);
- else if(isProseDraft(d)&&!hasCurrentExtraction(s,d.id))add('EXTRACTION_REQUIRED','请对当前已保存正文重新提取候选记忆，再审查与接受');
+ else if(isProseDraft(d)&&!hasCurrentExtraction(s,d.id))add('EXTRACTION_REQUIRED','请对当前已保存正文提取候选记忆，或明确选择不提取，再审查与接受');
  for(const event of d.staging??[]){if(typeof event.sourceQuote!=='string'||!event.sourceQuote.trim()||!d.text.includes(event.sourceQuote))add('STAGING_EVIDENCE','暂存事件证据已不在当前正文中，请恢复证据或拒绝此稿后重新生成');else if(Object.hasOwn(event,'sourceParagraphIndex')&&(!Number.isInteger(event.sourceParagraphIndex)||event.sourceParagraphIndex<0||(isProseDraft(d)?segmentProse(d.text)[event.sourceParagraphIndex]?.text:d.text.split('\n')[event.sourceParagraphIndex])!==event.sourceQuote))add('STAGING_ANCHOR','暂存事件段落引用已失效，请恢复段落或拒绝此稿后重新生成');}
  if(s.mode==='custom')return issues;
  if(d.text.includes('用铜钥匙打开')&&!d.text.includes('取下一把铜钥匙'))add('KEY_SUPPORT','开门动作缺少此前获得钥匙的来源');if(d.text.includes('警方已经知道')||d.text.includes('警方早已知道'))add('KNOWLEDGE_LEAK','警方无来源提前获知秘密');if(relation(s)?.value==='has_met'&&d.text.includes('素未谋面'))add('CANON','草稿仍使用被替代的陌生关系');return issues;}
@@ -209,7 +209,7 @@ export function acceptDraft(state,id){const original=draft(state,id);if(original
   s.events.push({...event,...(card?{label:`原文摘录 · 第 ${card.paragraphIndex+1} 段`,originalLabel:e.label,memoryKind:'textual_excerpt',memoryTrust:'textual_presence_only'}:{memoryKind:'author_attested_paraphrase',memoryTrust:'author_attested_unverified'}),status:'confirmed',draftId:id,memoryDecision:copy(decision),source:{chapterId:c.id,revision:c.revision,...(card?{paragraphId:card.paragraphId,start:card.start,end:card.end,quote:card.text}:{...(Object.hasOwn(e,'sourceParagraphIndex')?{paragraphId:`p${e.sourceParagraphIndex+1}`} : {}),...(isProseDraft(d)?{start:e.sourceStart,end:e.sourceEnd}:{}),quote:e.sourceQuote})}});
  }
 
- s.commits.push({id:`commit-${s.sequence}`,kind:'draft_accept',draftId:id,version:s.version,summary:d.manualSource?'作者明确接受手写稿 · 未证明语义正确':'接受经当前版本审查的候选稿',...(d.manualSource?{manualSource:copy(d.manualSource),acceptance:{protocol:'manual-chapter-v1',authority:'explicit_author_decision',draftRevision:d.revision,textHash:hash(d.text),textSnapshot:d.text,sourceRevision:d.manualSource.revision,memoryExtraction:d.extraction.status,semanticStatus:d.modelReview?'model_reviewed_unverified':'not_evaluated'}}:{}),factDecisions:copy(d.factDecisions??[]),memoryDecisions:copy(d.memoryDecisions??[]),memoryCandidateIds:d.staging.map(candidate=>candidate.id),memoryAuthorityIds:[...new Set((d.memoryDecisions??[]).map(decision=>decision.authorityId))],before,after:snapshot(s),dependencies:s.commits.filter(x=>x.kind==='patch'&&!s.commits.some(y=>y.undoes===x.id)).map(x=>x.id),chapterId:c.id,revision:c.revision});return s;}
+ s.commits.push({id:`commit-${s.sequence}`,kind:'draft_accept',draftId:id,version:s.version,summary:d.manualSource?'作者明确接受手写稿 · 未证明语义正确':d.extraction?.status==='skipped'?'作者仅接受模型来源正文 · 0 条新记忆':'接受经当前版本审查的候选稿',...(d.manualSource?{manualSource:copy(d.manualSource),acceptance:{protocol:'manual-chapter-v1',authority:'explicit_author_decision',draftRevision:d.revision,textHash:hash(d.text),textSnapshot:d.text,sourceRevision:d.manualSource.revision,memoryExtraction:d.extraction.status,semanticStatus:d.modelReview?'model_reviewed_unverified':'not_evaluated'}}:{}),...(isProseDraft(d)&&!d.manualSource&&d.extraction.status==='skipped'?{acceptance:{protocol:'prose-only-v1',authority:'explicit_author_decision',draftRevision:d.revision,textHash:hash(d.text),textSnapshot:d.text,memoryExtraction:'skipped',extractionAttempt:d.extraction.attempt,semanticStatus:d.modelReview?'model_reviewed_unverified':'not_evaluated'}}:{}),factDecisions:copy(d.factDecisions??[]),memoryDecisions:copy(d.memoryDecisions??[]),memoryCandidateIds:d.staging.map(candidate=>candidate.id),memoryAuthorityIds:[...new Set((d.memoryDecisions??[]).map(decision=>decision.authorityId))],before,after:snapshot(s),dependencies:s.commits.filter(x=>x.kind==='patch'&&!s.commits.some(y=>y.undoes===x.id)).map(x=>x.id),chapterId:c.id,revision:c.revision});return s;}
 export function rejectDraft(state,id){const s=copy(state),d=draft(s,id);if(d.status==='ACCEPTED')fail('DRAFT_STATUS','已接受草稿需要补偿撤销');archiveMemoryReview(d,'draft_rejected');clearDraftReviews(d);d.status='REJECTED';replaceMemoryCandidates(d,[]);if(isProseDraft(d))d.extraction={status:'cancelled',attempt:d.extraction.attempt+1,binding:null};return s;}
 
 /** Generic projects contain only user-supplied configuration, never demo Canon. */
@@ -293,7 +293,7 @@ export function validateProseDraftRecord(d){
  if(!['pending','complete','failed','cancelled','skipped'].includes(x.status)||!Number.isSafeInteger(x.attempt)||x.attempt<0||Object.keys(x).some(k=>!['status','attempt','binding','provider','reviewNotes','stagingHash','stagingSnapshot','error','authority'].includes(k)))invalid();
  if(x.binding!==null&&(!positiveInteger(x.attempt)||!extractionBindingMatches(x.binding,extractionBindingFor(d,d.baseVersion,d.chapterRevisions,d.context))))invalid();
  if(x.status==='skipped'){
-  if(!d.manualSource||x.authority!=='explicit_author_decision'||!x.binding||d.staging.length||Object.keys(x).some(k=>!['status','attempt','binding','authority'].includes(k)))invalid();
+  if(x.authority!=='explicit_author_decision'||!x.binding||d.staging.length||Object.keys(x).some(k=>!['status','attempt','binding','authority'].includes(k)))invalid();
  }else if(Object.hasOwn(x,'authority'))invalid();
  if(x.status==='complete'){
   if(!x.binding||!validProvider(x.provider)||!Array.isArray(x.reviewNotes)||x.reviewNotes.length>30||x.reviewNotes.some(n=>typeof n!=='string'||!n.trim()||n.length>2000)||x.stagingHash!==hash(JSON.stringify(d.staging))||(Object.hasOwn(x,'stagingSnapshot')&&JSON.stringify(x.stagingSnapshot)!==JSON.stringify(d.staging))||Object.hasOwn(x,'error'))invalid();
@@ -351,14 +351,22 @@ export function stageManualDraft(state,chapterId){
 }
 /** Zero-memory is an explicit author choice, never a forged successful extraction. */
 export function skipManualMemoryExtraction(state,id){
+ if(!draft(state,id).manualSource)fail('MANUAL_DRAFT_REQUIRED','只有作者明确准备的手写稿可使用手写稿入口');
+ return skipMemoryExtraction(state,id);
+}
+/** An explicit, version-bound choice; never relabel model prose as author-origin. */
+export function skipMemoryExtraction(state,id){
  const original=draft(state,id);
- if(!original.manualSource)fail('MANUAL_DRAFT_REQUIRED','只有作者明确准备的手写稿可选择不提取记忆');
- if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能修改待定手写稿的记忆选择');
+ if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能修改待定候选稿的记忆选择');
+ if(!isProseDraft(original))fail('EXTRACTION_NOT_REQUIRED','此旧版候选稿不支持独立记忆提取选择');
  validateManualDraftSource(state,original);validateProseDraftRecord(original);
- if(!manualSourceCurrent(state,original))fail('MANUAL_SOURCE_CHANGED','已保存正文已变化，请拒绝旧手写稿并重新准备');
- if(!extractionOriginCurrent(state,original))fail('STALE_EXTRACTION','请先更新手写稿的参考上下文，再明确选择不提取记忆');
+ if(original.manualSource&&!manualSourceCurrent(state,original))fail('MANUAL_SOURCE_CHANGED','已保存正文已变化，请拒绝旧手写稿并重新准备');
+ if(original.context.contextSchemaVersion!==CONTEXT_SCHEMA_VERSION)fail('CONTEXT_UPGRADE_REQUIRED',contextUpgradeMessage);
+ if(!extractionOriginCurrent(state,original))fail('STALE_EXTRACTION','请先更新候选稿的参考上下文，再明确选择不提取记忆');
  const s=copy(state),d=draft(s,id);
- archiveMemoryReview(d,'manual_extraction_skipped');clearDraftReviews(d);replaceMemoryCandidates(d,[]);
+ archiveMemoryReview(d,d.manualSource?'manual_extraction_skipped':'prose_extraction_skipped');
+ if(!d.manualSource)Object.assign(d.memoryArchives.at(-1),{structuralReview:copy(d.review),factDecisions:copy(d.factDecisions??[])});
+ clearDraftReviews(d);replaceMemoryCandidates(d,[]);
  d.extraction={status:'skipped',attempt:d.extraction.attempt+1,binding:null,authority:'explicit_author_decision'};
  // Build the binding directly: the skipped record is validated once its binding exists.
  d.extraction.binding=extractionBindingFor(d,s.version,d.chapterRevisions,d.context);
