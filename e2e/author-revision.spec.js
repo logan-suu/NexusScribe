@@ -109,12 +109,13 @@ const boundNames = ['汉字下限','汉字上限','段数下限','段数上限']
 async function fillBounds(page, values = {}) {
   for (const name of boundNames) await adoptionDialog(page).getByLabel(name, {exact:true}).fill(values[name] ?? '');
 }
-function adoptionRecord(text, lengthBounds = {}, authority = text === AFTER ? 'explicit_model_adoption' : 'explicit_author_edit', modelResult = {text:AFTER, chapterId:'ch1', provider}) {
+function adoptionRecord(text, modelResult, lengthBounds = {}, authority = text === AFTER ? 'explicit_model_adoption' : 'explicit_author_edit') {
   return {modelResultHash:engine.hash(JSON.stringify(modelResult)), authority, textHash:engine.hash(text), counts:proseCounts(text), lengthBounds};
 }
 function expectRawProposal(next, raw) {
   for (const key of ['binding','beforeCounts','afterCounts','result']) expect(next[key]).toEqual(raw[key]);
-  expect(next.result.provider).toEqual(provider);
+  expect(next.result.provider).toEqual(raw.result.provider);
+  expect(raw.result.provider).toEqual({...provider, label:'服务端模型'});
 }
 async function failWorkspaceWrites(page, name) {
   await page.evaluate(({key, name}) => {
@@ -182,7 +183,7 @@ test('explicit revision preserves exact original, compares counts, then adopts o
   expect(next.extraction.status).toBe('pending');
   for (const key of ['review','modelReview']) expect(next[key]).toBeNull();
   for (const key of ['staging','factDecisions','memoryDecisions']) expect(next[key]).toEqual([]);
-  expect(next.revisionProposals[0]).toEqual({...advice, status:'adopted', adoptedRevision:next.revision, resultSnapshot:null, adoption:adoptionRecord(AFTER)});
+  expect(next.revisionProposals[0]).toEqual({...advice, status:'adopted', adoptedRevision:next.revision, resultSnapshot:null, adoption:adoptionRecord(AFTER, advice.result)});
   expect(next.memoryArchives.some(archive => archive.reason === 'draft_edited' && archive.decisions.length === 1)).toBe(true);
   expect(nextState.chapters).toEqual(initial.chapters);
   expect(nextState.facts).toEqual(initial.facts);
@@ -218,7 +219,7 @@ test('author edits remain local until confirmation and preserve the exact raw pr
   expect(next.text).toBe(EDITED);
   expect(next.proseVersions.map(version => version.text)).toEqual([BEFORE, EDITED]);
   expect(next.proseVersions.find(version => version.revision === accepted.adoptedRevision).text).toBe(EDITED);
-  expect(accepted.adoption).toEqual(adoptionRecord(EDITED));
+  expect(accepted.adoption).toEqual(adoptionRecord(EDITED, raw.result));
   expect(accepted.adoption).not.toHaveProperty('text');
   expect(accepted.adoption).not.toHaveProperty('textSnapshot');
   expectRawProposal(accepted, raw);
@@ -265,7 +266,7 @@ test('offline correction of the historical contradiction is an author edit, not 
   expect(next.status).toBe('DRAFT');
   expect(next.modelReview).toBeNull();
   expect(next.extraction.status).toBe('pending');
-  expect(accepted.adoption).toEqual(adoptionRecord(corrected, {}, 'explicit_author_edit', raw.result));
+  expect(accepted.adoption).toEqual(adoptionRecord(corrected, raw.result, {}, 'explicit_author_edit'));
   expectRawProposal(accepted, raw);
   expect(accepted.result.text).toContain(contradiction);
   expect(next.text).not.toContain('许宁没再敲');
@@ -294,7 +295,7 @@ for (const dismissal of ['return','escape']) test(`${dismissal} discards pending
   await expect(adoptionDialog(page)).toContainText('23 汉字 · 36 字符 · 3 段');
   await button(page, names.confirm).click();
   expect((await draft(page)).text).toBe(AFTER);
-  expect((await proposal(page)).adoption).toEqual(adoptionRecord(AFTER));
+  expect((await proposal(page)).adoption).toEqual(adoptionRecord(AFTER, before.state.drafts[0].revisionProposals.at(-1).result));
   expect(mock.calls).toHaveLength(2);
   noUnexpected(mock);
 });
@@ -351,7 +352,7 @@ for (const direction of ['under','over']) test(`${direction} numeric author boun
   await capture(page, info, adoptionDialog(page), 'author-revision-advisory-'+direction);
   await button(page, names.confirm).click();
   expect((await draft(page)).text).toBe(EDITED);
-  expect((await proposal(page)).adoption).toEqual(adoptionRecord(EDITED, limits));
+  expect((await proposal(page)).adoption).toEqual(adoptionRecord(EDITED, raw.result, limits));
   expectRawProposal(await proposal(page), raw);
   expect(mock.calls).toHaveLength(2);
   noUnexpected(mock);
@@ -383,7 +384,7 @@ test('numeric bounds reject negative, fractional, unsafe and inverted values wit
   await fillBounds(page, {'汉字下限':'0','段数下限':'0'});
   await expect(button(page, names.confirm)).toBeEnabled();
   await button(page, names.confirm).click();
-  expect((await proposal(page)).adoption).toEqual(adoptionRecord(AFTER, {hanMin:0,paragraphsMin:0}));
+  expect((await proposal(page)).adoption).toEqual(adoptionRecord(AFTER, before.state.drafts[0].revisionProposals.at(-1).result, {hanMin:0,paragraphsMin:0}));
   expect(mock.calls).toHaveLength(2);
   noUnexpected(mock);
 });
@@ -418,7 +419,7 @@ for (const errorName of ['QuotaExceededError','SecurityError']) test(`${errorNam
   await button(page, names.confirm).click();
   await expect(adoptionDialog(page)).toHaveCount(0);
   expect((await draft(page)).text).toBe(EDITED);
-  expect((await proposal(page)).adoption).toEqual(adoptionRecord(EDITED, {hanMin:10,paragraphsMax:3}));
+  expect((await proposal(page)).adoption).toEqual(adoptionRecord(EDITED, raw.result, {hanMin:10,paragraphsMax:3}));
   expectRawProposal(await proposal(page), raw);
   expect(mock.calls).toHaveLength(2);
   noUnexpected(mock);
