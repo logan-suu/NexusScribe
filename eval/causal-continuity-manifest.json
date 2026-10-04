@@ -22,18 +22,19 @@
     "eval/history/causal-continuity-v1/source-workflow.yml": "c14894c8ef448da8eeed3f33b3765017a17e68a4c8cf756ae13f1ff4f0b07415",
     "eval/history/causal-continuity-v1/transport-compatibility.json": "8a3338e568736aa6fd4bc50c1115671d380033369b03f45850abc75fc38f1f33",
     "eval/history/causal-continuity-v1/artifact-index.json": "0dd542a2a5c91f0f1d6ab1d64a45cfee44423ffd7360ccfac1c3f26193846d5a",
-    "scripts/run-causal-continuity.mjs": "91f2fb79c3e584e7cc7690abe6d2617d637e782b121acf5a7129c4e445ab8f6b",
+    "scripts/run-causal-continuity.mjs": "fb7bb78f26a509a149f779dc6a4230b3f61c3e00bdba5deec95d3501123bc613",
     ".github/workflows/causal-continuity-trial.yml": "b3205e58fc6be6163fe723700d109826d6d2dea7a8f45dd57e07dcf67299566f",
     "eval/CAUSAL-CONTINUITY-PROTOCOL.md": "d54a45cc769a1e214b360fa8510fd11aea988dfc45d2055c59ced096a6be5458",
     "eval/causal-continuity-requests.json": "5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73",
     "tests/causal-continuity.test.js": "be7c474b3b6c3d9b2f966880d4706cced924e1ff9b7494c99039223df64e04b0",
     "scripts/run-author-revision-live.mjs": "f3edc9097bd880256175e2f12a7743aa0260cbb1b983d93c94d64acb8e0dfc55",
-    "scripts/run-author-revision-eval.mjs": "f51ffb366793182bfdb14a7ba29240ba9ea229ee9ebd8d1a05c053bc046e50e0",
-    "server/provider.js": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7",
+    "scripts/run-author-revision-eval.mjs": "eec7dcc1b3c136349454c70e159385d54b2803326a5a643d52f3ea6f60664b6e",
+    "server/provider.js": "cbd2d3ad2123e9ba8cc0fad56443a13e5e73531876b507b111fe1ee0bbe131e7",
     "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
     "eval/history/prose-pipeline-v1/inputs.json": "3c48fdb7ef7bcfab6aad7067edc317d988f4c4c3fd6abaeb6b8bc7f67f6b9502",
     "eval/history/multichapter-v1/request-05.json": "2b73b05a467ea495c0050704bfafb830862fdf8516961222d9d1bd935d39a694",
-    "eval/writing-quality-fixtures.mjs": "7ccc665810cf8aa8c101b4615be1bbdabfe802e2020da6ff08170f7bbf6480b4"
+    "eval/writing-quality-fixtures.mjs": "7ccc665810cf8aa8c101b4615be1bbdabfe802e2020da6ff08170f7bbf6480b4",
+    "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195"
   },
   "retirement": {
     "protocol": "causal-continuity-v1",

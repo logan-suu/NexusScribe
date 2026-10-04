@@ -4,9 +4,10 @@
   "sha256": {
     "eval/ISOLATED-MEMORY-SUPPORT-PROTOCOL.md": "09248c1744d99cdf38e678dc8c14364daf777903847e64824faa46a95bb3f1c1",
     "eval/isolated-memory-support-fixtures.mjs": "c0e8548e3f3c9f9bbe46986d09f525f2c6ce7baa53a5d25cc0b538de3937ac32",
-    "scripts/isolated-memory-support-eval.mjs": "ea1edac06b234f5474d7e45cbfc939dc6fb6c6e818cc5aa423c95295927cb97e",
+    "scripts/isolated-memory-support-eval.mjs": "a09f60d604e6330bafdcb3234fe11f4b88159b623fdfce2587ba5e775622b026",
     "tests/isolated-memory-support-eval.test.js": "18324c012f6248c2d72ed8e40dca118eb7d95fc129b7b983f08964c89fe5e95a",
-    "server/provider.js": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7"
+    "server/provider.js": "cbd2d3ad2123e9ba8cc0fad56443a13e5e73531876b507b111fe1ee0bbe131e7",
+    "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195"
   },
   "authorization": "Offline-prepared only. No live approval is conferred by this manifest. A future separately approved first-attempt run must use this exact reviewed source freeze.",
   "maintenanceNote": "Current offline maintenance freeze updated for the independent reviseProse capability. Retained historical pilot source manifests and evidence are unchanged; this is not live-run authority."

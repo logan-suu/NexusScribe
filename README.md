@@ -249,3 +249,5 @@ The path is **save/adopt candidate → explicitly skip extraction → request fr
 Edits and context refresh revoke the skip; pending backup imports require a fresh choice and review. Returning or closing the confirmation changes nothing. Storage conflicts or failures block commitment. Reopening or compensating a prose-only accepted chapter removes its current accepted-manuscript role while preserving earlier text, raw revision proposals and audit evidence.
 
 Offline/domain and hosted desktop/mobile regressions exercise the retained failed revision, a simulated author correction, fresh mocked review, zero-memory acceptance and the next chapter's context without an extraction request. This establishes operational acceptance only. The [historical one-call revision trial](eval/AUTHOR-REVISION-RESULTS.md), raw output and failed close-read remain unchanged; real writing quality is unresolved. No new live call, release or deployment is part of this change.
+
+For the offline shared request contract, enum-only failure diagnostics and a separate, unapproved one-call compatibility proposal, see [Provider transport](docs/provider-transport.md).
