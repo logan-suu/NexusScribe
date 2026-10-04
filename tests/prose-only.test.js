@@ -178,3 +178,11 @@ test('old combined candidates and terminal prose drafts cannot use the new skip 
   assert.throws(()=>e.skipMemoryExtraction(s,id(s)),{code:'DRAFT_STATUS'});
  }
 });
+
+test('credential-free maintenance replay manifest covers current runtime; historical trial evidence is separate',async()=>{
+ const {verifyFrozenManifest}=await import('../scripts/multichapter-eval.mjs');
+ const maintenance=await verifyFrozenManifest();
+ const historical=JSON.parse(readFileSync(new URL('../eval/history/multichapter-v1/source-manifest.json',import.meta.url),'utf8'));
+ assert.notEqual(maintenance.sha256['src/domain/engine.js'],historical.sha256['src/domain/engine.js']);
+ assert.notEqual(maintenance.sha256['src/App.jsx'],historical.sha256['src/App.jsx']);
+});
