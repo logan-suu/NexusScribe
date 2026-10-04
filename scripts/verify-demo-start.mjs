@@ -2,6 +2,13 @@
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {setTimeout as delay} from 'node:timers/promises';
+import {createServer} from 'node:net';
+// Do not mistake an already-running app for the checkout just launched.
+for (const port of [5173,8787]) await new Promise((resolve,reject)=>{
+  const probe=createServer();
+  probe.once('error',()=>reject(Error(`Port ${port} is unavailable; stop the existing service before the clean-launch smoke`)));
+  probe.listen(port,'127.0.0.1',()=>probe.close(error=>error?reject(error):resolve()));
+});
 const env=Object.fromEntries(Object.entries(process.env).filter(([key])=>!key.startsWith('NEXUS_')));
 env.NEXUS_LIVE_ENABLED='false'; env.NEXUS_OVERAGE_CONFIRMED_OFF='false';
 const child=spawn('npm',['start'],{cwd:new URL('../',import.meta.url),env,stdio:['ignore','pipe','pipe'],detached:process.platform!=='win32'});
