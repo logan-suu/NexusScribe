@@ -1,3 +1,4 @@
+import RevisionPanel from './RevisionPanel.jsx';
 import {useState,useRef,useEffect} from 'react';
 import {Check, X, ShieldCheck, FileText} from 'lucide-react';
 
@@ -69,7 +70,7 @@ export function DecisionDialog({label,title,onClose,children}) {
  }
  return <div className="modal-backdrop"><section ref={container} className="modal memory-decision-modal" role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={keydown}><header><h2>{title}</h2><button className="icon-button" aria-label={`关闭${label}`} onClick={onClose}><X/></button></header>{children}</section></div>;
 }
-export default function DraftPanel({drafts,chapterTitle=null,contextCurrent={},onRefreshContext,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,onSkipExtraction,onEditingChange,extractionReady={},memoryReviews={},onMemoryDecision,onRejectAllMemory,onMemoryAudit,mode='template',auditBudget=null,auditDisabled=false,busy=false}) {
+export default function DraftPanel({drafts,chapterTitle=null,contextCurrent={},onRefreshContext,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,onSkipExtraction,onEditingChange,extractionReady={},memoryReviews={},onMemoryDecision,onRejectAllMemory,onMemoryAudit,revisionCurrent={},onRevisionInstruction,onRequestRevision,onAdoptRevision,onDiscardRevision,onCancelRevision,mode='template',auditBudget=null,auditDisabled=false,busy=false}) {
  const [editing,setEditing]=useState(null),[text,setText]=useState('');
  useEffect(()=>{onEditingChange?.(editing!==null);return()=>onEditingChange?.(false)},[editing,onEditingChange]);
  return <section className="draft-section"><header><h2>{chapterTitle?`${chapterTitle} · 候选稿`:'下一场景 · 候选稿'}</h2><span>候选先隔离 · 接受才提交</span></header>
@@ -81,7 +82,7 @@ export default function DraftPanel({drafts,chapterTitle=null,contextCurrent={},o
    <div className="draft-prose">{d.text}</div>{d.manualSource&&<p className="fine" aria-label="手写稿来源">原正文 r{d.manualSource.revision} · 作者分类 {d.manualSource.patchId}。手写候选保留此版本不变；修改请回章节编辑器分类保存、拒绝旧稿，再准备新稿。{d.requiresSemanticReview?'当前有已确认设定：仍须明确点击模型审查，并逐项解决冲突或未知判断；不会自动请求模型。':'当前无已确认设定：只做本地结构检查即可进入作者确认，不调用模型；语义一致性未评估。'}</p>}
    {active&&d.requiresExtraction&&contextCurrent[d.id]===false&&<div className="warning" aria-label="候选参考上下文已过期"><p>参考正文、故事状态或上下文格式已变化。可保留本稿正文并更新参考上下文，再重新提取与审阅；手写稿也可重新明确选择不提取记忆。旧批准不能沿用。</p><button disabled={busy} onClick={()=>onRefreshContext?.(d.id)}>更新参考上下文</button></div>}
    {editing===d.id&&<><textarea className="draft-edit" aria-label="编辑候选稿" value={text} onChange={e=>setText(e.target.value)}/><button onClick={()=>{onEdit(d.id,text);setEditing(null)}}>保存候选稿修改</button><button onClick={()=>setEditing(null)}>取消候选稿修改</button></>}
-   <div className="staging"><b>候选记忆暂存区</b><span>仅在接受正文后保存所选摘录或未验证转述</span></div>
+   <RevisionPanel draft={d} mode={mode} busy={busy||editing!==null} disabled={auditDisabled} current={revisionCurrent[d.id]} onInstruction={onRevisionInstruction} onRequest={onRequestRevision} onAdopt={onAdoptRevision} onDiscard={onDiscardRevision} onCancel={onCancelRevision}/><div className="staging"><b>候选记忆暂存区</b><span>仅在接受正文后保存所选摘录或未验证转述</span></div>
    {d.requiresExtraction&&<div className="extraction-status" aria-label="候选记忆提取状态"><p className={extracted&&!rejected?'success-note':'warning'}>{extractionMessage}</p><p className="fine">{d.manualSource?'手写稿的准备、明确跳过提取、结构检查与接受不调用模型。可选提取会额外调用模型；有已确认设定时审查也需明确调用模型。跳过提取不能解除设定冲突。':'正文、提取、审阅分别调用模型。失败不会自动重试；版本、段落位置与原文引用由程序生成。空结果不证明没有遗漏。'}</p></div>}
    {active&&memories.length>0&&<div className="memory-audit-budget" aria-label="独立核对调用预算"><p>{d.manualSource?'手写稿不调用生成。可选记忆提取额外 1 次请求；有已确认设定时，明确请求的整章审阅额外 1 次。每条可选独立核对再增加 1 次；摘录选择、转述确认和全部拒绝不调用模型，不会批量调用或自动重试。':'真实模型每章基础 3 次请求（正文、提取、整章审阅）+ K 次可选单条独立核对。保留原文摘录、作者确认转述和全部拒绝均不调用模型。每次点击独立核对仅核对一条，额外 1 次模型请求，不会批量调用或自动重试。'}</p><p>此前访谈、规划、生成及其他调用也会占用服务端本次进程上限。{auditBudget?`最近一次派发前检查：已用 ${auditBudget.callsUsed} / ${auditBudget.maxCalls} 次；此后用量可能变化。`:'尚无当前预算读数；每次核对前会检查，预算缺失或耗尽时不发送。'}服务端上限最终生效；调用数不是金额上限，账单费用仍未知。</p>{mode!=='server'&&<p>离线模板不发起独立模型核对；可保留有效原文摘录、明确确认未验证转述或拒绝。需要模型建议时请先明确选择真实模型模式。</p>}</div>}
    <section className="memory-candidates" aria-label="候选记忆逐条选择">

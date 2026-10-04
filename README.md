@@ -213,3 +213,14 @@ In a custom project, use **作者分类保存 · 不调用模型** to classify a
 - Reload and accepted backup imports preserve origin, classification, manuscript revisions and acceptance history. Pending imports revoke skip/review authority and require a new explicit choice. Legacy classifications without the new exact-source audit need one fresh local classification. The next chapter receives the accepted manuscript and only eligible explicitly selected memories; zero selected memories does not erase the prose.
 
 The manual workflow has offline domain, storage, DOM and mocked-browser regressions. These demonstrate workflow safety, not semantic correctness or real-model writing quality. No new live-model experiment or release accompanies this change.
+
+## Revise a pending model draft from your feedback
+
+For a pending live-model prose draft, enter **改稿意见** and explicitly click **按意见生成改稿建议 · 1 次模型请求**. This sends the exact draft, your instruction and its current story context to the configured server model. It first checks the remaining process call budget, then makes one revision request. Offline templates, accepted drafts and immutable author-origin snapshots are not revision targets.
+
+- The result is a separate proposal with the complete before/after text. Han counts use Unicode `Script=Han`, character counts include all Unicode code points (including whitespace/newlines), and paragraphs are nonblank physical lines. Counts demonstrate adherence, not writing quality
+- Adopt only through a fresh confirmation. Adoption appends a candidate revision and archives the old extraction, reviews, Canon exceptions and memory choices; it does not automatically extract, review, accept a chapter or commit memory. Original prose and provider provenance remain available in the backup
+- Discard keeps the original and the proposal history. Source/context/instruction changes invalidate adoption, including changing an instruction away and back. Cancelled/failed requests never retry automatically. A late result on a changed workspace is retained as stale when received, with no adoption authority
+- Budget exhaustion/unknown budget and unsafe storage block dispatch. A received result whose save fails stays in the current window for export or retry-save without another paid request. Closing the window before recovery can lose that unsaved result. Reload preserves valid completed advice; an interrupted request needs an explicit **取消中断的改稿请求** before a new request. Backup import makes pending advice stale
+
+This action is distinct from **局部润色**, which remains two deterministic demo replacements, and `interpretRevision`, which interprets edits the author already made. The unchanged configured model may still introduce defects. The [new fixed revision trial](eval/AUTHOR-REVISION-PROTOCOL.md) is preregistered offline only; no live quality improvement or author acceptance is claimed by these tests.
