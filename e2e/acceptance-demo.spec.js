@@ -102,7 +102,12 @@ test('complete synthetic writing journey keeps author control through next conte
   await page.getByLabel('主角愿望',{exact:true}).fill(INPUT.goal);
   await page.getByLabel('不希望出现的内容',{exact:true}).fill(INPUT.boundaries);
   await button(page,'查看故事约定').click();
-  await capture(page,info,'synthetic-01-story-agreement',page.locator('.ns-wizard'));
+  // The wizard scrolls internally: capture the visible viewport, not its
+  // offscreen element box (which can produce clipped/blank screenshot areas).
+  const agreementHeading=page.getByRole('heading',{name:'在落笔前，达成约定'});
+  await agreementHeading.scrollIntoViewIfNeeded();
+  await expect(agreementHeading).toBeInViewport();
+  await capture(page,info,'synthetic-01-story-agreement');
   await button(page,'确认约定，开始创作').click();
   await button(page,'生成当前章').click();
   await expect.poll(async()=>(await draft(page))?.text).toBe(GENERATED);
