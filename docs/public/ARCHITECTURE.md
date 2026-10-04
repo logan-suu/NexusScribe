@@ -18,7 +18,7 @@ Edits save independently, then become proposed memory updates. The author explic
 
 ## Model gateway
 
-`POST /api/agent` accepts `{action,input}` and returns `{output}`. Supported actions: interview, planStory, generateProse, extractMemory, interpretRevision, reviewChapter and auditMemoryCandidate; the legacy generateChapter action remains available for compatibility and independent comparison. `GET /api/status` exposes configuration status and nonsecret call limits only.
+`POST /api/agent` accepts `{action,input}` and returns `{output}`. Supported actions: interview, planStory, generateProse, reviseProse, extractMemory, interpretRevision, reviewChapter and auditMemoryCandidate; the legacy generateChapter action remains available for compatibility and independent comparison. `GET /api/status` exposes configuration status and nonsecret call limits only.
 
 The gateway validates request and response shape, exact evidence excerpts, bounded sizes, local Host/Origin, HTTPS configuration, timeout, concurrency and per-process call count. Upstream redirects and silent template fallbacks are prohibited. This is a local developer gateway, not a production multiuser API.
 
@@ -65,3 +65,13 @@ Authors explicitly request one candidate audit at a time, with cancellable serve
 Every candidate still needs an explicit keep/reject choice. Ordinary keep requires a current isolated supported assessment. A reasoned author override preserves the original unknown/unsupported judgment and evidence, and remains visibly unverified. Successful empty extraction or rejection of every candidate can accept prose alone; failed/cancelled extraction cannot masquerade as empty success. Fact conflicts, generic review errors, source versions, extraction and final selected-count confirmation remain separate gates. Accepted historical records are not retroactively promoted to isolated verification.
 
 Writing + extraction + whole-chapter review remains three base calls; auditing K candidates adds K calls. The existing default10/max30 lifetime limits and rate/concurrency controls are unchanged. Tokens, latency and billing of the isolated design have not been measured. See the [corrective design and acceptance boundary](ISOLATED-MEMORY-REVIEW.md). This implementation is an offline-tested candidate until separately authorized live evidence exists; no semantic guarantee or literary-quality claim follows.
+
+## Author-directed prose revision
+
+`reviseProse` applies one explicit instruction to a pending model-produced draft and returns a separate proposal. `src/domain/author-revision.js` owns its exact source/context/instruction-version binding, deterministic text counts and adoption/discard lifecycle. It is distinct from `interpretRevision` (interpreting an edit already made) and the demo's fixed local polish replacements.
+
+A proposal never changes the accepted manuscript or memory by itself. Explicit adoption appends a draft revision through the existing edit operation, preserving original text/provider provenance while archiving old extraction, structural/model reviews, Canon exceptions and memory decisions. Every later extraction/review/acceptance remains separately initiated. Manual-origin snapshots and accepted drafts are excluded.
+
+The browser checks process budget before storing a request proposal, then rechecks the durable workspace before dispatch. Proposals reference deduplicated exact source/context snapshots; terminal records keep their result once, and active proposal currency is evaluated in one pass per draft. The 2 MiB workspace limit still bounds genuinely new retained content; no audit history is silently deleted. Server limits remain authoritative.
+
+A received proposal survives a failed save in current-window state for export/retry-save. Stale results, instruction changes (even away and back), cancellation, reload/import and confirmation races cannot silently acquire adoption authority. These are workflow properties; neither author choice, model review nor count compliance certifies literary quality.

@@ -108,6 +108,14 @@ jobs:
             test-results/manual-chapter*/manual-accepted-exact-author-chapter.png
           if-no-files-found: warn
           retention-days: 7
+      - name: Preserve compact author revision screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: author-revision-screenshots
+          path: test-results/author-revision*/*.png
+          if-no-files-found: warn
+          retention-days: 7
       - name: Preserve offline multi-chapter harness evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

@@ -1,0 +1,113 @@
+{
+  "protocol": "author-revision-v1",
+  "version": 1,
+  "status": "preregistered_staged_trial",
+  "authorization": "One separately approved lifetime trial, at most three attempted requests in frozen revise/extract/review order, after exact-SHA successful CI and independent review. The revision is reported and close-read before extraction; a new extraction continuation decision gates review. No retries, extra batch, fallback, acceptance, or reuse of consumed multichapter allowance.",
+  "hashEncoding": {
+    "files": "SHA-256 of exact file bytes",
+    "strings": "SHA-256 of UTF-8 string, no trimming or normalization",
+    "objects": "SHA-256 of UTF-8 JSON.stringify(value), preserving parsed property and array order"
+  },
+  "settings": {
+    "id": "author-revision-v1",
+    "version": 1,
+    "mode": "preregistered_staged_trial",
+    "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+    "model": "deepseek-v4.1-flash",
+    "maxCalls": 3,
+    "maxTokens": 3000,
+    "maxOutputTokens": 9000,
+    "temperature": 0.7,
+    "thinking": "disabled",
+    "minimumGapMs": 11000,
+    "actions": [
+      "reviseProse",
+      "extractMemory",
+      "reviewChapter"
+    ],
+    "targetHan": [
+      350,
+      500
+    ],
+    "targetParagraphs": [
+      4,
+      7
+    ]
+  },
+  "sources": {
+    "target": {
+      "path": "eval/history/multichapter-v1/completed-05.json",
+      "pointer": "/output/text",
+      "textSha256": "6a58486c108fe32ac376f3d4f5bbd96483b7367300fa61c549aa5fca30142046",
+      "chapterId": "ch2",
+      "hanCharacters": 691,
+      "paragraphs": 8
+    },
+    "context": {
+      "path": "eval/history/multichapter-v1/request-05.json",
+      "pointer": "/input/context",
+      "objectSha256": "8c7fb150cf64b1c9cee21892a9afb0b11458e349358dea2e5631eadd9a5a7436"
+    },
+    "acceptedPrior": {
+      "path": "eval/history/multichapter-v1/request-05.json",
+      "pointer": "/input/context/sources/0/text",
+      "textSha256": "c093b4d5bf0ae51a4cdf9bc9b62aa7f5f20a1851493b429acac6eec974178a73",
+      "chapterId": "ch1",
+      "revisionId": "ch1-r3",
+      "role": "accepted_manuscript"
+    },
+    "originalProject": {
+      "path": "eval/history/multichapter-v1/request-05.json",
+      "pointer": "/input/project",
+      "objectSha256": "3e0cb449d4cb55e9b949a6de940ca526febed706d2c0fda3f5a649fd6765f5ed",
+      "purpose": "Provenance only, not an extra reviseProse input field"
+    }
+  },
+  "instruction": "请修改这份第二章候选稿，不要重写为另一场戏。将正文压缩到350–500个汉字、4–7段，只返回完整修改后正文。\n修复纸盒可见性：纸盒是不透明的。许宁先解下橡皮筋、打开盒盖，老周才查看纸屑；查看后由许宁合盖并重新收好。不得再隔着未打开的盒壁看清纸屑，也不得把纸盒改成透明盒。柜门仍然锁着，不得混淆打开纸盒与打开柜子。\n删减重复的提工具袋、盒子碰袋壁及装饰性雨景，保留一两个真正推动动作的实物细节。保留修表师操作的职业感，可沿用镊子或装过游丝的纸盒，不要插入职业介绍。许宁说话简短、与实物相关；阿青着急但不咄咄逼人；老周用办事规矩表达关心。保持第三人称限知，只跟随许宁。\n保持次日上午来询问、老周说明旧登记本明天才能查、约定明天上午九点再来的事件顺序。可以保留九点差一刻到达，这不违反九点约定。不要提前查到记录、开柜或履行明天的约定。让延后查记录的说法自然可信，不添加新支线或重大设定。\n许宁的左耳仍听不见；损坏的铜铃不能响；阿青仍不知道信封中的旧车票，本章不得向他透露；寄信人仍未知。纸屑继续由许宁保管；四片、纸盒和柜号十七等已有实物关系不得改动。猜测、人物说法和已知事实要分清。保留这场小戏克制、少量干涩幽默的语气，不添加总结、解释、修改说明或审查结论。",
+  "instructionSha256": "40e0db393fe394859f6c4b2db0b13d8d65d8353cf821dbd00c414c92a73bbb10",
+  "revisionInputSha256": "ccbe82cf3337ec576430c8fd88cf4312d204a0bbc091434cdaed2e527bf0482b",
+  "closeReadItems": [
+    "physical_visibility_and_custody",
+    "time_and_obligation",
+    "knowledge_and_viewpoint",
+    "voice_and_professional_detail",
+    "compression_without_flattening"
+  ],
+  "stages": [
+    {
+      "sequence": 1,
+      "action": "reviseProse",
+      "maxCalls": 1,
+      "next": "Stop for objective checks and locked human/assistant close read; fail/uncertain stops trial"
+    },
+    {
+      "sequence": 2,
+      "action": "extractMemory",
+      "maxCalls": 1,
+      "requires": "Stage 1 objective and close-read pass; exact revised text and original context"
+    },
+    {
+      "sequence": 3,
+      "action": "reviewChapter",
+      "maxCalls": 1,
+      "requires": "Stage 2 nonempty extraction with exact source binding plus new locked extraction-output-hash-bound continuation gate; no candidate feedback or acceptance"
+    }
+  ],
+  "sha256": {
+    "eval/AUTHOR-REVISION-PROTOCOL.md": "dea73020569b7660a9cf0c709fd52304a52ccd87b38fb64c44b62a0804525b2d",
+    "scripts/run-author-revision-eval.mjs": "48312459a95c3e3ce3526a7e57d4d60c4b51b3af914260926edb02c9008bb35a",
+    "tests/author-revision-eval.test.js": "3b2623141159f4a5c040fef87750b923bfc51bedf755c7e63a181a76b0a0f5fd",
+    "server/provider.js": "e11257d7df77552c7325d0778f8c328984a3e15954f99464655209333b9604e7",
+    "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
+    "eval/history/multichapter-v1/completed-05.json": "75a1ae40bb15047e7560c99f8d5ea41486a48c22276630ecbabf24698995d1da",
+    "eval/history/multichapter-v1/request-05.json": "2b73b05a467ea495c0050704bfafb830862fdf8516961222d9d1bd935d39a694",
+    "eval/history/multichapter-v1/request-06.json": "3e3822e0e44ec3e42d6d5b712e72d8e06316d7238dfed064d877e41fabc25c31",
+    "eval/history/multichapter-v1/request-07.json": "ddf8a7235aa6d3265478b0cd9f13d4e6b72a22ebb63e61a9db417b9fa9e698e4",
+    "eval/history/multichapter-v1/source-manifest.json": "ce336473b0c9076d67a8e1c1befd53bb75feb5dde7250f49fe839b884e4e94c8",
+    "eval/history/multichapter-v1/artifact-index.json": "d9cb3e816017897a67c0a3d79aa548f4bd01bc0ebcc4ccf4b79be27c3f8a2072",
+    "eval/MULTICHAPTER-RESULTS.md": "00e6a844b8aa26cd2c3e6e66f87453f58a73d33974aa387ef9d7eb4ca46e3f73",
+    "scripts/run-author-revision-live.mjs": "605c871eb8bba74af2f9ea8bd5d3cbf71c648c059a66f9e0856ec55c42181cc4",
+    "tests/author-revision-live.test.js": "a9e2425f641956aabcd51ffdead66e7209254adfff8c617e35a68874a7a92ac9",
+    ".github/workflows/author-revision-trial.yml": "43417161a3c6370c8f97151d97b69aa9d486a1fb2e2f3c1caeba9800d0ca6911"
+  }
+}

@@ -1,14 +1,15 @@
 /** Browser adapters propose outputs. Only the domain runtime may commit state. */
 import {getInterviewQuestions,createProjectConfig,createDeterministicProvider} from '../authoring/index.js';
-import {segmentProse} from '../domain/prose.js';
+import {segmentProse,MAX_PROSE_LENGTH} from '../domain/prose.js';
 export const LEGACY_CAPABILITIES = ['interview','planStory','generateChapter','interpretRevision','reviewChapter'];
-export const CAPABILITIES = [...LEGACY_CAPABILITIES,'generateProse','extractMemory','auditMemoryCandidate'];
+export const CAPABILITIES = [...LEGACY_CAPABILITIES,'generateProse','extractMemory','auditMemoryCandidate','reviseProse'];
 export function createTemplateAdapter(){const template=createDeterministicProvider();return {
  id:'template-demo',label:'离线确定性模板',isLive:false,
  async interview({input}){return {questions:getInterviewQuestions(input),source:'template'}},
  async planStory({input}){return createProjectConfig(input)},
  generateChapter:template.generateChapter,
  async generateProse(input){const {text,chapterId,provider}=await template.generateChapter(input);return {text,chapterId,provider}},
+ async reviseProse(){throw Object.assign(Error('模板模式不支持按作者指令改稿；请使用已配置的模型服务'),{code:'UNSUPPORTED_CAPABILITY'})},
  async extractMemory(){return {staging:[],reviewNotes:['模板模式不执行语义记忆提取；请由作者审阅正文'],provider:{id:template.id,label:template.label,isLive:false}}},
  async auditMemoryCandidate(){return {status:'unknown',explanation:'模板模式不执行独立语义证据审查；请由作者核对原文',provider:{id:template.id,label:template.label,isLive:false}}},
  async interpretRevision(){return {status:'needs_author_confirmation',operations:[],questions:['请由作者明确区分局部表达与长期设定']}},
@@ -21,6 +22,14 @@ export function createInjectedProvider(implementation){return validateProvider(i
 const object=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const nonempty=value=>typeof value==='string'&&value.trim().length>0;
 const safeKey=key=>typeof key==='string'&&/^[A-Za-z][A-Za-z0-9_]*$/.test(key)&&!['__proto__','prototype','constructor'].includes(key);
+function validateProseRevisionInput(input){
+ const validString=(value,max,empty=false)=>typeof value==='string'&&value.length<=max&&(empty||!!value.trim());
+ const context=input?.context;
+ if(!object(input)||Object.keys(input).length!==4||Object.keys(input).some(key=>!['text','instruction','chapterId','context'].includes(key))||!validString(input.text,MAX_PROSE_LENGTH)||!validString(input.instruction,4000)||!validString(input.chapterId,200)||!object(context)||!validString(context.projectId,200)||!Number.isInteger(context.version)||context.version<1||!Array.isArray(context.sources)||context.sources.length>100||context.sources.some(source=>!object(source)||!validString(source.chapterId,200)||!Number.isInteger(source.revision)||source.revision<1||!validString(source.text,40000,true)))throw Error('改稿需要完整原文、明确的作者指令、目标章节与有效上下文');
+ const isolated={text:input.text,instruction:input.instruction,chapterId:input.chapterId,context};
+ if(new TextEncoder().encode(JSON.stringify({action:'reviseProse',input:isolated})).byteLength>128*1024)throw Error('改稿请求过大；请缩小参考上下文');
+ return isolated;
+}
 function validateMemoryAuditInput(input){
  if(!object(input)||Object.keys(input).length!==2||Object.keys(input).some(key=>!['label','sourceQuote'].includes(key))||!nonempty(input.label)||input.label.length>1000||!nonempty(input.sourceQuote)||input.sourceQuote.length>30000)throw Error('独立记忆审查只接受完整原始主张与该条精确引文');
  const isolated={label:input.label,sourceQuote:input.sourceQuote};
@@ -59,6 +68,10 @@ export function validateActionOutput(action,output,input){
  if(action==='planStory'&&(!object(output.contract)||!Array.isArray(output.contract.fields)||!output.contract.fields.length||output.contract.fields.some(f=>!object(f)||!safeKey(f.key)||!nonempty(f.label)||typeof f.value!=='string')||!Array.isArray(output.outline)||output.outline.length!==3||output.outline.some(c=>!object(c)||!nonempty(c.title)||!nonempty(c.goal))))throw Error('故事规划格式无效：需要故事约定与三章大纲');
  if(action==='generateChapter'&&!nonempty(output.text))throw Error('生成服务未返回章节正文，请重试');
  if(action==='generateProse'&&(!nonempty(output.text)||output.text.length>30000||!nonempty(output.chapterId)||(input?.project?.outline?.[input.chapterIndex]?.id!==undefined&&output.chapterId!==input.project.outline[input.chapterIndex].id)))throw Error('生成服务未返回有效完整正文，请重试；已保存的正文保持不变');
+ if(action==='reviseProse'){
+  validateProseRevisionInput(input);
+  if(Object.keys(output).some(key=>!['text','chapterId','provider'].includes(key))||!nonempty(output.text)||output.text.length>MAX_PROSE_LENGTH||output.chapterId!==input.chapterId||Object.hasOwn(output,'provider')&&!object(output.provider))throw Error('改稿服务未返回有效完整正文，请重试；已保存的正文保持不变');
+ }
  if(action==='extractMemory'){
   const paragraphs=typeof input?.text==='string'?segmentProse(input.text):null;
   if(!Array.isArray(output.staging)||output.staging.length>30||!Array.isArray(output.reviewNotes)||output.reviewNotes.length>30||output.reviewNotes.some(note=>!nonempty(note)||note.length>2000)||output.staging.some(entry=>{
@@ -104,10 +117,11 @@ export function createServerProvider({fetchImpl=(...args)=>globalThis.fetch(...a
  for(const action of CAPABILITIES)provider[action]=async (input,{signal}={})=>{
   if(action==='reviewChapter'&&!signal?.aborted)validateMemoryCandidates(input);
   if(action==='auditMemoryCandidate'&&!signal?.aborted)input=validateMemoryAuditInput(input);
+  if(action==='reviseProse'&&!signal?.aborted)input=validateProseRevisionInput(input);
   const payload=await request('/agent',{action,input},{signal});
   const output=validateActionOutput(action,payload?.output,input);
   if(action==='generateChapter')return {...output,provider:{...identity,...(object(payload.provider)?payload.provider:{}),...(object(output.provider)?output.provider:{}),isLive:true},...(payload.model?{model:payload.model}:{}),status:'candidate',baseVersion:input?.context?.stateVersion??input?.context?.version??null,staging:Array.isArray(output.staging)?output.staging:[]};
-  if(action==='generateProse'||action==='extractMemory'||action==='auditMemoryCandidate')return {...output,provider:{...identity,...(object(payload.provider)?payload.provider:{}),...(object(output.provider)?output.provider:{}),isLive:true}};
+  if(action==='generateProse'||action==='extractMemory'||action==='auditMemoryCandidate'||action==='reviseProse')return {...output,provider:{...identity,...(object(payload.provider)?payload.provider:{}),...(object(output.provider)?output.provider:{}),isLive:true}};
   return output;
  };
  return validateProvider(provider);
