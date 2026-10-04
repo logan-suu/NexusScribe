@@ -45,6 +45,8 @@ npm start
 
 Open **http://127.0.0.1:5173** on the machine running the app. The frontend and API bind to loopback; the API uses port `8787`. No account, API key, or external model call is needed for offline mode.
 
+For a guided zero-model manual path and a separate synthetic UI replay, see the [acceptance demo walkthrough](docs/public/DEMO-WALKTHROUGH.md).
+
 ### Try a revision that matters
 
 Open the included story **「雾港来信」**:

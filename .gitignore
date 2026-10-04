@@ -51,3 +51,6 @@ multichapter-offline-evidence/
 # One-shot author revision stage artifacts; publish only after explicit evidence review.
 author-revision-evidence/
 author-revision-prior/
+
+# Fictional acceptance samples and local test exports; regenerate from source.
+demo-output/

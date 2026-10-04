@@ -23,7 +23,9 @@
     "test:ui:multichapter": "node scripts/test-ui-multichapter.mjs",
     "test:ui:manual": "node scripts/test-ui-manual-chapter.mjs",
     "test:ui:revision": "node scripts/test-ui-author-revision.mjs",
-    "test:ui:prose-only": "node scripts/test-ui-prose-only.mjs"
+    "test:ui:prose-only": "node scripts/test-ui-prose-only.mjs",
+    "demo:prepare": "node scripts/prepare-demo.mjs",
+    "demo:acceptance": "playwright test e2e/acceptance-demo.spec.js --workers=1"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

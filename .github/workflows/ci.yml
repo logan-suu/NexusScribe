@@ -36,6 +36,10 @@ jobs:
         run: npm ci
       - name: Run all checks
         run: npm run check
+      - name: Prepare fictional imports and verify clean offline launch
+        run: |
+          npm run demo:prepare
+          node scripts/verify-demo-start.mjs
 
   browser-e2e:
     name: Chromium desktop and mobile
@@ -122,6 +126,18 @@ jobs:
         with:
           name: prose-only-acceptance-screenshots
           path: test-results/prose-only*/*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve curated offline acceptance package evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: acceptance-demo-evidence
+          path: |
+            test-results/acceptance-demo*/*.png
+            test-results/acceptance-demo*/acceptance-receipt.json
+            test-results/acceptance-demo*/accepted-backup.json
+            test-results/acceptance-demo*/unsaved-recovery-backup.json
           if-no-files-found: warn
           retention-days: 7
       - name: Preserve offline multi-chapter harness evidence
