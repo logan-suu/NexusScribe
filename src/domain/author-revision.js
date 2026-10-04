@@ -14,6 +14,37 @@ export function proseCounts(value) {
  if (typeof value !== 'string') fail('正文必须是字符串');
  return {han:[...value.matchAll(/\p{Script=Han}/gu)].length, characters:[...value].length, paragraphs:segmentProse(value).length};
 }
+const LENGTH_FIELDS = ['hanMin','hanMax','paragraphsMin','paragraphsMax'];
+/** Only explicit numeric fields count as bounds; freeform instructions are never parsed. */
+export function parseRevisionLengthBounds(fields = {}) {
+ if (!object(fields) || Object.keys(fields).some(key => !LENGTH_FIELDS.includes(key))) fail('篇幅范围字段无效');
+ const bounds = {};
+ for (const key of LENGTH_FIELDS) {
+  const value = fields[key];
+  if (value === undefined || value === '') continue;
+  if (typeof value === 'string' && !/^\d+$/.test(value) || !['number','string'].includes(typeof value) || !integer(Number(value))) fail('篇幅范围须为非负安全整数，或留空');
+  bounds[key] = Number(value);
+ }
+ for (const metric of ['han','paragraphs']) if (bounds[metric+'Min'] !== undefined && bounds[metric+'Max'] !== undefined && bounds[metric+'Min'] > bounds[metric+'Max']) fail('篇幅下限不能高于上限');
+ return bounds;
+}
+function validateLengthBounds(bounds) {
+ if (!object(bounds) || Object.values(bounds).some(value => !integer(value)) || !same(bounds,parseRevisionLengthBounds(bounds))) fail('篇幅范围记录无效');
+}
+export function revisionLengthWarnings(value, bounds = {}) {
+ validateLengthBounds(bounds);
+ const counts = proseCounts(value), warnings = [];
+ for (const [metric,label] of [['han','汉字'],['paragraphs','段数']]) {
+  const min = bounds[metric+'Min'], max = bounds[metric+'Max'];
+  if (min !== undefined && counts[metric] < min) warnings.push(`${label} ${counts[metric]} 低于作者下限 ${min}`);
+  if (max !== undefined && counts[metric] > max) warnings.push(`${label} ${counts[metric]} 高于作者上限 ${max}`);
+ }
+ return warnings;
+}
+export function getRevisionAdoptedText(draft, proposal) {
+ if (proposal.status !== 'adopted') return null;
+ return draft.proseVersions.find(version => version.revision === proposal.adoptedRevision)?.text ?? null;
+}
 function eligible(state,draft) {
  if (!['DRAFT','IN_REVIEW'].includes(draft.status) || draft.requiresExtraction !== true || draft.providerInfo?.isLive !== true || Object.hasOwn(draft,'manualSource') || draft.provider === 'author-manuscript' || draft.providerInfo?.id === 'author-manuscript') fail('按意见改稿仅适用于待定的模型正文；已接受稿、模板与手写来源不支持此操作');
  engine.validateProseDraftRecord(draft);
@@ -54,7 +85,15 @@ export function validateDraftRevisions(draft) {
    if (!object(r) || Object.keys(r).some(key => !['text','chapterId','provider'].includes(key)) || !text(r.text) || r.chapterId !== b.chapterId || !object(r.provider) || typeof r.provider.id !== 'string' || !r.provider.id || r.provider.isLive !== true || (['proposed','requesting'].includes(proposal.status)?!same(r,proposal.resultSnapshot):proposal.resultSnapshot!==null) || !same(proposal.afterCounts,proseCounts(r.text))) invalid();
   } else if (proposal.resultSnapshot !== null || proposal.afterCounts !== null) invalid();
   if (['requesting','failed','cancelled'].includes(proposal.status) && proposal.result !== null || ['proposed','adopted','discarded'].includes(proposal.status) && proposal.result === null) invalid();
-  if (proposal.status === 'adopted' && (!integer(proposal.adoptedRevision) || proposal.adoptedRevision <= b.draftRevision || versionsByRevision.get(proposal.adoptedRevision)?.text !== proposal.result.text)) invalid();
+  if (proposal.status === 'adopted') {
+   const finalText = versionsByRevision.get(proposal.adoptedRevision)?.text;
+   if (!integer(proposal.adoptedRevision) || proposal.adoptedRevision <= b.draftRevision || !text(finalText)) invalid();
+   if (Object.hasOwn(proposal,'adoption')) {
+    const a = proposal.adoption;
+    if (!object(a) || Object.keys(a).length !== 4 || a.authority !== (finalText === proposal.result.text ? 'explicit_model_adoption' : 'explicit_author_edit') || a.textHash !== engine.hash(finalText) || !same(a.counts,proseCounts(finalText))) invalid();
+    validateLengthBounds(a.lengthBounds);
+   } else if (finalText !== proposal.result.text) invalid(); // Legacy, unedited adoption.
+  } else if (Object.hasOwn(proposal,'adoption') || Object.hasOwn(proposal,'adoptedRevision')) invalid();
  }
  return true;
 }
@@ -124,13 +163,19 @@ export function discardDraftRevision(state,id,proposalId) {
  if (!p || !['proposed','stale'].includes(p.status) || !p.result) fail('此改稿建议不可放弃或已处理');
  p.status = 'discarded'; p.resultSnapshot=null; return s;
 }
-export function adoptDraftRevision(state,id,proposalId,expected) {
+export function adoptDraftRevision(state,id,proposalId,expected,options = {}) {
  const d = get(state,id); eligible(state,d); validateDraftRevisions(d);
  const p = d.revisionProposals?.find(p => p.id === proposalId);
  if (!p || p.status !== 'proposed' || !isRevisionCurrent(state,id,proposalId) || !same(p,expected)) fail('改稿建议、指令或原稿已变化，请重新核对；旧建议不能采用');
+ if (!object(options) || Object.keys(options).some(key => !['text','lengthBounds'].includes(key))) fail('采用选项无效');
+ const finalText = options.text === undefined ? p.result.text : options.text;
+ if (!text(finalText)) fail('待采用正文不能为空，且不得超过 30000 字符');
+ const lengthBounds = options.lengthBounds === undefined ? {} : options.lengthBounds;
+ validateLengthBounds(lengthBounds);
  // editDraft archives old extraction/reviews/author choices, preserves original prose,
  // and does not perform extraction, review, acceptance or a provider invocation.
- const s = engine.editDraft(state,id,p.result.text), next = get(s,id), adopted = next.revisionProposals.find(item => item.id === proposalId);
+ const s = engine.editDraft(state,id,finalText), next = get(s,id), adopted = next.revisionProposals.find(item => item.id === proposalId);
  adopted.status = 'adopted'; adopted.adoptedRevision = next.revision; adopted.resultSnapshot=null;
+ adopted.adoption = {authority:finalText === p.result.text ? 'explicit_model_adoption' : 'explicit_author_edit', textHash:engine.hash(finalText), counts:proseCounts(finalText), lengthBounds:copy(lengthBounds)};
  validateDraftRevisions(next); return s;
 }
