@@ -32,7 +32,7 @@
     "src/authoring/wizard.css": "e2969f2d6eb6653e7190405689ba3a1cacc801affcc455c2ad5d2c1f3418f3cf",
     "index.html": "a821efcbd93ad4f2954725cda50074708a3c2dbb3f655a43279115b54cc7e535",
     "vite.config.js": "cf5960e8774cfa10916c06661dbb956474538088fdfc5fb2c96fac21b471ec87",
-    "package.json": "294a144ff1cac48837a4cfb9ade425969784380e6322d1a89590c4497e5a4841",
+    "package.json": "0e4d4f723407385a8a3db662c5b8f16609a2fb461a847876d819f7555b11f012",
     "package-lock.json": "41f4dafa8e6ba98465d641b6bd86d7ab2755b9a86dd9c528853faddabef1008e",
     ".github/workflows/live-smoke.yml": "805bc3dd704496a797bef14c523e51e9542ea386fbd950f7e9ba9ce0e7f6401e"
   }
