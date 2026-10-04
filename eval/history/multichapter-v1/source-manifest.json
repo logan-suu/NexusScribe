@@ -2,9 +2,9 @@
   "protocol": "multichapter-v1",
   "version": 1,
   "sha256": {
-    "eval/MULTICHAPTER-PROTOCOL.md": "86611d4ec543b987691d1318dc242284e075e6206e95c05f1502f742e28532a8",
+    "eval/MULTICHAPTER-PROTOCOL.md": "8b15f307371ca468abdad394324588478f66565e8e3405eaefa662fa7c812caa",
     "eval/multichapter-fixtures.mjs": "5f46c2b7a27fc839f1f60cec28679305477d24731f613e163a9a2b27afcfe53e",
-    "scripts/multichapter-eval.mjs": "e449c8900afcb54045c5659f4aee2bda95c767c3572b4ea0fe2c87648f3a9709",
+    "scripts/multichapter-eval.mjs": "92fe5b871ad6ba5e19f7d225ae311ec281b45ee94c2d399cefa92d480ec58868",
     "tests/multichapter-eval.test.js": "bbec880ddd9462d509aedd41dd66444f692834cc591088554572cd83a5005d95",
     "server/provider.js": "8c0ed8c3ae03854f598a15faeebe335d9457577eb61fc0678f50d53f2312cb71",
     "server/index.js": "d1d63c6636fc43fba2b9e50d6e9d57e4bca738076b9176c0898a3246650d0d72",
@@ -16,7 +16,7 @@
     "src/storage.js": "d342651786dd159c40afda9e06dd78b342be02cfee13148024effe996f9d754a",
     "src/adapters/provider.js": "3e0f37952f32402d3e2e6b8c76d3b34acf291ceef7351ed6b2f20ae5782d8dd6",
     "src/authoring/live-provider.js": "3a83337bd47b5414e4d81ae8230488c5318b34a1990cc738b9976fdce184b786",
-    "src/components/DraftPanel.jsx": "3b649f16fac1b7df34e5c6f4323727e5f28d4d0b7a7d5934c772101a4a585999",
+    "src/components/DraftPanel.jsx": "290e9f47c35989e693ed3bb3046e0f52544749a3fba5126f6eb2e05ce6a4d751",
     "src/components/ProviderPanel.jsx": "158f70f2c2351e627fb756425c13c2a8a1b930ba3e358cfa64af489e6c75ba19",
     "src/components/Editor.jsx": "81cb7559b73d5e42537ad9edd24f6900b50c297081ae230b0e08434e2068b616",
     "src/components/PatchPanel.jsx": "80eab1449a125a8fd9bb0b3a82f5aa0d5510b323745942d1f978fce8ad9a4dd8",
@@ -36,6 +36,5 @@
     "package-lock.json": "41f4dafa8e6ba98465d641b6bd86d7ab2755b9a86dd9c528853faddabef1008e",
     ".github/workflows/live-smoke.yml": "805bc3dd704496a797bef14c523e51e9542ea386fbd950f7e9ba9ce0e7f6401e"
   },
-  "authorization": "The single live v1 batch concluded after eight calls. Live CLI is retired; this current maintenance freeze supports credential-free CI only. No remaining or new paid-run authority.",
-  "maintenanceNote": "Post-run truthful model-support warning, live CLI retirement and historical-status note only. Original tested freeze remains byte-identical at eval/history/multichapter-v1/source-manifest.json and source eb7b8826aa9a0ab360073bdaf69fe1c07000531b."
+  "authorization": "One separately authorized first-attempt twelve-call batch only, after exact-source offline/browser review and CI. This manifest grants no additional run or retry authorization."
 }

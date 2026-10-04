@@ -1,5 +1,7 @@
 # Synthetic three-chapter browser validation, version 1
 
+**Concluded:** [the one-shot result](MULTICHAPTER-RESULTS.md) stopped at eight calls and retained a false positive. The live CLI is retired; only credential-free CI replay remains enabled. The original frozen specification is at `eb7b8826aa9a0ab360073bdaf69fe1c07000531b`; the historical protocol below grants no new execution permission.
+
 ## Question and limits
 
 Can the current application carry one wholly synthetic story through three successive real prose generations, visible memory decisions and chapter acceptance, while sending current accepted prose, a newly confirmed author fact and selected current-source memory into later requests?

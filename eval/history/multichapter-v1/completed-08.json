@@ -1,0 +1,11 @@
+{
+  "sequence": 8,
+  "chapter": 2,
+  "action": "auditMemoryCandidate",
+  "output": {
+    "status": "unsupported",
+    "explanation": "引文仅提到许宁在次日上午九点差一刻推寄存室铁门，并发现门从里面拴着；没有提到阿青，也没有说明阿青一同抵达寄存室。因此标签中“许宁、阿青”共同抵达这一具体关系未被引文完全支持。"
+  },
+  "outputSha256": "34a5c4d68f1268bb8197368e4bc8e5c9a395b08866e4a7f9a8908180f776ab80",
+  "serviceElapsedMs": 1565.6313260000024
+}

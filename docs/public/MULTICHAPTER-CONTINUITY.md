@@ -27,3 +27,7 @@ The explicit **更新参考上下文** action opens a confirmation explaining th
 - The separately bounded [multi-chapter protocol](../../eval/MULTICHAPTER-PROTOCOL.md) must be read with its recorded result. Passing software tests or finishing provider calls is not a literary-quality pass
 - Complete recall, event deduplication, automatic repair of downstream chapters, general semantic accuracy and long-novel scalability remain unproven
 - Existing storage, server lifetime-call limits, per-request output bounds and explicit author acceptance remain unchanged
+
+## First real run and warning maintenance
+
+The [recorded live result](../../eval/MULTICHAPTER-RESULTS.md) failed the three-chapter criterion after eight calls and retained a chapter-1 false positive. Current support labels explicitly say they are model judgments that may be wrong, and describe the observed missing-detail failure. The mobile backup export control remains visible on narrow screens after hosted CI exposed its earlier absence. These engineering fixes do not repair general semantic support reliability. The next safety boundary should use deterministic quote-derived memory and explicit author attestation for paraphrases, rather than treating another model-positive result as verified evidence.

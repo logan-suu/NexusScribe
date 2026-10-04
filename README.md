@@ -198,3 +198,6 @@ The [first live support audit](eval/MEMORY-SUPPORT-RESULTS.md) missed the retain
 ## Multi-chapter continuation and recovery
 
 Author-selected current event memory now accompanies exact manuscript sources, with explicit planning roles and stale-source exclusions. Custom candidate cards are chapter-local. Paid extraction/review results survive a failed storage write in the current window, and older candidates can explicitly refresh context without regenerating prose. See the [behavior and limits](docs/public/MULTICHAPTER-CONTINUITY.md) and the [non-blind reading of retained prose](eval/RETAINED-PROSE-CLOSE-READING.md). These improvements do not establish literary superiority or complete long-form continuity.
+
+
+The [first real multi-chapter run](eval/MULTICHAPTER-RESULTS.md) stopped at call eight: chapter 2's first candidate was correctly rejected, but chapter 1 had already received a false positive that admitted a missing location detail. Two retained prose outputs also missed length/paragraph targets. The isolated four-case pilot is not a general support guarantee; no three-chapter or literary-quality pass is claimed. Model judgments remain advisory, and the consumed live protocol cannot be rerun through its old CLI.

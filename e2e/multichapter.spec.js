@@ -107,6 +107,7 @@ async function audit(page, n, status = 'supported') {
   await choice(page, '独立核对', n).click();
   await expect(candidate(page, n).getByLabel(`独立核对状态 ${n}`)).toContainText('独立核对已完成');
   await expect(choice(page, '保留', n))[status === 'supported' ? 'toBeEnabled' : 'toBeDisabled']();
+  if (status === 'supported') {await expect(candidate(page, n).getByLabel('模型记忆判断风险')).toBeVisible(); await expect(candidate(page, n)).toContainText('模型判断：原文支持（可能误判）');}
 }
 async function accept(page, chapterIndex, selectedCount) {
   const before = await state(page);

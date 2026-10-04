@@ -13,14 +13,15 @@ export function FactEvidence({item}) {
   <p>模型判断：{statusLabels[item.status]||item.status} · {item.explanation}</p>
  </div>;
 }
-const memoryStatusLabels={supported:'原文支持',unsupported:'原文不支持',unknown:'未知 / 未判断'};
+const memoryStatusLabels={supported:'模型判断：原文支持（可能误判）',unsupported:'模型判断：原文不支持',unknown:'未知 / 未判断'};
 export function MemoryEvidence({item}) {
  return <div className="memory-evidence">
   <p><strong>候选标签：{item.label}</strong></p>
   <p className="fine">候选记忆 {item.candidateId} · 候选 r{item.binding?.draftRevision??'未知'}{Number.isInteger(item.candidateSnapshot?.sourceParagraphIndex)?` · 段落 ${item.candidateSnapshot.sourceParagraphIndex+1}`:''}{Number.isInteger(item.candidateSnapshot?.sourceStart)?` · 字符位置 ${item.candidateSnapshot.sourceStart}–${item.candidateSnapshot.sourceEnd}`:''}</p>
   <blockquote aria-label="完整候选原文引用">{item.sourceQuote||'缺少可核验的原文引用'}</blockquote>
-  <p className={item.isolatedAssessmentId&&item.status==='supported'?'success-note':'warning'}>独立引文核对：{item.isolatedAssessmentId?(memoryStatusLabels[item.status]||memoryStatusLabels.unknown):memoryStatusLabels.unknown}</p>
+  <p className="warning">独立引文核对：{item.isolatedAssessmentId?(memoryStatusLabels[item.status]||memoryStatusLabels.unknown):memoryStatusLabels.unknown}</p>
   <p>{item.assessmentOrigin==='historic_combined_unverified'?'此历史记录来自旧版整章判断，未经单条引文独立核对':item.explanation||'尚无当前版本的独立引文判断；普通保留需要单条独立核对'}</p>
+  {item.isolatedAssessmentId&&item.status==='supported'&&<p className="warning" aria-label="模型记忆判断风险">模型判断只是建议，真实测试曾在缺少标签细节时误报支持。保留前须由作者核对完整标签与本条引文；这不是已验证事实。</p>}
   {item.legacyAssessment&&<div className="legacy-memory-assessment" aria-label="历史整章记忆判断"><p>历史整章判断（未经独立核对，不可据此普通保留）：{memoryStatusLabels[item.legacyAssessment.status]||memoryStatusLabels.unknown}</p><p>{item.legacyAssessment.explanation}</p></div>}
  </div>;
 }

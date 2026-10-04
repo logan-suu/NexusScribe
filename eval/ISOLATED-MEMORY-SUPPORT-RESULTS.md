@@ -45,3 +45,8 @@ Downloaded Actions artifact `11285664107` was verified against ZIP SHA-256 `eadb
 The [earlier bundled audit](MEMORY-SUPPORT-RESULTS.md) remains a failed experiment: false support on the retained claim, then a timeout on request two, whose usage is unknown. Its outputs and source freeze were not rewritten. The new isolated result is a separate four-call batch, not a re-scoring or retry of that run.
 
 The [design](../docs/public/ISOLATED-MEMORY-REVIEW.md) adds one explicit call for each candidate audited: three base chapter calls plus K audits, excluding interview/planning/revisions and earlier attempts. These short synthetic quotes do not establish chapter-scale cost or reliability. No automatic bulk auditing, automatic retry or automatic memory acceptance was added. Single-author local storage, 2 MiB backup bounds, cross-browser coverage and production deployment limitations remain.
+
+
+## Later counterexample
+
+The [subsequent multi-chapter run](MULTICHAPTER-RESULTS.md) retained a new false `supported` result: the isolated auditor acknowledged a location detail was absent from its own quote but accepted it as reasonable specificity. The four fixed expectations above remain their original bounded result; they do not establish reliable entire-label support. Request isolation does not make the model judgment verified authority.

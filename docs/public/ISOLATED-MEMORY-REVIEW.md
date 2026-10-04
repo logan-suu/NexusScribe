@@ -44,3 +44,8 @@ A separate preregistered live audit must retain the original failed label/quote 
 The [separately approved isolated pilot](../../eval/ISOLATED-MEMORY-SUPPORT-RESULTS.md) completed four calls on source `e8cd9d6d568cb16e0d09d030de248d29746504a1`, with all four preregistered expectations matched and no retries. The unchanged combined claim was judged unsupported because the reply was absent from its own quote. The literal positive was supported; unproven character belief and explicit negation with an embedded instruction were unsupported. The amended harness stops immediately on semantic as well as transport/schema/persistence failure.
 
 This establishes the narrow four-case acceptance condition, not general entailment accuracy, truth, reliability, literary quality or long-form performance. The first bundled audit remains a failure with its original evidence intact. Engineering checks use mocked judgments and are reported separately.
+
+
+## Later counterexample
+
+The [subsequent multi-chapter run](../../eval/MULTICHAPTER-RESULTS.md) retained a new false `supported` result: the isolated auditor acknowledged a location detail was absent from its own quote but accepted it as reasonable specificity. The four fixed expectations above remain their original bounded result; they do not establish reliable entire-label support. Request isolation does not make the model judgment verified authority.

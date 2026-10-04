@@ -37,7 +37,7 @@ const digest = value => createHash('sha256').update(typeof value === 'string' ||
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const object = x => x !== null && typeof x === 'object' && !Array.isArray(x);
 const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-const codes = new Set(['MULTICHAPTER_PROTOCOL_ERROR', 'EVIDENCE_PERSISTENCE_FAILED', 'UI_JOURNEY_FAILED', 'SEMANTIC_BLOCK', 'REQUEST_CANCELLED', 'NOT_CONFIGURED', 'INVALID_INPUT', 'INVALID_MODEL_OUTPUT', 'UPSTREAM_ERROR', 'UPSTREAM_TIMEOUT', 'OUTPUT_TRUNCATED', 'CALL_LIMIT', 'RATE_LIMIT', 'CONCURRENT_LIMIT']);
+const codes = new Set(['PROTOCOL_RETIRED', 'MULTICHAPTER_PROTOCOL_ERROR', 'EVIDENCE_PERSISTENCE_FAILED', 'UI_JOURNEY_FAILED', 'SEMANTIC_BLOCK', 'REQUEST_CANCELLED', 'NOT_CONFIGURED', 'INVALID_INPUT', 'INVALID_MODEL_OUTPUT', 'UPSTREAM_ERROR', 'UPSTREAM_TIMEOUT', 'OUTPUT_TRUNCATED', 'CALL_LIMIT', 'RATE_LIMIT', 'CONCURRENT_LIMIT']);
 const reasons = new Set(['FROZEN_MANIFEST', 'REQUEST_ORDER', 'REQUEST_COUNT', 'REQUEST_LIMIT', 'REQUEST_SETTINGS', 'INPUT_MISMATCH', 'RESPONSE_BODY', 'RESPONSE_SIZE', 'RESPONSE_ENVELOPE', 'STAGE_NOT_ARMED', 'UI_STATE', 'FACT_PROPAGATION', 'MEMORY_PROPAGATION', 'PROSE_RETENTION', 'EMPTY_EXTRACTION', 'UNSUPPORTED_AUDIT', 'BLOCKING_REVIEW']);
 const problem = reason => Object.assign(Error('Synthetic multichapter protocol stopped'), { code: 'MULTICHAPTER_PROTOCOL_ERROR', validationReason: reason });
 const fail = reason => { throw problem(reason); };
@@ -350,6 +350,8 @@ export function createFileSaver(out) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
     const offline = process.argv[2] === '--offline-smoke';
+    // This one-shot live protocol has concluded. Keep only credential-free CI replay active.
+    if (!offline) throw Object.assign(Error('COMPLETED_PROTOCOL_REQUIRES_NEW_APPROVAL'), {code:'PROTOCOL_RETIRED'});
     if (offline && process.env.GITHUB_ACTIONS !== 'true') throw Error('HOSTED_CI_ONLY');
     if (!offline) approvedConfig(process.env); await verifyFrozenManifest();
     const out = resolve(process.argv[offline ? 3 : 2] || (offline ? 'multichapter-offline-evidence' : 'multichapter-evidence')); await mkdir(out, { recursive: false });

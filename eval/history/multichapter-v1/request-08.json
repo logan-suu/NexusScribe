@@ -1,0 +1,10 @@
+{
+  "sequence": 8,
+  "action": "auditMemoryCandidate",
+  "chapter": 2,
+  "input": {
+    "label": "许宁、阿青次日上午九点差一刻抵达寄存室，发现铁门从里面拴着",
+    "sourceQuote": "次日上午九点差一刻，雨已经停了，檐口还在滴水，一滴一滴砸在寄存室门前的石阶上，像谁在慢慢数数。许宁把工具袋挎在右肩，纸盒仍箍着橡皮筋，放在最里层。他伸手推了推寄存室的铁门，门从里面拴着。"
+  },
+  "requestSha256": "ae8dfcf1aa61ae59dff89f723cd27cbe609a91959663938af8366e8b17ca7389"
+}

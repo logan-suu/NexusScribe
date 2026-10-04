@@ -1,0 +1,230 @@
+{
+  "protocol": {
+    "id": "multichapter-v1",
+    "version": 1,
+    "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+    "model": "deepseek-v4.1-flash",
+    "maxCalls": 12,
+    "maxTokens": 3000,
+    "maxOutputTokens": 36000,
+    "temperature": 0.7,
+    "thinking": "disabled",
+    "minimumGapMs": 11000,
+    "chapters": 3,
+    "targetHan": [
+      350,
+      500
+    ],
+    "targetParagraphs": [
+      4,
+      7
+    ],
+    "actions": [
+      "generateProse",
+      "extractMemory",
+      "reviewChapter",
+      "auditMemoryCandidate"
+    ]
+  },
+  "executionMode": "live",
+  "status": "stopped",
+  "attempts": 8,
+  "requestsPrepared": 8,
+  "completedStages": 8,
+  "attemptAccountingComplete": true,
+  "accountingNote": "A prepared running checkpoint may already have dispatched. Hard-interrupted calls remain uncertain; missing usage is never zero. Counts describe observed local dispatch, not independent billing.",
+  "sourceCommit": "eb7b8826aa9a0ab360073bdaf69fe1c07000531b",
+  "runId": "37173894618",
+  "code": "SEMANTIC_BLOCK",
+  "validationReason": "UNSUPPORTED_AUDIT",
+  "workflowElapsedMs": 115200.359507,
+  "usage": {
+    "promptTokens": {
+      "knownSum": 17280,
+      "reportedCalls": 8,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "completionTokens": {
+      "knownSum": 3158,
+      "reportedCalls": 8,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "totalTokens": {
+      "knownSum": 20438,
+      "reportedCalls": 8,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "reasoningTokens": {
+      "knownSum": 0,
+      "reportedCalls": 8,
+      "missingCalls": 0,
+      "complete": true
+    }
+  },
+  "calls": [
+    {
+      "sequence": 1,
+      "action": "generateProse",
+      "chapter": 1,
+      "requestSha256": "bfc4bf8169efd065a01f4315ac1cbeecfab746e02f28edb9f3576ab0963ef308",
+      "inputBytes": 9451,
+      "dispatched": true,
+      "status": "validated",
+      "usage": {
+        "promptTokens": 2125,
+        "completionTokens": 523,
+        "totalTokens": 2648,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 2484,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "transportElapsedMs": 5694.537737000001
+    },
+    {
+      "sequence": 2,
+      "action": "extractMemory",
+      "chapter": 1,
+      "requestSha256": "85d9c32e3037b9c21b4a8879bef615e95881eaa39e15267f0918f33b3b49dbd4",
+      "inputBytes": 10362,
+      "dispatched": true,
+      "status": "validated",
+      "usage": {
+        "promptTokens": 2398,
+        "completionTokens": 352,
+        "totalTokens": 2750,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 1831,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "transportElapsedMs": 4417.952067999999
+    },
+    {
+      "sequence": 3,
+      "action": "reviewChapter",
+      "chapter": 1,
+      "requestSha256": "85dad4e3d4ce862772238af477495b1ab635d6e199f85f6f51ce00819ca9779c",
+      "inputBytes": 11448,
+      "dispatched": true,
+      "status": "validated",
+      "usage": {
+        "promptTokens": 2551,
+        "completionTokens": 342,
+        "totalTokens": 2893,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 1774,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "transportElapsedMs": 3561.548877000001
+    },
+    {
+      "sequence": 4,
+      "action": "auditMemoryCandidate",
+      "chapter": 1,
+      "requestSha256": "d20a4088c43f5a465a84581afe3586f22d2305d71a6123d7e6a7b8d7bf79dd51",
+      "inputBytes": 2382,
+      "dispatched": true,
+      "status": "validated",
+      "usage": {
+        "promptTokens": 459,
+        "completionTokens": 165,
+        "totalTokens": 624,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 1124,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "transportElapsedMs": 2177.635862999996
+    },
+    {
+      "sequence": 5,
+      "action": "generateProse",
+      "chapter": 2,
+      "requestSha256": "c251a9dd4d4ef68bffcae780b707d36b26c97121c5e7678595acf30615a786ba",
+      "inputBytes": 12079,
+      "dispatched": true,
+      "status": "validated",
+      "usage": {
+        "promptTokens": 2799,
+        "completionTokens": 626,
+        "totalTokens": 3425,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 2902,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "transportElapsedMs": 6897.262877999994
+    },
+    {
+      "sequence": 6,
+      "action": "extractMemory",
+      "chapter": 2,
+      "requestSha256": "9d94436891aa9435fc299c89c1a619bf1c991fb0c84392000e4c3c38399dd0f6",
+      "inputBytes": 13408,
+      "dispatched": true,
+      "status": "validated",
+      "usage": {
+        "promptTokens": 3177,
+        "completionTokens": 436,
+        "totalTokens": 3613,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 2208,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "transportElapsedMs": 4101.31796
+    },
+    {
+      "sequence": 7,
+      "action": "reviewChapter",
+      "chapter": 2,
+      "requestSha256": "f621663be74ac2ce4bb4c72ecda59fff342397b756ece6938f552938bd22807e",
+      "inputBytes": 14494,
+      "dispatched": true,
+      "status": "validated",
+      "usage": {
+        "promptTokens": 3328,
+        "completionTokens": 642,
+        "totalTokens": 3970,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 2984,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "transportElapsedMs": 5381.957148999994
+    },
+    {
+      "sequence": 8,
+      "action": "auditMemoryCandidate",
+      "chapter": 2,
+      "requestSha256": "ae8dfcf1aa61ae59dff89f723cd27cbe609a91959663938af8366e8b17ca7389",
+      "inputBytes": 2344,
+      "dispatched": true,
+      "status": "semantic_block",
+      "usage": {
+        "promptTokens": 443,
+        "completionTokens": 72,
+        "totalTokens": 515,
+        "reasoningTokens": 0
+      },
+      "httpStatus": 200,
+      "responseBytes": 724,
+      "finishReason": "stop",
+      "finalContentPresent": true,
+      "transportElapsedMs": 1561.4304700000066
+    }
+  ],
+  "diagnosticRevision": 24
+}

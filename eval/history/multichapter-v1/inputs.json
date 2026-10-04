@@ -1,0 +1,623 @@
+{
+  "protocol": {
+    "id": "multichapter-v1",
+    "version": 1,
+    "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+    "model": "deepseek-v4.1-flash",
+    "maxCalls": 12,
+    "maxTokens": 3000,
+    "maxOutputTokens": 36000,
+    "temperature": 0.7,
+    "thinking": "disabled",
+    "minimumGapMs": 11000,
+    "chapters": 3,
+    "targetHan": [
+      350,
+      500
+    ],
+    "targetParagraphs": [
+      4,
+      7
+    ],
+    "actions": [
+      "generateProse",
+      "extractMemory",
+      "reviewChapter",
+      "auditMemoryCandidate"
+    ]
+  },
+  "executionMode": "live",
+  "fixture": {
+    "project": {
+      "projectId": "multichapter-synthetic-v1",
+      "title": "雨停前的寄存室",
+      "idea": "修表师许宁与邻居阿青在旧寄存室查找一封未署名信的来处；他们只能处理眼前的小线索。",
+      "protagonist": "许宁",
+      "pov": "第三人称限知，只跟随许宁",
+      "tone": "克制，实物细节，少量干涩幽默",
+      "goal": "三场连续小戏：发现纸屑，查问管理员，再依据回答安排下一步；寄信人保持未知。",
+      "boundaries": "每章350–500个汉字，4–7段。只写指定当前场景，接续已接受正文，不重演已发生的对白和动作。许宁说话简短、与实物相关；阿青着急但不咄咄逼人；管理员用办事规矩表达关心。不得写成许宁用左耳听声。阿青不得无来源知道信封中的旧车票，本三章不向他揭露；不得揭晓寄信人，不引入宏大阴谋。对纸屑和锁痕的猜测不能直接成为世界事实。没有获准的开锁动作不得提前成功。保留尚未履行的约定。",
+      "constraints": [
+        "许宁不能用左耳听见声音",
+        "阿青不知道信封中的旧车票，本三章不得揭露",
+        "寄信人保持未知"
+      ],
+      "outline": [
+        {
+          "id": "ch1",
+          "title": "柜底的纸",
+          "goal": "雨夜发现柜底纸屑并妥善保管；决定次日上午向管理员询问。柜门保持锁着。",
+          "scene": "雨夜寄存室；许宁与阿青检查锁柜；先观察再取证；结尾约定次日上午来问管理员。"
+        },
+        {
+          "id": "ch2",
+          "title": "门边的询问",
+          "goal": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+          "scene": "雨后次日上午寄存室门边；管理员出来应门，查看纸屑；不给寄信人答案；许宁继续保管纸屑，柜门仍未打开。"
+        },
+        {
+          "id": "ch3",
+          "title": "等记录的人",
+          "goal": "紧接第二章离开寄存室；依据管理员刚才的回答安排明早查旧记录。许宁与阿青分工准备，纸屑仍有明确保管处；不提前跳到明天或得到记录。",
+          "scene": "第二章之后门外檐下；二人讨论刚发生的询问及下一步，用一个实物动作结束，保持未知。"
+        }
+      ]
+    },
+    "initialFacts": [
+      "许宁的左耳听不见。",
+      "阿青不知道信封里装着一张旧车票。"
+    ],
+    "addedAuthorFact": "寄存室的铜铃已经损坏，不能发出声音。",
+    "seedNote": "The synthetic confirmed project and two author facts are seeded once before the app loads. All generation, memory choices, acceptance, later text editing and fact confirmation use visible UI.",
+    "firstChapterReference": "许宁的左耳听不见。\n阿青不知道信封里装着一张旧车票。\n许宁把未拆开的信封压在修表垫下。阿青等在寄存室门边。"
+  },
+  "seedWorkspace": {
+    "format": 1,
+    "serial": 0,
+    "state": {
+      "schemaVersion": 1,
+      "mode": "custom",
+      "projectId": "multichapter-synthetic-v1",
+      "title": "雨停前的寄存室",
+      "version": 3,
+      "chapters": [
+        {
+          "id": "ch1",
+          "title": "第一章 柜底的纸",
+          "text": "许宁的左耳听不见。\n阿青不知道信封里装着一张旧车票。\n许宁把未拆开的信封压在修表垫下。阿青等在寄存室门边。",
+          "revision": 1,
+          "syncedRevision": 1,
+          "status": "PLANNED",
+          "syncStatus": "CLEAN",
+          "revisions": [
+            {
+              "id": "ch1-r1",
+              "revision": 1,
+              "text": "许宁的左耳听不见。\n阿青不知道信封里装着一张旧车票。\n许宁把未拆开的信封压在修表垫下。阿青等在寄存室门边。",
+              "hash": "27fa32fe",
+              "paragraphs": [
+                {
+                  "id": "p1",
+                  "text": "许宁的左耳听不见。"
+                },
+                {
+                  "id": "p2",
+                  "text": "阿青不知道信封里装着一张旧车票。"
+                },
+                {
+                  "id": "p3",
+                  "text": "许宁把未拆开的信封压在修表垫下。阿青等在寄存室门边。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ch2",
+          "title": "第二章 门边的询问",
+          "text": "【创作规划，尚非生成正文】\n修表师许宁与邻居阿青在旧寄存室查找一封未署名信的来处；他们只能处理眼前的小线索。\n本章正文等待作者或已配置的模型提供。",
+          "revision": 1,
+          "syncedRevision": 1,
+          "status": "PLANNED",
+          "syncStatus": "CLEAN",
+          "revisions": [
+            {
+              "id": "ch2-r1",
+              "revision": 1,
+              "text": "【创作规划，尚非生成正文】\n修表师许宁与邻居阿青在旧寄存室查找一封未署名信的来处；他们只能处理眼前的小线索。\n本章正文等待作者或已配置的模型提供。",
+              "hash": "627d4348",
+              "paragraphs": [
+                {
+                  "id": "p1",
+                  "text": "【创作规划，尚非生成正文】"
+                },
+                {
+                  "id": "p2",
+                  "text": "修表师许宁与邻居阿青在旧寄存室查找一封未署名信的来处；他们只能处理眼前的小线索。"
+                },
+                {
+                  "id": "p3",
+                  "text": "本章正文等待作者或已配置的模型提供。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ch3",
+          "title": "第三章 等记录的人",
+          "text": "【创作规划，尚非生成正文】\n修表师许宁与邻居阿青在旧寄存室查找一封未署名信的来处；他们只能处理眼前的小线索。\n本章正文等待作者或已配置的模型提供。",
+          "revision": 1,
+          "syncedRevision": 1,
+          "status": "PLANNED",
+          "syncStatus": "CLEAN",
+          "revisions": [
+            {
+              "id": "ch3-r1",
+              "revision": 1,
+              "text": "【创作规划，尚非生成正文】\n修表师许宁与邻居阿青在旧寄存室查找一封未署名信的来处；他们只能处理眼前的小线索。\n本章正文等待作者或已配置的模型提供。",
+              "hash": "627d4348",
+              "paragraphs": [
+                {
+                  "id": "p1",
+                  "text": "【创作规划，尚非生成正文】"
+                },
+                {
+                  "id": "p2",
+                  "text": "修表师许宁与邻居阿青在旧寄存室查找一封未署名信的来处；他们只能处理眼前的小线索。"
+                },
+                {
+                  "id": "p3",
+                  "text": "本章正文等待作者或已配置的模型提供。"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "facts": [
+        {
+          "id": "author-fact-author-patch-multichapter-synthetic-v1-ch1-1-1-76e5bb9c",
+          "projectId": "multichapter-synthetic-v1",
+          "label": "许宁的左耳听不见。",
+          "value": "许宁的左耳听不见。",
+          "predicate": "作者确认的设定",
+          "subject": "作者决定",
+          "status": "confirmed",
+          "authority": "explicit_author_decision",
+          "recordVersion": 1,
+          "recordedFromVersion": 2,
+          "source": {
+            "chapterId": "ch1",
+            "revision": 1,
+            "revisionId": "ch1-r1",
+            "paragraphId": "p1",
+            "quote": "许宁的左耳听不见。",
+            "start": 0,
+            "end": 9
+          }
+        },
+        {
+          "id": "author-fact-author-patch-multichapter-synthetic-v1-ch1-1-2-a2972652",
+          "projectId": "multichapter-synthetic-v1",
+          "label": "阿青不知道信封里装着一张旧车票。",
+          "value": "阿青不知道信封里装着一张旧车票。",
+          "predicate": "作者确认的设定",
+          "subject": "作者决定",
+          "status": "confirmed",
+          "authority": "explicit_author_decision",
+          "recordVersion": 1,
+          "recordedFromVersion": 3,
+          "source": {
+            "chapterId": "ch1",
+            "revision": 1,
+            "revisionId": "ch1-r1",
+            "paragraphId": "p2",
+            "quote": "阿青不知道信封里装着一张旧车票。",
+            "start": 10,
+            "end": 26
+          }
+        }
+      ],
+      "knowledge": [],
+      "evidence": [],
+      "plans": [
+        {
+          "id": "outline-1",
+          "title": "柜底的纸",
+          "chapter": 1,
+          "description": "雨夜发现柜底纸屑并妥善保管；决定次日上午向管理员询问。柜门保持锁着。",
+          "status": "ready",
+          "condition": "author_outline",
+          "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+        },
+        {
+          "id": "outline-2",
+          "title": "门边的询问",
+          "chapter": 2,
+          "description": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+          "status": "ready",
+          "condition": "author_outline",
+          "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+        },
+        {
+          "id": "outline-3",
+          "title": "等记录的人",
+          "chapter": 3,
+          "description": "紧接第二章离开寄存室；依据管理员刚才的回答安排明早查旧记录。许宁与阿青分工准备，纸屑仍有明确保管处；不提前跳到明天或得到记录。",
+          "status": "ready",
+          "condition": "author_outline",
+          "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+        }
+      ],
+      "events": [],
+      "disclosures": [],
+      "preferences": [],
+      "drafts": [],
+      "commits": [
+        {
+          "id": "commit-1",
+          "kind": "patch",
+          "patchId": "author-patch-multichapter-synthetic-v1-ch1-1-1-76e5bb9c",
+          "patchHash": "2e9ce10c",
+          "version": 2,
+          "summary": "记录作者明确确认的设定，不进行额外语义推断",
+          "chapterId": "ch1",
+          "revision": 1,
+          "before": {
+            "facts": [],
+            "knowledge": [],
+            "evidence": [],
+            "plans": [
+              {
+                "id": "outline-1",
+                "title": "柜底的纸",
+                "chapter": 1,
+                "description": "雨夜发现柜底纸屑并妥善保管；决定次日上午向管理员询问。柜门保持锁着。",
+                "status": "ready",
+                "condition": "author_outline"
+              },
+              {
+                "id": "outline-2",
+                "title": "门边的询问",
+                "chapter": 2,
+                "description": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+                "status": "ready",
+                "condition": "author_outline"
+              },
+              {
+                "id": "outline-3",
+                "title": "等记录的人",
+                "chapter": 3,
+                "description": "紧接第二章离开寄存室；依据管理员刚才的回答安排明早查旧记录。许宁与阿青分工准备，纸屑仍有明确保管处；不提前跳到明天或得到记录。",
+                "status": "ready",
+                "condition": "author_outline"
+              }
+            ],
+            "events": [],
+            "disclosures": []
+          },
+          "after": {
+            "facts": [
+              {
+                "id": "author-fact-author-patch-multichapter-synthetic-v1-ch1-1-1-76e5bb9c",
+                "projectId": "multichapter-synthetic-v1",
+                "label": "许宁的左耳听不见。",
+                "value": "许宁的左耳听不见。",
+                "predicate": "作者确认的设定",
+                "subject": "作者决定",
+                "status": "confirmed",
+                "authority": "explicit_author_decision",
+                "recordVersion": 1,
+                "recordedFromVersion": 2,
+                "source": {
+                  "chapterId": "ch1",
+                  "revision": 1,
+                  "revisionId": "ch1-r1",
+                  "paragraphId": "p1",
+                  "quote": "许宁的左耳听不见。",
+                  "start": 0,
+                  "end": 9
+                }
+              }
+            ],
+            "knowledge": [],
+            "evidence": [],
+            "plans": [
+              {
+                "id": "outline-1",
+                "title": "柜底的纸",
+                "chapter": 1,
+                "description": "雨夜发现柜底纸屑并妥善保管；决定次日上午向管理员询问。柜门保持锁着。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              },
+              {
+                "id": "outline-2",
+                "title": "门边的询问",
+                "chapter": 2,
+                "description": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              },
+              {
+                "id": "outline-3",
+                "title": "等记录的人",
+                "chapter": 3,
+                "description": "紧接第二章离开寄存室；依据管理员刚才的回答安排明早查旧记录。许宁与阿青分工准备，纸屑仍有明确保管处；不提前跳到明天或得到记录。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              }
+            ],
+            "events": [],
+            "disclosures": []
+          },
+          "dependencies": [],
+          "operations": [
+            {
+              "op": "append_author_fact",
+              "statement": "许宁的左耳听不见。",
+              "source": {
+                "chapterId": "ch1",
+                "revision": 1,
+                "revisionId": "ch1-r1",
+                "paragraphId": "p1",
+                "quote": "许宁的左耳听不见。",
+                "start": 0,
+                "end": 9
+              }
+            }
+          ]
+        },
+        {
+          "id": "commit-2",
+          "kind": "patch",
+          "patchId": "author-patch-multichapter-synthetic-v1-ch1-1-2-a2972652",
+          "patchHash": "6f03bf0",
+          "version": 3,
+          "summary": "记录作者明确确认的设定，不进行额外语义推断",
+          "chapterId": "ch1",
+          "revision": 1,
+          "before": {
+            "facts": [
+              {
+                "id": "author-fact-author-patch-multichapter-synthetic-v1-ch1-1-1-76e5bb9c",
+                "projectId": "multichapter-synthetic-v1",
+                "label": "许宁的左耳听不见。",
+                "value": "许宁的左耳听不见。",
+                "predicate": "作者确认的设定",
+                "subject": "作者决定",
+                "status": "confirmed",
+                "authority": "explicit_author_decision",
+                "recordVersion": 1,
+                "recordedFromVersion": 2,
+                "source": {
+                  "chapterId": "ch1",
+                  "revision": 1,
+                  "revisionId": "ch1-r1",
+                  "paragraphId": "p1",
+                  "quote": "许宁的左耳听不见。",
+                  "start": 0,
+                  "end": 9
+                }
+              }
+            ],
+            "knowledge": [],
+            "evidence": [],
+            "plans": [
+              {
+                "id": "outline-1",
+                "title": "柜底的纸",
+                "chapter": 1,
+                "description": "雨夜发现柜底纸屑并妥善保管；决定次日上午向管理员询问。柜门保持锁着。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              },
+              {
+                "id": "outline-2",
+                "title": "门边的询问",
+                "chapter": 2,
+                "description": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              },
+              {
+                "id": "outline-3",
+                "title": "等记录的人",
+                "chapter": 3,
+                "description": "紧接第二章离开寄存室；依据管理员刚才的回答安排明早查旧记录。许宁与阿青分工准备，纸屑仍有明确保管处；不提前跳到明天或得到记录。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              }
+            ],
+            "events": [],
+            "disclosures": []
+          },
+          "after": {
+            "facts": [
+              {
+                "id": "author-fact-author-patch-multichapter-synthetic-v1-ch1-1-1-76e5bb9c",
+                "projectId": "multichapter-synthetic-v1",
+                "label": "许宁的左耳听不见。",
+                "value": "许宁的左耳听不见。",
+                "predicate": "作者确认的设定",
+                "subject": "作者决定",
+                "status": "confirmed",
+                "authority": "explicit_author_decision",
+                "recordVersion": 1,
+                "recordedFromVersion": 2,
+                "source": {
+                  "chapterId": "ch1",
+                  "revision": 1,
+                  "revisionId": "ch1-r1",
+                  "paragraphId": "p1",
+                  "quote": "许宁的左耳听不见。",
+                  "start": 0,
+                  "end": 9
+                }
+              },
+              {
+                "id": "author-fact-author-patch-multichapter-synthetic-v1-ch1-1-2-a2972652",
+                "projectId": "multichapter-synthetic-v1",
+                "label": "阿青不知道信封里装着一张旧车票。",
+                "value": "阿青不知道信封里装着一张旧车票。",
+                "predicate": "作者确认的设定",
+                "subject": "作者决定",
+                "status": "confirmed",
+                "authority": "explicit_author_decision",
+                "recordVersion": 1,
+                "recordedFromVersion": 3,
+                "source": {
+                  "chapterId": "ch1",
+                  "revision": 1,
+                  "revisionId": "ch1-r1",
+                  "paragraphId": "p2",
+                  "quote": "阿青不知道信封里装着一张旧车票。",
+                  "start": 10,
+                  "end": 26
+                }
+              }
+            ],
+            "knowledge": [],
+            "evidence": [],
+            "plans": [
+              {
+                "id": "outline-1",
+                "title": "柜底的纸",
+                "chapter": 1,
+                "description": "雨夜发现柜底纸屑并妥善保管；决定次日上午向管理员询问。柜门保持锁着。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              },
+              {
+                "id": "outline-2",
+                "title": "门边的询问",
+                "chapter": 2,
+                "description": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              },
+              {
+                "id": "outline-3",
+                "title": "等记录的人",
+                "chapter": 3,
+                "description": "紧接第二章离开寄存室；依据管理员刚才的回答安排明早查旧记录。许宁与阿青分工准备，纸屑仍有明确保管处；不提前跳到明天或得到记录。",
+                "status": "ready",
+                "condition": "author_outline",
+                "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+              }
+            ],
+            "events": [],
+            "disclosures": []
+          },
+          "dependencies": [],
+          "operations": [
+            {
+              "op": "append_author_fact",
+              "statement": "阿青不知道信封里装着一张旧车票。",
+              "source": {
+                "chapterId": "ch1",
+                "revision": 1,
+                "revisionId": "ch1-r1",
+                "paragraphId": "p2",
+                "quote": "阿青不知道信封里装着一张旧车票。",
+                "start": 10,
+                "end": 26
+              }
+            }
+          ]
+        }
+      ],
+      "factHistory": [],
+      "pendingPatches": [],
+      "derived": [],
+      "sequence": 2,
+      "config": {
+        "projectId": "multichapter-synthetic-v1",
+        "title": "雨停前的寄存室",
+        "idea": "修表师许宁与邻居阿青在旧寄存室查找一封未署名信的来处；他们只能处理眼前的小线索。",
+        "protagonist": "许宁",
+        "pov": "第三人称限知，只跟随许宁",
+        "tone": "克制，实物细节，少量干涩幽默",
+        "goal": "三场连续小戏：发现纸屑，查问管理员，再依据回答安排下一步；寄信人保持未知。",
+        "boundaries": "每章350–500个汉字，4–7段。只写指定当前场景，接续已接受正文，不重演已发生的对白和动作。许宁说话简短、与实物相关；阿青着急但不咄咄逼人；管理员用办事规矩表达关心。不得写成许宁用左耳听声。阿青不得无来源知道信封中的旧车票，本三章不向他揭露；不得揭晓寄信人，不引入宏大阴谋。对纸屑和锁痕的猜测不能直接成为世界事实。没有获准的开锁动作不得提前成功。保留尚未履行的约定。",
+        "constraints": [
+          "许宁不能用左耳听见声音",
+          "阿青不知道信封中的旧车票，本三章不得揭露",
+          "寄信人保持未知"
+        ],
+        "outline": [
+          {
+            "id": "ch1",
+            "title": "柜底的纸",
+            "goal": "雨夜发现柜底纸屑并妥善保管；决定次日上午向管理员询问。柜门保持锁着。",
+            "scene": "雨夜寄存室；许宁与阿青检查锁柜；先观察再取证；结尾约定次日上午来问管理员。"
+          },
+          {
+            "id": "ch2",
+            "title": "门边的询问",
+            "goal": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+            "scene": "雨后次日上午寄存室门边；管理员出来应门，查看纸屑；不给寄信人答案；许宁继续保管纸屑，柜门仍未打开。"
+          },
+          {
+            "id": "ch3",
+            "title": "等记录的人",
+            "goal": "紧接第二章离开寄存室；依据管理员刚才的回答安排明早查旧记录。许宁与阿青分工准备，纸屑仍有明确保管处；不提前跳到明天或得到记录。",
+            "scene": "第二章之后门外檐下；二人讨论刚发生的询问及下一步，用一个实物动作结束，保持未知。"
+          }
+        ]
+      }
+    },
+    "editing": {},
+    "patch": null,
+    "providerMode": "server"
+  },
+  "freeze": {
+    "protocol": "multichapter-v1",
+    "version": 1,
+    "sha256": {
+      "eval/MULTICHAPTER-PROTOCOL.md": "8b15f307371ca468abdad394324588478f66565e8e3405eaefa662fa7c812caa",
+      "eval/multichapter-fixtures.mjs": "5f46c2b7a27fc839f1f60cec28679305477d24731f613e163a9a2b27afcfe53e",
+      "scripts/multichapter-eval.mjs": "92fe5b871ad6ba5e19f7d225ae311ec281b45ee94c2d399cefa92d480ec58868",
+      "tests/multichapter-eval.test.js": "bbec880ddd9462d509aedd41dd66444f692834cc591088554572cd83a5005d95",
+      "server/provider.js": "8c0ed8c3ae03854f598a15faeebe335d9457577eb61fc0678f50d53f2312cb71",
+      "server/index.js": "d1d63c6636fc43fba2b9e50d6e9d57e4bca738076b9176c0898a3246650d0d72",
+      "src/App.jsx": "0256b1ac0f3f0df77049ae657081d4ec499d86c1c6f65bbdd747d6748b7fa8ee",
+      "src/domain/engine.js": "7b87331add115025d1ae256a7eab1524f3a27af5c7244cf4e07cfd90a0c93130",
+      "src/domain/memory-review.js": "b8411116c946f2ec301cc85098c9332eb014bf32123bd3b3efa5f096a07c89a5",
+      "src/domain/fact-review.js": "bce3e4cb59a263e079aeeb5f184b578f8dcef27a4976d48c67ba33728bbadb05",
+      "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
+      "src/storage.js": "d342651786dd159c40afda9e06dd78b342be02cfee13148024effe996f9d754a",
+      "src/adapters/provider.js": "3e0f37952f32402d3e2e6b8c76d3b34acf291ceef7351ed6b2f20ae5782d8dd6",
+      "src/authoring/live-provider.js": "3a83337bd47b5414e4d81ae8230488c5318b34a1990cc738b9976fdce184b786",
+      "src/components/DraftPanel.jsx": "290e9f47c35989e693ed3bb3046e0f52544749a3fba5126f6eb2e05ce6a4d751",
+      "src/components/ProviderPanel.jsx": "158f70f2c2351e627fb756425c13c2a8a1b930ba3e358cfa64af489e6c75ba19",
+      "src/components/Editor.jsx": "81cb7559b73d5e42537ad9edd24f6900b50c297081ae230b0e08434e2068b616",
+      "src/components/PatchPanel.jsx": "80eab1449a125a8fd9bb0b3a82f5aa0d5510b323745942d1f978fce8ad9a4dd8",
+      "src/components/Sidebar.jsx": "876028488f15955a592b99de3287c6fd363375c3671497789bfe2fe159f8de7c",
+      "src/hooks/useModelTask.js": "075e1083f7bafca47daac85cb053a343babc3d52b986de7456b5e8089be6f569",
+      "src/components/ProjectWizard.jsx": "a49d1f2cd20176bcfb6488a081931748655c1ee5b48a6f76ae47dd7ff80b13f3",
+      "src/components/Inspector.jsx": "d37324e86cab2a99c1aa34850aae0598b9ecfc6bdc2612b2fabd65b976145137",
+      "src/components/HistoryView.jsx": "3c746b9ccb866a00103f3627d289d54267d17c24f12a99215e6529a8b79ff7a7",
+      "src/components/ModelTaskStatus.jsx": "841efe2185a29c89b5419b3af0a36f04d46c646d561324e3da5a885b829253c4",
+      "src/main.jsx": "bff7940aa0d526751cacd8f05d24891ee890a2f74f653fb3128ead4638a256d9",
+      "src/styles.css": "6fa2f675fb25853d13cbf7253517e98c133eef2255d367b4e2a0208a930af334",
+      "src/authoring/index.js": "62e1aaac2d4cef1fe4cb96c10dc9952752da37fc8ee0ec2951dfae3c8ce0cb6d",
+      "src/authoring/wizard.css": "e2969f2d6eb6653e7190405689ba3a1cacc801affcc455c2ad5d2c1f3418f3cf",
+      "index.html": "a821efcbd93ad4f2954725cda50074708a3c2dbb3f655a43279115b54cc7e535",
+      "vite.config.js": "cf5960e8774cfa10916c06661dbb956474538088fdfc5fb2c96fac21b471ec87",
+      "package.json": "a731d299d517ea110765daaa67ed25864003b6e020c246610e7cdbcf5d428cab",
+      "package-lock.json": "41f4dafa8e6ba98465d641b6bd86d7ab2755b9a86dd9c528853faddabef1008e",
+      ".github/workflows/live-smoke.yml": "805bc3dd704496a797bef14c523e51e9542ea386fbd950f7e9ba9ce0e7f6401e"
+    },
+    "authorization": "One separately authorized first-attempt twelve-call batch only, after exact-source offline/browser review and CI. This manifest grants no additional run or retry authorization."
+  }
+}

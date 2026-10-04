@@ -1,0 +1,34 @@
+{
+  "sequence": 3,
+  "chapter": 1,
+  "action": "reviewChapter",
+  "output": {
+    "summary": "候选章节写的是雨夜在旧寄存室发现柜底纸屑、妥善收好并约定次日上午询问管理员，整体与既定场景、人物边界和计划一致。许宁全程用右手持手电、左手换持，未出现用左耳听声的描写；阿青没有获得或提及信封内旧车票的信息；寄信人仍未知，柜门保持锁着，纸屑仅作为实物线索被保管，未升级为世界事实。未发现需要以 error 或 warning 标记的明确违规。",
+    "issues": [],
+    "checks": [
+      "确认无左耳听声描写",
+      "确认阿青未获知旧车票",
+      "确认寄信人未揭露",
+      "确认柜门未开",
+      "确认纸屑仅为实物线索"
+    ],
+    "factChecks": [
+      {
+        "factId": "author-fact-author-patch-multichapter-synthetic-v1-ch1-1-1-76e5bb9c",
+        "recordVersion": 1,
+        "status": "not_applicable",
+        "explanation": "候选正文没有提及许宁的听力状况，既未直接断言其左耳听不见，也未出现其用左耳听声的描写；该设定未被使用或违反。",
+        "sourceQuote": ""
+      },
+      {
+        "factId": "author-fact-author-patch-multichapter-synthetic-v1-ch1-1-2-a2972652",
+        "recordVersion": 1,
+        "status": "not_applicable",
+        "explanation": "候选正文未提及信封内旧车票，阿青也没有表现出知道或谈论该车票；该事实在本场景中未被涉及，故不适用。",
+        "sourceQuote": ""
+      }
+    ]
+  },
+  "outputSha256": "d8f7fe0e0419473fbfa348f90390e8b0dd7be427c8742aa1e8f08144ed6c182c",
+  "serviceElapsedMs": 3566.2169390000054
+}
