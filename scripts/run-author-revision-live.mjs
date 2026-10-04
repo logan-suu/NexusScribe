@@ -1,14 +1,14 @@
-/** Separately dispatched stages of one frozen <=3-attempt trial. Never runs on import. */
-import { readFile, mkdir, open, readdir } from 'node:fs/promises';
+/** Consumed trial: live CLI permanently retired. Explicit fake-transport helpers remain for offline regression replay only. */
+import { mkdir, open } from 'node:fs/promises';
 import { resolve, basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createAgentService } from '../server/provider.js';
-import { protocol, digest, loadFrozenTrial, buildRevisionInput, buildFollowupInput, assessStage, validateCloseReadRecord } from './run-author-revision-eval.mjs';
+import { protocol, digest, buildRevisionInput, buildFollowupInput, assessStage, validateCloseReadRecord } from './run-author-revision-eval.mjs';
 
 export const STAGES = Object.freeze(['revise', 'extract', 'review']);
 export const WORKFLOW = 'author-revision-trial.yml';
 const ACTIONS = ['reviseProse', 'extractMemory', 'reviewChapter'];
-const SAFE_CODES = new Set(['APPROVAL_REQUIRED','FIRST_ACTIONS_ATTEMPT_REQUIRED','INVALID_STAGE','HISTORY_INVALID','STAGE_CONSUMED','SOURCE_MISMATCH','CI_REQUIRED','PRIOR_EVIDENCE_INVALID','GATE_FAILED','REQUEST_COUNT','REQUEST_SETTINGS','INPUT_MISMATCH','RESPONSE_INVALID','RESPONSE_TOO_LARGE','SECRET_ECHO','SECRET_SCAN_UNCERTAIN','EVIDENCE_FAILED','OBJECTIVE_OR_SEMANTIC_FAILURE','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','OUTPUT_TRUNCATED','INVALID_MODEL_OUTPUT','REQUEST_CANCELLED','NOT_CONFIGURED','RATE_LIMIT','CALL_LIMIT']);
+const SAFE_CODES = new Set(['PROTOCOL_RETIRED','APPROVAL_REQUIRED','FIRST_ACTIONS_ATTEMPT_REQUIRED','INVALID_STAGE','HISTORY_INVALID','STAGE_CONSUMED','SOURCE_MISMATCH','CI_REQUIRED','PRIOR_EVIDENCE_INVALID','GATE_FAILED','REQUEST_COUNT','REQUEST_SETTINGS','INPUT_MISMATCH','RESPONSE_INVALID','RESPONSE_TOO_LARGE','SECRET_ECHO','SECRET_SCAN_UNCERTAIN','EVIDENCE_FAILED','OBJECTIVE_OR_SEMANTIC_FAILURE','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','OUTPUT_TRUNCATED','INVALID_MODEL_OUTPUT','REQUEST_CANCELLED','NOT_CONFIGURED','RATE_LIMIT','CALL_LIMIT']);
 const stop = code => { throw Object.assign(Error(code), { code }); };
 const safeCode = error => SAFE_CODES.has(error?.code) ? error.code : 'EVIDENCE_FAILED';
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -117,7 +117,8 @@ export function validateExtractionGate(record,output) {
     });
 }
 
-export async function runStage({stage,env,trial,runs,ciRun,priorFiles={},closeRead,extractionGate,io,fetchImpl=globalThis.fetch,sleep=pause,now=()=>performance.now()}) {
+export async function runStage({stage,env,trial,runs,ciRun,priorFiles={},closeRead,extractionGate,io,fetchImpl,offlineReplay=false,sleep=pause,now=()=>performance.now()}) {
+  if(offlineReplay!==true||typeof fetchImpl!=='function'||fetchImpl===globalThis.fetch)stop('PROTOCOL_RETIRED');
   const config=approvedConfig(env),index=STAGES.indexOf(stage),sequence=index+1;
   if(index<0)stop('INVALID_STAGE');
   const prior=verifyPriorFiles(priorFiles,stage,env,trial);
@@ -224,7 +225,8 @@ async function apiGet(path,env,fetchImpl) {
   const response=await fetchImpl('https://api.github.com/repos/'+env.GITHUB_REPOSITORY+path,{method:'GET',redirect:'error',headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${env.GH_TOKEN}`,'X-GitHub-Api-Version':'2022-11-28'},signal:AbortSignal.timeout(30000)});
   if(!response.ok)stop('HISTORY_INVALID');return response.json();
 }
-export async function loadRunHistory(env,fetchImpl=globalThis.fetch) {
+export async function loadRunHistory(env,fetchImpl) {
+  if(typeof fetchImpl!=='function'||fetchImpl===globalThis.fetch)stop('PROTOCOL_RETIRED');
   const runs=[];let total;
   for(let page=1;page<=100;page++){
     const data=await apiGet(`/actions/workflows/${WORKFLOW}/runs?per_page=100&page=${page}`,env,fetchImpl);
@@ -235,15 +237,6 @@ export async function loadRunHistory(env,fetchImpl=globalThis.fetch) {
   }
   stop('HISTORY_INVALID');
 }
-async function readPrior(directory){const files={};for(const name of await readdir(directory)){if(!safeName(name))stop('PRIOR_EVIDENCE_INVALID');files[name]=await readFile(resolve(directory,name));}return files;}
-export async function main(env=process.env){
-  approvedConfig(env);const stage=env.NEXUS_AUTHOR_REVISION_STAGE;if(!STAGES.includes(stage))stop('INVALID_STAGE');
-  const trial=await loadFrozenTrial(),runs=await loadRunHistory(env),ciRun=await apiGet(`/actions/runs/${env.NEXUS_CI_RUN_ID}`,env,globalThis.fetch);
-  const priorFiles=stage==='revise'?{}:await readPrior('author-revision-prior');
-  let closeRead,extractionGate;try{if(stage!=='revise')closeRead=JSON.parse(env.NEXUS_CLOSE_READ_JSON||'');if(stage==='review')extractionGate=JSON.parse(env.NEXUS_EXTRACTION_GATE_JSON||'');}catch{stop('GATE_FAILED');}
-  const io=await createDiskEvidence('author-revision-evidence');
-  const ledger=await runStage({stage,env,trial,runs,ciRun,priorFiles,closeRead,extractionGate,io});
-  console.log(JSON.stringify({protocol:protocol.id,stage,status:ledger.status,attempts:ledger.attempts}));
-  if(ledger.status==='stopped')process.exitCode=1;
-}
+/** Retirement gate precedes environment/credential access, history reads and transport. */
+export async function main(){stop('PROTOCOL_RETIRED');}
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){try{await main();}catch(error){console.error(JSON.stringify({status:'blocked',code:safeCode(error)}));process.exitCode=1;}}

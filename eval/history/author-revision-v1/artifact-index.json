@@ -1,0 +1,19 @@
+{
+  "protocol": "author-revision-v1",
+  "sourceSha": "780b0b576b66869b3f9b3cd52bebe642a14ca4ad",
+  "runId": "37183679916",
+  "hashEncoding": "SHA-256 of exact file bytes",
+  "files": {
+    "close-read.json": "6cb0fb357145efe72a37460bcdff7256644ab0ed1747bac1279c6dae07449d21",
+    "completed-01.json": "5d7b427f52d13dbf55b1e5e53934b978962eaebee72f793df660a17740546571",
+    "dispatch-01.json": "4c71739ce39218e0b220aa5a84ac7ba8bbdafa723ba2dfeaa6cfcf2cc95bc7e1",
+    "index-01.json": "42735742fb8cc7013b328c1d4d3ec0169f25210119fcb1892fe0522becec2968",
+    "intent-01.json": "aa8f15a3c9de1485327385445c195aeb98aa49a6eb917cdc6c580dc2df6df930",
+    "ledger-01.json": "b5ecaefddf966cbbc3a21f36ace26c4b955f3eb7219f4b531c5728d13958f80e",
+    "outcome.json": "6c56635509b15959a048c22ee63134b8a2f304fedcf3944415217437fdc66b78",
+    "raw-01.bin": "25f6800dc6de6cfaa0c7a5b5c138970e856c2b960f5e1cf106183cd709ffe0ae",
+    "request-01.json": "6b6e9e896fdb52006e17c5f3a7b10ea83cb45babeeee58b8f8c76f7ad9018b9d",
+    "revised-chapter-2.txt": "71dffb6a68d42c2fee674fc4d64019e678f5bf730173e9cc75ea6925e2195ce3",
+    "source-manifest.json": "bf9124403214583274a2527ec9a704656e98e7cff809d0a844e615c9c51bee1b"
+  }
+}

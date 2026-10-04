@@ -2,7 +2,11 @@
 
 ## Status, question, and non-goals
 
-**Preregistered staged trial; no live request has been dispatched during preparation.** Recorded routine-test authorization covers one lifetime batch, conditional on exact-source CI and independent review; this document grants no additional batch, retry, or continuation after failure. This is a new, separately identified trial, `author-revision-v1`, with a lifetime ceiling of **three attempted provider requests**. A reviewed source/manifest and successful CI at the exact dispatch SHA are required before the separately approved first dispatch; the revision must be reported and close-read before any continuation. The consumed `multichapter-v1` run and its remaining nominal capacity cannot be reused. Protocol preparation does not itself dispatch a model call, access credentials, or accept application state. Authorized repository publication, review, and merging are separate development work.
+**Consumed and retired after one live request. No further live calls, retries, reruns, or new batch are authorized under `author-revision-v1`.** The only live stage was `reviseProse`, [run 37183679916](https://github.com/logan-suu/NexusScribe/actions/runs/37183679916), at source `780b0b576b66869b3f9b3cd52bebe642a14ca4ad`, following exact-source CI `37183364576`. It returned 396 Han characters in five paragraphs, then failed the mandatory close read. Extraction and review were not run; unused nominal capacity is not permission to continue.
+
+The actual CLI now rejects unconditionally with `PROTOCOL_RETIRED` before reading environment values, credentials, history, files, or transport. The workflow is permanently skipped and contains no credential injection or live command. Only explicitly injected fake-transport replay and credential-free offline checks remain. Their hypothetical three-stage tests are regression evidence, not further live observations or authorization.
+
+The original seven stage-evidence files and exact tested manifest remain unchanged in `eval/history/author-revision-v1/`; `source-manifest.json` is the historical manifest. The current `eval/author-revision-manifest.json` freezes retired maintenance/replay sources and separately identifies that original source and manifest. Never regenerate the historical manifest from current code. The preregistered instruction, source identity and checks below remain for interpreting the original attempt, not for dispatching it again.
 
 Question: can one author-directed revision of the exact retained chapter-2 draft repair its identified visibility defect and excessive length while preserving its useful voice, practical detail, limited knowledge, and outstanding appointment? This is one targeted, non-blind case, not a benchmark, independent human evaluation, proof of general revision quality, or comparison of models. Stage completion, objective adherence, an assistant/human close read, model review, and author acceptance are separate outcomes.
 
@@ -106,7 +110,7 @@ The report must include:
 - Actual provider-reported usage and latency, missing fields marked unknown. No price estimate from token caps or claim that a stopped/invalid request was free
 - No change to accepted chapters, author facts, memory decisions, or continuity context; no chapter 3 generation; no new live permission inferred
 
-The stopping condition is either the first recorded failure/uncertainty, or all three stages completed and reported with the candidate still awaiting the author's independent decision. Additional revision, acceptance, a new batch, live workflow activation, or altered sources/instructions require a new explicit decision and separately identified evidence.
+The trial reached its stopping condition at the first close-read failure after stage 1. The candidate remains unaccepted. No additional stage, retry, or new batch follows from this protocol or its unused capacity.
 
 ## Offline and staged implementation boundaries
 
@@ -116,7 +120,7 @@ The close-read record contains protocol ID, reviewer name/type, `nonBlind: true`
 
 The review-stage continuation record has protocol ID, reviewer name/type, `nonBlind: true`, `locked: true`, `status: "pass"`, exact normalized extraction `outputSha256`, a concrete `explanation`, `scope: "continuation_only_not_fact_verification"`, and one or more exact `{candidateIndex, label, sourceQuote}` evidence entries. It cannot assert author acceptance or convert proposals to facts. Both paid continuations therefore require a recorded non-blind inspection rather than a blind automatic chain.
 
-`scripts/run-author-revision-live.mjs` runs only through the separate `.github/workflows/author-revision-trial.yml` workflow:
+`scripts/run-author-revision-live.mjs` and `.github/workflows/author-revision-trial.yml` are now retired. The following describes the historical safeguards preserved in explicit fake replay, not an active execution path:
 
 - Fixed run names `author-revision-v1/revise`, `/extract`, `/review`; one protocol-wide concurrency group; no cancellation of in-progress runs; `github.run_attempt == 1`; one stage request per service process
 - Required `ci_run_id` must identify this repository's completed successful `.github/workflows/ci.yml` run at the exact dispatch SHA. The same SHA and CI run ID persist across the three stages; no source change is allowed mid-trial

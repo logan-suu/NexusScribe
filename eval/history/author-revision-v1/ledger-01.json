@@ -1,0 +1,98 @@
+{
+  "protocol": "author-revision-v1",
+  "sourceSha": "780b0b576b66869b3f9b3cd52bebe642a14ca4ad",
+  "manifestSha256": "061ae16da854ca476f80a8fd03e90f00f3dafaa68191ff154593fcb5f83170fb",
+  "ciRunId": "37183364576",
+  "status": "awaiting_close_read",
+  "attempts": 1,
+  "stages": [
+    {
+      "sequence": 1,
+      "stage": "revise",
+      "action": "reviseProse",
+      "runId": "37183679916",
+      "dispatched": true,
+      "status": "awaiting_close_read",
+      "usage": {
+        "promptTokens": 3455,
+        "completionTokens": 369,
+        "totalTokens": 3824,
+        "reasoningTokens": 0
+      },
+      "sourceTextSha256": "6a58486c108fe32ac376f3d4f5bbd96483b7367300fa61c549aa5fca30142046",
+      "requestSha256": "8db6ce217544630af5e1ba6041131c46b8a606fdde2140f3268b93c3d9bff01e",
+      "httpStatus": 200,
+      "rawBytes": 1858,
+      "rawSha256": "25f6800dc6de6cfaa0c7a5b5c138970e856c2b960f5e1cf106183cd709ffe0ae",
+      "rawComplete": true,
+      "finishReason": "stop",
+      "outputSha256": "9ba2f81710cb941460eccc0679f2b35e034e7081f8d82775743a4deca3f29412",
+      "assessment": {
+        "status": "pass",
+        "checks": [
+          {
+            "id": "PRODUCTION_OUTPUT_SCHEMA",
+            "status": "pass"
+          },
+          {
+            "id": "PROSE_NONEMPTY_BOUNDED",
+            "status": "pass"
+          },
+          {
+            "id": "PROSE_NO_CODE_FENCES",
+            "status": "pass"
+          },
+          {
+            "id": "PROSE_NOT_JSON_WRAPPED",
+            "status": "pass"
+          },
+          {
+            "id": "HAN_350_500",
+            "status": "pass"
+          },
+          {
+            "id": "PARAGRAPHS_4_7",
+            "status": "pass"
+          }
+        ],
+        "stopReason": null,
+        "stats": {
+          "characters": 483,
+          "hanCharacters": 396,
+          "paragraphs": 5
+        },
+        "textSha256": "71dffb6a68d42c2fee674fc4d64019e678f5bf730173e9cc75ea6925e2195ce3",
+        "nextStage": "await_close_read",
+        "semanticStatus": "not_evaluated"
+      },
+      "elapsedMs": 3262.913649,
+      "missingUsageFields": []
+    }
+  ],
+  "usage": {
+    "promptTokens": {
+      "knownSum": 3455,
+      "reportedCalls": 1,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "completionTokens": {
+      "knownSum": 369,
+      "reportedCalls": 1,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "totalTokens": {
+      "knownSum": 3824,
+      "reportedCalls": 1,
+      "missingCalls": 0,
+      "complete": true
+    },
+    "reasoningTokens": {
+      "knownSum": 0,
+      "reportedCalls": 1,
+      "missingCalls": 0,
+      "complete": true
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "protocol": "author-revision-v1",
+  "stage": "revise",
+  "runId": "37183679916",
+  "sourceSha": "780b0b576b66869b3f9b3cd52bebe642a14ca4ad",
+  "sequence": 1,
+  "priorAttempts": 0,
+  "cumulativeAttempts": 1,
+  "attemptedOrUncertain": true,
+  "requestSha256": "8db6ce217544630af5e1ba6041131c46b8a606fdde2140f3268b93c3d9bff01e"
+}

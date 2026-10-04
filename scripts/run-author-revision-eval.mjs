@@ -7,7 +7,7 @@ import { segmentProse } from '../src/domain/prose.js';
 import { validateInput, validateOutput } from '../server/provider.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const protocol = Object.freeze({ id: 'author-revision-v1', version: 1, mode: 'preregistered_staged_trial',
+export const protocol = Object.freeze({ id: 'author-revision-v1', version: 1, mode: 'retired_consumed_offline_replay',
   endpoint: 'https://opencode.ai/zen/go/v1/chat/completions', model: 'deepseek-v4.1-flash',
   maxCalls: 3, maxTokens: 3000, maxOutputTokens: 9000, temperature: 0.7, thinking: 'disabled', minimumGapMs: 11000,
   actions: Object.freeze(['reviseProse', 'extractMemory', 'reviewChapter']),
@@ -27,7 +27,8 @@ export const FROZEN_PATHS = Object.freeze([
   'eval/history/multichapter-v1/completed-05.json', 'eval/history/multichapter-v1/request-05.json',
   'eval/history/multichapter-v1/request-06.json', 'eval/history/multichapter-v1/request-07.json',
   'eval/history/multichapter-v1/source-manifest.json', 'eval/history/multichapter-v1/artifact-index.json',
-  'eval/MULTICHAPTER-RESULTS.md'
+  'eval/MULTICHAPTER-RESULTS.md',
+  ...['completed-01.json','dispatch-01.json','index-01.json','intent-01.json','ledger-01.json','raw-01.bin','request-01.json','source-manifest.json'].map(name => 'eval/history/author-revision-v1/'+name)
 ]);
 export const digest = value => createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -162,8 +163,8 @@ export async function main(args = process.argv.slice(2)) {
   if (args.length > 1 || (args.length === 1 && args[0] !== '--offline')) fail('OFFLINE_ONLY_NO_DISPATCH');
   const trial = await loadFrozenTrial();
   return { protocol: protocol.id, mode: 'offline_preparation_only', sourceVerified: true, sourceStats: proseStats(trial.text),
-    revisionInputSha256: digest(buildRevisionInput(trial)), liveCalls: 0, nextStage: 'exact_source_ci_and_review_required',
-    note: 'This command never dispatches. The separate staged runner requires exact-source CI, history, evidence, and continuation gates.' };
+    revisionInputSha256: digest(buildRevisionInput(trial)), liveCalls: 0, liveRetired: true, historicalLiveAttempts: 1, additionalLiveAllowance: 0, nextStage: 'none_retired',
+    note: 'The one-call trial stopped at its close-read gate. Live workflow and CLI are retired; only credential-free offline checks/replay remain.' };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try { console.log(JSON.stringify(await main(), null, 2)); }
