@@ -1,4 +1,4 @@
-/** Consumed and retired after one HTTP-200 request. Explicit fake replay only. */
+/** One explicitly approved transport probe. No literary trial or retries. */
 import {readFile,mkdir,open,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve,dirname} from 'node:path';
@@ -13,7 +13,7 @@ export const PATHS=['scripts/run-compatibility-probe.mjs','server/provider-trans
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const digest=x=>createHash('sha256').update(typeof x==='string'||Buffer.isBuffer(x)?x:JSON.stringify(x)).digest('hex');
 const fail=code=>{throw Object.assign(Error(code),{code});};
-const SAFE=new Set(['RETIRED','APPROVAL_REQUIRED','CONFIG_INVALID','SOURCE_MISMATCH','CI_REQUIRED','STAGE_CONSUMED','HISTORY_INVALID','FREEZE_INVALID','NOT_CONFIGURED','PERSISTENCE_FAILED','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','RESPONSE_TOO_LARGE','RESPONSE_INVALID','REFUSAL','HIDDEN_REASONING','SECRET_ECHO','OUTPUT_TRUNCATED']);
+const SAFE=new Set(['APPROVAL_REQUIRED','CONFIG_INVALID','SOURCE_MISMATCH','CI_REQUIRED','STAGE_CONSUMED','HISTORY_INVALID','FREEZE_INVALID','NOT_CONFIGURED','PERSISTENCE_FAILED','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','RESPONSE_TOO_LARGE','RESPONSE_INVALID','REFUSAL','HIDDEN_REASONING','SECRET_ECHO','OUTPUT_TRUNCATED']);
 export const safeCode=e=>SAFE.has(e?.code)?e.code:'PERSISTENCE_FAILED';
 const object=x=>x&&typeof x==='object'&&!Array.isArray(x);
 export function bodyFrom(bytes){
@@ -52,8 +52,7 @@ function secretEcho(value,key){
  return false;
 }
 /** Injected fake tests use this same function. Production invokes it once only after durable reservation upload. */
-export async function runOne({env,trial,record,io,fetchImpl,timeoutMs=120000,offlineReplay=false}){
- if(offlineReplay!==true||typeof fetchImpl!=='function'||fetchImpl===globalThis.fetch)fail('RETIRED');
+export async function runOne({env,trial,record,io,fetchImpl,timeoutMs=120000}){
  validateReservation(record,env,trial);
  const key=env.NEXUS_API_KEY;if(typeof key!=='string'||!key.trim()||key.length>4096||/[\r\n]/.test(key))fail('NOT_CONFIGURED');
  await io.write('dispatch.json',{protocol:ID,runId:env.GITHUB_RUN_ID,sourceSha:env.GITHUB_SHA,bodySha256:BODY_SHA,attemptedOrUncertain:true,remainingAttempts:0});
@@ -85,6 +84,17 @@ export async function runOne({env,trial,record,io,fetchImpl,timeoutMs=120000,off
  finally{active=false;clearTimeout(timer);controller.abort();try{Promise.resolve(reader?.cancel()).catch(()=>{});}catch{}out.receivedSuccessBytes=received;out.elapsedMs=Date.now()-began;out.missingUsageFields=['promptTokens','completionTokens','totalTokens','reasoningTokens'].filter(k=>!Object.hasOwn(out.usage,k));await io.write('result.json',out);const files=await io.files();await io.write('index.json',{protocol:ID,sourceSha:env.GITHUB_SHA,sha256:Object.fromEntries(Object.entries(files).map(([n,b])=>[n,digest(b)]))});}
  return out;
 }
-/** Retirement precedes all environment/credential access, API reads, evidence or transport. */
-export async function main(){fail('RETIRED');}
+async function get(path,env){const response=await fetch('https://api.github.com/repos/logan-suu/NexusScribe'+path,{redirect:'error',headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${env.GH_TOKEN}`},signal:AbortSignal.timeout(30000)});if(!response.ok)fail('HISTORY_INVALID');return response.json();}
+export async function main(mode=process.argv[2],env=process.env){
+ if(!['prepare','execute'].includes(mode))fail('CONFIG_INVALID');
+ const trial=await loadFreeze();
+ const history=await get('/actions/workflows/'+WORKFLOW+'/runs?per_page=100',env);
+ if(history.total_count!==1||history.workflow_runs?.length!==1)fail('STAGE_CONSUMED');
+ const ci=await get('/actions/runs/'+env.NEXUS_CI_RUN_ID,env);gates(env,history.workflow_runs,ci);
+ const io=await diskIO(resolve(ROOT,'compatibility-probe-evidence'));
+ if(mode==='prepare'){await io.write('reservation.json',reservation(env,trial));return;}
+ if(env.NEXUS_RESERVATION_UPLOADED!=='true')fail('PERSISTENCE_FAILED');
+ const record=JSON.parse(await readFile(resolve(ROOT,'compatibility-probe-evidence/reservation.json')));
+ const out=await runOne({env,trial,record,io,fetchImpl:globalThis.fetch});console.log(JSON.stringify(out));
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){try{await main();}catch(e){console.error(JSON.stringify({status:'blocked',code:safeCode(e)}));process.exitCode=1;}}

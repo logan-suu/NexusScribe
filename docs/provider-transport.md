@@ -1,3 +1,5 @@
+> Update, 6 October 2026: the separately approved one-call compatibility probe returned HTTP 200 and is now retired. See [result and limits](../eval/COMPATIBILITY-PROBE-RESULTS.md). The proposal below records the earlier offline repair design; it does not authorize another request.
+
 # Provider transport contract and safe failure diagnostics
 
 This repair is offline only. It does not authorize or schedule a provider call,

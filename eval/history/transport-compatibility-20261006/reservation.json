@@ -1,0 +1,17 @@
+{
+  "protocol": "transport-compatibility-20261006",
+  "sourceSha": "f7fb1edf5791458b5f3f2019d55a65fe736713fc",
+  "ciRunId": "37513688973",
+  "runId": "37514607937",
+  "attemptsReserved": 1,
+  "remainingAttempts": 0,
+  "attemptedOrUncertain": true,
+  "bodySha256": "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+  "manifestSha256": "0a3fb12e1a8e16a5ec8f01e3c334e5e98b4c3842e4143fbabfba46604de39136",
+  "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+  "maxOutputTokens": 3000,
+  "deadlineMs": 120000,
+  "successEnvelopeLimitBytes": 131072,
+  "errorEnvelopeLimitBytes": 16384,
+  "balanceEvidence": "user previously confirmed Use balance off; no refreshed console verification"
+}

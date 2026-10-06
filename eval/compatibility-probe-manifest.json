@@ -1,12 +1,13 @@
 {
   "protocol": "transport-compatibility-20261006",
+  "status": "retired_consumed_offline_replay",
   "maxAttempts": 1,
   "sha256": {
-    "scripts/run-compatibility-probe.mjs": "72d3668bdd15a93578860a84366a65689ca33345d7474e8bc35df71670222dc3",
+    "scripts/run-compatibility-probe.mjs": "4dd5a48c2d19676f294d24800e82dca225bb37b679d0b55173f719d7d1ca1ef3",
     "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195",
-    ".github/workflows/compatibility-probe.yml": "fe9574cb8ea71253083da7a4bc9ebba18da737aab37a4ced6dc4a3473950cecb",
-    "eval/COMPATIBILITY-PROBE-PROTOCOL.md": "fbd05666179aca9889e2ca2de2d43f3ce2c6b95c905c208a683c0abbc72bc808",
+    ".github/workflows/compatibility-probe.yml": "e5dcbdfd3f535d320ade238648968ae3cfb01f428574e0b35fac6c3fa986be7b",
+    "eval/COMPATIBILITY-PROBE-PROTOCOL.md": "471f2eba7ea2b1c7891ecc08885846148027e225b8fcbe0fa38b6ad887468d7f",
     "eval/causal-continuity-requests.json": "5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73",
-    "tests/compatibility-probe.test.js": "de6cf727188f6b480c1afdad1c2688538ba06731ea03eb044142fc7da90c6f67"
+    "tests/compatibility-probe.test.js": "45716223f287b7b66af92f7055fb7b7eea2c90599cb9eec633bbcf89552c3e68"
   }
 }

@@ -1,5 +1,3 @@
-> Consumed and retired after the single HTTP 200 response in run 37514607937. See [results](COMPATIBILITY-PROBE-RESULTS.md). The executed preregistration is preserved byte-for-byte under history/transport-compatibility-20261006/source-protocol.md. No further live authorization remains.
-
 # One-call transport compatibility protocol, 6 October 2026
 
 Protocol identity: `transport-compatibility-20261006`. The user explicitly approved
