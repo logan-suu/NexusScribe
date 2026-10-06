@@ -1,0 +1,9 @@
+{
+  "protocol": "transport-compatibility-20261006",
+  "sourceSha": "f7fb1edf5791458b5f3f2019d55a65fe736713fc",
+  "sha256": {
+    "dispatch.json": "40d20b57adc1eab0903205e162dc530bd18237eb7a8d79ccd35c7193fdc20e9e",
+    "reservation.json": "19c162346f5f7bdf6978211ae99c1bcd6f263bc0a92a62ac658ced496f5f0a25",
+    "result.json": "87253861ded8556281bca6551bb90e4e2f6cc4e8dcca7789b20b99185935320f"
+  }
+}

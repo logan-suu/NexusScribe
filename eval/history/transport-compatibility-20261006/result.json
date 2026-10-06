@@ -1,0 +1,23 @@
+{
+  "protocol": "transport-compatibility-20261006",
+  "sourceSha": "f7fb1edf5791458b5f3f2019d55a65fe736713fc",
+  "runId": "37514607937",
+  "bodySha256": "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+  "attempts": 1,
+  "remainingAttempts": 0,
+  "status": "compatible_response",
+  "usage": {
+    "promptTokens": 1557,
+    "completionTokens": 423,
+    "totalTokens": 1980,
+    "reasoningTokens": 0
+  },
+  "cost": "unknown",
+  "httpStatus": 200,
+  "finishReason": "stop",
+  "contentCharacters": 573,
+  "contentSha256": "731c9da59e5019f6ce92264f9da8601d1f04be9f93e5d019656273b6e47ef289",
+  "receivedSuccessBytes": 2116,
+  "elapsedMs": 4635,
+  "missingUsageFields": []
+}

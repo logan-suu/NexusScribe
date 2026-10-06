@@ -1,13 +1,10 @@
 // Strictly offline: every transport is injected, and every credential is public fake data.
-import test,{mock} from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,mkdtemp,mkdir,writeFile,rm,stat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
-import {ID,WORKFLOW,ENDPOINT,BODY_SHA,FREEZE_SHA,PATHS,digest,bodyFrom,gates,loadFreeze,diskIO,reservation,validateReservation,runOne,safeCode,main} from '../scripts/run-compatibility-probe.mjs';
-
-// A regression must never turn these offline tests into a real network request.
-mock.method(globalThis,'fetch',async()=>{throw Error('NETWORK_FORBIDDEN_IN_OFFLINE_TEST');});
+import {ID,WORKFLOW,ENDPOINT,BODY_SHA,FREEZE_SHA,PATHS,digest,bodyFrom,gates,loadFreeze,diskIO,reservation,validateReservation,runOne,safeCode} from '../scripts/run-compatibility-probe.mjs';
 
 const key='PUBLIC_FAKE_PROBE_KEY!+/=not-a-secret';
 const sha='f'.repeat(40);
@@ -22,7 +19,7 @@ const response=(data=envelope(),status=200)=>new Response(JSON.stringify(data),{
 function memoryIO(){const files={};return {filesData:files,async write(name,value){assert.equal(Object.hasOwn(files,name),false);files[name]=Buffer.from(JSON.stringify(value));},async files(){return {...files};}};}
 async function execute(fetchImpl=async()=>response(),options={}){
  const io=memoryIO(),calls=[];
- const result=await runOne({offlineReplay:true,env,trial,record:reservation(env,trial),io,timeoutMs:1000,...options,fetchImpl:async(...args)=>{calls.push(args);return fetchImpl(...args);}});
+ const result=await runOne({env,trial,record:reservation(env,trial),io,timeoutMs:1000,...options,fetchImpl:async(...args)=>{calls.push(args);return fetchImpl(...args);}});
  assert.equal(calls.length,1,'a reserved execution makes exactly one attempt, without retry');
  assert.equal(result.attempts,1);assert.equal(result.remainingAttempts,0);
  assert.deepEqual(Object.keys(io.filesData).sort(),['dispatch.json','index.json','result.json']);
@@ -67,7 +64,7 @@ test('reservation binds source, body, manifest, limits and a fully consumed sing
  for(const field of Object.keys(record)){const changed={...record,[field]:null};assert.throws(()=>validateReservation(changed,env,trial),hasCode('PERSISTENCE_FAILED'));}
  for(const changed of [{...record,extra:true},{},null])assert.throws(()=>validateReservation(changed,env,trial),hasCode('PERSISTENCE_FAILED'));
  assert.throws(()=>validateReservation(record,env,{...trial,body:trial.body+' '}),hasCode('PERSISTENCE_FAILED'));
- let calls=0;await assert.rejects(runOne({offlineReplay:true,env,trial,record:{...record,remainingAttempts:1},io:memoryIO(),fetchImpl:async()=>{calls++;return response();}}),hasCode('PERSISTENCE_FAILED'));assert.equal(calls,0);
+ let calls=0;await assert.rejects(runOne({env,trial,record:{...record,remainingAttempts:1},io:memoryIO(),fetchImpl:async()=>{calls++;return response();}}),hasCode('PERSISTENCE_FAILED'));assert.equal(calls,0);
 });
 
 test('freeze manifest rejects missing, extra, mutated files and protocol limits',async t=>{
@@ -104,7 +101,7 @@ test('missing or invalid usage stays unknown and arbitrary numeric/provider fiel
 });
 
 test('invalid credentials stop before transport or persistence',async()=>{
- for(const invalid of [undefined,'',' ','bad\r\nheader','x'.repeat(4097)]){let calls=0;const io=memoryIO();await assert.rejects(runOne({offlineReplay:true,env:{...env,NEXUS_API_KEY:invalid},trial,record:reservation(env,trial),io,fetchImpl:async()=>{calls++;return response();}}),hasCode('NOT_CONFIGURED'));assert.equal(calls,0);assert.deepEqual(io.filesData,{});}
+ for(const invalid of [undefined,'',' ','bad\r\nheader','x'.repeat(4097)]){let calls=0;const io=memoryIO();await assert.rejects(runOne({env:{...env,NEXUS_API_KEY:invalid},trial,record:reservation(env,trial),io,fetchImpl:async()=>{calls++;return response();}}),hasCode('NOT_CONFIGURED'));assert.equal(calls,0);assert.deepEqual(io.filesData,{});}
 });
 
 test('HTTP errors retain bounded enums without free text, headers, prose or credentials',async()=>{
@@ -160,47 +157,17 @@ test('rejected success stream is an upstream error and never records its free-te
 
 test('exclusive dispatch marker is durable before fetch and prevents a second local execution',async t=>{
  const root=await mkdtemp(join(tmpdir(),'nexus-probe-once-'));t.after(()=>rm(root,{recursive:true,force:true}));const io=await diskIO(root);let calls=0;
- const args={offlineReplay:true,env,trial,record:reservation(env,trial),io,fetchImpl:async()=>{calls++;const marker=JSON.parse((await io.files())['dispatch.json']);assert.equal(marker.attemptedOrUncertain,true);assert.equal(marker.remainingAttempts,0);return response();}};
+ const args={env,trial,record:reservation(env,trial),io,fetchImpl:async()=>{calls++;const marker=JSON.parse((await io.files())['dispatch.json']);assert.equal(marker.attemptedOrUncertain,true);assert.equal(marker.remainingAttempts,0);return response();}};
  await runOne(args);await assert.rejects(runOne(args),{code:'EEXIST'});assert.equal(calls,1);
  const index=JSON.parse((await io.files())['index.json']);assert.equal(Object.hasOwn(index.sha256,'dispatch.json'),true);
 });
 
 test('failed pre-dispatch persistence makes zero transport attempts',async()=>{
  let calls=0;const blocked={async write(){throw Object.assign(Error('offline disk full'),{code:'ENOSPC'});}};
- await assert.rejects(runOne({offlineReplay:true,env,trial,record:reservation(env,trial),io:blocked,fetchImpl:async()=>{calls++;return response();}}),{code:'ENOSPC'});assert.equal(calls,0);
+ await assert.rejects(runOne({env,trial,record:reservation(env,trial),io:blocked,fetchImpl:async()=>{calls++;return response();}}),{code:'ENOSPC'});assert.equal(calls,0);
 });
 
 test('public error codes are a fixed allowlist; arbitrary exceptions cannot leak details',()=>{
- for(const code of ['RETIRED','APPROVAL_REQUIRED','CONFIG_INVALID','SOURCE_MISMATCH','CI_REQUIRED','STAGE_CONSUMED','HISTORY_INVALID','FREEZE_INVALID','NOT_CONFIGURED','PERSISTENCE_FAILED','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','RESPONSE_TOO_LARGE','RESPONSE_INVALID','REFUSAL','HIDDEN_REASONING','SECRET_ECHO','OUTPUT_TRUNCATED'])assert.equal(safeCode({code,message:key,stack:key}),code);
+ for(const code of ['APPROVAL_REQUIRED','CONFIG_INVALID','SOURCE_MISMATCH','CI_REQUIRED','STAGE_CONSUMED','HISTORY_INVALID','FREEZE_INVALID','NOT_CONFIGURED','PERSISTENCE_FAILED','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','RESPONSE_TOO_LARGE','RESPONSE_INVALID','REFUSAL','HIDDEN_REASONING','SECRET_ECHO','OUTPUT_TRUNCATED'])assert.equal(safeCode({code,message:key,stack:key}),code);
  for(const error of [null,undefined,Error(key),{code:key},{code:'toString'},{code:'__proto__'}])assert.equal(safeCode(error),'PERSISTENCE_FAILED');
-});
-
-
-test('retired main rejects every mode before environment, credential, IO or transport access',async()=>{
- let accesses=0;
- const forbidden=new Proxy({}, {get(){accesses++;throw Error('retired main must not inspect environment');},ownKeys(){accesses++;throw Error('retired main must not inspect environment');}});
- for(const mode of ['prepare','execute','offline','invalid',undefined])await assert.rejects(Promise.resolve().then(()=>main(mode,forbidden)),hasCode('RETIRED'));
- assert.equal(accesses,0);assert.equal(globalThis.fetch.mock.calls.length,0);
-});
-
-test('runOne rejects absent offline opt-in and native transport before env or IO access',async()=>{
- let accesses=0,calls=0;
- const forbidden=new Proxy({}, {get(){accesses++;throw Error('retired execution touched protected inputs');}});
- const fake=async()=>{calls++;throw Error('transport must not run');};
- for(const patch of [{fetchImpl:fake},{offlineReplay:false,fetchImpl:fake},{offlineReplay:'true',fetchImpl:fake},{offlineReplay:true},{offlineReplay:true,fetchImpl:null},{offlineReplay:true,fetchImpl:globalThis.fetch}]){
-  await assert.rejects(runOne({env:forbidden,trial:forbidden,record:forbidden,io:forbidden,...patch}),hasCode('RETIRED'));
- }
- assert.equal(accesses,0);assert.equal(calls,0);
-});
-
-test('retired workflow has no credential reference or executable probe and no enabled job',async()=>{
- const workflow=await readFile(new URL('../.github/workflows/compatibility-probe.yml',import.meta.url),'utf8');
- const active=workflow.split('\n').filter(line=>!/^\s*#/.test(line)).join('\n');
- assert.doesNotMatch(active,/secrets\s*\.|NEXUS_API_KEY|GH_TOKEN/);
- assert.doesNotMatch(active,/run-compatibility-probe\.mjs|upload-artifact@|actions\/checkout@/);
- const jobs=active.split(/^jobs:\s*$/m)[1];
- if(jobs===undefined){assert.match(active,/^jobs:\s*\{\s*\}\s*$/m);return;}
- const jobBlocks=jobs.split(/^  [a-zA-Z_][\w-]*:\s*$/m).slice(1);
- assert.ok(jobBlocks.length>0,'retired workflow must explicitly disable its job');
- for(const block of jobBlocks)assert.match(block,/^    if:\s*(?:\$\{\{\s*false\s*\}\}|false)\s*$/m);
 });

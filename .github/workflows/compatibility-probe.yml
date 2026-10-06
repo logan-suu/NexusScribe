@@ -1,68 +1,13 @@
-name: Single transport compatibility probe
-run-name: transport-compatibility-20261006
+name: Retired single compatibility probe
+run-name: transport-compatibility-20261006/retired
+# Consumed by run37514607937 at f7fb1edf5791458b5f3f2019d55a65fe736713fc.
+# One HTTP200 response. No retries, continuation or remaining authorization.
 on:
   workflow_dispatch:
-    inputs:
-      source_sha:
-        description: Exact reviewed dev_v1.0 source SHA with successful CI
-        required: true
-        type: string
-      ci_run_id:
-        description: Successful exact-source CI run ID
-        required: true
-        type: string
-      approval:
-        description: Enter transport-compatibility-20261006 to consume the one approved attempt
-        required: true
-        type: string
-permissions:
-  contents: read
-  actions: read
-concurrency:
-  group: transport-compatibility-20261006
-  cancel-in-progress: false
+permissions: {}
 jobs:
-  probe:
-    if: ${{ github.ref == 'refs/heads/dev_v1.0' && github.run_attempt == 1 }}
+  retired:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 8
-    env:
-      NEXUS_SOURCE_SHA: ${{ inputs.source_sha }}
-      NEXUS_CI_RUN_ID: ${{ inputs.ci_run_id }}
-      NEXUS_COMPATIBILITY_APPROVED: ${{ inputs.approval }}
-      # User's existing confirmation; not a refreshed provider-console observation.
-      NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: '22'
-      - name: Reserve the single attempt before credential access
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node scripts/run-compatibility-probe.mjs prepare
-      - name: Persist immutable reservation before provider dispatch
-        id: reservation
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: transport-compatibility-20261006-reservation
-          path: compatibility-probe-evidence/reservation.json
-          if-no-files-found: error
-          retention-days: 90
-      - name: Execute exactly one request, no retries
-        if: ${{ success() && steps.reservation.outputs.artifact-id != '' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-          NEXUS_RESERVATION_UPLOADED: 'true'
-        run: node scripts/run-compatibility-probe.mjs execute
-      - name: Preserve only safe evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: transport-compatibility-20261006-evidence
-          path: compatibility-probe-evidence/*.json
-          if-no-files-found: warn
-          retention-days: 90
+      - run: echo 'RETIRED - single compatibility allowance consumed'

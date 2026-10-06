@@ -1,0 +1,21 @@
+{
+  "protocol": "transport-compatibility-20261006",
+  "runId": "37514607937",
+  "sourceSha": "f7fb1edf5791458b5f3f2019d55a65fe736713fc",
+  "ciRunId": "37513688973",
+  "artifactId": "11436527323",
+  "artifactZipSha256": "d6797599da1703504d61f7b88f95b27212c6546c75a1c32e0a63615e33323315",
+  "reservationArtifactId": "11436966264",
+  "reservationZipSha256": "4b5522adf306e0f786f234d2f7a54afbe2af205903154af7607c99643ab51c9f",
+  "sha256": {
+    "dispatch.json": "40d20b57adc1eab0903205e162dc530bd18237eb7a8d79ccd35c7193fdc20e9e",
+    "index.json": "fcba3c0de74c2e21a4482d405c87de82417f53fef138d68a1933bd18362a4233",
+    "reservation.json": "19c162346f5f7bdf6978211ae99c1bcd6f263bc0a92a62ac658ced496f5f0a25",
+    "result.json": "87253861ded8556281bca6551bb90e4e2f6cc4e8dcca7789b20b99185935320f",
+    "source-manifest.json": "ffeebebba464d71e68a31d2873086f69a785e1cc7bc8c2964abe1b38b48a170f",
+    "source-protocol.md": "fbd05666179aca9889e2ca2de2d43f3ce2c6b95c905c208a683c0abbc72bc808",
+    "source-runner.mjs": "72d3668bdd15a93578860a84366a65689ca33345d7474e8bc35df71670222dc3",
+    "source-tests.js": "de6cf727188f6b480c1afdad1c2688538ba06731ea03eb044142fc7da90c6f67",
+    "source-workflow.yml": "fe9574cb8ea71253083da7a4bc9ebba18da737aab37a4ced6dc4a3473950cecb"
+  }
+}

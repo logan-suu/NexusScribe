@@ -1,0 +1,12 @@
+{
+  "protocol": "transport-compatibility-20261006",
+  "maxAttempts": 1,
+  "sha256": {
+    "scripts/run-compatibility-probe.mjs": "72d3668bdd15a93578860a84366a65689ca33345d7474e8bc35df71670222dc3",
+    "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195",
+    ".github/workflows/compatibility-probe.yml": "fe9574cb8ea71253083da7a4bc9ebba18da737aab37a4ced6dc4a3473950cecb",
+    "eval/COMPATIBILITY-PROBE-PROTOCOL.md": "fbd05666179aca9889e2ca2de2d43f3ce2c6b95c905c208a683c0abbc72bc808",
+    "eval/causal-continuity-requests.json": "5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73",
+    "tests/compatibility-probe.test.js": "de6cf727188f6b480c1afdad1c2688538ba06731ea03eb044142fc7da90c6f67"
+  }
+}
