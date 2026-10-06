@@ -69,10 +69,16 @@ Main remains at initialization; no release or deployment occurred.
 
 A new separately approved causal-continuity comparison could reuse the unchanged
 six frozen bodies: F1 A/B, F2 B/A, F3 A/B. Maximum six new requests, 3,000 output
-tokens each (18,000 aggregate output-token cap), no retries, and failure or uncertain
-assessment stops the sequence. Use new protocol/reservations and fresh isolated
+tokens each (18,000 aggregate output-token cap), no retries. Fatal transport, invalid
+delivery, safety or budget uncertainty stops the sequence. Validly delivered but
+literarily weak prose is still scored and paired rather than stopping the sequence.
+This explicitly changes the retired protocol's rule that every literary dimension
+must be acceptable before the next arm. The user must approve this revised stopping
+rule along with the new call/token allowance before execution.
+Use new protocol/reservations and fresh isolated
 sessions; never reuse this probe's request as a literary baseline or the old trial's
 allowance. Keep source/input freezes, masked individual/pairwise close reading,
 objective delivery gates and no automatic prompt or manuscript adoption.
+Three fixture pairs provide exploratory evidence, not a broad literary-quality claim.
 This is an offline proposal only. New explicit user approval is required before
 any additional live model request, including the first baseline.
