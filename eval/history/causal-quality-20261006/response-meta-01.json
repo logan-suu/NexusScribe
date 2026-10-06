@@ -1,0 +1,24 @@
+{
+  "sequence": 1,
+  "requestSha256": "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+  "status": "stopped",
+  "usage": {
+    "promptTokens": 1557,
+    "completionTokens": 424,
+    "totalTokens": 1981,
+    "reasoningTokens": 0
+  },
+  "cost": "unknown",
+  "httpStatus": 200,
+  "finishReason": "stop",
+  "textSha256": "75a24e4f346bf57c3775c8d3180074334544ea9f1a5b0773f4beffaf9233dbf3",
+  "counts": {
+    "han": 472,
+    "paragraphs": 11,
+    "pass": false
+  },
+  "error": "DELIVERY_FAILED",
+  "receivedSuccessBytes": 2248,
+  "elapsedMs": 10386,
+  "missingUsageFields": []
+}

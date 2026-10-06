@@ -1,4 +1,4 @@
-/** Consumed after one scoreable HTTP-200 output; retired on delivery-count stop. Explicit fake replay only. */
+/** New, separately approved six-call fixed-context writing diagnostic. No retry or literary continuation gate. */
 import {readFile,mkdir,open,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve,dirname} from 'node:path';
@@ -12,14 +12,15 @@ export const ENDPOINT='https://opencode.ai/zen/go/v1/chat/completions';
 export const FREEZE_SHA='5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73';
 export const MASKED_MAPPING_SHA='00618555ff112bf760b93660740fd038c7078bfd02a3049f96680d38b72a895f';
 export const BODY_SHAS=['2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c','73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308','b08e91571190cb4ea1a18a84f1c5dcf03636f1e5aedceec744db116f2d0e9322','f6e433b06fdd772c042614c9a2d5fc41b14f523ef1184f12e28cc3e468bb2e04','3817d325ba0d06b1216f19700612978002f5d6bd1a00cc7a5f11f657a73a2f76','26f9ae08bf3dcf8611def04c295e857c73ef785b52f565a70b02d9be61254228'];
-export const PATHS=["scripts/run-causal-quality.mjs","server/provider-transport.js","src/domain/prose.js",".github/workflows/causal-quality-trial.yml",".github/workflows/ci.yml","eval/CAUSAL-QUALITY-PROTOCOL.md","eval/causal-continuity-requests.json","tests/causal-quality.test.js","eval/CAUSAL-QUALITY-RESULTS.md","eval/history/causal-quality-20261006/masked-candidate.json","eval/history/causal-quality-20261006/masked-individual.json","eval/history/causal-quality-20261006/artifact-index.json","eval/history/causal-quality-20261006/completed-01.json","eval/history/causal-quality-20261006/dispatch-01.json","eval/history/causal-quality-20261006/index.json","eval/history/causal-quality-20261006/ledger-01.json","eval/history/causal-quality-20261006/raw-prose-01.bin","eval/history/causal-quality-20261006/reservation.json","eval/history/causal-quality-20261006/response-meta-01.json","eval/history/causal-quality-20261006/result.json","eval/history/causal-quality-20261006/source-manifest.json","eval/history/causal-quality-20261006/source-protocol.md","eval/history/causal-quality-20261006/source-runner.mjs","eval/history/causal-quality-20261006/source-tests.js","eval/history/causal-quality-20261006/source-workflow.yml"];
+export const PATHS=['scripts/run-causal-quality.mjs','server/provider-transport.js','src/domain/prose.js','.github/workflows/causal-quality-trial.yml','.github/workflows/ci.yml','eval/CAUSAL-QUALITY-PROTOCOL.md','eval/causal-continuity-requests.json','tests/causal-quality.test.js'];
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const EVIDENCE='artifacts/causal-quality-20261006';
 const ORDER=[['F1-replay','A'],['F1-replay','B'],['F2-physical-transition','B'],['F2-physical-transition','A'],['F3-unused-domain-transfer','A'],['F3-unused-domain-transfer','B']];
 const object=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const fail=code=>{throw Object.assign(Error(code),{code});};
 export const digest=x=>createHash('sha256').update(typeof x==='string'||Buffer.isBuffer(x)?x:JSON.stringify(x)).digest('hex');
-const SAFE=new Set(['RETIRED','APPROVAL_REQUIRED','CONFIG_INVALID','SOURCE_MISMATCH','CI_REQUIRED','STAGE_CONSUMED','HISTORY_INVALID','FREEZE_INVALID','NOT_CONFIGURED','PERSISTENCE_FAILED','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','RESPONSE_TOO_LARGE','RESPONSE_INVALID','REFUSAL','HIDDEN_REASONING','SECRET_ECHO','OUTPUT_TRUNCATED','DELIVERY_FAILED','BUDGET_UNCERTAIN']);
+const SAFE=new Set(['APPROVAL_REQUIRED','CONFIG_INVALID','SOURCE_MISMATCH','CI_REQUIRED','STAGE_CONSUMED','HISTORY_INVALID','FREEZE_INVALID','NOT_CONFIGURED','PERSISTENCE_FAILED','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','RESPONSE_TOO_LARGE','RESPONSE_INVALID','REFUSAL','HIDDEN_REASONING','SECRET_ECHO','OUTPUT_TRUNCATED','DELIVERY_FAILED','BUDGET_UNCERTAIN']);
 export const safeCode=e=>SAFE.has(e?.code)?e.code:'PERSISTENCE_FAILED';
 const filename=(prefix,n,ext='json')=>`${prefix}-${String(n).padStart(2,'0')}.${ext}`;
 const allowedFile=n=>/^(?:reservation|result|index)\.json$/.test(n)||/^(?:dispatch|response-meta|completed|ledger)-0[1-6]\.json$/.test(n)||/^raw-prose-0[1-6]\.bin$/.test(n);
@@ -39,7 +40,7 @@ export function validateFreeze(bytes){
 export async function loadFreeze(root=ROOT){
  try{
   const manifest=JSON.parse(await readFile(resolve(root,'eval/causal-quality-manifest.json')));
-  if(manifest.protocol!==ID||manifest.status!=='retired_consumed_offline_replay'||!same(manifest.bodySha256,BODY_SHAS)||manifest.maxAttempts!==6||manifest.maxOutputTokensPerCall!==3000||manifest.maxOutputTokensTotal!==18000||manifest.maskedMappingSha256!==MASKED_MAPPING_SHA||manifest.stop!=='operational_delivery_safety_budget_uncertainty'||!object(manifest.sha256)||!same(Object.keys(manifest.sha256).sort(),[...PATHS].sort()))fail('FREEZE_INVALID');
+  if(manifest.protocol!==ID||manifest.status!=='new_separately_approved_not_dispatched'||!same(manifest.bodySha256,BODY_SHAS)||manifest.maxAttempts!==6||manifest.maxOutputTokensPerCall!==3000||manifest.maxOutputTokensTotal!==18000||manifest.maskedMappingSha256!==MASKED_MAPPING_SHA||manifest.stop!=='operational_delivery_safety_budget_uncertainty'||!object(manifest.sha256)||!same(Object.keys(manifest.sha256).sort(),[...PATHS].sort()))fail('FREEZE_INVALID');
   for(const p of PATHS)if(digest(await readFile(resolve(root,p)))!==manifest.sha256[p])fail('FREEZE_INVALID');
   return {manifest,requests:validateFreeze(await readFile(resolve(root,'eval/causal-continuity-requests.json')))};
  }catch{fail('FREEZE_INVALID');}
@@ -129,9 +130,8 @@ export function aggregateUsage(stages){
  const names=['promptTokens','completionTokens','totalTokens','reasoningTokens'];
  return Object.fromEntries(names.map(k=>[k,stages.length&&stages.every(s=>Number.isSafeInteger(s.usage[k]))&&Number.isSafeInteger(stages.reduce((sum,s)=>sum+s.usage[k],0))?stages.reduce((sum,s)=>sum+s.usage[k],0):null]));
 }
-/** Historical execution behavior is retained only for explicit injected fake replay. */
-export async function runTrial({env,trial,record,runs,ci,artifact,io,fetchImpl,timeoutMs=120000,sleep=ms=>new Promise(r=>setTimeout(r,ms)),offlineReplay=false}){
- if(offlineReplay!==true||typeof fetchImpl!=='function'||fetchImpl===globalThis.fetch)fail('RETIRED');
+/** Called once after durable reservation upload. Injected fake transports exercise this same path. */
+export async function runTrial({env,trial,record,runs,ci,artifact,io,fetchImpl,timeoutMs=120000,sleep=ms=>new Promise(r=>setTimeout(r,ms))}){
  gates(env,runs,ci);validateArtifact(env,artifact);validateReservation(record,env,trial);
  if(typeof fetchImpl!=='function'||!Number.isFinite(timeoutMs)||timeoutMs<=0||typeof sleep!=='function')fail('CONFIG_INVALID');
  const before=await io.files();if(!same(Object.keys(before),['reservation.json'])||!same(JSON.parse(before['reservation.json']),record))fail('PERSISTENCE_FAILED');
@@ -165,6 +165,21 @@ export async function runTrial({env,trial,record,runs,ci,artifact,io,fetchImpl,t
  await io.write('index.json',{protocol:ID,sourceSha:env.GITHUB_SHA,runId:env.GITHUB_RUN_ID,sha256:Object.fromEntries(Object.entries(files).map(([n,b])=>[n,digest(b)]))});
  return result;
 }
-/** Retirement precedes all argument, environment, credential, history, evidence and transport access. */
-export async function main(){fail('RETIRED');}
+async function get(path,env,fetchImpl){
+ let response;try{response=await fetchImpl('https://api.github.com/repos/logan-suu/NexusScribe'+path,{redirect:'error',headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${env.GH_TOKEN}`},signal:AbortSignal.timeout(30000)});}catch{fail('HISTORY_INVALID');}
+ if(!response.ok)fail('HISTORY_INVALID');try{return await response.json();}catch{fail('HISTORY_INVALID');}
+}
+export async function main(mode=process.argv[2],env=process.env,{root=ROOT,fetchImpl=globalThis.fetch}={}){
+ if(!['prepare','execute'].includes(mode))fail('CONFIG_INVALID');approval(env);
+ const trial=await loadFreeze(root);
+ const history=await get('/actions/workflows/'+WORKFLOW+'/runs?per_page=100',env,fetchImpl);
+ if(history.total_count!==1||history.workflow_runs?.length!==1)fail('STAGE_CONSUMED');
+ const ci=await get('/actions/runs/'+env.NEXUS_CI_RUN_ID,env,fetchImpl);gates(env,history.workflow_runs,ci);
+ const io=await diskIO(resolve(root,EVIDENCE));
+ if(mode==='prepare'){await io.write('reservation.json',reservation(env,trial));return {status:'reserved',attemptsReserved:6};}
+ if(env.NEXUS_RESERVATION_UPLOADED!=='true'||!/^\d+$/.test(env.NEXUS_RESERVATION_ARTIFACT_ID||''))fail('PERSISTENCE_FAILED');
+ const artifact=await get('/actions/artifacts/'+env.NEXUS_RESERVATION_ARTIFACT_ID,env,fetchImpl);validateArtifact(env,artifact);
+ const record=JSON.parse(await readFile(resolve(root,EVIDENCE,'reservation.json')));
+ return runTrial({env,trial,record,runs:history.workflow_runs,ci,artifact,io,fetchImpl});
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){try{const result=await main();console.log(JSON.stringify({protocol:ID,status:result.status,attempts:result.attempts,code:result.error}));if(result.status==='stopped')process.exitCode=1;}catch(e){console.error(JSON.stringify({status:'blocked',code:safeCode(e)}));process.exitCode=1;}}

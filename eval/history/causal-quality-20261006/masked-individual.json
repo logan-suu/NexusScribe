@@ -1,0 +1,676 @@
+{
+  "schemaVersion": "masked-prose-individual-v1",
+  "candidateId": "C-d0bddea4",
+  "storyInputSha256": "45232817977de48523f8bed3b8772598187c0d63628ecd8d2746361572a31174",
+  "textSha256": "75a24e4f346bf57c3775c8d3180074334544ea9f1a5b0773f4beffaf9233dbf3",
+  "locked": true,
+  "fullCandidateRead": true,
+  "masking": {
+    "suppliedNeutralPacketOnly": true,
+    "armIdentityKnown": false,
+    "generationOrderKnown": false,
+    "otherCandidatesInspected": false,
+    "pairwiseAssessmentPerformed": false
+  },
+  "offsets": {
+    "convention": "Zero-based JavaScript UTF-16 offsets; end exclusive",
+    "outputCoordinateSpace": "Exact packet.text, including paragraph-separating newlines",
+    "sourceCoordinateSpace": "Exact packet.storyInput string, not a reformatted or reserialized JSON object",
+    "repeatedSourceQuotationRule": "Cite the first occurrence; sourceLocation identifies that occurrence in the parsed story input"
+  },
+  "independentSummary": {
+    "literaryStatus": "needs_edit_or_uncertain",
+    "literaryFinding": "A complete, modest clue-discovery scene with recognizable restrained dialogue and an earned next-step decision. The strongest substantive concerns are ambiguous left-ear sound attribution and weak physical continuity for the envelope and light. These are editing concerns, not proven impossibilities on the supplied wording. The minor clue and unresolved sender are handled successfully.",
+    "deliveryStatus": "clear_failure",
+    "deliveryFinding": "The 472 Han characters satisfy the 450–600 target, but the exact submitted text has 11 blank-line-separated paragraphs against the requested 4–7. This formal failure does not erase the separate literary strengths or establish a causal contradiction.",
+    "definiteLiteraryConstraintContradictionEstablished": false,
+    "definiteDeliveryConstraintViolationEstablished": true
+  },
+  "dimensions": {
+    "new_scene_change": {
+      "status": "acceptable",
+      "explanation": "The scene moves from an uncooperative lock to a visible, localized clue: torn paper with a half blue printed line. The characters leave with the location remembered and a concrete plan to ask the administrator about the lock the next morning. The paper is not identified or collected, so the information gain is small, but a small clue is exactly the scene brief. The sender remains unknown. The text does more than merely repeat the preexisting envelope secret.",
+      "outputEvidence": [
+        {
+          "quote": "光扫过一道积灰的缝，缝里卡着几片碎纸，边缘毛糙，像是从什么票据上撕下来的。",
+          "startUtf16": 205,
+          "endUtf16": 242,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "纸屑很小，白底上印着半截蓝线，像某种表格的边角。",
+          "startUtf16": 284,
+          "endUtf16": 308,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "她记下位置，决定明早再来一趟，先问管理员那把锁的事，再问别的。",
+          "startUtf16": 547,
+          "endUtf16": 578,
+          "coordinateSpace": "text"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "quote": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+          "startUtf16": 187,
+          "endUtf16": 212,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.goal"
+        },
+        {
+          "quote": "雨夜，寄存室；程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索；结尾决定明早问管理员",
+          "startUtf16": 546,
+          "endUtf16": 587,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.outline[1].scene"
+        },
+        {
+          "quote": "寄信人保持未知",
+          "startUtf16": 329,
+          "endUtf16": 336,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.boundaries"
+        }
+      ],
+      "allegations": [],
+      "uncertainty": "No larger reveal or retrieval is required. The resemblance to a ticket or form is tentative and is not proof of a connection to the old ticket."
+    },
+    "physical_prerequisites_custody": {
+      "status": "needs_edit_or_uncertain",
+      "explanation": "The immediate mechanics of failed key use, illuminating the gap, reaching unsuccessfully, and leaving the scraps in place are plausible. Two custody descriptions are rough. The light begins as 阿陶’s phone, becomes a received 手电, and ends with 阿陶 switching his phone light off. More importantly, 程岚’s fingers encounter an envelope in the pocket while the same noun phrase identifies it as lying pressed under the repair mat. Neither wording proves an impossible event, because a phone light may be called a flashlight and a prior transfer of the envelope into the pocket may be left implicit. The prose nevertheless makes the reader repair both continuities, especially the envelope’s present-sounding placement.",
+      "outputEvidence": [
+        {
+          "quote": "阿陶蹲下去，拿手机灯照柜底。",
+          "startUtf16": 191,
+          "endUtf16": 205,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "她把手电接过来，光贴着地面推过去。",
+          "startUtf16": 267,
+          "endUtf16": 284,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "阿陶看了她一眼，像要说什么，最后只把手机灯关了。",
+          "startUtf16": 418,
+          "endUtf16": 442,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "程岚把钥匙串收回口袋，指尖碰到那枚修表垫下压着的信封边角，停了一下，没拿出来。",
+          "startUtf16": 459,
+          "endUtf16": 498,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "他伸手要够，指尖差了一截。",
+          "startUtf16": 242,
+          "endUtf16": 255,
+          "coordinateSpace": "text"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "quote": "程岚没有拆穿，只把信封压在修表垫下。",
+          "startUtf16": 738,
+          "endUtf16": 756,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.chapters[0].text"
+        },
+        {
+          "quote": "雨夜，寄存室；程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索；结尾决定明早问管理员",
+          "startUtf16": 546,
+          "endUtf16": 587,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.outline[1].scene"
+        }
+      ],
+      "allegations": [
+        {
+          "issue": "The envelope’s pocket location and repair-mat description are not cleanly reconciled.",
+          "severity": "needs_edit_or_uncertain",
+          "outputEvidence": [
+            {
+              "quote": "程岚把钥匙串收回口袋，指尖碰到那枚修表垫下压着的信封边角，停了一下，没拿出来。",
+              "startUtf16": 459,
+              "endUtf16": 498,
+              "coordinateSpace": "text"
+            }
+          ],
+          "sourceEvidence": [
+            {
+              "quote": "程岚没有拆穿，只把信封压在修表垫下。",
+              "startUtf16": 738,
+              "endUtf16": 756,
+              "coordinateSpace": "storyInput",
+              "sourceLocation": "input.project.chapters[0].text"
+            }
+          ],
+          "strongestPlausibleAlternativeReading": "Before arriving here, 程岚 took the envelope from under the mat and pocketed it; 修表垫下压着的 is a retrospective identifying description of the familiar envelope. Chinese relative clauses need not state their past tense explicitly, and this mundane off-scene transfer is not prohibited.",
+          "adjudication": "Accept the possible ordinary transfer; do not label it impossible custody or a proven source contradiction. Still flag the wording because it presents the under-mat position without a former/past marker while narrating contact inside a pocket.",
+          "minimalRepair": "Clarify that this is the envelope previously kept under the mat, or briefly establish it was brought along."
+        },
+        {
+          "issue": "The light’s object name and holder shift without a clean handoff.",
+          "severity": "needs_edit_or_uncertain",
+          "outputEvidence": [
+            {
+              "quote": "阿陶蹲下去，拿手机灯照柜底。",
+              "startUtf16": 191,
+              "endUtf16": 205,
+              "coordinateSpace": "text"
+            },
+            {
+              "quote": "她把手电接过来，光贴着地面推过去。",
+              "startUtf16": 267,
+              "endUtf16": 284,
+              "coordinateSpace": "text"
+            },
+            {
+              "quote": "阿陶看了她一眼，像要说什么，最后只把手机灯关了。",
+              "startUtf16": 418,
+              "endUtf16": 442,
+              "coordinateSpace": "text"
+            }
+          ],
+          "sourceEvidence": [
+            {
+              "quote": "雨夜，寄存室；程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索；结尾决定明早问管理员",
+              "startUtf16": 546,
+              "endUtf16": 587,
+              "coordinateSpace": "storyInput",
+              "sourceLocation": "input.project.outline[1].scene"
+            }
+          ],
+          "strongestPlausibleAlternativeReading": "手电 informally denotes the phone’s flashlight function; 程岚 receives the phone and returns it in an ordinary unmentioned gesture before 阿陶 turns it off. Alternatively he can reach its light control while it is held nearby.",
+          "adjudication": "No resource constraint forbids either bridge, so this is a small referential/custody roughness rather than a physically impossible event.",
+          "minimalRepair": "Keep the device named consistently as the phone; add a return only if needed for sentence-level clarity."
+        }
+      ],
+      "uncertainty": "The supplied source does not forbid carrying the envelope or supplying another small light. No inventory-wide prohibition is inferred from silence."
+    },
+    "temporal_causal_sequence": {
+      "status": "acceptable",
+      "explanation": "The chronology is legible: arrive, try the lock, illuminate the floor gap, find scraps, fail to reach them, inspect, decide to ask about the lock, leave and remember the location. The inability to open the lock and the inaccessible scraps reasonably support returning with the administrator’s help. The phone and envelope transitions are accounted for separately as custody ambiguities; they do not establish a backward or impossible causal sequence. 明天问 becomes the more specific 明早 at the end. Nothing represents the future chapter plan as already accomplished.",
+      "outputEvidence": [
+        {
+          "quote": "钥匙插进锁孔，转不动。她又试了一次，锁芯像咬住了什么。",
+          "startUtf16": 162,
+          "endUtf16": 189,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "他伸手要够，指尖差了一截。",
+          "startUtf16": 242,
+          "endUtf16": 255,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "她看了两秒，没再凑近，只把柜门又晃了晃。锁还是不动。",
+          "startUtf16": 308,
+          "endUtf16": 334,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "“换锁会留新钥匙。”程岚说，“明天问。”",
+          "startUtf16": 375,
+          "endUtf16": 395,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "她记下位置，决定明早再来一趟，先问管理员那把锁的事，再问别的。",
+          "startUtf16": 547,
+          "endUtf16": 578,
+          "coordinateSpace": "text"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "quote": "雨夜，寄存室；程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索；结尾决定明早问管理员",
+          "startUtf16": 546,
+          "endUtf16": 587,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.outline[1].scene"
+        },
+        {
+          "quote": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+          "startUtf16": 187,
+          "endUtf16": 212,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.goal"
+        },
+        {
+          "quote": "未来计划，不可当作已发生",
+          "startUtf16": 629,
+          "endUtf16": 641,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.outline[2].goal"
+        }
+      ],
+      "allegations": [],
+      "uncertainty": "The prose does not explicitly say the administrator is absent tonight, but the requested next-morning decision and ordinary lack of immediate access make this a permissible mundane gap. 雨天 does not by itself mean daylight, and the later 今晚 supports the specified rainy-night setting."
+    },
+    "motivation_obligation": {
+      "status": "acceptable",
+      "explanation": "Both characters continue the practical search. 阿陶 provides light, tries to reach the scraps, proposes a changed lock and asks what to do tonight. 程岚 tries the key twice, prevents forceful scraping, inspects the clue and chooses the next source of help. These small choices enact their different levels of urgency without hostility. The paper is intentionally left because the immediate reach failed, not forgotten. The plan supplies a bounded next step rather than a large new promise. Her precise confidence that a changed lock would have a new key is ordinary practical shorthand, not a fact the story requires us to certify.",
+      "outputEvidence": [
+        {
+          "quote": "他伸手要够，指尖差了一截。",
+          "startUtf16": 242,
+          "endUtf16": 255,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "“别硬抠。”程岚说。",
+          "startUtf16": 257,
+          "endUtf16": 267,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "“会不会是管理员换了锁？”阿陶站起来，拍了拍膝盖上的灰，语气急，但没催她。",
+          "startUtf16": 336,
+          "endUtf16": 373,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "“那今晚呢？”",
+          "startUtf16": 397,
+          "endUtf16": 404,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "她记下位置，决定明早再来一趟，先问管理员那把锁的事，再问别的。",
+          "startUtf16": 547,
+          "endUtf16": 578,
+          "coordinateSpace": "text"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "quote": "人物声音：程岚用简短、实物相关的干涩回应；阿陶着急但不咄咄逼人。",
+          "startUtf16": 260,
+          "endUtf16": 292,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.boundaries"
+        },
+        {
+          "quote": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+          "startUtf16": 187,
+          "endUtf16": 212,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.goal"
+        },
+        {
+          "quote": "雨夜，寄存室；程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索；结尾决定明早问管理员",
+          "startUtf16": 546,
+          "endUtf16": 587,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.outline[1].scene"
+        }
+      ],
+      "allegations": [],
+      "uncertainty": "The opening assumes she has candidate keys rather than dramatizing a search for a key from scratch. Since none works and the administrator will be asked about the lock, this is compatible with searching for a usable key. No source says she has no keys or already possesses the correct one."
+    },
+    "knowledge_pov_attribution": {
+      "status": "needs_edit_or_uncertain",
+      "explanation": "The principal concern is the paired right-ear/left-ear sentence. Within a scene closely following 程岚, the construction can suggest that the left ear supplies a muted pipe sound, which risks the explicit deafness constraint. It never actually says she hears with that ear, however: 左耳那边 can mark the sound’s position, still heard with the right ear. This should be clarified, not called a certain contradiction. Elsewhere, third-person limited focus holds: observations and 像 mark interpretations rather than access to 阿陶’s private mind. Visible paper that looks like some kind of ticket is not disclosure of the hidden envelope contents; 阿陶 never demonstrates knowledge of the old ticket. The sender remains unidentified.",
+      "outputEvidence": [
+        {
+          "quote": "她的右耳朝向他，左耳那边只有水管在墙里走动的闷响。",
+          "startUtf16": 105,
+          "endUtf16": 130,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "光扫过一道积灰的缝，缝里卡着几片碎纸，边缘毛糙，像是从什么票据上撕下来的。",
+          "startUtf16": 205,
+          "endUtf16": 242,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "纸屑很小，白底上印着半截蓝线，像某种表格的边角。",
+          "startUtf16": 284,
+          "endUtf16": 308,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "阿陶看了她一眼，像要说什么，最后只把手机灯关了。",
+          "startUtf16": 418,
+          "endUtf16": 442,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "程岚把钥匙串收回口袋，指尖碰到那枚修表垫下压着的信封边角，停了一下，没拿出来。",
+          "startUtf16": 459,
+          "endUtf16": 498,
+          "coordinateSpace": "text"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "quote": "程岚的左耳听不见。",
+          "startUtf16": 666,
+          "endUtf16": 675,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.chapters[0].text"
+        },
+        {
+          "quote": "不能把左耳听声写成真实感知",
+          "startUtf16": 315,
+          "endUtf16": 328,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.boundaries"
+        },
+        {
+          "quote": "阿陶不知道信封里装的是一张旧车票。",
+          "startUtf16": 721,
+          "endUtf16": 738,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.chapters[0].text"
+        },
+        {
+          "quote": "本场景不向他揭露",
+          "startUtf16": 306,
+          "endUtf16": 314,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.boundaries"
+        },
+        {
+          "quote": "第三人称限知，只跟随程岚",
+          "startUtf16": 165,
+          "endUtf16": 177,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.pov"
+        },
+        {
+          "quote": "寄信人保持未知",
+          "startUtf16": 329,
+          "endUtf16": 336,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.boundaries"
+        }
+      ],
+      "allegations": [
+        {
+          "issue": "The auditory contrast can be read as attributing actual sound perception to the deaf left ear.",
+          "severity": "needs_edit_or_uncertain",
+          "outputEvidence": [
+            {
+              "quote": "她的右耳朝向他，左耳那边只有水管在墙里走动的闷响。",
+              "startUtf16": 105,
+              "endUtf16": 130,
+              "coordinateSpace": "text"
+            }
+          ],
+          "sourceEvidence": [
+            {
+              "quote": "程岚的左耳听不见。",
+              "startUtf16": 666,
+              "endUtf16": 675,
+              "coordinateSpace": "storyInput",
+              "sourceLocation": "input.project.chapters[0].text"
+            },
+            {
+              "quote": "不能把左耳听声写成真实感知",
+              "startUtf16": 315,
+              "endUtf16": 328,
+              "coordinateSpace": "storyInput",
+              "sourceLocation": "input.project.boundaries"
+            }
+          ],
+          "strongestPlausibleAlternativeReading": "左耳那边 means the physical left-hand side of her body or the wall beside that ear, not the ear’s sensory channel. The pipe makes a muffled sound on that side, audible to her right ear; third-person limited prose can describe an environmental sound without naming the functioning ear every time.",
+          "adjudication": "That reading is linguistically and physically plausible. The explicit contrast of the two ears nevertheless creates avoidable constraint-sensitive ambiguity. Do not count other neutral sounds in the scene as forbidden hearing.",
+          "minimalRepair": "Attach the pipe noise clearly to the functioning right ear or simply describe the pipe/wall without making the left ear the auditory contrast."
+        }
+      ],
+      "uncertainty": "This is an attribution ambiguity, not a keyword-based left-ear failure. The evidence does not establish that 阿陶 learns anything about the concealed old ticket or the sender."
+    },
+    "voice_economy_agency": {
+      "status": "acceptable",
+      "explanation": "程岚 speaks in short, practical lines, with a dry cabinet joke that fits the requested physical vocabulary. 阿陶’s questions are urgent but not accusatory; his crouching, lighting and reaching prevent him from being merely a prompting voice. 程岚 also makes visible decisions. The tactile key, damp room and narrow floor gap give the scene material presence. There are mild stylistic weaknesses: 语气急，但没催她 announces the instruction rather literally; 像一句没说完的话 is a conventional mystery-closing simile; and the final plan partly repeats 明天问. These are small economy issues, not a material loss of character voice. The short standalone dialogue paragraphs produce a formal paragraph excess, but short dialogue itself is not weak prose.",
+      "outputEvidence": [
+        {
+          "quote": "“别硬抠。”程岚说。",
+          "startUtf16": 257,
+          "endUtf16": 267,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "“换锁会留新钥匙。”程岚说，“明天问。”",
+          "startUtf16": 375,
+          "endUtf16": 395,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "“今晚它又不会跑。”",
+          "startUtf16": 406,
+          "endUtf16": 416,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "“会不会是管理员换了锁？”阿陶站起来，拍了拍膝盖上的灰，语气急，但没催她。",
+          "startUtf16": 336,
+          "endUtf16": 373,
+          "coordinateSpace": "text"
+        },
+        {
+          "quote": "柜底的纸屑还留在原处，像一句没说完的话。",
+          "startUtf16": 527,
+          "endUtf16": 547,
+          "coordinateSpace": "text"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "quote": "人物声音：程岚用简短、实物相关的干涩回应；阿陶着急但不咄咄逼人。",
+          "startUtf16": 260,
+          "endUtf16": 292,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.boundaries"
+        },
+        {
+          "quote": "克制、带一点干涩幽默",
+          "startUtf16": 146,
+          "endUtf16": 156,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.tone"
+        }
+      ],
+      "allegations": [],
+      "minorEditorialNotes": [
+        {
+          "note": "The urgency/nonaggression phrase closely paraphrases the requested characterization.",
+          "outputEvidence": [
+            {
+              "quote": "语气急，但没催她。",
+              "startUtf16": 364,
+              "endUtf16": 373,
+              "coordinateSpace": "text"
+            }
+          ],
+          "alternativeReading": "A limited narrator can economically infer tone from observed delivery, so this is legitimate concise narration even if less vivid than a gesture or interruption.",
+          "materialFailure": false
+        },
+        {
+          "note": "The closing simile and repeated plan could be tightened for a drier finish.",
+          "outputEvidence": [
+            {
+              "quote": "柜底的纸屑还留在原处，像一句没说完的话。",
+              "startUtf16": 527,
+              "endUtf16": 547,
+              "coordinateSpace": "text"
+            },
+            {
+              "quote": "“换锁会留新钥匙。”程岚说，“明天问。”",
+              "startUtf16": 375,
+              "endUtf16": 395,
+              "coordinateSpace": "text"
+            },
+            {
+              "quote": "她记下位置，决定明早再来一趟，先问管理员那把锁的事，再问别的。",
+              "startUtf16": 547,
+              "endUtf16": 578,
+              "coordinateSpace": "text"
+            }
+          ],
+          "alternativeReading": "The last line adds the precise time and question order, and the unfinished-sentence image modestly sustains the unresolved mystery.",
+          "materialFailure": false
+        }
+      ],
+      "uncertainty": "Only one candidate is available, so there is no basis for a relative voice-regression or checklist-padding comparison."
+    },
+    "delivery_contract": {
+      "status": "clear_failure",
+      "explanation": "The exact submitted candidate has 472 Han characters, within 450–600, but 11 paragraphs separated by blank lines, above the explicit 4–7 range. The text remains one present scene, contains no analysis or commentary, identifies the scraps and ends with the next-morning administrator plan. The paragraph requirement alone is a clear, independently verifiable delivery failure.",
+      "outputEvidence": [
+        {
+          "quote": "雨天的寄存室比平时更窄。程岚把伞收在门外的铁桶里，桶底积着水，伞尖一碰，声音就漫上来。阿陶跟在她身后，鞋跟踩过水泥地上的水痕，像在数格子。\n\n“你说那只柜子是哪一排？”阿陶问。\n\n“左边第三排，靠墙。”程岚说。她的右耳朝向他，左耳那边只有水管在墙里走动的闷响。她把钥匙串从口袋里摸出来，铜的，冰的，上头挂着修表用的小螺丝刀。钥匙插进锁孔，转不动。她又试了一次，锁芯像咬住了什么。\n\n阿陶蹲下去，拿手机灯照柜底。光扫过一道积灰的缝，缝里卡着几片碎纸，边缘毛糙，像是从什么票据上撕下来的。他伸手要够，指尖差了一截。\n\n“别硬抠。”程岚说。她把手电接过来，光贴着地面推过去。纸屑很小，白底上印着半截蓝线，像某种表格的边角。她看了两秒，没再凑近，只把柜门又晃了晃。锁还是不动。\n\n“会不会是管理员换了锁？”阿陶站起来，拍了拍膝盖上的灰，语气急，但没催她。\n\n“换锁会留新钥匙。”程岚说，“明天问。”\n\n“那今晚呢？”\n\n“今晚它又不会跑。”\n\n阿陶看了她一眼，像要说什么，最后只把手机灯关了。寄存室里暗下去，雨声重新占满屋子。程岚把钥匙串收回口袋，指尖碰到那枚修表垫下压着的信封边角，停了一下，没拿出来。\n\n她往门口走，走到一半又回头，看了看第三排靠墙那只柜子。柜底的纸屑还留在原处，像一句没说完的话。她记下位置，决定明早再来一趟，先问管理员那把锁的事，再问别的。",
+          "startUtf16": 0,
+          "endUtf16": 578,
+          "coordinateSpace": "text"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "quote": "写450–600个汉字的一场戏，4–7段，只写当前场景。",
+          "startUtf16": 232,
+          "endUtf16": 260,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.boundaries"
+        },
+        {
+          "quote": "不写评析。",
+          "startUtf16": 337,
+          "endUtf16": 342,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.boundaries"
+        },
+        {
+          "quote": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+          "startUtf16": 187,
+          "endUtf16": 212,
+          "coordinateSpace": "storyInput",
+          "sourceLocation": "input.project.goal"
+        }
+      ],
+      "measured": {
+        "hanCharacters": 472,
+        "hanMethod": "Count Unicode Script=Han code points in exact text",
+        "allowedHan": [
+          450,
+          600
+        ],
+        "hanPass": true,
+        "paragraphs": 11,
+        "paragraphMethod": "Split exact text at blank-line separators /\\n\\s*\\n/; every resulting block is nonempty",
+        "allowedParagraphs": [
+          4,
+          7
+        ],
+        "paragraphPass": false,
+        "exactUtf16Length": 578,
+        "agreesWithPacketCounts": true,
+        "paragraphSpans": [
+          {
+            "number": 1,
+            "startUtf16": 0,
+            "endUtf16": 69,
+            "quote": "雨天的寄存室比平时更窄。程岚把伞收在门外的铁桶里，桶底积着水，伞尖一碰，声音就漫上来。阿陶跟在她身后，鞋跟踩过水泥地上的水痕，像在数格子。"
+          },
+          {
+            "number": 2,
+            "startUtf16": 71,
+            "endUtf16": 88,
+            "quote": "“你说那只柜子是哪一排？”阿陶问。"
+          },
+          {
+            "number": 3,
+            "startUtf16": 90,
+            "endUtf16": 189,
+            "quote": "“左边第三排，靠墙。”程岚说。她的右耳朝向他，左耳那边只有水管在墙里走动的闷响。她把钥匙串从口袋里摸出来，铜的，冰的，上头挂着修表用的小螺丝刀。钥匙插进锁孔，转不动。她又试了一次，锁芯像咬住了什么。"
+          },
+          {
+            "number": 4,
+            "startUtf16": 191,
+            "endUtf16": 255,
+            "quote": "阿陶蹲下去，拿手机灯照柜底。光扫过一道积灰的缝，缝里卡着几片碎纸，边缘毛糙，像是从什么票据上撕下来的。他伸手要够，指尖差了一截。"
+          },
+          {
+            "number": 5,
+            "startUtf16": 257,
+            "endUtf16": 334,
+            "quote": "“别硬抠。”程岚说。她把手电接过来，光贴着地面推过去。纸屑很小，白底上印着半截蓝线，像某种表格的边角。她看了两秒，没再凑近，只把柜门又晃了晃。锁还是不动。"
+          },
+          {
+            "number": 6,
+            "startUtf16": 336,
+            "endUtf16": 373,
+            "quote": "“会不会是管理员换了锁？”阿陶站起来，拍了拍膝盖上的灰，语气急，但没催她。"
+          },
+          {
+            "number": 7,
+            "startUtf16": 375,
+            "endUtf16": 395,
+            "quote": "“换锁会留新钥匙。”程岚说，“明天问。”"
+          },
+          {
+            "number": 8,
+            "startUtf16": 397,
+            "endUtf16": 404,
+            "quote": "“那今晚呢？”"
+          },
+          {
+            "number": 9,
+            "startUtf16": 406,
+            "endUtf16": 416,
+            "quote": "“今晚它又不会跑。”"
+          },
+          {
+            "number": 10,
+            "startUtf16": 418,
+            "endUtf16": 498,
+            "quote": "阿陶看了她一眼，像要说什么，最后只把手机灯关了。寄存室里暗下去，雨声重新占满屋子。程岚把钥匙串收回口袋，指尖碰到那枚修表垫下压着的信封边角，停了一下，没拿出来。"
+          },
+          {
+            "number": 11,
+            "startUtf16": 500,
+            "endUtf16": 578,
+            "quote": "她往门口走，走到一半又回头，看了看第三排靠墙那只柜子。柜底的纸屑还留在原处，像一句没说完的话。她记下位置，决定明早再来一趟，先问管理员那把锁的事，再问别的。"
+          }
+        ]
+      },
+      "allegations": [
+        {
+          "issue": "11 submitted paragraphs exceed the maximum of 7.",
+          "severity": "clear_failure",
+          "outputEvidence": [
+            {
+              "quote": "雨天的寄存室比平时更窄。程岚把伞收在门外的铁桶里，桶底积着水，伞尖一碰，声音就漫上来。阿陶跟在她身后，鞋跟踩过水泥地上的水痕，像在数格子。\n\n“你说那只柜子是哪一排？”阿陶问。\n\n“左边第三排，靠墙。”程岚说。她的右耳朝向他，左耳那边只有水管在墙里走动的闷响。她把钥匙串从口袋里摸出来，铜的，冰的，上头挂着修表用的小螺丝刀。钥匙插进锁孔，转不动。她又试了一次，锁芯像咬住了什么。\n\n阿陶蹲下去，拿手机灯照柜底。光扫过一道积灰的缝，缝里卡着几片碎纸，边缘毛糙，像是从什么票据上撕下来的。他伸手要够，指尖差了一截。\n\n“别硬抠。”程岚说。她把手电接过来，光贴着地面推过去。纸屑很小，白底上印着半截蓝线，像某种表格的边角。她看了两秒，没再凑近，只把柜门又晃了晃。锁还是不动。\n\n“会不会是管理员换了锁？”阿陶站起来，拍了拍膝盖上的灰，语气急，但没催她。\n\n“换锁会留新钥匙。”程岚说，“明天问。”\n\n“那今晚呢？”\n\n“今晚它又不会跑。”\n\n阿陶看了她一眼，像要说什么，最后只把手机灯关了。寄存室里暗下去，雨声重新占满屋子。程岚把钥匙串收回口袋，指尖碰到那枚修表垫下压着的信封边角，停了一下，没拿出来。\n\n她往门口走，走到一半又回头，看了看第三排靠墙那只柜子。柜底的纸屑还留在原处，像一句没说完的话。她记下位置，决定明早再来一趟，先问管理员那把锁的事，再问别的。",
+              "startUtf16": 0,
+              "endUtf16": 578,
+              "coordinateSpace": "text"
+            }
+          ],
+          "sourceEvidence": [
+            {
+              "quote": "写450–600个汉字的一场戏，4–7段，只写当前场景。",
+              "startUtf16": 232,
+              "endUtf16": 260,
+              "coordinateSpace": "storyInput",
+              "sourceLocation": "input.project.boundaries"
+            }
+          ],
+          "strongestPlausibleAlternativeReading": "One could group neighboring dialogue blocks into larger conceptual beats and describe the scene as 4–7 dramatic units.",
+          "adjudication": "Conceptual beats do not change the submitted blank-line paragraph structure; the request specifies 段. The exact text therefore fails this requirement.",
+          "minimalRepair": "Merge suitable dialogue blocks with adjacent action to produce 4–7 actual paragraphs without adding or removing story content."
+        }
+      ],
+      "uncertainty": "No material uncertainty in the count. No need to infer a daylight violation from 雨天 because 今晚 and the scene context support nighttime."
+    }
+  },
+  "pairwiseAssessment": null,
+  "pairwiseUnavailableReason": "No pair packet or second candidate was supplied. No first/second/neither preference, causal improvement, materialVoiceRegression, or checklistPadding comparison can be established.",
+  "conclusion": "Retain the modest clue progression and dry dialogue. Clarify the envelope reference and ear attribution, keep the light reference consistent, and repair the paragraph count. Treat the three continuity/attribution concerns as qualified editorial findings rather than proven logical contradictions."
+}

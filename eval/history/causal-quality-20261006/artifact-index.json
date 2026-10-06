@@ -1,0 +1,37 @@
+{
+  "protocol": "causal-quality-20261006",
+  "runId": "37545250479",
+  "sourceSha": "b40a2735d590665d77d9126b955e1f091d9b3b55",
+  "ciRunId": "37544379125",
+  "artifactId": "11450875724",
+  "artifactZipSha256": "94f50e3e934dd4b632d48caddda3dbe50e3b2edb0c13cbb3727a67278bf99194",
+  "reservationArtifactId": "11450835685",
+  "reservationZipSha256": "658bb4f5a23ef77a4614608811434cfbd6e41bd459fb4b94a5ed0373aab10c17",
+  "sha256": {
+    "completed-01.json": "808b844fb246b1f698833edc47d149063acedae2309fdd1e3e3481e7f5685358",
+    "dispatch-01.json": "ce632fdd846fafca7657070fd346ed30b7c63bd74a582c2ec24f65d05e6a9ad7",
+    "index.json": "1cd037e22c733a75fa564b9f591fc5e9a586312f3c84c05808177fe9b4629591",
+    "ledger-01.json": "02f6cca9e31fab67c84d3d8fd45ac75d19631e9ea404a38e3b1bd531f397ad11",
+    "raw-prose-01.bin": "75a24e4f346bf57c3775c8d3180074334544ea9f1a5b0773f4beffaf9233dbf3",
+    "reservation.json": "b38ed374a91c6c2a3b0d74ff26ab9b3eea331793ad38b828fcc0d7ac7e88953f",
+    "response-meta-01.json": "f01e76d3c251a661e35305068f7c0ee72c607e31716227ed4d459c69f7d64a36",
+    "result.json": "02f6cca9e31fab67c84d3d8fd45ac75d19631e9ea404a38e3b1bd531f397ad11",
+    "source-manifest.json": "cba6874be4ba0c4aa5cf7d33bb4cdcf9777498e7a989e6e93648182249ffe0ee",
+    "source-protocol.md": "843d17dcd1a2433b0479057f099894f8a23d31f8c2600bdb970c16b7e95cb7a0",
+    "source-runner.mjs": "427e69f9a1c25aace180e5d37f1e3841f620a902b7648cd0b21caef3ee3055a0",
+    "source-tests.js": "c220558fb8e53b5db2d9c3a1abc526f7ff564975725e9e9ca412276851913dcf",
+    "source-workflow.yml": "ffe1681360e69752d427da15e654825d78df3de21d7f0ca4bec1ef919671cec0",
+    "masked-individual.json": "2819b0e7b904edb13706a6dbf153cc6b22fe817851ae4ca09c41c651697c0a36",
+    "masked-candidate.json": "1eb3e204749511c8cdb1b03c932dd2794191ee56e2ea49b71671a53ba28bb3ed"
+  },
+  "maskedReading": {
+    "locked": true,
+    "candidateId": "C-d0bddea4",
+    "pairwiseAssessment": false,
+    "fullCandidateMappingAvailable": false,
+    "fullCandidateMappingReverified": false,
+    "committedMappingSha256": "00618555ff112bf760b93660740fd038c7078bfd02a3049f96680d38b72a895f",
+    "limitation": "Full private mapping file lost during workspace replacement; individual neutral-ID provenance retained in coordinator/reader records. No reconstructed mapping is claimed.",
+    "candidatePacketProvenance": "Reconstructed after workspace replacement from unchanged frozen story input, original retained output and the previously recorded neutral ID; input/output hashes verified. Not claimed to be surviving original packet bytes or the complete candidate mapping."
+  }
+}

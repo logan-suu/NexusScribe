@@ -1,0 +1,77 @@
+name: Bounded causal writing quality trial
+run-name: causal-quality-20261006
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact independently reviewed dev_v1.0 source SHA with successful CI
+        required: true
+        type: string
+      ci_run_id:
+        description: Successful exact-source CI run ID
+        required: true
+        type: string
+      approval:
+        description: Enter causal-quality-20261006 to consume the separately approved six-attempt trial
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: causal-quality-20261006
+  cancel-in-progress: false
+jobs:
+  trial:
+    if: ${{ github.ref == 'refs/heads/dev_v1.0' && github.run_attempt == 1 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXUS_SOURCE_SHA: ${{ inputs.source_sha }}
+      NEXUS_CI_RUN_ID: ${{ inputs.ci_run_id }}
+      NEXUS_QUALITY_APPROVED: ${{ inputs.approval }}
+      # Existing user confirmation, not a refreshed provider-console observation.
+      NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Reserve the entire six-call allowance before provider credential access
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/run-causal-quality.mjs prepare
+      - name: Persist immutable global reservation before provider dispatch
+        id: reservation
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: causal-quality-20261006-reservation
+          path: artifacts/causal-quality-20261006/reservation.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Execute at most six sequential requests without retry
+        if: ${{ success() && steps.reservation.outputs.artifact-id != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_RESERVATION_UPLOADED: 'true'
+          NEXUS_RESERVATION_ARTIFACT_ID: ${{ steps.reservation.outputs.artifact-id }}
+        run: node scripts/run-causal-quality.mjs execute
+      - name: Preserve only safe synthetic prose and evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: causal-quality-20261006-evidence
+          path: |
+            artifacts/causal-quality-20261006/reservation.json
+            artifacts/causal-quality-20261006/dispatch-0[1-6].json
+            artifacts/causal-quality-20261006/response-meta-0[1-6].json
+            artifacts/causal-quality-20261006/completed-0[1-6].json
+            artifacts/causal-quality-20261006/raw-prose-0[1-6].bin
+            artifacts/causal-quality-20261006/ledger-0[1-6].json
+            artifacts/causal-quality-20261006/result.json
+            artifacts/causal-quality-20261006/index.json
+          if-no-files-found: warn
+          retention-days: 90
