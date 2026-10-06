@@ -1,6 +1,6 @@
 {
   "protocol": "causal-quality-20261006",
-  "status": "new_separately_approved_not_dispatched",
+  "status": "retired_consumed_offline_replay",
   "maxAttempts": 6,
   "maxOutputTokensPerCall": 3000,
   "maxOutputTokensTotal": 18000,
@@ -15,13 +15,37 @@
     "26f9ae08bf3dcf8611def04c295e857c73ef785b52f565a70b02d9be61254228"
   ],
   "sha256": {
-    "scripts/run-causal-quality.mjs": "427e69f9a1c25aace180e5d37f1e3841f620a902b7648cd0b21caef3ee3055a0",
+    "scripts/run-causal-quality.mjs": "08af2a6495d97d65b8907f8c6bc777280451b97d27448611e42409c9a3d8f45b",
     "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195",
     "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
-    ".github/workflows/causal-quality-trial.yml": "ffe1681360e69752d427da15e654825d78df3de21d7f0ca4bec1ef919671cec0",
+    ".github/workflows/causal-quality-trial.yml": "66e92f06d3ac37e868421a4b203dbe33e2b703885f69108df39a45da7e8238e3",
     ".github/workflows/ci.yml": "ecd518f9e25063c66e6357949ea17454c095a727b59ef99ee77c460fae575db0",
-    "eval/CAUSAL-QUALITY-PROTOCOL.md": "843d17dcd1a2433b0479057f099894f8a23d31f8c2600bdb970c16b7e95cb7a0",
+    "eval/CAUSAL-QUALITY-PROTOCOL.md": "1efa2eaf40966a34628757d1cf0c1ae5720cadbd148807de415e6c543a58f90e",
     "eval/causal-continuity-requests.json": "5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73",
-    "tests/causal-quality.test.js": "c220558fb8e53b5db2d9c3a1abc526f7ff564975725e9e9ca412276851913dcf"
-  }
+    "tests/causal-quality.test.js": "57c54391cebd7eb78896041abd78eae48b3dcb8992b6d8694b78b2323c319c28",
+    "eval/CAUSAL-QUALITY-RESULTS.md": "3c4a320216a499ccdf162b66035f3f50decbd8f56ae62cb4bf4db3adc7daf559",
+    "eval/history/causal-quality-20261006/masked-candidate.json": "1eb3e204749511c8cdb1b03c932dd2794191ee56e2ea49b71671a53ba28bb3ed",
+    "eval/history/causal-quality-20261006/masked-individual.json": "2819b0e7b904edb13706a6dbf153cc6b22fe817851ae4ca09c41c651697c0a36",
+    "eval/history/causal-quality-20261006/artifact-index.json": "f1f7134ba82de5f9af7fee48b1647762f675d0960952b9f412c2cd4565253140",
+    "eval/history/causal-quality-20261006/completed-01.json": "808b844fb246b1f698833edc47d149063acedae2309fdd1e3e3481e7f5685358",
+    "eval/history/causal-quality-20261006/dispatch-01.json": "ce632fdd846fafca7657070fd346ed30b7c63bd74a582c2ec24f65d05e6a9ad7",
+    "eval/history/causal-quality-20261006/index.json": "1cd037e22c733a75fa564b9f591fc5e9a586312f3c84c05808177fe9b4629591",
+    "eval/history/causal-quality-20261006/ledger-01.json": "02f6cca9e31fab67c84d3d8fd45ac75d19631e9ea404a38e3b1bd531f397ad11",
+    "eval/history/causal-quality-20261006/raw-prose-01.bin": "75a24e4f346bf57c3775c8d3180074334544ea9f1a5b0773f4beffaf9233dbf3",
+    "eval/history/causal-quality-20261006/reservation.json": "b38ed374a91c6c2a3b0d74ff26ab9b3eea331793ad38b828fcc0d7ac7e88953f",
+    "eval/history/causal-quality-20261006/response-meta-01.json": "f01e76d3c251a661e35305068f7c0ee72c607e31716227ed4d459c69f7d64a36",
+    "eval/history/causal-quality-20261006/result.json": "02f6cca9e31fab67c84d3d8fd45ac75d19631e9ea404a38e3b1bd531f397ad11",
+    "eval/history/causal-quality-20261006/source-manifest.json": "cba6874be4ba0c4aa5cf7d33bb4cdcf9777498e7a989e6e93648182249ffe0ee",
+    "eval/history/causal-quality-20261006/source-protocol.md": "843d17dcd1a2433b0479057f099894f8a23d31f8c2600bdb970c16b7e95cb7a0",
+    "eval/history/causal-quality-20261006/source-runner.mjs": "427e69f9a1c25aace180e5d37f1e3841f620a902b7648cd0b21caef3ee3055a0",
+    "eval/history/causal-quality-20261006/source-tests.js": "c220558fb8e53b5db2d9c3a1abc526f7ff564975725e9e9ca412276851913dcf",
+    "eval/history/causal-quality-20261006/source-workflow.yml": "ffe1681360e69752d427da15e654825d78df3de21d7f0ca4bec1ef919671cec0"
+  },
+  "runId": "37545250479",
+  "executedSourceSha": "b40a2735d590665d77d9126b955e1f091d9b3b55",
+  "ciRunId": "37544379125",
+  "attemptsObserved": 1,
+  "remainingAttempts": 0,
+  "unattemptedSlotsRetired": 5,
+  "terminalReason": "DELIVERY_FAILED"
 }

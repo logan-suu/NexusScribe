@@ -1,0 +1,27 @@
+{
+  "protocol": "causal-quality-20261006",
+  "sourceSha": "b40a2735d590665d77d9126b955e1f091d9b3b55",
+  "ciRunId": "37544379125",
+  "runId": "37545250479",
+  "attemptsReserved": 6,
+  "remainingAttempts": 0,
+  "attemptedOrUncertain": true,
+  "bodySha256": [
+    "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+    "73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308",
+    "b08e91571190cb4ea1a18a84f1c5dcf03636f1e5aedceec744db116f2d0e9322",
+    "f6e433b06fdd772c042614c9a2d5fc41b14f523ef1184f12e28cc3e468bb2e04",
+    "3817d325ba0d06b1216f19700612978002f5d6bd1a00cc7a5f11f657a73a2f76",
+    "26f9ae08bf3dcf8611def04c295e857c73ef785b52f565a70b02d9be61254228"
+  ],
+  "manifestSha256": "32b04253115680e9f691399231d074276dfeb9b95c1afc1b553e12305936faa1",
+  "maskedMappingSha256": "00618555ff112bf760b93660740fd038c7078bfd02a3049f96680d38b72a895f",
+  "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+  "maxOutputTokensPerCall": 3000,
+  "maxOutputTokensTotal": 18000,
+  "deadlineMsPerCall": 120000,
+  "minGapMs": 11000,
+  "successEnvelopeLimitBytes": 131072,
+  "errorEnvelopeLimitBytes": 16384,
+  "balanceEvidence": "user previously confirmed Use balance off; no refreshed console verification"
+}

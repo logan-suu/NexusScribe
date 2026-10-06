@@ -1,8 +1,7 @@
 // Offline only: injected fake transports, fictional prose and public fake credentials.
 import test,{mock} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile,mkdtemp,mkdir,writeFile,rm,stat,symlink,readdir} from 'node:fs/promises';
-import {spawnSync} from 'node:child_process';
+import {readFile,mkdtemp,mkdir,writeFile,rm,stat,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {ID,WORKFLOW,ENDPOINT,FREEZE_SHA,MASKED_MAPPING_SHA,BODY_SHAS,PATHS,digest,validateRequests,validateFreeze,loadFreeze,approval,gates,validateArtifact,diskIO,reservation,validateReservation,secretEcho,stats,aggregateUsage,runTrial,safeCode,main} from '../scripts/run-causal-quality.mjs';
@@ -13,14 +12,14 @@ const run={id:123,head_sha:sha,head_branch:'dev_v1.0',run_attempt:1,event:'workf
 const ci={id:122,path:'.github/workflows/ci.yml',head_sha:sha,head_branch:'dev_v1.0',event:'push',status:'completed',conclusion:'success'};
 const artifact={id:456,name:ID+'-reservation',expired:false,size_in_bytes:2000,workflow_run:{id:123,head_sha:sha}};
 const frozen=await readFile(new URL('../eval/causal-continuity-requests.json',import.meta.url));
-const manifest=()=>({protocol:ID,status:'retired_consumed_offline_replay',bodySha256:[...BODY_SHAS],maxAttempts:6,maxOutputTokensPerCall:3000,maxOutputTokensTotal:18000,maskedMappingSha256:MASKED_MAPPING_SHA,stop:'operational_delivery_safety_budget_uncertainty',sha256:{}});
+const manifest=()=>({protocol:ID,status:'new_separately_approved_not_dispatched',bodySha256:[...BODY_SHAS],maxAttempts:6,maxOutputTokensPerCall:3000,maxOutputTokensTotal:18000,maskedMappingSha256:MASKED_MAPPING_SHA,stop:'operational_delivery_safety_budget_uncertainty',sha256:{}});
 const trial={requests:validateFreeze(frozen),manifest:manifest()};
 const hasCode=code=>e=>e.code===code&&e.message===code;
 const prose=n=>Array.from({length:5},()=> '弱'.repeat(n===3||n===4?80:100)).join('\n\n');
 function envelope(n=1){return {id:'PRIVATE_ID',model:'PRIVATE_MODEL',extra:{private:'PRIVATE_ENVELOPE'},choices:[{finish_reason:'stop',message:{role:'assistant',content:prose(n)}}],usage:{prompt_tokens:42,completion_tokens:500,total_tokens:542,completion_tokens_details:{reasoning_tokens:0}}};}
 const response=(data=envelope(),status=200)=>new Response(JSON.stringify(data),{status,headers:{'x-private':'PRIVATE_HEADER'}});
 function memoryIO(initial={}){const data=Object.fromEntries(Object.entries(initial).map(([n,v])=>[n,Buffer.isBuffer(v)?v:Buffer.from(JSON.stringify(v))]));return {data,async write(n,v){assert.equal(Object.hasOwn(data,n),false,'exclusive evidence '+n);data[n]=Buffer.isBuffer(v)?Buffer.from(v):Buffer.from(JSON.stringify(v));},async files(){return {...data};}};}
-function context(options={}){const t=options.trial||trial,e=options.env||env,record=reservation(e,t);return {offlineReplay:true,env:e,trial:t,record,runs:[run],ci,artifact,io:memoryIO({'reservation.json':record}),timeoutMs:1000,sleep:async()=>{},...options};}
+function context(options={}){const t=options.trial||trial,e=options.env||env,record=reservation(e,t);return {env:e,trial:t,record,runs:[run],ci,artifact,io:memoryIO({'reservation.json':record}),timeoutMs:1000,sleep:async()=>{},...options};}
 async function execute(transport=async n=>response(envelope(n)),options={}){
  const c=context(options),calls=[];
  const result=await runTrial({...c,fetchImpl:async(...args)=>{const n=calls.length+1;assert.ok(c.io.data['dispatch-0'+n+'.json'],'dispatch precedes fetch');calls.push(args);return transport(n,...args);}});
@@ -121,61 +120,17 @@ test('persistence failure before dispatch makes no call; later failure stops bef
 test('frozen request snapshot prevents a transport from replacing a later arm',async()=>{
  const t=structuredClone(trial);const out=await execute(async n=>{if(n===1)t.requests[1].body.messages[0].content='MUTATED';return response(envelope(n));},{trial:t});assert.equal(out.calls.length,6);assert.equal(digest(out.calls[1][1].body),BODY_SHAS[1]);
 });
-test('retired main rejects every mode without touching arguments, environment, IO or fetch',async()=>{
- let reads=0;const forbidden=new Proxy({}, {get(){reads++;throw Error('retired main inspected arguments');},ownKeys(){reads++;throw Error('retired main inspected arguments');}});
- const before=globalThis.fetch.mock.calls.length;
- for(const mode of ['prepare','execute','offline','invalid',undefined])await assert.rejects(main(mode,forbidden,forbidden),hasCode('RETIRED'));
- assert.equal(reads,0);assert.equal(globalThis.fetch.mock.calls.length,before);
- const cli=spawnSync(process.execPath,['scripts/run-causal-quality.mjs','execute'],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{...process.env,NEXUS_API_KEY:key,GH_TOKEN:gh}});
- assert.equal(cli.status,1);assert.equal(cli.stdout,'');assert.deepEqual(JSON.parse(cli.stderr),{status:'blocked',code:'RETIRED'});assert.equal(cli.stderr.includes(key),false);
+test('prepare has no provider credential access; execute validates durable upload before key',async t=>{
+ const {root}=await fixtureRoot(t);let reads=0;const guarded={...env};Object.defineProperty(guarded,'NEXUS_API_KEY',{get(){reads++;return key;}});
+ const paths=[];const fake=async url=>{paths.push(url);if(url.includes('/workflows/'))return response({total_count:1,workflow_runs:[run]});if(url.includes('/runs/122'))return response(ci);if(url.includes('/artifacts/456'))return response(artifact);assert.equal(url,ENDPOINT);assert.equal(reads,1);return response({error:{code:'rate_limit_exceeded'}},429);};
+ assert.equal((await main('prepare',guarded,{root,fetchImpl:fake})).status,'reserved');assert.equal(reads,0);
+ await assert.rejects(main('execute',{...env,NEXUS_RESERVATION_UPLOADED:'false'},{root,fetchImpl:fake}),hasCode('PERSISTENCE_FAILED'));
+ const out=await main('execute',guarded,{root,fetchImpl:fake});assert.equal(out.attempts,1);assert.equal(out.error,'UPSTREAM_ERROR');assert.equal(reads,1);assert.ok(paths.indexOf('https://api.github.com/repos/logan-suu/NexusScribe/actions/artifacts/456')<paths.indexOf(ENDPOINT));
+ await assert.rejects(main('execute',guarded,{root,fetchImpl:fake}),hasCode('PERSISTENCE_FAILED'));assert.equal(reads,1);
 });
-test('retired replay requires literal opt-in and injected non-global transport before all protected access',async()=>{
- let reads=0,calls=0;const forbidden=new Proxy({}, {get(){reads++;throw Error('retired replay inspected inputs');}});const fake=async()=>{calls++;};
- for(const patch of [{fetchImpl:fake},{offlineReplay:false,fetchImpl:fake},{offlineReplay:'true',fetchImpl:fake},{offlineReplay:1,fetchImpl:fake},{offlineReplay:true},{offlineReplay:true,fetchImpl:null},{offlineReplay:true,fetchImpl:globalThis.fetch}])await assert.rejects(runTrial({env:forbidden,trial:forbidden,record:forbidden,runs:forbidden,ci:forbidden,artifact:forbidden,io:forbidden,...patch}),hasCode('RETIRED'));
- assert.equal(reads,0);assert.equal(calls,0);
-});
-test('retired workflow contains no credentials, checkout, uploader or executable trial job',async()=>{
- const yaml=await readFile(new URL('../.github/workflows/causal-quality-trial.yml',import.meta.url),'utf8');const active=yaml.split('\n').filter(l=>!/^\s*#/.test(l)).join('\n');
- assert.doesNotMatch(active,/secrets\s*\.|NEXUS_API_KEY|GH_TOKEN|run-causal-quality\.mjs|upload-artifact@|actions\/checkout@/);
- const jobs=active.split(/^jobs:\s*$/m)[1];assert.ok(jobs);const blocks=jobs.split(/^  [a-zA-Z_][\w-]*:\s*$/m).slice(1);assert.ok(blocks.length>0);for(const block of blocks)assert.match(block,/^    if:\s*(?:\$\{\{\s*false\s*\}\}|false)\s*$/m);
-});
-test('archived workflow records credential separation and pinned original execution',async()=>{
- const yaml=await readFile(new URL('../eval/history/causal-quality-20261006/source-workflow.yml',import.meta.url),'utf8');
+test('workflow isolates secret to execution after durable upload; actions pinned, no matrix or retries',async()=>{
+ const yaml=await readFile(new URL('../.github/workflows/causal-quality-trial.yml',import.meta.url),'utf8');
  assert.equal((yaml.match(/secrets\./g)||[]).length,1);assert.ok(yaml.indexOf('run-causal-quality.mjs prepare')<yaml.indexOf('id: reservation'));assert.ok(yaml.indexOf('id: reservation')<yaml.indexOf('secrets.NEXUS_API_KEY'));assert.match(yaml,/steps.reservation.outputs.artifact-id != ''/);assert.match(yaml,/NEXUS_RESERVATION_ARTIFACT_ID:.*steps.reservation.outputs.artifact-id/);assert.match(yaml,/cancel-in-progress: false/);assert.match(yaml,/github.run_attempt == 1/);assert.match(yaml,/persist-credentials: false/);assert.doesNotMatch(yaml,/matrix:|continue-on-error:|retry:|NEXUS_API_KEY:.*inputs/);
  for(const line of yaml.split('\n').filter(l=>l.includes('uses:')))assert.match(line,/@[a-f0-9]{40}(?:\s|$)/);
  const protocol=await readFile(new URL('../eval/CAUSAL-QUALITY-PROTOCOL.md',import.meta.url),'utf8');assert.match(protocol,/There is no literary acceptability gate/);assert.match(protocol,new RegExp(MASKED_MAPPING_SHA));
-});
-
-test('original artifact bytes and exact executed source are immutable and hash-linked',async()=>{
- const dir=new URL('../eval/history/causal-quality-20261006/',import.meta.url),read=n=>readFile(new URL(n,dir));
- const archive=JSON.parse(await read('artifact-index.json'));
- assert.equal(archive.runId,'37545250479');assert.equal(archive.sourceSha,'b40a2735d590665d77d9126b955e1f091d9b3b55');assert.equal(archive.ciRunId,'37544379125');
- assert.equal(archive.artifactId,'11450875724');assert.equal(archive.artifactZipSha256,'94f50e3e934dd4b632d48caddda3dbe50e3b2edb0c13cbb3727a67278bf99194');
- assert.equal(archive.reservationArtifactId,'11450835685');assert.equal(archive.reservationZipSha256,'658bb4f5a23ef77a4614608811434cfbd6e41bd459fb4b94a5ed0373aab10c17');
- assert.deepEqual((await readdir(dir)).sort(),[...Object.keys(archive.sha256),'artifact-index.json'].sort());assert.equal(Object.keys(archive.sha256).length,15);
- for(const [name,h]of Object.entries(archive.sha256))assert.equal(digest(await read(name)),h,name);
- const index=JSON.parse(await read('index.json'));assert.equal(Object.keys(index.sha256).length,7);for(const [name,h]of Object.entries(index.sha256))assert.equal(digest(await read(name)),h,name);
- const original=JSON.parse(await read('source-manifest.json')),record=JSON.parse(await read('reservation.json'));
- assert.equal(original.status,'new_separately_approved_not_dispatched');assert.equal(digest(original),record.manifestSha256);
- const sources={'scripts/run-causal-quality.mjs':'source-runner.mjs','.github/workflows/causal-quality-trial.yml':'source-workflow.yml','eval/CAUSAL-QUALITY-PROTOCOL.md':'source-protocol.md','tests/causal-quality.test.js':'source-tests.js'};
- for(const [path,h]of Object.entries(original.sha256)){const bytes=sources[path]?await read(sources[path]):await readFile(new URL('../'+path,import.meta.url));assert.equal(digest(bytes),h,path);}
- const source=(await read('source-runner.mjs')).toString();assert.match(source,/export async function main\(mode=/);assert.doesNotMatch(source,/offlineReplay|fail\('RETIRED'\)/);
-});
-test('retained scoreable baseline reproduces the over-strict historical paragraph stop with no B or pair',async()=>{
- const base=new URL('../eval/history/causal-quality-20261006/',import.meta.url),text=await readFile(new URL('raw-prose-01.bin',base),'utf8'),saved=JSON.parse(await readFile(new URL('completed-01.json',base))),result=JSON.parse(await readFile(new URL('result.json',base)));
- assert.equal(saved.text,text);assert.equal(digest(text),'75a24e4f346bf57c3775c8d3180074334544ea9f1a5b0773f4beffaf9233dbf3');assert.equal(saved.textSha256,digest(text));assert.deepEqual(stats(text,trial.requests[0]),{han:472,paragraphs:11,pass:false});
- assert.equal(result.attempts,1);assert.equal(result.remainingAttempts,0);assert.equal(result.error,'DELIVERY_FAILED');assert.equal(result.stages.length,1);assert.equal(result.stages[0].httpStatus,200);assert.equal(result.stages[0].finishReason,'stop');assert.deepEqual(result.usage,{promptTokens:1557,completionTokens:424,totalTokens:1981,reasoningTokens:0});assert.equal(result.cost,'unknown');
- const d=envelope();d.choices[0].message.content=text;d.usage={prompt_tokens:1557,completion_tokens:424,total_tokens:1981,completion_tokens_details:{reasoning_tokens:0}};
- const replay=await execute(async()=>response(d));assert.equal(replay.calls.length,1);assert.equal(replay.result.error,'DELIVERY_FAILED');assert.equal(replay.io.data['raw-prose-01.bin'].toString(),text);
- const current=JSON.parse(await readFile(new URL('../eval/causal-quality-manifest.json',import.meta.url)));assert.equal(current.status,'retired_consumed_offline_replay');assert.equal(current.remainingAttempts,0);assert.equal(current.attemptsObserved,1);assert.equal(current.unattemptedSlotsRetired,5);
-});
-
-test('locked masked judgment stays exact, binds sole output and input, and retains qualified source-grounded spans',async()=>{
- const root=new URL('../eval/history/causal-quality-20261006/',import.meta.url),packetBytes=await readFile(new URL('masked-candidate.json',root)),judgmentBytes=await readFile(new URL('masked-individual.json',root));
- assert.equal(digest(packetBytes),'1eb3e204749511c8cdb1b03c932dd2794191ee56e2ea49b71671a53ba28bb3ed');assert.equal(digest(judgmentBytes),'2819b0e7b904edb13706a6dbf153cc6b22fe817851ae4ca09c41c651697c0a36');
- const packet=JSON.parse(packetBytes),judgment=JSON.parse(judgmentBytes);assert.equal(judgment.locked,true);assert.equal(judgment.fullCandidateRead,true);assert.equal(judgment.candidateId,packet.candidateId);assert.equal(packet.storyInput,trial.requests[0].body.messages[1].content);assert.equal(digest(packet.storyInput),judgment.storyInputSha256);assert.equal(digest(packet.text),judgment.textSha256);assert.equal(packet.text,await readFile(new URL('raw-prose-01.bin',root),'utf8'));
- for(const k of ['arm','sequence','system','systemInstruction','runId','mapping'])assert.equal(Object.hasOwn(packet,k),false);
- assert.equal(judgment.pairwiseAssessment,null);assert.equal(judgment.masking.pairwiseAssessmentPerformed,false);assert.equal(judgment.independentSummary.definiteLiteraryConstraintContradictionEstablished,false);
- let spans=0;const visit=(v,path='judgment')=>{if(!v||typeof v!=='object')return;if(typeof v.quote==='string'&&Number.isInteger(v.startUtf16)&&Number.isInteger(v.endUtf16)){const coordinate=v.coordinateSpace??(path.startsWith('judgment.dimensions.delivery_contract.measured.paragraphSpans.')?'text':undefined);assert.ok(['text','storyInput'].includes(coordinate));assert.equal(packet[coordinate].slice(v.startUtf16,v.endUtf16),v.quote);spans++;}for(const [k,x]of Object.entries(v))visit(x,path+'.'+k);};visit(judgment);assert.ok(spans>20);
- const index=JSON.parse(await readFile(new URL('artifact-index.json',root)));assert.equal(index.maskedReading.fullCandidateMappingAvailable,false);assert.equal(index.maskedReading.fullCandidateMappingReverified,false);
 });

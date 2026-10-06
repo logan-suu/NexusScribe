@@ -1,0 +1,27 @@
+{
+  "protocol": "causal-quality-20261006",
+  "status": "new_separately_approved_not_dispatched",
+  "maxAttempts": 6,
+  "maxOutputTokensPerCall": 3000,
+  "maxOutputTokensTotal": 18000,
+  "stop": "operational_delivery_safety_budget_uncertainty",
+  "maskedMappingSha256": "00618555ff112bf760b93660740fd038c7078bfd02a3049f96680d38b72a895f",
+  "bodySha256": [
+    "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+    "73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308",
+    "b08e91571190cb4ea1a18a84f1c5dcf03636f1e5aedceec744db116f2d0e9322",
+    "f6e433b06fdd772c042614c9a2d5fc41b14f523ef1184f12e28cc3e468bb2e04",
+    "3817d325ba0d06b1216f19700612978002f5d6bd1a00cc7a5f11f657a73a2f76",
+    "26f9ae08bf3dcf8611def04c295e857c73ef785b52f565a70b02d9be61254228"
+  ],
+  "sha256": {
+    "scripts/run-causal-quality.mjs": "427e69f9a1c25aace180e5d37f1e3841f620a902b7648cd0b21caef3ee3055a0",
+    "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195",
+    "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
+    ".github/workflows/causal-quality-trial.yml": "ffe1681360e69752d427da15e654825d78df3de21d7f0ca4bec1ef919671cec0",
+    ".github/workflows/ci.yml": "ecd518f9e25063c66e6357949ea17454c095a727b59ef99ee77c460fae575db0",
+    "eval/CAUSAL-QUALITY-PROTOCOL.md": "843d17dcd1a2433b0479057f099894f8a23d31f8c2600bdb970c16b7e95cb7a0",
+    "eval/causal-continuity-requests.json": "5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73",
+    "tests/causal-quality.test.js": "c220558fb8e53b5db2d9c3a1abc526f7ff564975725e9e9ca412276851913dcf"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "protocol": "causal-quality-20261006",
+  "sourceSha": "b40a2735d590665d77d9126b955e1f091d9b3b55",
+  "runId": "37545250479",
+  "sha256": {
+    "completed-01.json": "808b844fb246b1f698833edc47d149063acedae2309fdd1e3e3481e7f5685358",
+    "dispatch-01.json": "ce632fdd846fafca7657070fd346ed30b7c63bd74a582c2ec24f65d05e6a9ad7",
+    "ledger-01.json": "02f6cca9e31fab67c84d3d8fd45ac75d19631e9ea404a38e3b1bd531f397ad11",
+    "raw-prose-01.bin": "75a24e4f346bf57c3775c8d3180074334544ea9f1a5b0773f4beffaf9233dbf3",
+    "reservation.json": "b38ed374a91c6c2a3b0d74ff26ab9b3eea331793ad38b828fcc0d7ac7e88953f",
+    "response-meta-01.json": "f01e76d3c251a661e35305068f7c0ee72c607e31716227ed4d459c69f7d64a36",
+    "result.json": "02f6cca9e31fab67c84d3d8fd45ac75d19631e9ea404a38e3b1bd531f397ad11"
+  }
+}

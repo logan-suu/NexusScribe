@@ -1,5 +1,3 @@
-> Retired after run 37545250479 at source b40a2735d590665d77d9126b955e1f091d9b3b55. One HTTP-200, finish-stop, scoreable F1-A output was retained; the executed count gate stopped it for 11 paragraphs against 4–7. No B output or complete pair exists; the five unattempted slots are retired. This was an over-strict evaluation gate, not a transport, parsing or truncation failure. See [results and methodological limitation](CAUSAL-QUALITY-RESULTS.md). The exact executed protocol is preserved in [source-protocol.md](history/causal-quality-20261006/source-protocol.md). Everything below is historical and grants no execution permission.
-
 # Causal writing quality diagnostic, 6 October 2026
 
 Protocol: `causal-quality-20261006`. This is a new, separately authorized allowance of **at most six attempts in one run**. The HTTP-400 causal-continuity trial and the one-call HTTP-200 compatibility probe stay consumed and retired. No unused historical slots are restored. This document does not itself dispatch requests. The new harness must undergo independent review and exact-source green CI before the approved live dispatch.
