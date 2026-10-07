@@ -1,0 +1,54 @@
+{
+  "protocol": "causal-quality-20261007",
+  "sourceSha": "effcaaaeed9e4dd99e06e8eeffbc1b4cafbdcb85",
+  "ciRunId": "37555966642",
+  "runId": "37557977202",
+  "attemptsReserved": 6,
+  "remainingAttempts": 0,
+  "attemptedOrUncertain": true,
+  "bodySha256": [
+    "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+    "73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308",
+    "b08e91571190cb4ea1a18a84f1c5dcf03636f1e5aedceec744db116f2d0e9322",
+    "f6e433b06fdd772c042614c9a2d5fc41b14f523ef1184f12e28cc3e468bb2e04",
+    "3817d325ba0d06b1216f19700612978002f5d6bd1a00cc7a5f11f657a73a2f76",
+    "26f9ae08bf3dcf8611def04c295e857c73ef785b52f565a70b02d9be61254228"
+  ],
+  "manifestSha256": "7226ddbae0c7eddec10971becd36b42ab729ce3da7f9303f0f1d6d200b53261c",
+  "maskedMapping": [
+    {
+      "sequence": 1,
+      "candidateId": "C-6ec68745fa48e2b9e4ecb484674c5b7e"
+    },
+    {
+      "sequence": 2,
+      "candidateId": "C-cd731f5e836adb51f8a072cc0d8b92af"
+    },
+    {
+      "sequence": 3,
+      "candidateId": "C-bfc3f1a0d643da85aac2694a33300b98"
+    },
+    {
+      "sequence": 4,
+      "candidateId": "C-4a87feaee3792cbac47dbb27426a6019"
+    },
+    {
+      "sequence": 5,
+      "candidateId": "C-259473bbc4e726be48ed91c2321a2a54"
+    },
+    {
+      "sequence": 6,
+      "candidateId": "C-61f0bae42550589bed842be6eaddfa7c"
+    }
+  ],
+  "maskedMappingSha256": "378805940e08d7a5c3746f75333c0c6b17b846632622cf0cc37e940f69e8698b",
+  "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+  "maxOutputTokensPerCall": 3000,
+  "maxOutputTokensTotal": 18000,
+  "deadlineMsPerCall": 120000,
+  "minGapMs": 11000,
+  "successEnvelopeLimitBytes": 131072,
+  "errorEnvelopeLimitBytes": 16384,
+  "maxAssistantUtf16Units": 30000,
+  "balanceEvidence": "user previously confirmed Use balance off; no refreshed console verification"
+}

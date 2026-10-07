@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "pairId": "P2",
+  "storyInputSha256": "7f78c47c85aef206a769d877f1367b049e1e448669697b09ad512e6413363940",
+  "first": {
+    "candidateId": "C-259473bbc4e726be48ed91c2321a2a54",
+    "textSha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0"
+  },
+  "second": {
+    "candidateId": "C-61f0bae42550589bed842be6eaddfa7c",
+    "textSha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0"
+  },
+  "locked": true,
+  "fullPairRead": true,
+  "individualJudgmentsPreserved": true,
+  "armIdentitiesKnown": false,
+  "overallPreference": "first",
+  "causalImprovement": "first",
+  "materialVoiceAgencyRegression": "none",
+  "checklistPadding": "none",
+  "directionConvention": "first/second names the packet member preferred for overallPreference or causalImprovement; for regression/padding it names the member exhibiting more of the negative property. none means no material directional claim.",
+  "spanConvention": "Zero-based, end-exclusive UTF-16 code units into the exact indicated text or decoded source property.",
+  "criteria": {
+    "overallPreference": {
+      "explanation": "偏好第一篇。小满发现张力风险后主动拆针，赵姨扣手机不催，情绪通过彼此照顾的动作产生，既平实又有轻微尴尬。它还落实明日时间。第二篇有更直接的车到站结尾和鲜明的叠缝缺陷，但多轮失手、骨头/疤痕比喻及未成约的结尾使这一小戏更重、更散。该偏好不依赖529/750字的差距，两篇都超段数。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "断带的位置靠近脚趾弯折的地方，线拉得太紧，脚一弯就会再崩。",
+          "startUtf16": 368,
+          "endUtf16": 397
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "最后把这一段拆了两针，重新走松一点。赵姨在旁边没催，只把手机翻过去扣在腿上。",
+          "startUtf16": 416,
+          "endUtf16": 454
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“四点以后都在。”",
+          "startUtf16": 535,
+          "endUtf16": 544
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "她手一抖，针从指间滑出去，掉在摊板上，弹了一下，滚到零钱盒旁边。",
+          "startUtf16": 374,
+          "endUtf16": 406
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "带子没断，但皱的那块鼓着，像皮肤上的一道疤。",
+          "startUtf16": 690,
+          "endUtf16": 712
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“明天我可能不来。”",
+          "startUtf16": 773,
+          "endUtf16": 783
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/tone",
+          "quote": "平实、轻微尴尬，感情藏在动作里",
+          "startUtf16": 0,
+          "endUtf16": 15
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "第二篇让末班车灯真正出现，赵姨自己检查带子并坚持付钱，生活质感更丰富。第一篇仍重述白线交流，且试穿后又拎鞋离开略需交代，不能视作没有瑕疵。"
+    },
+    "causalImprovement": {
+      "explanation": "第一篇有可指认的实质目标/义务优势：双方把次日补牢落实为“明天几点/四点以后”，第二篇则提出后由赵姨说可能不来，未形成约定。第一篇还把脚趾弯折风险明确接到拆两针放松的动作。第二篇从赤脚到扳脚让鞋底朝上再到穿鞋，摆位需补桥。后者只算可编辑歧义，不拿来制造不可能性；主要决定性差异仍是次日约定。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“能走到车站，别跑。明天拿过来，我再用皮线从底下走一道，就牢了。”",
+          "startUtf16": 470,
+          "endUtf16": 503
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“明天几点？”",
+          "startUtf16": 526,
+          "endUtf16": 533
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“四点以后都在。”",
+          "startUtf16": 535,
+          "endUtf16": 544
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“能走。但你别使劲拽，明天拿来我再补。叠缝的地方得用胶粘一下，线才不磨。”",
+          "startUtf16": 628,
+          "endUtf16": 665
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“明天我可能不来。”",
+          "startUtf16": 773,
+          "endUtf16": 783
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "她把赵姨的脚往自己这边扳了扳，让鞋底朝上。",
+          "startUtf16": 510,
+          "endUtf16": 531
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "赵姨把鞋穿上，踩了踩",
+          "startUtf16": 667,
+          "endUtf16": 677
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/goal",
+          "quote": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+          "startUtf16": 0,
+          "endUtf16": 24
+        },
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "不可让临时修补成为无缺陷的永久修复。",
+          "startUtf16": 105,
+          "endUtf16": 123
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "第二篇“可能不来”可为坚持先付款的客气话，明日仍可能出现；但可能回来不等于此刻已有约定。脚和鞋可以用省略的试穿、脱鞋动作衔接。两篇都把永久加固留到以后，不能把第一篇未来“就牢了”错算当前完美修复。"
+    },
+    "materialVoiceAgencyRegression": {
+      "explanation": "不判实质声音/能动性退化。第一篇的小满主动减张力，第二篇则从对齐缝改为叠缝；两者都在试错后作技术选择，赵姨也都有自己的行动。第二篇写得更狼狈、比喻更重，经济性较弱，但未把主人公写成只会受挫或由帮手解决问题。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "最后把这一段拆了两针，重新走松一点。",
+          "startUtf16": 416,
+          "endUtf16": 434
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "赵姨把钱压在铁盒底下",
+          "startUtf16": 564,
+          "endUtf16": 574
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“白的也挺好认。”",
+          "startUtf16": 589,
+          "endUtf16": 598
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "这回她没再对齐断口，而是把两头叠着缝",
+          "startUtf16": 531,
+          "endUtf16": 549
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "赵姨把鞋穿上，踩了踩，又蹲下来用手掰了掰带子。",
+          "startUtf16": 667,
+          "endUtf16": 690
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“你先拿着。”",
+          "startUtf16": 820,
+          "endUtf16": 827
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "周小满回答容易停顿但不自怜；赵姨实际、体贴，不讲人生大道理。",
+          "startUtf16": 37,
+          "endUtf16": 67
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "checklistPadding": {
+      "explanation": "两篇都把白线、断针和临时性放入实物动作或必要告知中，未见需要作方向性判定的限制清单式填充。第二篇更长且屡次失手，但这些动作在表现新手技术选择；第一篇的限用提醒直接服务赵姨如何走去车站。重复旧台词是续写经济性问题，与清单式填充不自动同义。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "她低头把针插回线轴上，那截裹在纸里的断针还在零钱盒旁边",
+          "startUtf16": 607,
+          "endUtf16": 634
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“能走到车站，别跑。明天拿过来，我再用皮线从底下走一道，就牢了。”",
+          "startUtf16": 470,
+          "endUtf16": 503
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "她弯腰去捡，看见纸里裹着的那截断针",
+          "startUtf16": 406,
+          "endUtf16": 423
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“能走。但你别使劲拽，明天拿来我再补。叠缝的地方得用胶粘一下，线才不磨。”",
+          "startUtf16": 628,
+          "endUtf16": 665
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "师傅不在场，不能突然知道断针的事；不可让临时修补成为无缺陷的永久修复。",
+          "startUtf16": 88,
+          "endUtf16": 123
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "有人可能觉得第二篇逐项提及黑线用完、锥子不拿、针还可用较像逐项避险；但每项都在场内改变选择，单凭出现限制相关物件不足以定性为填充。"
+    }
+  },
+  "confidence": {
+    "overallPreference": "medium-high",
+    "causalImprovement": "high for the next-day agreement; medium for staging differences",
+    "materialVoiceAgencyRegression": "medium",
+    "checklistPadding": "medium"
+  },
+  "softComplianceNotUsedAsProseVerdict": {
+    "first": {
+      "han": 529,
+      "paragraphs": 13,
+      "pass": false
+    },
+    "second": {
+      "han": 750,
+      "paragraphs": 13,
+      "pass": false
+    },
+    "bothProseEvaluable": true,
+    "technicalFailureEstablished": false
+  },
+  "bottomLine": "第一篇的优势不只是更短：临时修补有可见决策，且把指定的明日补牢真正约定下来；两篇均保留人物能动性。"
+}

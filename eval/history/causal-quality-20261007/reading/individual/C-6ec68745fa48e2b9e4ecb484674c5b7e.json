@@ -1,0 +1,359 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "C-6ec68745fa48e2b9e4ecb484674c5b7e",
+  "storyInputSha256": "45232817977de48523f8bed3b8772598187c0d63628ecd8d2746361572a31174",
+  "textSha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+  "evaluationStage": "individual_locked_before_pairwise",
+  "spanConvention": "Zero-based UTF-16 code units; end exclusive; source offsets refer to the indicated decoded storyInput property, output offsets to packet.text.",
+  "proseEvaluable": true,
+  "summary": "完成发现、取样、保管和明早询问的行动线；没有把车票告知阿陶或写成左耳恢复。主要可编辑点是重演已有对白、结尾过度说明听觉设定，以及超出字数和段数。",
+  "dimensions": {
+    "new_scene_change": {
+      "label": "acceptable",
+      "explanation": "与此前只对锁说话不同，此处照见纸屑、夹出一片、封装并带走，决定明早问管理员。纸上半字没有直接揭示寄信人，有限线索推动下一步。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "她拿手电照柜门底缝，光斜进去，照见一层灰、两根头发，还有几片纸屑",
+          "startUtf16": 224,
+          "endUtf16": 256
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "她用镊子夹出一片，就着手电看。",
+          "startUtf16": 279,
+          "endUtf16": 294
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“明早问管理员。”她说",
+          "startUtf16": 549,
+          "endUtf16": 560
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/goal",
+          "quote": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+          "startUtf16": 0,
+          "endUtf16": 25
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "physical_prerequisites_custody": {
+      "label": "acceptable",
+      "explanation": "先手电照见再镊取，纸片进袋封口后揣入口袋，保管链明确。钥匙不匹配与只能转半圈可以是同一未开锁状态，不能据此声称开锁成功。证物袋虽未在先文列出，但本故事没有禁止普通工具新增，袋子提供平常保管方式而非异常解决问题。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "锁是老式的铜挂锁，锁舌卡死，钥匙插进去只能转半圈。",
+          "startUtf16": 199,
+          "endUtf16": 224
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "程岚把纸屑放进证物袋，封口",
+          "startUtf16": 344,
+          "endUtf16": 357
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "程岚把证物袋揣进口袋，又拍了拍，确认不会掉",
+          "startUtf16": 631,
+          "endUtf16": 652
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/scene",
+          "quote": "程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索",
+          "startUtf16": 7,
+          "endUtf16": 30
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "阿陶不知道信封里装的是一张旧车票。程岚没有拆穿，只把信封压在修表垫下。",
+          "startUtf16": 55,
+          "endUtf16": 90
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "temporal_causal_sequence": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "纸屑调查及约明早的因果顺序成立；管理员不在解释延期。但正文重新呈现此前“你总得问点什么/先问这锁，收费低”的交换，开头阿陶跑进来的交代也像重新启动一场已经开始的戏，缺乏明确回述标记。不是硬时间矛盾，也没有把明日计划当成已发生。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“你总得问点什么。”",
+          "startUtf16": 161,
+          "endUtf16": 171
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“先问这锁。”程岚把右耳又贴近了些，“收费低。”",
+          "startUtf16": 173,
+          "endUtf16": 197
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“现在他不在。”程岚把证物袋揣进口袋",
+          "startUtf16": 623,
+          "endUtf16": 641
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "阿陶说：“你总得问点什么。”她说：“先问这锁，收费低。”",
+          "startUtf16": 27,
+          "endUtf16": 55
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/project/outline/2/goal",
+          "quote": "未来计划，不可当作已发生",
+          "startUtf16": 0,
+          "endUtf16": 12
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "同一场景里两人可以有意重复这段干涩玩笑；跑进来可以是对之前到达动作的背景补叙。由于没有禁止任何回述，也可将其视为衔接性重述，但原文没有明确给出这个用意。"
+    },
+    "motivation_obligation": {
+      "label": "acceptable",
+      "explanation": "阿陶着急但未逼迫，提出来源可能性、问能否现在问，最后接受等待。程岚主动取证并给出管理员不在这一实际障碍，辅以早上茶时更易交流的策略；决定而未提前解决来信者身份。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“会不会是有人取过东西，掉出来的？”",
+          "startUtf16": 416,
+          "endUtf16": 434
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“可能。”程岚站起来，膝盖响了一声，“也可能是一直在底下。”",
+          "startUtf16": 436,
+          "endUtf16": 466
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“现在不能问？”",
+          "startUtf16": 613,
+          "endUtf16": 621
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“现在他不在。”",
+          "startUtf16": 623,
+          "endUtf16": 631
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "阿陶张了张嘴，最后只“嗯”了一声。",
+          "startUtf16": 682,
+          "endUtf16": 699
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "阿陶着急但不咄咄逼人。",
+          "startUtf16": 53,
+          "endUtf16": 64
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/scene",
+          "quote": "结尾决定明早问管理员",
+          "startUtf16": 31,
+          "endUtf16": 41
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "knowledge_pov_attribution": {
+      "label": "acceptable",
+      "explanation": "程岚将纸字限定为像某字且“看不出”，纸屑来源保留两种可能。阿陶没有获得车票内容；对信封位置的记忆属于程岚的视角。右耳对锁和结尾明确左耳无声，与设定一致；不把普通水管或雨声误判为左耳感知。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "上面只剩半个字，印刷体，横折钩，像“到”，也像“列”。",
+          "startUtf16": 294,
+          "endUtf16": 321
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“看不出。”",
+          "startUtf16": 369,
+          "endUtf16": 375
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "阿陶不知道那封信里装着什么，她也没打算在这儿说。",
+          "startUtf16": 495,
+          "endUtf16": 519
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "右耳里是雨声，左耳里什么都没有",
+          "startUtf16": 728,
+          "endUtf16": 743
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "阿陶不能无来源知道车票内容；本场景不向他揭露；不能把左耳听声写成真实感知；寄信人保持未知。",
+          "startUtf16": 64,
+          "endUtf16": 109
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/pov",
+          "quote": "第三人称限知，只跟随程岚",
+          "startUtf16": 0,
+          "endUtf16": 12
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "voice_economy_agency": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "程岚的“半个字”“可能”与实物相连，主动照、夹、封、决定，阿陶也有提问和扶门动作，能动性良好。结尾却以一长串否定声音再次解释已由开头右耳位置保证的设定，另加“她习惯了”“她只是”，略显说明和情绪总结，削弱克制感。重用此前收费低的笑话也不增加新的声音层次。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“半个字。”程岚把纸屑放进证物袋，封口",
+          "startUtf16": 338,
+          "endUtf16": 357
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "右耳里是雨声，左耳里什么都没有——没有水管的咕噜，没有灯管的电流，也没有阿陶那声“嗯”的回音。她习惯了。",
+          "startUtf16": 728,
+          "endUtf16": 780
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "她只是把伞撑开，走进雨里，心里记着明早要问的那句话。",
+          "startUtf16": 780,
+          "endUtf16": 806
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/tone",
+          "quote": "克制、带一点干涩幽默",
+          "startUtf16": 0,
+          "endUtf16": 10
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "程岚用简短、实物相关的干涩回应",
+          "startUtf16": 37,
+          "endUtf16": 52
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "结尾的左右耳对照也可是一种有意的身体经验书写，收拢雨夜声场，而非仅为解释设定。它没有违背事实；是否显得用力属于文风与节奏判断。"
+    },
+    "instruction_adherence": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "主要秘密、听觉和场景目标都保持；正文中文、无外部评析。644汉字和13段超出450–600字、4–7段，单独计软格式违例。短暂回想信封不是另起一场戏，不因它直接判越界。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "阿陶不知道那封信里装着什么，她也没打算在这儿说。",
+          "startUtf16": 495,
+          "endUtf16": 519
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“明早问管理员。”",
+          "startUtf16": 549,
+          "endUtf16": 558
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "右耳里是雨声，左耳里什么都没有",
+          "startUtf16": 728,
+          "endUtf16": 743
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "写450–600个汉字的一场戏，4–7段，只写当前场景。",
+          "startUtf16": 4,
+          "endUtf16": 32
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "不写评析。",
+          "startUtf16": 109,
+          "endUtf16": 114
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "寄信人保持未知。",
+          "startUtf16": 101,
+          "endUtf16": 109
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "独立对白段可以改善阅读节拍，少量超字数未损害可读性；但按空行及汉字计数仍不满足目标，不能用这些解释取消格式偏差。"
+    }
+  },
+  "separateCompliance": {
+    "han": 644,
+    "hanTarget": [
+      450,
+      600
+    ],
+    "paragraphs": 13,
+    "paragraphTarget": [
+      4,
+      7
+    ],
+    "hanWithinTarget": false,
+    "paragraphsWithinTarget": false,
+    "language": "Chinese",
+    "wrapperOrCommentary": false,
+    "technicalFailureEstablished": false
+  },
+  "overallIndividualAssessment": "线索与保管可追踪，人物保留行动和未知；删除重演对白并缩短结尾的设定说明，会使这场小戏更自然。"
+}

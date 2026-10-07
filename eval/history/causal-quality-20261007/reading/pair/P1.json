@@ -1,0 +1,268 @@
+{
+  "schemaVersion": 1,
+  "pairId": "P1",
+  "storyInputSha256": "45232817977de48523f8bed3b8772598187c0d63628ecd8d2746361572a31174",
+  "first": {
+    "candidateId": "C-6ec68745fa48e2b9e4ecb484674c5b7e",
+    "textSha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064"
+  },
+  "second": {
+    "candidateId": "C-cd731f5e836adb51f8a072cc0d8b92af",
+    "textSha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2"
+  },
+  "locked": true,
+  "fullPairRead": true,
+  "individualJudgmentsPreserved": true,
+  "armIdentitiesKnown": false,
+  "overallPreference": "second",
+  "causalImprovement": "neither",
+  "materialVoiceAgencyRegression": "none",
+  "checklistPadding": "first",
+  "directionConvention": "first/second names the packet member preferred for overallPreference or causalImprovement; for regression/padding it names the member exhibiting more of the negative property. none means no material directional claim.",
+  "spanConvention": "Zero-based, end-exclusive UTF-16 code units into the exact indicated text or decoded source property.",
+  "criteria": {
+    "overallPreference": {
+      "explanation": "偏好第二篇，程度中等。即使不看535/644字和4/13段的差异，第二篇也把试钥匙、停手、取纸、存纸和约明早连在同一条短行动线上，结尾用纸片重量收束。第一篇重说旧笑话并长篇解释听觉，减慢局部悬念。第二篇藏纸和排除收据的理由仍待小修，不能当作全维度胜出。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“先问这锁。”程岚把右耳又贴近了些，“收费低。”",
+          "startUtf16": 173,
+          "endUtf16": 197
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "右耳里是雨声，左耳里什么都没有——没有水管的咕噜，没有灯管的电流，也没有阿陶那声“嗯”的回音。她习惯了。",
+          "startUtf16": 728,
+          "endUtf16": 780
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“锁舌老了，别硬拧。”阿陶停手",
+          "startUtf16": 119,
+          "endUtf16": 134
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "最后只把钥匙从锁眼里拔出来，搁在柜顶。",
+          "startUtf16": 540,
+          "endUtf16": 559
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "工具袋里那片纸屑很轻，轻得像没放进去一样。",
+          "startUtf16": 623,
+          "endUtf16": 644
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/tone",
+          "quote": "克制、带一点干涩幽默",
+          "startUtf16": 0,
+          "endUtf16": 10
+        },
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "阿陶说：“你总得问点什么。”她说：“先问这锁，收费低。”",
+          "startUtf16": 27,
+          "endUtf16": 55
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "第一篇对来源保留两种可能，合作关系更顺；偏好调查推理的读者可能优先选择第一篇，而把第二篇的不让看纸和排除收据看得更重。"
+    },
+    "causalImprovement": {
+      "explanation": "不判任何一篇有稳健的整体实质因果优势。两篇都完成发现、保管与延期询问，并守住秘密和左耳设定。第一篇的线索判断较谨慎，第二篇的钥匙动作及明确明早回应较紧。第二篇额外藏纸动机不明、收据排除依据不足，但都是可合理解释的局部疑点；第一篇也有重复既有对话的衔接损失。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“可能。”程岚站起来，膝盖响了一声，“也可能是一直在底下。”",
+          "startUtf16": 436,
+          "endUtf16": 466
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“现在他不在。”程岚把证物袋揣进口袋，又拍了拍，确认不会掉",
+          "startUtf16": 623,
+          "endUtf16": 652
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "阿陶凑过来，她把手一偏，没让他看清。",
+          "startUtf16": 291,
+          "endUtf16": 309
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "她摇头：“收据不撕这么碎。”",
+          "startUtf16": 416,
+          "endUtf16": 430
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“那我明早来。”他说。程岚点头",
+          "startUtf16": 559,
+          "endUtf16": 574
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/goal",
+          "quote": "发现锁柜底下的纸屑，决定次日问管理员，不揭晓寄信人",
+          "startUtf16": 0,
+          "endUtf16": 25
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "若把无依据排除收据及遮挡纸片视为关键推理缺陷，可给第一篇局部因果优势；若把这些视为角色习惯或可犯错判断，则不足以支持整体因果改善。这里选择保留不确定性。"
+    },
+    "materialVoiceAgencyRegression": {
+      "explanation": "两篇都让程岚主动查看、取出和保存纸片，让阿陶尝试钥匙、提问并参与离开；没有一篇明显把人物降成被动服从限制的载体。第一篇的声音说明较多、第二篇的“急出来的话”稍泛，但不足以判实质声音或能动性退化。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“半个字。”程岚把纸屑放进证物袋，封口",
+          "startUtf16": 338,
+          "endUtf16": 357
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“会不会是有人取过东西，掉出来的？”",
+          "startUtf16": 416,
+          "endUtf16": 434
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "他退到门口，替她扶着那扇有点变形的铁门。",
+          "startUtf16": 699,
+          "endUtf16": 719
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "试到第七把时终于说：“这把像。”",
+          "startUtf16": 62,
+          "endUtf16": 78
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "她用钳尖拨了两下，夹出一片纸屑",
+          "startUtf16": 262,
+          "endUtf16": 277
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“先别急，”她说，“急出来的话不结实。”",
+          "startUtf16": 309,
+          "endUtf16": 329
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "程岚用简短、实物相关的干涩回应；阿陶着急但不咄咄逼人。",
+          "startUtf16": 37,
+          "endUtf16": 64
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "checklistPadding": {
+      "explanation": "第一篇更有重复确认限制的阅读感：已经以右耳朝锁保证听觉一致，后面又列举左耳听不到的三种声音；另单独说明阿陶不知道信里东西且现在不说。第二篇也明确左耳安静，但篇幅短得多。此判断只描述成文效果，不推测任何生成方式，且不把有意义的取证封装当填充。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "程岚蹲在第三排最下面那格前，右耳对着锁孔，左耳朝着墙。",
+          "startUtf16": 52,
+          "endUtf16": 79
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "阿陶不知道那封信里装着什么，她也没打算在这儿说。",
+          "startUtf16": 495,
+          "endUtf16": 519
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "左耳里什么都没有——没有水管的咕噜，没有灯管的电流，也没有阿陶那声“嗯”的回音。",
+          "startUtf16": 735,
+          "endUtf16": 775
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "把右耳贴近柜门",
+          "startUtf16": 84,
+          "endUtf16": 91
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "右耳还留着雨声，左耳那边始终是安静的，像有人把那一侧的窗关死了。",
+          "startUtf16": 498,
+          "endUtf16": 530
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "阿陶不能无来源知道车票内容；本场景不向他揭露；不能把左耳听声写成真实感知",
+          "startUtf16": 64,
+          "endUtf16": 100
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "左右耳对照也可以承担身体经验和雨夜氛围，并非必然无效。第一篇的同类提醒叠加较多，因此是中等把握的冗余判断，不是客观错误。"
+    }
+  },
+  "confidence": {
+    "overallPreference": "medium",
+    "causalImprovement": "medium-low; mixed local advantages",
+    "materialVoiceAgencyRegression": "medium",
+    "checklistPadding": "medium"
+  },
+  "softComplianceNotUsedAsProseVerdict": {
+    "first": {
+      "han": 644,
+      "paragraphs": 13,
+      "pass": false
+    },
+    "second": {
+      "han": 535,
+      "paragraphs": 4,
+      "pass": true
+    },
+    "bothProseEvaluable": true,
+    "technicalFailureEstablished": false
+  },
+  "bottomLine": "第二篇文学节奏略胜；不能据此宣布实质因果全面改善，也没有明确的声音/能动性退化。"
+}

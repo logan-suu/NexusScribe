@@ -1,0 +1,160 @@
+{
+  "protocol": "causal-quality-20261007",
+  "maskedMappingSha256": "378805940e08d7a5c3746f75333c0c6b17b846632622cf0cc37e940f69e8698b",
+  "sourceSha": "effcaaaeed9e4dd99e06e8eeffbc1b4cafbdcb85",
+  "runId": "37557977202",
+  "ciRunId": "37555966642",
+  "manifestSha256": "7226ddbae0c7eddec10971becd36b42ab729ce3da7f9303f0f1d6d200b53261c",
+  "attemptsReserved": 6,
+  "attempts": 6,
+  "remainingAttempts": 0,
+  "requestedOutputTokens": 18000,
+  "status": "six_calls_retained_awaiting_masked_read",
+  "cost": "unknown",
+  "stages": [
+    {
+      "sequence": 1,
+      "requestSha256": "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 1557,
+        "completionTokens": 571,
+        "totalTokens": 2128,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+      "counts": {
+        "han": 644,
+        "paragraphs": 13,
+        "pass": false
+      },
+      "receivedSuccessBytes": 2928,
+      "elapsedMs": 7068,
+      "missingUsageFields": []
+    },
+    {
+      "sequence": 2,
+      "requestSha256": "73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 1684,
+        "completionTokens": 466,
+        "totalTokens": 2150,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+      "counts": {
+        "han": 535,
+        "paragraphs": 4,
+        "pass": true
+      },
+      "receivedSuccessBytes": 2457,
+      "elapsedMs": 4538,
+      "missingUsageFields": []
+    },
+    {
+      "sequence": 3,
+      "requestSha256": "b08e91571190cb4ea1a18a84f1c5dcf03636f1e5aedceec744db116f2d0e9322",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 2926,
+        "completionTokens": 620,
+        "totalTokens": 3546,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+      "counts": {
+        "han": 665,
+        "paragraphs": 13,
+        "pass": false
+      },
+      "receivedSuccessBytes": 2985,
+      "elapsedMs": 5408,
+      "missingUsageFields": []
+    },
+    {
+      "sequence": 4,
+      "requestSha256": "f6e433b06fdd772c042614c9a2d5fc41b14f523ef1184f12e28cc3e468bb2e04",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 2799,
+        "completionTokens": 564,
+        "totalTokens": 3363,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+      "counts": {
+        "han": 610,
+        "paragraphs": 13,
+        "pass": false
+      },
+      "receivedSuccessBytes": 2781,
+      "elapsedMs": 5247,
+      "missingUsageFields": []
+    },
+    {
+      "sequence": 5,
+      "requestSha256": "3817d325ba0d06b1216f19700612978002f5d6bd1a00cc7a5f11f657a73a2f76",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 1595,
+        "completionTokens": 488,
+        "totalTokens": 2083,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+      "counts": {
+        "han": 529,
+        "paragraphs": 13,
+        "pass": false
+      },
+      "receivedSuccessBytes": 2484,
+      "elapsedMs": 4986,
+      "missingUsageFields": []
+    },
+    {
+      "sequence": 6,
+      "requestSha256": "26f9ae08bf3dcf8611def04c295e857c73ef785b52f565a70b02d9be61254228",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 1722,
+        "completionTokens": 718,
+        "totalTokens": 2440,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+      "counts": {
+        "han": 750,
+        "paragraphs": 13,
+        "pass": false
+      },
+      "receivedSuccessBytes": 3261,
+      "elapsedMs": 6572,
+      "missingUsageFields": []
+    }
+  ],
+  "usage": {
+    "promptTokens": 12283,
+    "completionTokens": 3427,
+    "totalTokens": 15710,
+    "reasoningTokens": 0
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "evaluationStage": "all_three_pairwise_reports_locked_before_unmask",
+  "locked": true,
+  "fullPairRead": true,
+  "signedByEvaluatorTask": "/root/compare_nexus_writing_quality/read_new_masked_prose",
+  "individualReportBytesUnchanged": true,
+  "individualLockManifestSha256": "11437dd28b95d61dd39a4cda76a012d5ef60dab820c81612b366bb65ba66aba7",
+  "utf16QuoteSpansVerified": 84,
+  "sourceAndOutputHashesVerified": true,
+  "isolation": {
+    "readOnlySuppliedPairPacketsAndOwnIndividualReportsDuringPairStage": true,
+    "allIndividualReportsLockedBeforePairPackets": true,
+    "armIdentitiesKnown": false,
+    "armIdentitySoughtOrInferred": false,
+    "consultedOtherEvaluators": false,
+    "usedPaidApiOrModelJudge": false,
+    "delegatedEvaluation": false
+  },
+  "pairs": [
+    {
+      "pairId": "P1",
+      "storyInputSha256": "45232817977de48523f8bed3b8772598187c0d63628ecd8d2746361572a31174",
+      "first": {
+        "candidateId": "C-6ec68745fa48e2b9e4ecb484674c5b7e",
+        "textSha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064"
+      },
+      "second": {
+        "candidateId": "C-cd731f5e836adb51f8a072cc0d8b92af",
+        "textSha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2"
+      },
+      "reportPath": "/workspace/shared/quality07-pair-judgments/P1.json",
+      "reportSha256": "004a0b4da1c21817833c1e3ce9258167fb2b7e7b64a1080272ece599cbf36eb1",
+      "locked": true,
+      "fullPairRead": true,
+      "overallPreference": "second",
+      "causalImprovement": "neither",
+      "materialVoiceAgencyRegression": "none",
+      "checklistPadding": "first"
+    },
+    {
+      "pairId": "P2",
+      "storyInputSha256": "7f78c47c85aef206a769d877f1367b049e1e448669697b09ad512e6413363940",
+      "first": {
+        "candidateId": "C-259473bbc4e726be48ed91c2321a2a54",
+        "textSha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0"
+      },
+      "second": {
+        "candidateId": "C-61f0bae42550589bed842be6eaddfa7c",
+        "textSha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0"
+      },
+      "reportPath": "/workspace/shared/quality07-pair-judgments/P2.json",
+      "reportSha256": "55f595d2d0a2071603f94b93f858ccbe9ab00cda03f8b64d32b8bf7908a840f4",
+      "locked": true,
+      "fullPairRead": true,
+      "overallPreference": "first",
+      "causalImprovement": "first",
+      "materialVoiceAgencyRegression": "none",
+      "checklistPadding": "none"
+    },
+    {
+      "pairId": "P3",
+      "storyInputSha256": "ca4b564caee7e8aaaad5510430dbe37646e6d564506488638cf3f3f3f691ca8d",
+      "first": {
+        "candidateId": "C-4a87feaee3792cbac47dbb27426a6019",
+        "textSha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07"
+      },
+      "second": {
+        "candidateId": "C-bfc3f1a0d643da85aac2694a33300b98",
+        "textSha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27"
+      },
+      "reportPath": "/workspace/shared/quality07-pair-judgments/P3.json",
+      "reportSha256": "52f49be896553495b77d14247958f0c50b2f669f6fba218a0812e1e9f313d863",
+      "locked": true,
+      "fullPairRead": true,
+      "overallPreference": "neither",
+      "causalImprovement": "neither",
+      "materialVoiceAgencyRegression": "none",
+      "checklistPadding": "none"
+    }
+  ],
+  "summary": "P1: prefer second on literary economy, no robust net causal gain. P2: prefer first, including a clear improvement in fulfilling the next-day repair agreement. P3: no stable overall or causal preference; reciprocal strengths and ambiguities. No material voice/agency regression established in any pair. P1 first has more reminder-like constraint exposition. Counts remain separate and all outputs are evaluable prose."
+}

@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "C-259473bbc4e726be48ed91c2321a2a54",
+  "storyInputSha256": "7f78c47c85aef206a769d877f1367b049e1e448669697b09ad512e6413363940",
+  "textSha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+  "evaluationStage": "individual_locked_before_pairwise",
+  "spanConvention": "Zero-based UTF-16 code units; end exclusive; source offsets refer to the indicated decoded storyInput property, output offsets to packet.text.",
+  "proseEvaluable": true,
+  "summary": "修补时发现受力问题、拆回两针并明确限制使用，构成有效的小场景。动作承载尴尬，赵姨的体贴也可见。问题主要是重复已经发生的到摊/白线交流、添入未铺垫工具，以及段数超标；这些不等于技术故障。",
+  "dimensions": {
+    "new_scene_change": {
+      "label": "acceptable",
+      "explanation": "鞋带从断裂变为可暂时步行；小满实际撤回过紧的针脚，并约定次日补牢，具有新行动和可见结果。未直接写登车，但已让赵姨离摊且不再耽搁，可合理满足当前修鞋场景的目的。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "最后把这一段拆了两针，重新走松一点。",
+          "startUtf16": 416,
+          "endUtf16": 434
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“好了。”周小满把鞋递过去，“能走到车站，别跑。明天拿过来，我再用皮线从底下走一道，就牢了。”",
+          "startUtf16": 456,
+          "endUtf16": 503
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/goal",
+          "quote": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+          "startUtf16": 0,
+          "endUtf16": 24
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "physical_prerequisites_custody": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "白线缝补、拆针减张力、试穿都具备普通可理解的动作链。另行安置师傅的锥子并拿出自己的小钳子，缺少来源铺垫，和不得凭空出现工具的特定要求存在张力；两件工具却没有承担明确、不可替代的修补步骤，所以不判物理不可能。试穿后又拎鞋离开可由脱鞋这一普通省略动作解释。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "师傅的锥子摆在右手边，她没动，只拿了自己那把小钳子。",
+          "startUtf16": 265,
+          "endUtf16": 291
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "断口两边的皮还软，能扎进去。",
+          "startUtf16": 291,
+          "endUtf16": 305
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "赵姨穿上试了试，脚趾弯了两下，带子没再断。",
+          "startUtf16": 505,
+          "endUtf16": 526
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "赵姨把钱压在铁盒底下，拎起鞋走了。",
+          "startUtf16": 564,
+          "endUtf16": 581
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "修补只能用现有白线，不凭空出现工具或帮手",
+          "startUtf16": 67,
+          "endUtf16": 87
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "普通修鞋摊自然可能已有锥子和钳子；“摆在右手边”“自己那把”可读为既存工具的首次叙述，并非工具凭空生成。一次断针也不排除另一枚可用针，因此针的存在本身不构成违例。"
+    },
+    "temporal_causal_sequence": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "主要修补因果清楚：缝得紧，认识到弯折风险，拆针放松，再试穿。开头却重新写赵姨到摊、发现白线，并重复此前已经说过的同一句话，没有交代这是重述还是后来再次说起，削弱续写的时间衔接。这个问题是叙事衔接歧义，不是不可调和的时间矛盾。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "天擦黑的时候，赵姨拎着一只凉鞋从巷口过来，鞋跟敲在水泥地上，一下一下，急。",
+          "startUtf16": 0,
+          "endUtf16": 37
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“白的就白的，鞋底谁看。”赵姨说。",
+          "startUtf16": 198,
+          "endUtf16": 215
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "断带的位置靠近脚趾弯折的地方，线拉得太紧，脚一弯就会再崩。",
+          "startUtf16": 368,
+          "endUtf16": 397
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "周小满把线轴转到缺口朝里，赵姨还是看见了。“白的就白的，鞋底谁看。”",
+          "startUtf16": 15,
+          "endUtf16": 49
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "开头可以是同一晚同一场景的短暂重述或镜头回拉；赵姨也完全可能重复一句实际的安慰。因此只能提出衔接编辑建议。"
+    },
+    "motivation_obligation": {
+      "label": "acceptable",
+      "explanation": "末班车的二十分钟限制解释赶工；主人公仍主动拆掉两针，显出对使用者负责。赵姨扣下手机、留下零钱，与实际体贴的设定相合；次日时间被明确约定。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“末班车还有二十分钟。”",
+          "startUtf16": 125,
+          "endUtf16": 137
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "赵姨在旁边没催，只把手机翻过去扣在腿上。",
+          "startUtf16": 434,
+          "endUtf16": 454
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“四点以后都在。”",
+          "startUtf16": 535,
+          "endUtf16": 544
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/goal",
+          "quote": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+          "startUtf16": 0,
+          "endUtf16": 24
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "赵姨实际、体贴，不讲人生大道理。",
+          "startUtf16": 51,
+          "endUtf16": 67
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "knowledge_pov_attribution": {
+      "label": "acceptable",
+      "explanation": "观察和技术判断都跟随小满；赵姨的体贴由外部动作呈现，未直接进入其内心。师傅没有到场或收到消息；尾部断针只由小满重新触碰，未传播该秘密。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "她盯着那个弧度，手指在线上来回蹭了蹭",
+          "startUtf16": 397,
+          "endUtf16": 415
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "那截裹在纸里的断针还在零钱盒旁边，纸角被风吹得翘起来。她把它往里按了按",
+          "startUtf16": 618,
+          "endUtf16": 653
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/pov",
+          "quote": "第三人称限知，只跟随周小满",
+          "startUtf16": 0,
+          "endUtf16": 13
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "师傅不在场，不能突然知道断针的事",
+          "startUtf16": 88,
+          "endUtf16": 104
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "voice_economy_agency": {
+      "label": "acceptable",
+      "explanation": "小满只在回答中轻微停顿，没有自怜，且自己发现并处理针脚问题。赵姨用扣手机、压零钱和短句表达体贴。白线如疤的比喻略显强调但仍受控；整体动作比议论更有分量。重复此前白线交流是可压缩处，而非人物能动性消失。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“不……不是这个意思。”",
+          "startUtf16": 217,
+          "endUtf16": 229
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "最后把这一段拆了两针，重新走松一点。",
+          "startUtf16": 416,
+          "endUtf16": 434
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "赵姨从兜里摸出两张零钱，周小满摆手。赵姨把钱压在铁盒底下",
+          "startUtf16": 546,
+          "endUtf16": 574
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“白的也挺好认。”",
+          "startUtf16": 589,
+          "endUtf16": 598
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "人物声音：周小满回答容易停顿但不自怜；赵姨实际、体贴，不讲人生大道理。",
+          "startUtf16": 32,
+          "endUtf16": 67
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "instruction_adherence": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "汉字数在目标内，正文中文、无评析或包装。13段超过4–7段，为独立的软格式违例，不会使正文不可评价。白线修补保持暂时性，未来“皮线”只是明日计划，未变成现在可用材料。未铺垫工具的内容疑点另见物理维度。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "能走到车站，别跑。明天拿过来，我再用皮线从底下走一道，就牢了。",
+          "startUtf16": 471,
+          "endUtf16": 502
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“四点以后都在。”",
+          "startUtf16": 535,
+          "endUtf16": 544
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "写450–600个汉字的一场戏，4–7段，只写当前场景。",
+          "startUtf16": 4,
+          "endUtf16": 32
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "不可让临时修补成为无缺陷的永久修复。",
+          "startUtf16": 105,
+          "endUtf16": 123
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "短对话被各自分段可改善节奏；也可能不把每个对白块算独立段，但按空行分段这一通常口径，确实为13段。明日补牢不意味着本次修补已经永久完美。"
+    }
+  },
+  "separateCompliance": {
+    "han": 529,
+    "hanTarget": [
+      450,
+      600
+    ],
+    "paragraphs": 13,
+    "paragraphTarget": [
+      4,
+      7
+    ],
+    "hanWithinTarget": true,
+    "paragraphsWithinTarget": false,
+    "language": "Chinese",
+    "wrapperOrCommentary": false,
+    "technicalFailureEstablished": false
+  },
+  "overallIndividualAssessment": "连贯可读，有具体修补决策和克制的人情；时间重述与工具铺垫需编辑，段数单独不合要求。"
+}

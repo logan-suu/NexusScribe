@@ -1,0 +1,30 @@
+{
+  "protocol": "causal-quality-20261007",
+  "status": "new_separately_approved_not_dispatched",
+  "baselineSourceSha": "d0fb8d1817f5e27aa6e7d75a63ef713360267a1a",
+  "maxAttempts": 6,
+  "maxOutputTokensPerCall": 3000,
+  "maxOutputTokensTotal": 18000,
+  "stop": "operational_safety_resource_budget_uncertainty",
+  "softTargets": "score_only_never_gate",
+  "masking": "prepare_random_ids_durable_full_mapping_v1",
+  "bodySha256": [
+    "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+    "73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308",
+    "b08e91571190cb4ea1a18a84f1c5dcf03636f1e5aedceec744db116f2d0e9322",
+    "f6e433b06fdd772c042614c9a2d5fc41b14f523ef1184f12e28cc3e468bb2e04",
+    "3817d325ba0d06b1216f19700612978002f5d6bd1a00cc7a5f11f657a73a2f76",
+    "26f9ae08bf3dcf8611def04c295e857c73ef785b52f565a70b02d9be61254228"
+  ],
+  "sha256": {
+    "scripts/run-causal-quality-20261007.mjs": "c13ea80d86a365429d887f4701eb6490426bb423d6c66541ccc9da15c872fd3a",
+    "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195",
+    "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
+    ".github/workflows/causal-quality-20261007-trial.yml": "6e03eb8dcd72520fd9382282ab7123caf9b4d75d40730aee0909a4f74ef89314",
+    ".github/workflows/ci.yml": "ecd518f9e25063c66e6357949ea17454c095a727b59ef99ee77c460fae575db0",
+    "eval/CAUSAL-QUALITY-20261007-PROTOCOL.md": "66f5647af13d9a6e768b6c1e8c9a6b7c5b3209c5940a0c11257fd2146cf47555",
+    "eval/causal-continuity-requests.json": "5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73",
+    "tests/causal-quality-20261007.test.js": "1a4a8a7cc36b631ad5c75ab9231f6a45de50b2b387aecca53ba0bb94f75f56bb",
+    "eval/history/causal-quality-20261006/raw-prose-01.bin": "75a24e4f346bf57c3775c8d3180074334544ea9f1a5b0773f4beffaf9233dbf3"
+  }
+}

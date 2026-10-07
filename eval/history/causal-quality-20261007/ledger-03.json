@@ -1,0 +1,91 @@
+{
+  "protocol": "causal-quality-20261007",
+  "maskedMappingSha256": "378805940e08d7a5c3746f75333c0c6b17b846632622cf0cc37e940f69e8698b",
+  "sourceSha": "effcaaaeed9e4dd99e06e8eeffbc1b4cafbdcb85",
+  "runId": "37557977202",
+  "ciRunId": "37555966642",
+  "manifestSha256": "7226ddbae0c7eddec10971becd36b42ab729ce3da7f9303f0f1d6d200b53261c",
+  "attemptsReserved": 6,
+  "attempts": 3,
+  "remainingAttempts": 0,
+  "requestedOutputTokens": 9000,
+  "status": "running",
+  "cost": "unknown",
+  "stages": [
+    {
+      "sequence": 1,
+      "requestSha256": "2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 1557,
+        "completionTokens": 571,
+        "totalTokens": 2128,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+      "counts": {
+        "han": 644,
+        "paragraphs": 13,
+        "pass": false
+      },
+      "receivedSuccessBytes": 2928,
+      "elapsedMs": 7068,
+      "missingUsageFields": []
+    },
+    {
+      "sequence": 2,
+      "requestSha256": "73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 1684,
+        "completionTokens": 466,
+        "totalTokens": 2150,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+      "counts": {
+        "han": 535,
+        "paragraphs": 4,
+        "pass": true
+      },
+      "receivedSuccessBytes": 2457,
+      "elapsedMs": 4538,
+      "missingUsageFields": []
+    },
+    {
+      "sequence": 3,
+      "requestSha256": "b08e91571190cb4ea1a18a84f1c5dcf03636f1e5aedceec744db116f2d0e9322",
+      "status": "retained_for_masked_read",
+      "usage": {
+        "promptTokens": 2926,
+        "completionTokens": 620,
+        "totalTokens": 3546,
+        "reasoningTokens": 0
+      },
+      "cost": "unknown",
+      "httpStatus": 200,
+      "finishReason": "stop",
+      "textSha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+      "counts": {
+        "han": 665,
+        "paragraphs": 13,
+        "pass": false
+      },
+      "receivedSuccessBytes": 2985,
+      "elapsedMs": 5408,
+      "missingUsageFields": []
+    }
+  ],
+  "usage": {
+    "promptTokens": 6167,
+    "completionTokens": 1657,
+    "totalTokens": 7824,
+    "reasoningTokens": 0
+  }
+}
