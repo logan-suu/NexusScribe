@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "pairId": "P3",
+  "storyInputSha256": "ca4b564caee7e8aaaad5510430dbe37646e6d564506488638cf3f3f3f691ca8d",
+  "first": {
+    "candidateId": "C-4a87feaee3792cbac47dbb27426a6019",
+    "textSha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07"
+  },
+  "second": {
+    "candidateId": "C-bfc3f1a0d643da85aac2694a33300b98",
+    "textSha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27"
+  },
+  "locked": true,
+  "fullPairRead": true,
+  "individualJudgmentsPreserved": true,
+  "armIdentitiesKnown": false,
+  "overallPreference": "neither",
+  "causalImprovement": "neither",
+  "materialVoiceAgencyRegression": "none",
+  "checklistPadding": "none",
+  "directionConvention": "first/second names the packet member preferred for overallPreference or causalImprovement; for regression/padding it names the member exhibiting more of the negative property. none means no material directional claim.",
+  "spanConvention": "Zero-based, end-exclusive UTF-16 code units into the exact indicated text or decoded source property.",
+  "criteria": {
+    "overallPreference": {
+      "explanation": "不作明确胜负判断。第一篇较聚焦“明天调记录”，报修单的干涩回应贴近限定的这场小询问；但等待、开盒及重复日期拖节奏，管理员先知柜号需补交代。第二篇用包子和管理员替约钥匙增加人情与参与，询问起点更清楚，却引入三十天公示，让当下戏承担过多程序性分量。两者各有实际文学得失，610/665字和同为13段不决定结果。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“这排柜子换过两回锁，登记本归库房，得明天上午调。”",
+          "startUtf16": 549,
+          "endUtf16": 575
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“明天上午。”许宁重复了一遍。",
+          "startUtf16": 577,
+          "endUtf16": 592
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "报修单也得明天。",
+          "startUtf16": 647,
+          "endUtf16": 655
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "手里拎着两只包子，递了一只给许宁",
+          "startUtf16": 86,
+          "endUtf16": 102
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“明天别迟到，库房钥匙在主任那儿，我替你们约。”",
+          "startUtf16": 686,
+          "endUtf16": 710
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "阿青站在台阶下，包子已经凉了，他三两口塞进嘴里，含混地说：“三十天。”",
+          "startUtf16": 732,
+          "endUtf16": 767
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/goal",
+          "quote": "管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+          "startUtf16": 35,
+          "endUtf16": 60
+        },
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/tone",
+          "quote": "克制，实物细节，少量干涩幽默",
+          "startUtf16": 0,
+          "endUtf16": 14
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "更重视有限信息与场景聚焦的读者可偏好第一篇；更重视阿青的人情动作和老周实际帮忙的读者可偏好第二篇。这种取舍没有足够单向优势支持稳健选择。"
+    },
+    "causalImprovement": {
+      "explanation": "互有修补与新增疑点，故不判净实质因果改善。第一篇直接敲门，完全不依赖坏铃；第二篇却以残壳拉绳的闷响接应门，需解释声源。反过来，第二篇先由许宁报柜号，管理员知识有来源；第一篇管理员初见便问十七号柜，缺桥。两篇都保存纸屑、维持柜锁、未提前得到记录，并有明确次日预约。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "他走到门边，抬手敲了三下。",
+          "startUtf16": 149,
+          "endUtf16": 162
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“十七号柜的事？”老周问。",
+          "startUtf16": 408,
+          "endUtf16": 421
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "他朝老周点了下头，说：“明天九点。”",
+          "startUtf16": 704,
+          "endUtf16": 722
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "铃早坏了，拉一下只发出铁皮碰铁皮的闷响。他拉了一下。隔了几秒，又拉一下。",
+          "startUtf16": 196,
+          "endUtf16": 232
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“不取东西。”许宁把工具袋往身前挪了挪，“问十七号柜的旧记录。”",
+          "startUtf16": 288,
+          "endUtf16": 320
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "明天八点半来，我带你去库房。",
+          "startUtf16": 570,
+          "endUtf16": 584
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "寄存室的铜铃已经损坏，不能发出声音。",
+          "startUtf16": 697,
+          "endUtf16": 715
+        },
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/goal",
+          "quote": "在门边用符合当前设定的方法招呼他",
+          "startUtf16": 18,
+          "endUtf16": 34
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "坏铃不能鸣铃不排除残壳撞击其他金属；管理员也可能恰好开门。第一篇管理员亦可能有未写出的既有背景。两处都宜澄清，但都不足以直接认定正式矛盾，不能将其中之一夸大以制造胜负。"
+    },
+    "materialVoiceAgencyRegression": {
+      "explanation": "没有足够证据判任一篇存在实质退化。第一篇许宁主动敲门、展示、定时，阿青提出去后面找人；第二篇许宁主动报柜号，阿青送包子并追问地点与公示时长，老周也主动代约。第二篇参与更分散，第一篇更节制，但二者都保留自主行动和角色差异。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“要不我去后面看看，兴许人在库房。”",
+          "startUtf16": 242,
+          "endUtf16": 260
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“先等。”许宁说。",
+          "startUtf16": 262,
+          "endUtf16": 271
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“你们来之前别自己开柜。钥匙在我这儿，锁没坏，坏了要报修，报修单也得明天。”",
+          "startUtf16": 618,
+          "endUtf16": 656
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "“不取东西。”",
+          "startUtf16": 288,
+          "endUtf16": 295
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "阿青往前半步：“那在哪儿？”",
+          "startUtf16": 387,
+          "endUtf16": 401
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "阿青张了张嘴，到底只问了一句：“公示多久？”",
+          "startUtf16": 637,
+          "endUtf16": 659
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "我替你们约。",
+          "startUtf16": 703,
+          "endUtf16": 709
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "许宁说话简短、与实物相关；阿青着急但不咄咄逼人；管理员用办事规矩表达关心。",
+          "startUtf16": 48,
+          "endUtf16": 85
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "checklistPadding": {
+      "explanation": "不作清单式填充的方向判定。第一篇反复开合纸盒、重说日期和末尾确认铃不响，确有可压缩之处；第二篇最后明确柜门仍锁、柜牌还在，也有状态重申。第一篇的保管和时间确认、第二篇的程序交代同时承担场内叙事功能，单凭重复不能可靠区分为更严重的限制清单。第二篇三十天公示是扩展支线，不应错归为复述既有清单。",
+      "firstEvidence": [
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "他合上盖，重新箍好橡皮筋，没让阿青接手。",
+          "startUtf16": 322,
+          "endUtf16": 342
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "“明天上午。”许宁重复了一遍。",
+          "startUtf16": 577,
+          "endUtf16": 592
+        },
+        {
+          "side": "first",
+          "path": "/first/text",
+          "quote": "铜铃跟着晃了晃，依旧没声。",
+          "startUtf16": 745,
+          "endUtf16": 758
+        }
+      ],
+      "secondEvidence": [
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "许宁把纸盒收回工具袋最里层，拉链拉到底。",
+          "startUtf16": 712,
+          "endUtf16": 732
+        },
+        {
+          "side": "second",
+          "path": "/second/text",
+          "quote": "柜门仍锁着，十七号的铜牌在门里那排暗处，他看不见，但知道它还在。",
+          "startUtf16": 794,
+          "endUtf16": 826
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "side": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/scene",
+          "quote": "许宁继续保管纸屑，柜门仍未打开。",
+          "startUtf16": 33,
+          "endUtf16": 49
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "若特别厌烦重复状态确认，会觉得第一篇两次强调无声和多次开合盒较像逐项确认；也可把它们视为等待中的谨慎动作。这里保留局部冗余意见，不作更强的清单化断言。"
+    }
+  },
+  "confidence": {
+    "overallPreference": "low directional preference; medium confidence in mixed trade-offs",
+    "causalImprovement": "medium confidence in no demonstrated net advantage",
+    "materialVoiceAgencyRegression": "medium",
+    "checklistPadding": "medium-low"
+  },
+  "softComplianceNotUsedAsProseVerdict": {
+    "first": {
+      "han": 610,
+      "paragraphs": 13,
+      "pass": false
+    },
+    "second": {
+      "han": 665,
+      "paragraphs": 13,
+      "pass": false
+    },
+    "bothProseEvaluable": true,
+    "technicalFailureEstablished": false
+  },
+  "bottomLine": "两篇各解决一个衔接问题，也各带来新的负担；现有文本不足以证明其中一篇在文学质量或实质因果上稳定胜出。"
+}

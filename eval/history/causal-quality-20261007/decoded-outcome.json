@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "protocol": "causal-quality-20261007",
+  "runId": "37557977202",
+  "sourceSha": "effcaaaeed9e4dd99e06e8eeffbc1b4cafbdcb85",
+  "decodedAfterAllIndividualAndPairwiseRecordsLocked": true,
+  "bindings": {
+    "reservationFileSha256": "941350cdb703ba0e73da108c2d1c46e841720c0d8cd9a84d87b01c48b230bf07",
+    "maskedMappingSha256": "378805940e08d7a5c3746f75333c0c6b17b846632622cf0cc37e940f69e8698b",
+    "individualLockManifestSha256": "11437dd28b95d61dd39a4cda76a012d5ef60dab820c81612b366bb65ba66aba7",
+    "pairLockManifestSha256": "1fe2e4bbbf9a7abededa657708dd07ee9e7771af913c57cd287415630d30fc97",
+    "executedProtocolFileSha256": "66f5647af13d9a6e768b6c1e8c9a6b7c5b3209c5940a0c11257fd2146cf47555"
+  },
+  "pairs": [
+    {
+      "pairId": "P1",
+      "fixture": "F1-replay",
+      "storyInputSha256": "45232817977de48523f8bed3b8772598187c0d63628ecd8d2746361572a31174",
+      "packetSha256": "d2f52c370f274572f95752698667b849ffb198188e2b795e7ed74c7ad15f7b59",
+      "reportSha256": "004a0b4da1c21817833c1e3ce9258167fb2b7e7b64a1080272ece599cbf36eb1",
+      "first": {
+        "candidateId": "C-6ec68745fa48e2b9e4ecb484674c5b7e",
+        "textSha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+        "sequence": 1,
+        "arm": "A"
+      },
+      "second": {
+        "candidateId": "C-cd731f5e836adb51f8a072cc0d8b92af",
+        "textSha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+        "sequence": 2,
+        "arm": "B"
+      },
+      "overallPreferenceArm": "B",
+      "causalImprovementArm": "neither",
+      "materialVoiceAgencyRegressionArm": "none",
+      "checklistPaddingArm": "A"
+    },
+    {
+      "pairId": "P2",
+      "fixture": "F3-unused-domain-transfer",
+      "storyInputSha256": "7f78c47c85aef206a769d877f1367b049e1e448669697b09ad512e6413363940",
+      "packetSha256": "60a3fc24940e7c2895eca45f2c8f54c756119c0877d635c5bee28a8694f55dc4",
+      "reportSha256": "55f595d2d0a2071603f94b93f858ccbe9ab00cda03f8b64d32b8bf7908a840f4",
+      "first": {
+        "candidateId": "C-259473bbc4e726be48ed91c2321a2a54",
+        "textSha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+        "sequence": 5,
+        "arm": "A"
+      },
+      "second": {
+        "candidateId": "C-61f0bae42550589bed842be6eaddfa7c",
+        "textSha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+        "sequence": 6,
+        "arm": "B"
+      },
+      "overallPreferenceArm": "A",
+      "causalImprovementArm": "A",
+      "materialVoiceAgencyRegressionArm": "none",
+      "checklistPaddingArm": "none"
+    },
+    {
+      "pairId": "P3",
+      "fixture": "F2-physical-transition",
+      "storyInputSha256": "ca4b564caee7e8aaaad5510430dbe37646e6d564506488638cf3f3f3f691ca8d",
+      "packetSha256": "6f4e048d0d5a133ca2010167574b97e56eab02386f72731a15907534aa71bec3",
+      "reportSha256": "52f49be896553495b77d14247958f0c50b2f669f6fba218a0812e1e9f313d863",
+      "first": {
+        "candidateId": "C-4a87feaee3792cbac47dbb27426a6019",
+        "textSha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+        "sequence": 4,
+        "arm": "A"
+      },
+      "second": {
+        "candidateId": "C-bfc3f1a0d643da85aac2694a33300b98",
+        "textSha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+        "sequence": 3,
+        "arm": "B"
+      },
+      "overallPreferenceArm": "neither",
+      "causalImprovementArm": "neither",
+      "materialVoiceAgencyRegressionArm": "none",
+      "checklistPaddingArm": "none"
+    }
+  ],
+  "bIndividualLiteraryAssessment": [
+    {
+      "candidateId": "C-cd731f5e836adb51f8a072cc0d8b92af",
+      "sequence": 2,
+      "fixture": "F1-replay",
+      "literaryDimensionLabels": {
+        "new_scene_change": "acceptable",
+        "physical_prerequisites_custody": "acceptable",
+        "temporal_causal_sequence": "acceptable",
+        "motivation_obligation": "needs_edit_or_uncertain",
+        "knowledge_pov_attribution": "needs_edit_or_uncertain",
+        "voice_economy_agency": "acceptable"
+      },
+      "allRequiredLiteraryDimensionsAcceptable": false
+    },
+    {
+      "candidateId": "C-bfc3f1a0d643da85aac2694a33300b98",
+      "sequence": 3,
+      "fixture": "F2-physical-transition",
+      "literaryDimensionLabels": {
+        "new_scene_change": "acceptable",
+        "physical_prerequisites_custody": "needs_edit_or_uncertain",
+        "temporal_causal_sequence": "acceptable",
+        "motivation_obligation": "acceptable",
+        "knowledge_pov_attribution": "acceptable",
+        "voice_economy_agency": "needs_edit_or_uncertain"
+      },
+      "allRequiredLiteraryDimensionsAcceptable": false
+    },
+    {
+      "candidateId": "C-61f0bae42550589bed842be6eaddfa7c",
+      "sequence": 6,
+      "fixture": "F3-unused-domain-transfer",
+      "literaryDimensionLabels": {
+        "new_scene_change": "acceptable",
+        "physical_prerequisites_custody": "needs_edit_or_uncertain",
+        "temporal_causal_sequence": "needs_edit_or_uncertain",
+        "motivation_obligation": "clear_failure",
+        "knowledge_pov_attribution": "acceptable",
+        "voice_economy_agency": "needs_edit_or_uncertain"
+      },
+      "allRequiredLiteraryDimensionsAcceptable": false
+    }
+  ],
+  "adoptionCriterion": {
+    "decision": "not_met",
+    "threeCompletePairsAvailable": true,
+    "requiredSubstantiveBPairGains": 2,
+    "observedSubstantiveBPairGains": 0,
+    "allThreeBAcceptableOnRequiredLiteraryDimensions": false,
+    "softTargetsExcludedFromDecision": true,
+    "reason": "No locked pair establishes substantive causal/continuation gain for B; F3 B does not settle the required next-day repair agreement. Soft count misses do not determine this decision."
+  },
+  "readingVerification": {
+    "individualQuoteSpans": 222,
+    "pairwiseQuoteSpans": 84,
+    "totalQuoteSpans": 306,
+    "allSixOutputsEvaluable": true,
+    "individualReportsUnchanged": true
+  },
+  "recommendation": "Retain the existing baseline instruction; no automatic prompt adoption, feature changes or further paid trial.",
+  "limits": [
+    "Three fixed contexts, one sample per arm and one independent reader; no general capability claim or statistical estimate.",
+    "F1 B is preferred overall for literary economy without a robust net causal advantage.",
+    "Qualified physical/knowledge ambiguities are not promoted to formal contradictions."
+  ]
+}

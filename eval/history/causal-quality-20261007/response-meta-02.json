@@ -1,0 +1,23 @@
+{
+  "sequence": 2,
+  "requestSha256": "73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308",
+  "status": "retained_for_masked_read",
+  "usage": {
+    "promptTokens": 1684,
+    "completionTokens": 466,
+    "totalTokens": 2150,
+    "reasoningTokens": 0
+  },
+  "cost": "unknown",
+  "httpStatus": 200,
+  "finishReason": "stop",
+  "textSha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+  "counts": {
+    "han": 535,
+    "paragraphs": 4,
+    "pass": true
+  },
+  "receivedSuccessBytes": 2457,
+  "elapsedMs": 4538,
+  "missingUsageFields": []
+}

@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "C-4a87feaee3792cbac47dbb27426a6019",
+  "storyInputSha256": "ca4b564caee7e8aaaad5510430dbe37646e6d564506488638cf3f3f3f691ca8d",
+  "textSha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+  "evaluationStage": "individual_locked_before_pairwise",
+  "spanConvention": "Zero-based UTF-16 code units; end exclusive; source offsets refer to the indicated decoded storyInput property, output offsets to packet.text.",
+  "proseEvaluable": true,
+  "summary": "询问动作完成，坏铃不响，纸盒的来源和去处均有交代，预约明确。较弱之处是管理员首次开门就知道具体柜号，以及等待和重复确认造成的冗长；它们没有使整场戏的因果失效。",
+  "dimensions": {
+    "new_scene_change": {
+      "label": "acceptable",
+      "explanation": "新场景不重演取纸屑，实际完成敲门、展示和询问，得到记录次日才能调取这一有限的新信息，形成明早九点的下一步。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "他走到门边，抬手敲了三下。",
+          "startUtf16": 149,
+          "endUtf16": 162
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“柜号旧记录不在我这儿。”他说，“这排柜子换过两回锁，登记本归库房，得明天上午调。”",
+          "startUtf16": 533,
+          "endUtf16": 575
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "他朝老周点了下头，说：“明天九点。”",
+          "startUtf16": 704,
+          "endUtf16": 722
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/goal",
+          "quote": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+          "startUtf16": 0,
+          "endUtf16": 60
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "physical_prerequisites_custody": {
+      "label": "acceptable",
+      "explanation": "敲门不依赖坏铜铃；铜铃两处都明确无声。四片纸屑从既有工具袋纸盒中取出，展示时许宁不松手，最后放回最里层；柜门未开。最里层与“从袋侧摸出”可以指从袋子侧面伸手取最里层物品，不必视为位置瞬移。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "铜铃挂在门框上方，锈得发黑，他伸手碰了碰，铃舌卡死了，晃不出声。",
+          "startUtf16": 180,
+          "endUtf16": 212
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "许宁把纸盒递过去，没松手，只掀开盖让他看。",
+          "startUtf16": 450,
+          "endUtf16": 471
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "许宁把纸盒盖好，橡皮筋重新箍上，放回工具袋最里层。",
+          "startUtf16": 679,
+          "endUtf16": 704
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "寄存室的铜铃已经损坏，不能发出声音。",
+          "startUtf16": 697,
+          "endUtf16": 715
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "许宁把它们放进纸盒，合上盖，又用橡皮筋箍了一圈。",
+          "startUtf16": 371,
+          "endUtf16": 395
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "他把纸盒放进工具袋最里层，拉上拉链。",
+          "startUtf16": 443,
+          "endUtf16": 461
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "temporal_causal_sequence": {
+      "label": "acceptable",
+      "explanation": "前夜约次日上午，正文来到雨后上午；敲门等待后应门，询问后才定次日时间。记录未提前拿到，锁未提前打开。铃舌检查不影响敲门作为招呼原因。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "雨后的上午比夜里更冷。",
+          "startUtf16": 0,
+          "endUtf16": 11
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "门里终于有了脚步。管理员老周拉开门",
+          "startUtf16": 344,
+          "endUtf16": 361
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“明天上午。”许宁重复了一遍。",
+          "startUtf16": 577,
+          "endUtf16": 592
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "老周也点头，退回去把门带上",
+          "startUtf16": 724,
+          "endUtf16": 737
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "他说明天上午九点，阿青点头，说九点。",
+          "startUtf16": 622,
+          "endUtf16": 640
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/scene",
+          "quote": "雨后次日上午寄存室门边；管理员出来应门，查看纸屑；不给寄信人答案；许宁继续保管纸屑，柜门仍未打开。",
+          "startUtf16": 0,
+          "endUtf16": 49
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "motivation_obligation": {
+      "label": "acceptable",
+      "explanation": "许宁带证物落实前夜约定；阿青想去后面找人表现着急，但接受先等，没有逼迫管理员。管理员强调调本和报修程序，既有规矩也有让二人别冒险弄锁的实际作用；明早约定明确保留。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "他说：“要不我去后面看看，兴许人在库房。”",
+          "startUtf16": 239,
+          "endUtf16": 260
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“先等。”许宁说。",
+          "startUtf16": 262,
+          "endUtf16": 271
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“你们来之前别自己开柜。钥匙在我这儿，锁没坏，坏了要报修，报修单也得明天。”",
+          "startUtf16": 618,
+          "endUtf16": 656
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "他朝老周点了下头，说：“明天九点。”",
+          "startUtf16": 704,
+          "endUtf16": 722
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "阿青着急但不咄咄逼人；管理员用办事规矩表达关心。",
+          "startUtf16": 61,
+          "endUtf16": 85
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "保留尚未履行的约定。",
+          "startUtf16": 175,
+          "endUtf16": 185
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "knowledge_pov_attribution": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "未暴露旧车票或寄信人；普通脚步与门轴声不意味着左耳听声。明显可编辑处是管理员未经当前对话提示，就用“十七号柜的事”准确识别来意；已有材料没有提供他获知二人调查柜号的渠道。不是直接的知识禁令违例，但缺一小句交代或让许宁先报柜号会更稳。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“十七号柜的事？”老周问。",
+          "startUtf16": 408,
+          "endUtf16": 421
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“柜底夹出来的。”许宁把纸盒递过去",
+          "startUtf16": 441,
+          "endUtf16": 458
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "门轴响了一声，铜铃跟着晃了晃，依旧没声。",
+          "startUtf16": 738,
+          "endUtf16": 758
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "“柜号是十七，老记录应该在。”",
+          "startUtf16": 461,
+          "endUtf16": 476
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/pov",
+          "quote": "第三人称限知，只跟随许宁",
+          "startUtf16": 0,
+          "endUtf16": 12
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "阿青不得无来源知道信封中的旧车票，本三章不向他揭露；不得揭晓寄信人",
+          "startUtf16": 97,
+          "endUtf16": 130
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "管理员可能早已因未写出的日常接触了解十七号柜的待办事项，也可能认得这两位与那个柜子的关系。文本没有排除这种普通背景，因此不是已证实的矛盾。"
+    },
+    "voice_economy_agency": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "人物口吻总体符合设定，物件和干涩的报修笑点有效，许宁也主动敲门并保管纸屑。然而等人时先开盒验看、管理员面前再开盒，以及连续两次原样复述“明天上午”，提供的信息较少，拖长到场到预约这条短行动线。此为具体节奏意见，不是只因超字数而降级。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "他把工具袋换到另一边肩，从袋侧摸出那只纸盒，掀开盖看了一眼。",
+          "startUtf16": 271,
+          "endUtf16": 301
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“四片，昨天夜里发现的。柜门锁着，没动过。”",
+          "startUtf16": 471,
+          "endUtf16": 493
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“明天上午。”许宁重复了一遍。",
+          "startUtf16": 577,
+          "endUtf16": 592
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“明天上午。”老周把眼镜摘下来，折好，放回口袋。",
+          "startUtf16": 594,
+          "endUtf16": 618
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/tone",
+          "quote": "克制，实物细节，少量干涩幽默",
+          "startUtf16": 0,
+          "endUtf16": 14
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "许宁说话简短、与实物相关；阿青着急但不咄咄逼人；管理员用办事规矩表达关心。",
+          "startUtf16": 48,
+          "endUtf16": 85
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "重复可以刻画办事节奏和慎重确认；先验盒也能体现许宁的谨慎。愿意接受慢节奏的读者可认为这些是人物化细节，而非纯填充。"
+    },
+    "instruction_adherence": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "610汉字及13段均超过350–500字、4–7段，单独记为软长度和分段违例。正文仍可完整评价；坏铃、保管、尚未开柜、未知寄信人及明早约定等主要内容限制均被保留。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "纸盒还在最里层，橡皮筋箍得紧。",
+          "startUtf16": 49,
+          "endUtf16": 64
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“明天九点。”",
+          "startUtf16": 715,
+          "endUtf16": 722
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "铜铃跟着晃了晃，依旧没声。",
+          "startUtf16": 745,
+          "endUtf16": 758
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "每章350–500个汉字，4–7段。",
+          "startUtf16": 0,
+          "endUtf16": 18
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "没有获准的开锁动作不得提前成功。保留尚未履行的约定。",
+          "startUtf16": 159,
+          "endUtf16": 185
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "短对白的独立分段服务节奏；即使接受这种排版习惯，仍不在给定段数范围内。这不构成技术失败。"
+    }
+  },
+  "separateCompliance": {
+    "han": 610,
+    "hanTarget": [
+      350,
+      500
+    ],
+    "paragraphs": 13,
+    "paragraphTarget": [
+      4,
+      7
+    ],
+    "hanWithinTarget": false,
+    "paragraphsWithinTarget": false,
+    "language": "Chinese",
+    "wrapperOrCommentary": false,
+    "technicalFailureEstablished": false
+  },
+  "overallIndividualAssessment": "核心任务因果完整，可作为连续正文阅读；压缩等待和重复对话、补足管理员获知柜号的交代后会更利落。"
+}

@@ -1,6 +1,4 @@
-# Corrected causal writing quality diagnostic, 7 October 2026 — retired
-
-**Retired after run 37557977202 retained all six complete outputs. Zero allowance remains. The live workflow is disabled and CLI unconditionally rejects. The original executed protocol is archived unchanged in [source-protocol.md](history/causal-quality-20261007/source-protocol.md); [results](CAUSAL-QUALITY-20261007-RESULTS.md) separate execution observations from the locked masked literary assessment. The preregistration below is historical, not permission for another run.**
+# Corrected causal writing quality diagnostic, 7 October 2026
 
 Protocol: `causal-quality-20261007`. This is a new, separately authorized allowance of **at most six provider attempts in one run**. It does not revive the retired causal-continuity, compatibility or 6 October quality experiments, their workflows or their unused slots. Their files and evidence stay unchanged. This document does not dispatch requests. Independent review, an approved merge to `dev_v1.0` and successful CI for that exact merged source are prerequisites to live execution.
 

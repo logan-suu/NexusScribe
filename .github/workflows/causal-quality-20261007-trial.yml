@@ -1,82 +1,13 @@
-name: Corrected bounded causal writing quality trial (Oct 7)
-run-name: causal-quality-20261007
+name: Retired corrected causal writing quality trial (Oct 7)
+run-name: causal-quality-20261007/retired
+# Consumed by run 37557977202 at effcaaaeed9e4dd99e06e8eeffbc1b4cafbdcb85.
+# All six safe complete outputs retained. Zero allowance remains; no retry or resume.
 on:
   workflow_dispatch:
-    inputs:
-      source_sha:
-        description: Exact independently reviewed dev_v1.0 source SHA with successful CI
-        required: true
-        type: string
-      ci_run_id:
-        description: Successful exact-source CI run ID
-        required: true
-        type: string
-      approval:
-        description: Enter causal-quality-20261007 to consume the separately approved six-attempt trial
-        required: true
-        type: string
-permissions:
-  contents: read
-  actions: read
-concurrency:
-  group: causal-quality-20261007
-  cancel-in-progress: false
+permissions: {}
 jobs:
-  trial:
-    if: ${{ github.ref == 'refs/heads/dev_v1.0' && github.run_attempt == 1 }}
+  retired:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      NEXUS_SOURCE_SHA: ${{ inputs.source_sha }}
-      NEXUS_CI_RUN_ID: ${{ inputs.ci_run_id }}
-      NEXUS_QUALITY_APPROVED: ${{ inputs.approval }}
-      # Existing user confirmation, not a refreshed provider-console observation.
-      NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: '22'
-      - name: Prepare random neutral IDs and reserve all six calls before provider credential access
-        id: prepare
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          node scripts/run-causal-quality-20261007.mjs prepare
-          echo "reservation-sha256=$(sha256sum artifacts/causal-quality-20261007/reservation.json | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
-      - name: Persist immutable global reservation INCLUDING full masking map before provider dispatch
-        id: reservation
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: causal-quality-20261007-reservation
-          path: artifacts/causal-quality-20261007/reservation.json
-          if-no-files-found: error
-          retention-days: 90
-      - name: Execute at most six sequential requests without retry
-        if: ${{ success() && steps.reservation.outputs.artifact-id != '' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-          NEXUS_RESERVATION_UPLOADED: 'true'
-          NEXUS_RESERVATION_SHA256: ${{ steps.prepare.outputs.reservation-sha256 }}
-          NEXUS_RESERVATION_ARTIFACT_ID: ${{ steps.reservation.outputs.artifact-id }}
-        run: node scripts/run-causal-quality-20261007.mjs execute
-      - name: Preserve only safe synthetic prose and evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: causal-quality-20261007-evidence
-          path: |
-            artifacts/causal-quality-20261007/reservation.json
-            artifacts/causal-quality-20261007/dispatch-0[1-6].json
-            artifacts/causal-quality-20261007/response-meta-0[1-6].json
-            artifacts/causal-quality-20261007/completed-0[1-6].json
-            artifacts/causal-quality-20261007/candidate-C-*.json
-            artifacts/causal-quality-20261007/raw-prose-0[1-6].bin
-            artifacts/causal-quality-20261007/ledger-0[1-6].json
-            artifacts/causal-quality-20261007/result.json
-            artifacts/causal-quality-20261007/index.json
-          if-no-files-found: warn
-          retention-days: 90
+      - run: echo 'RETIRED - all six trial slots consumed'

@@ -1,6 +1,6 @@
-/** Consumed six-call quality diagnostic. Retired entrypoints; explicit injected-fake replay only. */
+/** New, separately approved six-call fixed-context writing diagnostic. No retry or literary continuation gate. */
 import {readFile,mkdir,open,readdir} from 'node:fs/promises';
-import {createHash} from 'node:crypto';
+import {createHash,randomBytes} from 'node:crypto';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {buildProviderRequest,readProviderError} from '../server/provider-transport.js';
@@ -12,14 +12,15 @@ export const ENDPOINT='https://opencode.ai/zen/go/v1/chat/completions';
 export const FREEZE_SHA='5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73';
 export const MASKING='prepare_random_ids_durable_full_mapping_v1';
 export const BODY_SHAS=['2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c','73f139424a49b72b2d3d84781968b7a031122c9d56f4932caa9688afdd9fd308','b08e91571190cb4ea1a18a84f1c5dcf03636f1e5aedceec744db116f2d0e9322','f6e433b06fdd772c042614c9a2d5fc41b14f523ef1184f12e28cc3e468bb2e04','3817d325ba0d06b1216f19700612978002f5d6bd1a00cc7a5f11f657a73a2f76','26f9ae08bf3dcf8611def04c295e857c73ef785b52f565a70b02d9be61254228'];
-export const PATHS=["scripts/run-causal-quality-20261007.mjs","server/provider-transport.js","src/domain/prose.js",".github/workflows/causal-quality-20261007-trial.yml",".github/workflows/ci.yml","eval/CAUSAL-QUALITY-20261007-PROTOCOL.md","eval/causal-continuity-requests.json","tests/causal-quality-20261007.test.js","eval/history/causal-quality-20261006/raw-prose-01.bin","eval/CAUSAL-QUALITY-20261007-RESULTS.md","eval/history/causal-quality-20261007/artifact-index.json","eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json","eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json","eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json","eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json","eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json","eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json","eval/history/causal-quality-20261007/completed-01.json","eval/history/causal-quality-20261007/completed-02.json","eval/history/causal-quality-20261007/completed-03.json","eval/history/causal-quality-20261007/completed-04.json","eval/history/causal-quality-20261007/completed-05.json","eval/history/causal-quality-20261007/completed-06.json","eval/history/causal-quality-20261007/decoded-outcome.json","eval/history/causal-quality-20261007/dispatch-01.json","eval/history/causal-quality-20261007/dispatch-02.json","eval/history/causal-quality-20261007/dispatch-03.json","eval/history/causal-quality-20261007/dispatch-04.json","eval/history/causal-quality-20261007/dispatch-05.json","eval/history/causal-quality-20261007/dispatch-06.json","eval/history/causal-quality-20261007/index.json","eval/history/causal-quality-20261007/ledger-01.json","eval/history/causal-quality-20261007/ledger-02.json","eval/history/causal-quality-20261007/ledger-03.json","eval/history/causal-quality-20261007/ledger-04.json","eval/history/causal-quality-20261007/ledger-05.json","eval/history/causal-quality-20261007/ledger-06.json","eval/history/causal-quality-20261007/raw-prose-01.bin","eval/history/causal-quality-20261007/raw-prose-02.bin","eval/history/causal-quality-20261007/raw-prose-03.bin","eval/history/causal-quality-20261007/raw-prose-04.bin","eval/history/causal-quality-20261007/raw-prose-05.bin","eval/history/causal-quality-20261007/raw-prose-06.bin","eval/history/causal-quality-20261007/reading/individual/C-259473bbc4e726be48ed91c2321a2a54.json","eval/history/causal-quality-20261007/reading/individual/C-4a87feaee3792cbac47dbb27426a6019.json","eval/history/causal-quality-20261007/reading/individual/C-61f0bae42550589bed842be6eaddfa7c.json","eval/history/causal-quality-20261007/reading/individual/C-6ec68745fa48e2b9e4ecb484674c5b7e.json","eval/history/causal-quality-20261007/reading/individual/C-bfc3f1a0d643da85aac2694a33300b98.json","eval/history/causal-quality-20261007/reading/individual/C-cd731f5e836adb51f8a072cc0d8b92af.json","eval/history/causal-quality-20261007/reading/individual/individual-lock-manifest.json","eval/history/causal-quality-20261007/reading/individual-durable-locks.json","eval/history/causal-quality-20261007/reading/pair/P1.json","eval/history/causal-quality-20261007/reading/pair/P2.json","eval/history/causal-quality-20261007/reading/pair/P3.json","eval/history/causal-quality-20261007/reading/pair/pair-lock-manifest.json","eval/history/causal-quality-20261007/reading/pair-durable-locks.json","eval/history/causal-quality-20261007/reading/pair-packets/P1.json","eval/history/causal-quality-20261007/reading/pair-packets/P2.json","eval/history/causal-quality-20261007/reading/pair-packets/P3.json","eval/history/causal-quality-20261007/reservation.json","eval/history/causal-quality-20261007/response-meta-01.json","eval/history/causal-quality-20261007/response-meta-02.json","eval/history/causal-quality-20261007/response-meta-03.json","eval/history/causal-quality-20261007/response-meta-04.json","eval/history/causal-quality-20261007/response-meta-05.json","eval/history/causal-quality-20261007/response-meta-06.json","eval/history/causal-quality-20261007/result.json","eval/history/causal-quality-20261007/source-manifest.json","eval/history/causal-quality-20261007/source-protocol.md","eval/history/causal-quality-20261007/source-runner.mjs","eval/history/causal-quality-20261007/source-tests.js","eval/history/causal-quality-20261007/source-workflow.yml"];
+export const PATHS=['scripts/run-causal-quality-20261007.mjs','server/provider-transport.js','src/domain/prose.js','.github/workflows/causal-quality-20261007-trial.yml','.github/workflows/ci.yml','eval/CAUSAL-QUALITY-20261007-PROTOCOL.md','eval/causal-continuity-requests.json','tests/causal-quality-20261007.test.js','eval/history/causal-quality-20261006/raw-prose-01.bin'];
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const EVIDENCE='artifacts/causal-quality-20261007';
 const ORDER=[['F1-replay','A'],['F1-replay','B'],['F2-physical-transition','B'],['F2-physical-transition','A'],['F3-unused-domain-transfer','A'],['F3-unused-domain-transfer','B']];
 const object=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const fail=code=>{throw Object.assign(Error(code),{code});};
 export const digest=x=>createHash('sha256').update(typeof x==='string'||Buffer.isBuffer(x)?x:JSON.stringify(x)).digest('hex');
-const SAFE=new Set(['RETIRED','APPROVAL_REQUIRED','CONFIG_INVALID','SOURCE_MISMATCH','CI_REQUIRED','STAGE_CONSUMED','HISTORY_INVALID','FREEZE_INVALID','NOT_CONFIGURED','PERSISTENCE_FAILED','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','RESPONSE_TOO_LARGE','RESPONSE_INVALID','REFUSAL','HIDDEN_REASONING','SECRET_ECHO','OUTPUT_TRUNCATED','BUDGET_UNCERTAIN']);
+const SAFE=new Set(['APPROVAL_REQUIRED','CONFIG_INVALID','SOURCE_MISMATCH','CI_REQUIRED','STAGE_CONSUMED','HISTORY_INVALID','FREEZE_INVALID','NOT_CONFIGURED','PERSISTENCE_FAILED','UPSTREAM_ERROR','UPSTREAM_TIMEOUT','RESPONSE_TOO_LARGE','RESPONSE_INVALID','REFUSAL','HIDDEN_REASONING','SECRET_ECHO','OUTPUT_TRUNCATED','BUDGET_UNCERTAIN']);
 export const safeCode=e=>SAFE.has(e?.code)?e.code:'PERSISTENCE_FAILED';
 const filename=(prefix,n,ext='json')=>`${prefix}-${String(n).padStart(2,'0')}.${ext}`;
 const allowedFile=n=>/^(?:reservation|result|index)\.json$/.test(n)||/^(?:dispatch|response-meta|completed|ledger)-0[1-6]\.json$/.test(n)||/^raw-prose-0[1-6]\.bin$/.test(n)||/^candidate-C-[a-f0-9]{32}\.json$/.test(n);
@@ -39,7 +40,7 @@ export function validateFreeze(bytes){
 export async function loadFreeze(root=ROOT){
  try{
   const manifest=JSON.parse(await readFile(resolve(root,'eval/causal-quality-20261007-manifest.json')));
-  if(manifest.protocol!==ID||manifest.status!=='retired_consumed_offline_replay'||manifest.remainingAttempts!==0||manifest.attemptsObserved!==6||!same(manifest.bodySha256,BODY_SHAS)||manifest.maxAttempts!==6||manifest.maxOutputTokensPerCall!==3000||manifest.maxOutputTokensTotal!==18000||manifest.masking!==MASKING||manifest.stop!=='operational_safety_resource_budget_uncertainty'||manifest.softTargets!=='score_only_never_gate'||!object(manifest.sha256)||!same(Object.keys(manifest.sha256).sort(),[...PATHS].sort()))fail('FREEZE_INVALID');
+  if(manifest.protocol!==ID||manifest.status!=='new_separately_approved_not_dispatched'||!same(manifest.bodySha256,BODY_SHAS)||manifest.maxAttempts!==6||manifest.maxOutputTokensPerCall!==3000||manifest.maxOutputTokensTotal!==18000||manifest.masking!==MASKING||manifest.stop!=='operational_safety_resource_budget_uncertainty'||manifest.softTargets!=='score_only_never_gate'||!object(manifest.sha256)||!same(Object.keys(manifest.sha256).sort(),[...PATHS].sort()))fail('FREEZE_INVALID');
   for(const p of PATHS)if(digest(await readFile(resolve(root,p)))!==manifest.sha256[p])fail('FREEZE_INVALID');
   return {manifest,requests:validateFreeze(await readFile(resolve(root,'eval/causal-continuity-requests.json')))};
  }catch{fail('FREEZE_INVALID');}
@@ -70,6 +71,11 @@ export async function diskIO(dir){
   },
   async files(){const out={};for(const item of await readdir(dir,{withFileTypes:true})){if(!item.isFile()||!allowedFile(item.name))fail('PERSISTENCE_FAILED');out[item.name]=await readFile(resolve(dir,item.name));}return out;}
  };
+}
+/** Randomness is used only by the credential-free prepare branch, never execute/validation. */
+function prepareMapping(){
+ const mapping=Array.from({length:6},(_,i)=>({sequence:i+1,candidateId:'C-'+randomBytes(16).toString('hex')}));
+ validateMapping(mapping);return mapping;
 }
 export function validateMapping(mapping){
  if(!Array.isArray(mapping)||mapping.length!==6)fail('PERSISTENCE_FAILED');
@@ -153,9 +159,7 @@ export function aggregateUsage(stages){
  return Object.fromEntries(names.map(k=>[k,stages.length&&stages.every(s=>Number.isSafeInteger(s.usage[k]))&&Number.isSafeInteger(stages.reduce((sum,s)=>sum+s.usage[k],0))?stages.reduce((sum,s)=>sum+s.usage[k],0):null]));
 }
 /** Called once after durable reservation upload. Injected fake transports exercise this same path. */
-export async function runTrial(options){
- if(!options||options.offlineReplay!==true||typeof options.fetchImpl!=='function'||options.fetchImpl===globalThis.fetch)fail('RETIRED');
- const {env,trial,record,runs,ci,artifact,io,fetchImpl,timeoutMs=120000,sleep=ms=>new Promise(r=>setTimeout(r,ms))}=options;
+export async function runTrial({env,trial,record,runs,ci,artifact,io,fetchImpl,timeoutMs=120000,sleep=ms=>new Promise(r=>setTimeout(r,ms))}){
  gates(env,runs,ci);validateArtifact(env,artifact);validateReservation(record,env,trial);
  if(typeof fetchImpl!=='function'||!Number.isFinite(timeoutMs)||timeoutMs<=0||typeof sleep!=='function')fail('CONFIG_INVALID');
  const before=await io.files();if(!same(Object.keys(before),['reservation.json'])||digest(before['reservation.json'])!==env.NEXUS_RESERVATION_SHA256||!same(JSON.parse(before['reservation.json']),record))fail('PERSISTENCE_FAILED');
@@ -192,6 +196,21 @@ export async function runTrial(options){
  await io.write('index.json',{protocol:ID,sourceSha:env.GITHUB_SHA,runId:env.GITHUB_RUN_ID,sha256:Object.fromEntries(Object.entries(files).map(([n,b])=>[n,digest(b)]))});
  return result;
 }
-/** Unconditional retirement before argument, environment, credential, evidence or network access. */
-export async function main(){fail('RETIRED');}
+async function get(path,env,fetchImpl){
+ let response;try{response=await fetchImpl('https://api.github.com/repos/logan-suu/NexusScribe'+path,{redirect:'error',headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${env.GH_TOKEN}`},signal:AbortSignal.timeout(30000)});}catch{fail('HISTORY_INVALID');}
+ if(!response.ok)fail('HISTORY_INVALID');try{return await response.json();}catch{fail('HISTORY_INVALID');}
+}
+export async function main(mode=process.argv[2],env=process.env,{root=ROOT,fetchImpl=globalThis.fetch}={}){
+ if(!['prepare','execute'].includes(mode))fail('CONFIG_INVALID');approval(env);
+ const trial=await loadFreeze(root);
+ const history=await get('/actions/workflows/'+WORKFLOW+'/runs?per_page=100',env,fetchImpl);
+ if(history.total_count!==1||history.workflow_runs?.length!==1)fail('STAGE_CONSUMED');
+ const ci=await get('/actions/runs/'+env.NEXUS_CI_RUN_ID,env,fetchImpl);gates(env,history.workflow_runs,ci);
+ const io=await diskIO(resolve(root,EVIDENCE));
+ if(mode==='prepare'){await io.write('reservation.json',reservation(env,trial,prepareMapping()));return {status:'reserved',attemptsReserved:6};}
+ if(env.NEXUS_RESERVATION_UPLOADED!=='true'||!/^\d+$/.test(env.NEXUS_RESERVATION_ARTIFACT_ID||''))fail('PERSISTENCE_FAILED');
+ const artifact=await get('/actions/artifacts/'+env.NEXUS_RESERVATION_ARTIFACT_ID,env,fetchImpl);validateArtifact(env,artifact);
+ const record=JSON.parse(await readFile(resolve(root,EVIDENCE,'reservation.json')));
+ return runTrial({env,trial,record,runs:history.workflow_runs,ci,artifact,io,fetchImpl});
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){try{const result=await main();console.log(JSON.stringify({protocol:ID,status:result.status,attempts:result.attempts,code:result.error}));if(result.status==='stopped')process.exitCode=1;}catch(e){console.error(JSON.stringify({status:'blocked',code:safeCode(e)}));process.exitCode=1;}}

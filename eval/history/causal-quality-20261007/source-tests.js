@@ -1,10 +1,7 @@
 // Offline only: injected fake transports, fictional prose and public fake credentials.
-import {createHash} from 'node:crypto';
-import {spawnSync} from 'node:child_process';
-import {pathToFileURL} from 'node:url';
 import test,{mock} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile,mkdtemp,mkdir,writeFile,rm,stat,symlink,readdir} from 'node:fs/promises';
+import {readFile,mkdtemp,mkdir,writeFile,rm,stat,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {ID,WORKFLOW,ENDPOINT,FREEZE_SHA,MASKING,BODY_SHAS,PATHS,digest,validateRequests,validateFreeze,loadFreeze,approval,gates,validateArtifact,diskIO,reservation,validateReservation,validateMapping,maskedPacket,explicitRefusal,secretEcho,stats,aggregateUsage,runTrial,safeCode,main} from '../scripts/run-causal-quality-20261007.mjs';
@@ -15,7 +12,7 @@ const run={id:123,head_sha:sha,head_branch:'dev_v1.0',run_attempt:1,event:'workf
 const ci={id:122,path:'.github/workflows/ci.yml',head_sha:sha,head_branch:'dev_v1.0',event:'push',status:'completed',conclusion:'success'};
 const artifact={id:456,name:ID+'-reservation',expired:false,size_in_bytes:2000,workflow_run:{id:123,head_sha:sha}};
 const frozen=await readFile(new URL('../eval/causal-continuity-requests.json',import.meta.url));
-const manifest=()=>({protocol:ID,status:'retired_consumed_offline_replay',remainingAttempts:0,attemptsObserved:6,bodySha256:[...BODY_SHAS],maxAttempts:6,maxOutputTokensPerCall:3000,maxOutputTokensTotal:18000,masking:MASKING,softTargets:'score_only_never_gate',stop:'operational_safety_resource_budget_uncertainty',sha256:{}});
+const manifest=()=>({protocol:ID,status:'new_separately_approved_not_dispatched',bodySha256:[...BODY_SHAS],maxAttempts:6,maxOutputTokensPerCall:3000,maxOutputTokensTotal:18000,masking:MASKING,softTargets:'score_only_never_gate',stop:'operational_safety_resource_budget_uncertainty',sha256:{}});
 const mapping=Array.from({length:6},(_,i)=>({sequence:i+1,candidateId:'C-'+String(i+1).padStart(32,'0')}));
 const trial={requests:validateFreeze(frozen),manifest:manifest()};
 const hasCode=code=>e=>e.code===code&&e.message===code;
@@ -23,7 +20,7 @@ const prose=n=>Array.from({length:5},()=> '弱'.repeat(n===3||n===4?80:100)).joi
 function envelope(n=1){return {id:'PRIVATE_ID',model:'PRIVATE_MODEL',extra:{private:'PRIVATE_ENVELOPE'},choices:[{finish_reason:'stop',message:{role:'assistant',content:prose(n)}}],usage:{prompt_tokens:42,completion_tokens:500,total_tokens:542,completion_tokens_details:{reasoning_tokens:0}}};}
 const response=(data=envelope(),status=200)=>new Response(JSON.stringify(data),{status,headers:{'x-private':'PRIVATE_HEADER'}});
 function memoryIO(initial={}){const data=Object.fromEntries(Object.entries(initial).map(([n,v])=>[n,Buffer.isBuffer(v)?v:Buffer.from(JSON.stringify(v))]));return {data,async write(n,v){assert.equal(Object.hasOwn(data,n),false,'exclusive evidence '+n);data[n]=Buffer.isBuffer(v)?Buffer.from(v):Buffer.from(JSON.stringify(v));},async files(){return {...data};}};}
-function context(options={}){const t=options.trial||trial,e=options.env||env,record=reservation(e,t,mapping);return {offlineReplay:true,env:{...e,NEXUS_RESERVATION_SHA256:digest(Buffer.from(JSON.stringify(record)))},trial:t,record,runs:[run],ci,artifact,io:memoryIO({'reservation.json':record}),timeoutMs:1000,sleep:async()=>{},...options,env:{...e,NEXUS_RESERVATION_SHA256:digest(Buffer.from(JSON.stringify(record)))}};}
+function context(options={}){const t=options.trial||trial,e=options.env||env,record=reservation(e,t,mapping);return {env:{...e,NEXUS_RESERVATION_SHA256:digest(Buffer.from(JSON.stringify(record)))},trial:t,record,runs:[run],ci,artifact,io:memoryIO({'reservation.json':record}),timeoutMs:1000,sleep:async()=>{},...options,env:{...e,NEXUS_RESERVATION_SHA256:digest(Buffer.from(JSON.stringify(record)))}};}
 async function execute(transport=async n=>response(envelope(n)),options={}){
  const c=context(options),calls=[];
  const result=await runTrial({...c,fetchImpl:async(...args)=>{const n=calls.length+1;assert.ok(c.io.data['dispatch-0'+n+'.json'],'dispatch precedes fetch');calls.push(args);return transport(n,...args);}});
@@ -33,21 +30,6 @@ async function execute(transport=async n=>response(envelope(n)),options={}){
 }
 function reader({chunks=[],status=200,stalled=false,throws=false}={}){let count=0,cancels=0;return {stats:()=>({count,cancels}),response:{ok:status>=200&&status<300,status,body:{getReader(){return {read(){count++;if(throws)return Promise.reject(Error(key));return chunks.length?Promise.resolve({done:false,value:Buffer.from(chunks.shift())}):stalled?new Promise(()=>{}):Promise.resolve({done:true});},cancel(){cancels++;return new Promise(()=>{});}};}},text(){throw Error('unbounded text forbidden');}}};}
 async function fixtureRoot(t){const root=await mkdtemp(join(tmpdir(),'nexus-quality-'));t.after(()=>rm(root,{recursive:true,force:true}));const m=manifest();for(const p of PATHS){const bytes=await readFile(new URL('../'+p,import.meta.url));await mkdir(dirname(join(root,p)),{recursive:true});await writeFile(join(root,p),bytes);m.sha256[p]=digest(bytes);}await writeFile(join(root,'eval/causal-quality-20261007-manifest.json'),JSON.stringify(m));return {root,m};}
-
-async function archiveFiles(dir,prefix=''){
- const names=[];for(const item of await readdir(dir,{withFileTypes:true})){const name=prefix+item.name;if(item.isDirectory())names.push(...await archiveFiles(new URL(item.name+'/',dir),name+'/'));else names.push(name);}return names.sort();
-}
-async function executedSource(t){
- const root=await mkdtemp(join(tmpdir(),'nexus-quality07-executed-source-'));t.after(()=>rm(root,{recursive:true,force:true}));
- const history=new URL('../eval/history/causal-quality-20261007/',import.meta.url),m=JSON.parse(await readFile(new URL('source-manifest.json',history)));
- const archived={'scripts/run-causal-quality-20261007.mjs':'source-runner.mjs','.github/workflows/causal-quality-20261007-trial.yml':'source-workflow.yml','eval/CAUSAL-QUALITY-20261007-PROTOCOL.md':'source-protocol.md','tests/causal-quality-20261007.test.js':'source-tests.js'};
- for(const [p,h]of Object.entries(m.sha256)){
-  const bytes=await readFile(archived[p]?new URL(archived[p],history):new URL('../'+p,import.meta.url));assert.equal(digest(bytes),h);
-  await mkdir(dirname(join(root,p)),{recursive:true});await writeFile(join(root,p),bytes);
- }
- await writeFile(join(root,'eval/causal-quality-20261007-manifest.json'),await readFile(new URL('source-manifest.json',history)));
- const source=await import(pathToFileURL(join(root,'scripts/run-causal-quality-20261007.mjs')).href);return {root,main:source.main};
-}
 
 test('unchanged six-body freeze pins order, exact messages, target counts and settings',()=>{
  assert.equal(digest(frozen),FREEZE_SHA);assert.equal(validateRequests(trial.requests),trial.requests);
@@ -139,8 +121,8 @@ test('persistence failure before dispatch makes no call; later failure stops bef
 test('frozen request snapshot prevents a transport from replacing a later arm',async()=>{
  const t=structuredClone(trial);const out=await execute(async n=>{if(n===1)t.requests[1].body.messages[0].content='MUTATED';return response(envelope(n));},{trial:t});assert.equal(out.calls.length,6);assert.equal(digest(out.calls[1][1].body),BODY_SHAS[1]);
 });
-test('archived PREPARE and EXECUTE preserve original credential-before-upload guards with fake transport only',async t=>{
- const {root,main}=await executedSource(t);let reads=0;const guarded={...env};Object.defineProperty(guarded,'NEXUS_API_KEY',{get(){reads++;return key;}});
+test('prepare has no provider credential access; execute validates durable upload before key',async t=>{
+ const {root}=await fixtureRoot(t);let reads=0;const guarded={...env};Object.defineProperty(guarded,'NEXUS_API_KEY',{get(){reads++;return key;}});
  const paths=[];const fake=async url=>{paths.push(url);if(url.includes('/workflows/'))return response({total_count:1,workflow_runs:[run]});if(url.includes('/runs/122'))return response(ci);if(url.includes('/artifacts/456'))return response(artifact);assert.equal(url,ENDPOINT);assert.equal(reads,1);return response({error:{code:'rate_limit_exceeded'}},429);};
  assert.equal((await main('prepare',guarded,{root,fetchImpl:fake})).status,'reserved');assert.equal(reads,0);
  guarded.NEXUS_RESERVATION_SHA256=digest(await readFile(join(root,'artifacts/'+ID+'/reservation.json')));
@@ -148,8 +130,8 @@ test('archived PREPARE and EXECUTE preserve original credential-before-upload gu
  const out=await main('execute',guarded,{root,fetchImpl:fake});assert.equal(out.attempts,1);assert.equal(out.error,'UPSTREAM_ERROR');assert.equal(reads,1);assert.ok(paths.indexOf('https://api.github.com/repos/logan-suu/NexusScribe/actions/artifacts/456')<paths.indexOf(ENDPOINT));
  await assert.rejects(main('execute',guarded,{root,fetchImpl:fake}),hasCode('PERSISTENCE_FAILED'));assert.equal(reads,1);
 });
-test('archived workflow isolates secret to execution after durable upload; actions pinned, no matrix or retries',async()=>{
- const yaml=await readFile(new URL('../eval/history/causal-quality-20261007/source-workflow.yml',import.meta.url),'utf8');
+test('workflow isolates secret to execution after durable upload; actions pinned, no matrix or retries',async()=>{
+ const yaml=await readFile(new URL('../.github/workflows/causal-quality-20261007-trial.yml',import.meta.url),'utf8');
  assert.equal((yaml.match(/secrets\./g)||[]).length,1);assert.ok(yaml.indexOf('run-causal-quality-20261007.mjs prepare')<yaml.indexOf('id: reservation'));assert.ok(yaml.indexOf('id: reservation')<yaml.indexOf('secrets.NEXUS_API_KEY'));assert.match(yaml,/steps.reservation.outputs.artifact-id != ''/);assert.match(yaml,/NEXUS_RESERVATION_ARTIFACT_ID:.*steps.reservation.outputs.artifact-id/);assert.match(yaml,/cancel-in-progress: false/);assert.match(yaml,/github.run_attempt == 1/);assert.match(yaml,/persist-credentials: false/);assert.doesNotMatch(yaml,/matrix:|continue-on-error:|retry:|NEXUS_API_KEY:.*inputs/);
  for(const line of yaml.split('\n').filter(l=>l.includes('uses:')))assert.match(line,/@[a-f0-9]{40}(?:\s|$)/);
  const protocol=await readFile(new URL('../eval/CAUSAL-QUALITY-20261007-PROTOCOL.md',import.meta.url),'utf8');assert.match(protocol,/There is no literary acceptability gate/);assert.match(protocol,/full mapping.*reservation/);assert.match(protocol,/soft.*never.*gate/i);
@@ -251,7 +233,7 @@ test('full stored mapping schema, uniqueness, integrity and prepared byte hash r
 test('PREPARE alone generates durable random map; execution reuses stored IDs after fresh object load',async t=>{
  const maps=[];
  for(let attempt=0;attempt<2;attempt++){
-  const {root,main}=await executedSource(t);let reads=0;const guarded={...env};Object.defineProperty(guarded,'NEXUS_API_KEY',{get(){reads++;throw Error('NO_CREDENTIAL_ACCESS');}});
+  const {root}=await fixtureRoot(t);let reads=0;const guarded={...env};Object.defineProperty(guarded,'NEXUS_API_KEY',{get(){reads++;throw Error('NO_CREDENTIAL_ACCESS');}});
   const fake=async url=>url.includes('/workflows/')?response({total_count:1,workflow_runs:[run]}):response(ci);
   await main('prepare',guarded,{root,fetchImpl:fake});assert.equal(reads,0);
   const bytes=await readFile(join(root,'artifacts/'+ID+'/reservation.json'));const stored=JSON.parse(bytes);validateMapping(stored.maskedMapping);assert.equal(stored.maskedMappingSha256,digest(stored.maskedMapping));maps.push(stored.maskedMapping);
@@ -263,115 +245,4 @@ test('PREPARE alone generates durable random map; execution reuses stored IDs af
  const packets=Object.entries(c.io.data).filter(([name])=>name.startsWith('candidate-')).map(([,b])=>JSON.parse(b)).sort((a,b)=>a.candidateId.localeCompare(b.candidateId));
  assert.equal(packets.length,6);assert.deepEqual(packets.map(p=>p.candidateId),before.map(r=>r.candidateId));
  for(const [i,p]of packets.entries()){assert.deepEqual(Object.keys(p),['candidateId','storyInput','storyInputSha256','text','textSha256','targets','counts']);assert.deepEqual(p,maskedPacket(trial.requests[i],saved,prose(i+1)));for(const key of ['sequence','arm','fixture','runId','sourceSha','repository','system'])assert.equal(Object.hasOwn(p,key),false);}
-});
-
-test('retired main and CLI reject all modes before argument/environment/evidence/network access',async()=>{
- let reads=0;const forbidden=new Proxy({}, {get(){reads++;throw Error('FORBIDDEN_ACCESS');},ownKeys(){reads++;throw Error('FORBIDDEN_ACCESS');}});
- for(const mode of [undefined,'prepare','execute','offline','restart',forbidden])await assert.rejects(main(mode,forbidden,forbidden),hasCode('RETIRED'));
- assert.equal(reads,0);assert.equal(safeCode({code:'RETIRED'}),'RETIRED');
- for(const args of [[],['prepare'],['execute'],['--offline-replay']]){
-  const cli=spawnSync(process.execPath,['scripts/run-causal-quality-20261007.mjs',...args],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{...process.env,...env,NEXUS_LIVE_ENABLED:'true'}});
-  assert.equal(cli.status,1);assert.equal(cli.stdout,'');assert.deepEqual(JSON.parse(cli.stderr),{status:'blocked',code:'RETIRED'});assert.equal(cli.stderr.includes(key),false);
- }
-});
-
-test('retired runTrial requires explicit fake replay before reading any operational input',async()=>{
- let reads=0,calls=0;const fake=async()=>{calls++;return response();};
- for(const patch of [{},{fetchImpl:fake},{offlineReplay:false,fetchImpl:fake},{offlineReplay:'true',fetchImpl:fake},{offlineReplay:1,fetchImpl:fake},{offlineReplay:true},{offlineReplay:true,fetchImpl:null},{offlineReplay:true,fetchImpl:globalThis.fetch}]){
-  const options={...patch};for(const name of ['env','trial','record','runs','ci','artifact','io','timeoutMs','sleep'])Object.defineProperty(options,name,{get(){reads++;throw Error('FORBIDDEN_ACCESS');}});
-  await assert.rejects(runTrial(options),hasCode('RETIRED'));
- }
- await assert.rejects(runTrial(),hasCode('RETIRED'));await assert.rejects(runTrial(null),hasCode('RETIRED'));assert.equal(reads,0);assert.equal(calls,0);
-});
-
-test('retired workflow has no credentials, checkout, upload or enabled job',async()=>{
- const yaml=await readFile(new URL('../.github/workflows/causal-quality-20261007-trial.yml',import.meta.url),'utf8');const active=yaml.split('\n').filter(l=>!/^\s*#/.test(l)).join('\n');
- assert.doesNotMatch(active,/secrets\s*\.|NEXUS_API_KEY|GH_TOKEN|run-causal-quality-20261007\.mjs|upload-artifact@|actions\/checkout@/);
- const jobs=active.split(/^jobs:\s*$/m)[1];assert.ok(jobs);const blocks=jobs.split(/^  [a-zA-Z_][\w-]*:\s*$/m).slice(1);assert.ok(blocks.length>0);for(const block of blocks)assert.match(block,/^    if:\s*(?:\$\{\{\s*false\s*\}\}|false)\s*$/m);
- const source=await readFile(new URL('../scripts/run-causal-quality-20261007.mjs',import.meta.url),'utf8');assert.doesNotMatch(source,/prepareMapping|randomBytes|async function get\(|api\.github\.com/);
-});
-
-test('39 original evidence files and five exact executed sources stay byte-for-byte hash-linked',async()=>{
- const dir=new URL('../eval/history/causal-quality-20261007/',import.meta.url),read=n=>readFile(new URL(n,dir)),archive=JSON.parse(await read('artifact-index.json'));
- assert.equal(archive.runId,'37557977202');assert.equal(archive.sourceSha,'effcaaaeed9e4dd99e06e8eeffbc1b4cafbdcb85');assert.equal(archive.ciRunId,'37555966642');assert.equal(archive.artifactId,'11454978404');assert.equal(archive.reservationArtifactId,'11454993088');assert.equal(archive.originalEvidenceFiles,39);assert.equal(archive.exactExecutedSourceFiles,5);
- assert.equal(archive.artifactZipSha256,'12a03c32728412135fbe0c11abe77a12888bc7d2d8c8e64638dcca6be320d87a');assert.equal(archive.reservationZipSha256,'b8e3e75bb479febdb3c4e8ab1e63a0fbcd92e58ad627a3ceb12350770848b0cf');
- assert.deepEqual(await archiveFiles(dir),[...Object.keys(archive.sha256),'artifact-index.json'].sort());assert.ok(Object.keys(archive.sha256).length>=44);for(const [n,h]of Object.entries(archive.sha256))assert.equal(digest(await read(n)),h,n);
- const index=JSON.parse(await read('index.json'));assert.equal(Object.keys(index.sha256).length,38);for(const [n,h]of Object.entries(index.sha256))assert.equal(digest(await read(n)),h,n);
- const originalBytes=await read('source-manifest.json'),original=JSON.parse(originalBytes),record=JSON.parse(await read('reservation.json'));
- assert.equal(digest(originalBytes),'bcfdc4f0100655dcc39950ef5f00f545e591a8d4bccc54e107193ca9da204557');assert.equal(original.status,'new_separately_approved_not_dispatched');assert.equal(digest(original),record.manifestSha256);assert.equal(record.manifestSha256,'7226ddbae0c7eddec10971becd36b42ab729ce3da7f9303f0f1d6d200b53261c');
- const sources={'scripts/run-causal-quality-20261007.mjs':'source-runner.mjs','.github/workflows/causal-quality-20261007-trial.yml':'source-workflow.yml','eval/CAUSAL-QUALITY-20261007-PROTOCOL.md':'source-protocol.md','tests/causal-quality-20261007.test.js':'source-tests.js'};
- for(const [path,h]of Object.entries(original.sha256)){const bytes=sources[path]?await read(sources[path]):await readFile(new URL('../'+path,import.meta.url));assert.equal(digest(bytes),h,path);}
- const source=(await read('source-runner.mjs')).toString();assert.match(source,/export async function main\(mode=/);assert.doesNotMatch(source,/offlineReplay|fail\('RETIRED'\)/);
-});
-
-test('durably recovered original mapping binds all six untouched packets, counts and terminal usage',async()=>{
- const dir=new URL('../eval/history/causal-quality-20261007/',import.meta.url),read=n=>readFile(new URL(n,dir));
- const record=JSON.parse(await read('reservation.json')),result=JSON.parse(await read('result.json')),archive=JSON.parse(await read('artifact-index.json'));
- assert.equal(digest(await read('reservation.json')),'941350cdb703ba0e73da108c2d1c46e841720c0d8cd9a84d87b01c48b230bf07');validateMapping(record.maskedMapping);assert.equal(digest(record.maskedMapping),record.maskedMappingSha256);assert.equal(record.maskedMappingSha256,'378805940e08d7a5c3746f75333c0c6b17b846632622cf0cc37e940f69e8698b');assert.equal(result.maskedMappingSha256,record.maskedMappingSha256);
- assert.equal(archive.maskedReading.fullCandidateMappingAvailable,true);assert.equal(archive.maskedReading.fullCandidateMappingReverified,true);
- assert.equal(result.status,'six_calls_retained_awaiting_masked_read');assert.equal(result.attempts,6);assert.equal(result.remainingAttempts,0);assert.equal(result.requestedOutputTokens,18000);assert.equal(result.cost,'unknown');assert.equal(result.error,undefined);assert.deepEqual(result.usage,{promptTokens:12283,completionTokens:3427,totalTokens:15710,reasoningTokens:0});assert.equal(result.stages.filter(s=>!s.counts.pass).length,5);
- const observedCounts=[[644,13,false],[535,4,true],[665,13,false],[610,13,false],[529,13,false],[750,13,false]];
- for(let i=0;i<6;i++){
-  const n=String(i+1).padStart(2,'0'),text=(await read('raw-prose-'+n+'.bin')).toString(),completed=JSON.parse(await read('completed-'+n+'.json')),packet=JSON.parse(await read('candidate-'+record.maskedMapping[i].candidateId+'.json')),stage=result.stages[i],dispatch=JSON.parse(await read('dispatch-'+n+'.json')),ledger=JSON.parse(await read('ledger-'+n+'.json'));
-  assert.equal(completed.text,text);assert.equal(completed.textSha256,digest(text));assert.deepEqual(packet,maskedPacket(trial.requests[i],record,text));assert.equal(stage.textSha256,digest(text));assert.equal(stage.httpStatus,200);assert.equal(stage.finishReason,'stop');assert.equal(stage.status,'retained_for_masked_read');assert.equal(stage.error,undefined);assert.deepEqual(Object.values(stats(text,trial.requests[i])),observedCounts[i]);assert.deepEqual(stage.counts,completed.counts);assert.equal(dispatch.requestSha256,BODY_SHAS[i]);assert.equal(dispatch.sequence,i+1);assert.equal(dispatch.attemptedOrUncertain,true);assert.equal(ledger.attempts,i+1);assert.equal(ledger.remainingAttempts,0);
- }
- const current=JSON.parse(await readFile(new URL('../eval/causal-quality-20261007-manifest.json',import.meta.url)));assert.equal(current.status,'retired_consumed_offline_replay');assert.equal(current.remainingAttempts,0);assert.equal(current.attemptsObserved,6);
-});
-
-test('six locked individual reports retain exact durable bytes and all 222 decoded-source/output spans',async()=>{
- const dir=new URL('../eval/history/causal-quality-20261007/',import.meta.url),read=n=>readFile(new URL(n,dir));
- const lockBytes=await read('reading/individual/individual-lock-manifest.json'),lock=JSON.parse(lockBytes),durable=JSON.parse(await read('reading/individual-durable-locks.json'));
- assert.equal(lock.locked,true);assert.equal(lock.fullCandidateRead,true);assert.equal(lock.evaluationStage,'all_six_individuals_locked_before_any_pairwise_packet');assert.equal(lock.reports.length,6);assert.equal(lock.sourceAndTextHashesVerified,true);assert.equal(lock.utf16QuoteSpansVerified,222);
- assert.equal(lock.evaluatorIsolation.readOnlyNeutralCandidatePacketsAndOwnReports,true);for(const [k,v]of Object.entries(lock.evaluatorIsolation))if(k!=='readOnlyNeutralCandidatePacketsAndOwnReports')assert.equal(v,false,k);
- const blob=b=>createHash('sha1').update(Buffer.from('blob '+b.length+'\0')).update(b).digest('hex');
- assert.equal(blob(lockBytes),durable['individual-lock-manifest.json'].gitBlob);
- let spans=0;
- for(const report of lock.reports){
-  const bytes=await read('reading/individual/'+report.candidateId+'.json'),judgment=JSON.parse(bytes),packet=JSON.parse(await read('candidate-'+report.candidateId+'.json'));
-  assert.equal(digest(bytes),report.reportSha256);assert.equal(blob(bytes),durable[report.candidateId+'.json'].gitBlob);if(durable[report.candidateId+'.json'].sha256)assert.equal(digest(bytes),durable[report.candidateId+'.json'].sha256);
-  assert.equal(report.locked,true);assert.equal(report.fullCandidateRead,true);assert.equal(judgment.evaluationStage,'individual_locked_before_pairwise');assert.equal(judgment.candidateId,packet.candidateId);assert.equal(judgment.storyInputSha256,digest(packet.storyInput));assert.equal(judgment.textSha256,digest(packet.text));assert.equal(report.storyInputSha256,judgment.storyInputSha256);assert.equal(report.textSha256,judgment.textSha256);assert.equal(judgment.proseEvaluable,true);
-  const source=JSON.parse(packet.storyInput);
-  const visit=v=>{if(!v||typeof v!=='object')return;if(typeof v.quote==='string'&&Number.isInteger(v.startUtf16)&&Number.isInteger(v.endUtf16)){
-   let coordinate;if(v.kind==='output'){assert.equal(v.path,'/text');coordinate=packet.text;}else{assert.equal(v.kind,'source');assert.ok(v.path.startsWith('/storyInput(decoded)/'));coordinate=source;for(const part of v.path.slice('/storyInput(decoded)/'.length).split('/')){const key=part.replace(/~1/g,'/').replace(/~0/g,'~');assert.equal(Object.hasOwn(coordinate,key),true);coordinate=coordinate[key];}}
-   assert.equal(typeof coordinate,'string');assert.ok(v.startUtf16>=0&&v.endUtf16>=v.startUtf16&&v.endUtf16<=coordinate.length);assert.equal(coordinate.slice(v.startUtf16,v.endUtf16),v.quote,judgment.candidateId+' '+v.path);spans++;
-  }for(const child of Object.values(v))visit(child);};visit(judgment);
- }
- assert.equal(spans,222);assert.equal(lock.nonSubstantiveErrata.length,1);assert.equal(lock.nonSubstantiveErrata[0].candidateId,'C-cd731f5e836adb51f8a072cc0d8b92af');
- const original=JSON.parse(await read('reading/individual/C-cd731f5e836adb51f8a072cc0d8b92af.json'));assert.ok(original.dimensions.motivation_obligation.explanation.includes(lock.nonSubstantiveErrata[0].quotedOriginal));
-});
-
-test('three locked pairs preserve nine individual/pair judgments, neutral packets and all 306 spans',async()=>{
- const dir=new URL('../eval/history/causal-quality-20261007/',import.meta.url),read=n=>readFile(new URL(n,dir)),lockBytes=await read('reading/pair/pair-lock-manifest.json'),lock=JSON.parse(lockBytes),durable=JSON.parse(await read('reading/pair-durable-locks.json'));
- const blob=b=>createHash('sha1').update(Buffer.from('blob '+b.length+'\0')).update(b).digest('hex');
- assert.equal(digest(lockBytes),'1fe2e4bbbf9a7abededa657708dd07ee9e7771af913c57cd287415630d30fc97');assert.equal(blob(lockBytes),durable['pair-lock-manifest.json'].gitBlob);assert.equal(lock.locked,true);assert.equal(lock.fullPairRead,true);assert.equal(lock.individualReportBytesUnchanged,true);assert.equal(lock.evaluationStage,'all_three_pairwise_reports_locked_before_unmask');assert.equal(lock.individualLockManifestSha256,digest(await read('reading/individual/individual-lock-manifest.json')));assert.equal(lock.utf16QuoteSpansVerified,84);assert.equal(lock.pairs.length,3);
- assert.equal(lock.isolation.readOnlySuppliedPairPacketsAndOwnIndividualReportsDuringPairStage,true);assert.equal(lock.isolation.allIndividualReportsLockedBeforePairPackets,true);for(const k of ['armIdentitiesKnown','armIdentitySoughtOrInferred','consultedOtherEvaluators','usedPaidApiOrModelJudge','delegatedEvaluation'])assert.equal(lock.isolation[k],false);
- let spans=0;
- for(const record of lock.pairs){
-  const bytes=await read('reading/pair/'+record.pairId+'.json'),j=JSON.parse(bytes),packet=JSON.parse(await read('reading/pair-packets/'+record.pairId+'.json'));
-  assert.equal(digest(bytes),record.reportSha256);assert.equal(blob(bytes),durable[record.pairId+'.json'].gitBlob);assert.equal(j.locked,true);assert.equal(j.fullPairRead,true);assert.equal(j.individualJudgmentsPreserved,true);assert.equal(j.armIdentitiesKnown,false);assert.equal(j.softComplianceNotUsedAsProseVerdict.bothProseEvaluable,true);assert.equal(j.softComplianceNotUsedAsProseVerdict.technicalFailureEstablished,false);assert.deepEqual(j.softComplianceNotUsedAsProseVerdict.first,packet.first.counts);assert.deepEqual(j.softComplianceNotUsedAsProseVerdict.second,packet.second.counts);assert.equal(j.pairId,packet.pairId);assert.equal(j.storyInputSha256,digest(packet.storyInput));assert.equal(j.storyInputSha256,record.storyInputSha256);assert.ok(packet.first.candidateId<packet.second.candidateId);
-  for(const side of ['first','second']){assert.deepEqual(packet[side],JSON.parse(await read('candidate-'+packet[side].candidateId+'.json')));assert.deepEqual(j[side],record[side]);assert.equal(j[side].candidateId,packet[side].candidateId);assert.equal(j[side].textSha256,digest(packet[side].text));assert.equal(packet[side].storyInput,packet.storyInput);}
-  for(const field of ['overallPreference','causalImprovement','materialVoiceAgencyRegression','checklistPadding'])assert.equal(j[field],record[field]);
-  const source=JSON.parse(packet.storyInput),visit=v=>{if(!v||typeof v!=='object')return;if(typeof v.quote==='string'&&Number.isInteger(v.startUtf16)&&Number.isInteger(v.endUtf16)){
-   let coordinate;if(['first','second'].includes(v.side)){assert.equal(v.path,'/'+v.side+'/text');coordinate=packet[v.side].text;}else{assert.equal(v.side,'source');assert.ok(v.path.startsWith('/storyInput(decoded)/'));coordinate=source;for(const part of v.path.slice('/storyInput(decoded)/'.length).split('/')){const key=part.replace(/~1/g,'/').replace(/~0/g,'~');assert.equal(Object.hasOwn(coordinate,key),true);coordinate=coordinate[key];}}
-   assert.equal(typeof coordinate,'string');assert.ok(v.startUtf16>=0&&v.endUtf16>=v.startUtf16&&v.endUtf16<=coordinate.length);assert.equal(coordinate.slice(v.startUtf16,v.endUtf16),v.quote,j.pairId+' '+v.path);spans++;
-  }for(const child of Object.values(v))visit(child);};visit(j);
- }
- assert.equal(spans,84);assert.equal(spans+JSON.parse(await read('reading/individual/individual-lock-manifest.json')).utf16QuoteSpansVerified,306);
-});
-
-test('post-lock decoded outcome derives arms from durable mapping and fails adoption on literature, not counts',async()=>{
- const dir=new URL('../eval/history/causal-quality-20261007/',import.meta.url),read=n=>readFile(new URL(n,dir)),decoded=JSON.parse(await read('decoded-outcome.json')),reservation=JSON.parse(await read('reservation.json'));
- assert.equal(decoded.decodedAfterAllIndividualAndPairwiseRecordsLocked,true);assert.equal(decoded.bindings.reservationFileSha256,digest(await read('reservation.json')));assert.equal(decoded.bindings.maskedMappingSha256,digest(reservation.maskedMapping));assert.equal(decoded.bindings.individualLockManifestSha256,digest(await read('reading/individual/individual-lock-manifest.json')));assert.equal(decoded.bindings.pairLockManifestSha256,digest(await read('reading/pair/pair-lock-manifest.json')));assert.equal(decoded.bindings.executedProtocolFileSha256,digest(await read('source-protocol.md')));
- const byId=new Map(reservation.maskedMapping.map(r=>[r.candidateId,trial.requests[r.sequence-1]]));
- for(const pair of decoded.pairs){
-  const bytes=await read('reading/pair/'+pair.pairId+'.json'),j=JSON.parse(bytes);assert.equal(pair.reportSha256,digest(bytes));assert.equal(pair.packetSha256,digest(await read('reading/pair-packets/'+pair.pairId+'.json')));
-  for(const side of ['first','second']){const request=byId.get(j[side].candidateId);assert.equal(pair[side].arm,request.arm);assert.equal(pair[side].sequence,request.sequence);assert.equal(pair.fixture,request.fixture);assert.equal(pair[side].textSha256,j[side].textSha256);}
-  for(const name of ['overallPreference','causalImprovement','materialVoiceAgencyRegression','checklistPadding'])assert.equal(pair[name+'Arm'],['first','second'].includes(j[name])?byId.get(j[j[name]].candidateId).arm:j[name]);
- }
- assert.deepEqual(decoded.pairs.map(p=>[p.pairId,p.fixture,p.overallPreferenceArm,p.causalImprovementArm]),[['P1','F1-replay','B','neither'],['P2','F3-unused-domain-transfer','A','A'],['P3','F2-physical-transition','neither','neither']]);
- const dimensions=['new_scene_change','physical_prerequisites_custody','temporal_causal_sequence','motivation_obligation','knowledge_pov_attribution','voice_economy_agency'];
- assert.equal(decoded.bIndividualLiteraryAssessment.length,3);for(const b of decoded.bIndividualLiteraryAssessment){assert.equal(byId.get(b.candidateId).arm,'B');const j=JSON.parse(await read('reading/individual/'+b.candidateId+'.json'));assert.deepEqual(Object.keys(b.literaryDimensionLabels),dimensions);for(const k of dimensions)assert.equal(b.literaryDimensionLabels[k],j.dimensions[k].label);assert.equal(b.allRequiredLiteraryDimensionsAcceptable,dimensions.every(k=>j.dimensions[k].label==='acceptable'));}
- assert.equal(decoded.adoptionCriterion.decision,'not_met');assert.equal(decoded.adoptionCriterion.threeCompletePairsAvailable,true);assert.equal(decoded.adoptionCriterion.requiredSubstantiveBPairGains,2);assert.equal(decoded.adoptionCriterion.observedSubstantiveBPairGains,decoded.pairs.filter(p=>p.causalImprovementArm==='B').length);assert.equal(decoded.adoptionCriterion.observedSubstantiveBPairGains,0);assert.equal(decoded.adoptionCriterion.allThreeBAcceptableOnRequiredLiteraryDimensions,false);assert.equal(decoded.adoptionCriterion.softTargetsExcludedFromDecision,true);assert.equal(decoded.readingVerification.totalQuoteSpans,306);
- const f3b=decoded.bIndividualLiteraryAssessment.find(b=>b.fixture==='F3-unused-domain-transfer');assert.equal(f3b.literaryDimensionLabels.motivation_obligation,'clear_failure');
- const p2=JSON.parse(await read('reading/pair-packets/P2.json'));assert.ok(p2.second.text.includes('明天我可能不来'));assert.ok(p2.first.text.includes('明天几点'));assert.ok(p2.first.text.includes('四点以后都在'));
 });

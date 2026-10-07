@@ -1,0 +1,12 @@
+{
+  "protocol": "causal-quality-20261007",
+  "sourceSha": "effcaaaeed9e4dd99e06e8eeffbc1b4cafbdcb85",
+  "runId": "37557977202",
+  "sequence": 5,
+  "requestSha256": "3817d325ba0d06b1216f19700612978002f5d6bd1a00cc7a5f11f657a73a2f76",
+  "attemptedOrUncertain": true,
+  "cumulativeAttempts": 5,
+  "maxAttempts": 6,
+  "cumulativeRequestedOutputTokens": 15000,
+  "maxRequestedOutputTokens": 18000
+}

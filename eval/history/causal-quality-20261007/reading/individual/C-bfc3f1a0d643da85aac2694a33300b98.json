@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "C-bfc3f1a0d643da85aac2694a33300b98",
+  "storyInputSha256": "ca4b564caee7e8aaaad5510430dbe37646e6d564506488638cf3f3f3f691ca8d",
+  "textSha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+  "evaluationStage": "individual_locked_before_pairwise",
+  "spanConvention": "Zero-based UTF-16 code units; end exclusive; source offsets refer to the indicated decoded storyInput property, output offsets to packet.text.",
+  "proseEvaluable": true,
+  "summary": "顺利续写次日上午询问，先报柜号再得到回答，纸屑保管和明早预约明确。坏铃拉绳仍作有声招呼的机制需要澄清；加入无主件公示三十天的支线让有限询问变重，但采用条件句，不能当成已确认无主或已获得记录。",
+  "dimensions": {
+    "new_scene_change": {
+      "label": "acceptable",
+      "explanation": "前夜决定问管理员，正文实际见到管理员、展示纸屑、确认明早可查，并得到八点半的预约，形成明确的新结果。没有重演取纸屑或前夜对白，也没有现在就拿到记录。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“不取东西。”许宁把工具袋往身前挪了挪，“问十七号柜的旧记录。”",
+          "startUtf16": 288,
+          "endUtf16": 320
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "今天的活排满了，明天早上才能翻。",
+          "startUtf16": 423,
+          "endUtf16": 439
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "明天八点半来，我带你去库房。",
+          "startUtf16": 570,
+          "endUtf16": 584
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/goal",
+          "quote": "次日上午携前章保管的纸屑来问管理员；在门边用符合当前设定的方法招呼他；管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+          "startUtf16": 0,
+          "endUtf16": 60
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "physical_prerequisites_custody": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "四片纸屑的纸盒、橡皮筋和工具袋与前文衔接，展示后仍由许宁带走，柜门未开。问题在于已明确“不能发出声音”的坏铜铃，这里仍用其残壳所系拉绳制造闷响，紧接管理员应门；本应失效的招呼装置是否以碰撞另获功能，没有交代独立撞击物。由于非铃声的机械碰撞完全可能存在，不判形式上的物理矛盾，但该应门机制需要更清楚地满足设定。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "许宁没敲门。",
+          "startUtf16": 165,
+          "endUtf16": 171
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "绳头系着半截铜铃的残壳——铃早坏了，拉一下只发出铁皮碰铁皮的闷响。他拉了一下。隔了几秒，又拉一下。",
+          "startUtf16": 183,
+          "endUtf16": 232
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "门开了一条缝",
+          "startUtf16": 234,
+          "endUtf16": 240
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "许宁把纸盒收回工具袋最里层，拉链拉到底。",
+          "startUtf16": 712,
+          "endUtf16": 732
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "寄存室的铜铃已经损坏，不能发出声音。",
+          "startUtf16": 697,
+          "endUtf16": 715
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "许宁把它们放进纸盒，合上盖，又用橡皮筋箍了一圈。",
+          "startUtf16": 371,
+          "endUtf16": 395
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "源文“不能发出声音”可在日常语言里仅指不能正常鸣铃；坏铃残壳碰门板或其他金属仍会响，管理员也可能恰好出来。因此此处是设定解释和招呼机制的歧义，不应直接宣称钟铃被修复或事件不可能发生。"
+    },
+    "temporal_causal_sequence": {
+      "label": "acceptable",
+      "explanation": "从前夜到次日上午、门外招呼、报柜号、获知次日调记录、约定时间和收好证物的顺序清楚。公示规则是条件性的未来分支，未被叙述成已经执行。拉绳信号的设定疑点单独归物理维度，除此之外没有时间跳跃。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "许宁到得比九点早",
+          "startUtf16": 40,
+          "endUtf16": 48
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“问十七号柜的旧记录。”",
+          "startUtf16": 308,
+          "endUtf16": 320
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "记录上要是没有寄放人姓名，那这柜子就是无主件，按规矩得公示。",
+          "startUtf16": 584,
+          "endUtf16": 614
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“明天别迟到，库房钥匙在主任那儿，我替你们约。”",
+          "startUtf16": 686,
+          "endUtf16": 710
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/sources/0/text",
+          "quote": "他说明天上午九点，阿青点头，说九点。",
+          "startUtf16": 622,
+          "endUtf16": 640
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "对纸屑和锁痕的猜测不能直接成为世界事实。没有获准的开锁动作不得提前成功。保留尚未履行的约定。",
+          "startUtf16": 139,
+          "endUtf16": 185
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "motivation_obligation": {
+      "label": "acceptable",
+      "explanation": "许宁落实此前约定并主动询问，阿青递包子、急问地点和公示多久，关心与焦急都有动作依据。管理员忙、记录归库房解释延期，代约钥匙及明早八点半承诺让规则带有帮助的意味。尚未履行的预约仍保留。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "手里拎着两只包子，递了一只给许宁",
+          "startUtf16": 86,
+          "endUtf16": 102
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“那在哪儿？”",
+          "startUtf16": 394,
+          "endUtf16": 401
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "今天的活排满了，明天早上才能翻。",
+          "startUtf16": 423,
+          "endUtf16": 439
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“明天别迟到，库房钥匙在主任那儿，我替你们约。”",
+          "startUtf16": 686,
+          "endUtf16": 710
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "阿青着急但不咄咄逼人；管理员用办事规矩表达关心。",
+          "startUtf16": 61,
+          "endUtf16": 85
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "保留尚未履行的约定。",
+          "startUtf16": 175,
+          "endUtf16": 185
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "knowledge_pov_attribution": {
+      "label": "acceptable",
+      "explanation": "先由许宁报出十七号柜，管理员重复核对，有明确获知渠道。车票未被提起，寄信人未揭晓；一般闷响和搭扣响没有归因于左耳。换锁次数和公示由管理员说出，属于有身份来源的新信息；条件句不等于叙述确认柜子无主。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“问十七号柜的旧记录。”",
+          "startUtf16": 308,
+          "endUtf16": 320
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“十七号。”他重复了一遍，像在核对什么。",
+          "startUtf16": 346,
+          "endUtf16": 366
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "记录上要是没有寄放人姓名，那这柜子就是无主件，按规矩得公示。",
+          "startUtf16": 584,
+          "endUtf16": 614
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "搭扣“咔”地扣死。",
+          "startUtf16": 785,
+          "endUtf16": 794
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "不得写成许宁用左耳听声。阿青不得无来源知道信封中的旧车票，本三章不向他揭露；不得揭晓寄信人，不引入宏大阴谋。",
+          "startUtf16": 85,
+          "endUtf16": 139
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "对纸屑和锁痕的猜测不能直接成为世界事实。",
+          "startUtf16": 139,
+          "endUtf16": 159
+        }
+      ],
+      "strongestPlausibleAlternativeReading": null
+    },
+    "voice_economy_agency": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "包子递出后放凉、搭扣按紧等动作有效，许宁话短，阿青并非只等待。但管理员长段介绍无主件和三十天公示，让本应有限的小线索询问转向较重的程序说明，结束又重复“三十天”和柜牌存在，节奏可压缩。此评价依据内容分量与重复，不只是字数超限。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "记录上要是没有寄放人姓名，那这柜子就是无主件，按规矩得公示。",
+          "startUtf16": 584,
+          "endUtf16": 614
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“三十天。”",
+          "startUtf16": 661,
+          "endUtf16": 667
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "阿青站在台阶下，包子已经凉了，他三两口塞进嘴里，含混地说：“三十天。”",
+          "startUtf16": 732,
+          "endUtf16": 767
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "十七号的铜牌在门里那排暗处，他看不见，但知道它还在。",
+          "startUtf16": 800,
+          "endUtf16": 826
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/tone",
+          "quote": "克制，实物细节，少量干涩幽默",
+          "startUtf16": 0,
+          "endUtf16": 14
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "许宁说话简短、与实物相关；阿青着急但不咄咄逼人；管理员用办事规矩表达关心。",
+          "startUtf16": 48,
+          "endUtf16": 85
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "程序本来就是管理员的声音，提前交代可能的三十天等待也能提高阿青的利害感；末尾重复可表现压力。因此不是毫无作用的填充，只是明显扩大了这场戏的重心。"
+    },
+    "instruction_adherence": {
+      "label": "needs_edit_or_uncertain",
+      "explanation": "中文正文、当前时段、秘密和未开柜限制均保持。665汉字、13段是独立的软格式违例。额外引入公示三十天与主任钥匙预约，比“只确认旧记录明天才能查”的限定更宽，可能需要收窄；因公示是条件性说明而非确定新线索，不将其当成揭露或正式世界事实矛盾。",
+      "outputEvidence": [
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "记录上要是没有寄放人姓名，那这柜子就是无主件，按规矩得公示。",
+          "startUtf16": 584,
+          "endUtf16": 614
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "“三十天。”",
+          "startUtf16": 661,
+          "endUtf16": 667
+        },
+        {
+          "kind": "output",
+          "path": "/text",
+          "quote": "柜门仍锁着",
+          "startUtf16": 794,
+          "endUtf16": 799
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/context/constitution/boundaries",
+          "quote": "每章350–500个汉字，4–7段。",
+          "startUtf16": 0,
+          "endUtf16": 18
+        },
+        {
+          "kind": "source",
+          "path": "/storyInput(decoded)/input/project/outline/1/goal",
+          "quote": "管理员只确认柜号旧记录明天才能查，三人约明早再来。",
+          "startUtf16": 35,
+          "endUtf16": 60
+        }
+      ],
+      "strongestPlausibleAlternativeReading": "“只确认”也可理解为只限制确定的调查发现，并不禁止管理员介绍条件性的办事规则；这样读时新增规则属人物化补充而非越界。无论如何，字数及段数偏差仍独立存在。"
+    }
+  },
+  "separateCompliance": {
+    "han": 665,
+    "hanTarget": [
+      350,
+      500
+    ],
+    "paragraphs": 13,
+    "paragraphTarget": [
+      4,
+      7
+    ],
+    "hanWithinTarget": false,
+    "paragraphsWithinTarget": false,
+    "language": "Chinese",
+    "wrapperOrCommentary": false,
+    "technicalFailureEstablished": false
+  },
+  "overallIndividualAssessment": "信息获取与保管总体连贯，人物各有动作；应明确坏铃之外的可靠招呼方式，并削减新添程序负担，使当前场景更集中。"
+}
