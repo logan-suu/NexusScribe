@@ -38,3 +38,14 @@
 .revision-original pre,.revision-adopted pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.8;padding:12px;background:rgba(127,127,127,.05);border-radius:8px}
 .revision-length-bounds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-width:0;border:1px solid var(--line);border-radius:8px}
 .revision-length-bounds input{min-width:0;width:100%;box-sizing:border-box}
+
+/* Saved intent is a read-only reference beside prose, not a completion verdict. */
+.scene-intent{min-width:0;margin:16px 0;padding:14px 16px;border:1px solid var(--line);border-radius:5px;background:#f5f7f1;overflow-wrap:anywhere}
+.scene-intent h3{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;margin:0 0 10px;font-size:13px}
+.scene-intent h3 span{font-size:11px;font-weight:400;color:var(--muted)}
+.scene-intent p{font-size:11px;line-height:1.8;margin:7px 0}
+.scene-intent-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin:14px 0}
+.scene-intent-fields dt{font-size:11px;color:var(--pine);font-weight:600;margin-bottom:7px}
+.scene-intent-fields dd{margin:0;font-size:13px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere}
+.scene-intent-binding{border-top:1px dashed var(--line);padding-top:6px}
+@media(max-width:700px){.scene-intent{padding:12px}.scene-intent-fields{grid-template-columns:minmax(0,1fr);gap:12px}}

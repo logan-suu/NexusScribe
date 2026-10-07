@@ -32,6 +32,10 @@ A small edit can change a relationship, invalidate a future scene, or alter what
 
 Offline mode supports the three-chapter template workflow. The normal live flow uses interview, planning, prose generation, independent memory extraction, revision interpretation, chapter review and separately requested isolated candidate audits. The strict legacy chapter action remains available as a comparator. Writing + chapter review uses two base model calls; optional extraction adds a third, and every explicitly requested candidate audit adds another call. Choosing to skip extraction does not undo prior calls or guarantee zero cost. No cost or latency savings are promised. Model output remains a proposal throughout.
 
+### Saved scene intent beside the draft
+
+The read-only “本章创作意图” panel shows the current chapter's exact saved `goal` and `exitState`, their outline slot/ID, and the candidate revision/reference-context status. Missing and deliberately empty values stay explicit; no substitute goal is invented. Chapter switching and edits update the display locally with **zero model calls**. Current intent is not a record of what the generator originally received, and context freshness is not proof the prose fulfills either target. This creates no new acceptance gate or Canon/plot-obligation record. See the [binding and evidence limits](docs/public/SCENE-INTENT.md).
+
 ## Quick start
 
 Use the development checkout on `dev_v1.0` after integration, or the reviewed PR head while changes are under review. `main` is reserved for releases; no public hosted app is created by cloning this repository.
