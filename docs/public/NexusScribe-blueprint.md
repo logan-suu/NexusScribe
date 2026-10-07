@@ -1487,3 +1487,10 @@ B5 从 Mem0、Graphiti 或 Letta 等候选中按能力匹配选择至少一个�
 真实多章试验已保留缺失地点细节却误报 supported 的反例，独立请求隔离不能证明整个标签被引文蕴含。当前方案不再让任何模型 supported 开放转述保留。默认作者选择程序生成的完整段落原文卡，保留前后文及精确版本／位置，只证明文字存在；角色说法、否定、信念和未来计划不能变成世界真相。自由转述必须另行填写理由并勾选明确知情确认，依旧标作未验证。
 
 拒绝单条或全部拒绝均不调用模型，最终可仅接受原正文。旧已接受记忆保持原标签、引文、判断和审计，展示及后续上下文标为历史未验证，不重写 Canon；旧待定批准不能沿用。可选独立审阅、预算、取消、迟到响应、存储恢复和版本绑定保护保留。本轮仅离线验证，两篇真实保留正文加明确标注的合成第三章不等于三章真实质量通过。详见 [设计与边界](QUOTE-GROUNDED-MEMORY.md)。
+
+
+### 2026-10-07 本章创作意图对照（零调用） / Saved scene intent
+
+候选稿旁原样展示当前已保存大纲的 `goal` 与 `exitState`，遵循现有生成入口的映射：规范章节 ID → 当前章节顺序 → `config.outline[index]`。同时标注该位置、原大纲 ID、意图指纹及候选正文 revision／指纹、基准状态和参考上下文版本；缺失、主动留空、旧上下文与历史候选明确区分。指纹仅用于展示，不能授予接受权限。草稿没有保留准备／生成时的完整大纲快照，不能把当前目标说成当时实际使用的目标；更新参考上下文也不自动重写正文。
+
+This read-only panel displays exact current saved intent, with positional outline provenance and per-candidate revision/reference-context metadata. It never scores fulfillment, substitutes missing goals, changes generation or acceptance, or adds provider calls, schemas or memory. Author intent remains separate from Canon and long-term plot obligations. The retained six-output trial used fixed contexts that do **not uniformly use the current schema-3 context**; it is not a current-app end-to-end validation. Historical output bytes, judgments, retired guards and the unchanged production instruction remain intact. See [scene-intent boundaries](SCENE-INTENT.md) for the bilingual explanation and offline test scope.

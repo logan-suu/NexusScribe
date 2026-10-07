@@ -1,4 +1,5 @@
 import RevisionPanel from './RevisionPanel.jsx';
+import SceneIntent from './SceneIntent.jsx';
 import {useState,useRef,useEffect} from 'react';
 import {Check, X, ShieldCheck, FileText} from 'lucide-react';
 
@@ -70,15 +71,16 @@ export function DecisionDialog({label,title,onClose,children}) {
  }
  return <div className="modal-backdrop"><section ref={container} className="modal memory-decision-modal" role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={keydown}><header><h2>{title}</h2><button className="icon-button" aria-label={`关闭${label}`} onClick={onClose}><X/></button></header>{children}</section></div>;
 }
-export default function DraftPanel({drafts,chapterTitle=null,contextCurrent={},onRefreshContext,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,onSkipExtraction,onEditingChange,extractionReady={},memoryReviews={},onMemoryDecision,onRejectAllMemory,onMemoryAudit,revisionCurrent={},onRevisionInstruction,onRequestRevision,onAdoptRevision,onDiscardRevision,onCancelRevision,mode='template',auditBudget=null,auditDisabled=false,busy=false}) {
+export default function DraftPanel({drafts,chapterTitle=null,chapterIntent=null,sceneIntentByDraft={},contextCurrent={},onRefreshContext,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,onSkipExtraction,onEditingChange,extractionReady={},memoryReviews={},onMemoryDecision,onRejectAllMemory,onMemoryAudit,revisionCurrent={},onRevisionInstruction,onRequestRevision,onAdoptRevision,onDiscardRevision,onCancelRevision,mode='template',auditBudget=null,auditDisabled=false,busy=false}) {
  const [editing,setEditing]=useState(null),[text,setText]=useState('');
  useEffect(()=>{onEditingChange?.(editing!==null);return()=>onEditingChange?.(false)},[editing,onEditingChange]);
  return <section className="draft-section"><header><h2>{chapterTitle?`${chapterTitle} · 候选稿`:'下一场景 · 候选稿'}</h2><span>候选先隔离 · 接受才提交</span></header>
- {drafts.length===0?<p className="empty-note">生成后先审阅，再决定是否接受。候选事件不会进入故事记忆。</p>:drafts.slice().reverse().map(d=>{
+ {drafts.length===0?<><SceneIntent reference={chapterIntent}/><p className="empty-note">生成后先审阅，再决定是否接受。候选事件不会进入故事记忆。</p></>:drafts.slice().reverse().map(d=>{
   const ledger=factReviews[d.id]||[],unresolved=ledger.filter(item=>item.blocking&&!item.resolved),memories=memoryReviews[d.id]||[],pendingMemories=memories.filter(item=>!item.resolved),selectedMemories=memories.filter(isSelectedMemory),active=!['ACCEPTED','REJECTED'].includes(d.status),needsExtraction=d.requiresExtraction&&active&&!extractionReady[d.id],rejected=d.status==='REJECTED',skipped=d.extraction?.status==='skipped',extracted=d.extraction?.status==='complete'&&(extractionReady[d.id]||d.status==='ACCEPTED'),emptyExtraction=extracted&&d.staging?.length===0&&!rejected;
   const extractionMessage=skipped?'作者明确选择不提取记忆 · 0 条候选；跳过这一步不调用模型，不代表没有可提取内容':rejected?'候选稿已拒绝 · 提取已取消；历史提取与选择记录已归档，未提交':d.extraction?.status==='failed'?'提取未完成 · 已保存的正文保留':d.extraction?.status==='cancelled'?'提取已取消 · 已保存的正文保留':extracted?(d.status==='ACCEPTED'?'此版本已接受 · 仅作者选中的记忆已提交':'当前正文的候选记忆已提取 · 尚需核对与审阅'):'正文已保存 · 可提取当前版本的候选记忆，或明确选择不提取';
   return <article className="draft" key={d.id}>
    <div className="draft-meta"><span><FileText/>{d.id}</span><span>基于 v{d.baseVersion} · 候选 r{d.revision} · {d.manualSource?'作者手写稿 · 未验证':d.requiresSemanticReview?'真实模型':'确定性模板'} · {d.status}</span></div>
+   <SceneIntent reference={sceneIntentByDraft[d.id]} editing={editing===d.id}/>
    <div className="draft-prose">{d.text}</div>{d.manualSource&&<p className="fine" aria-label="手写稿来源">原正文 r{d.manualSource.revision} · 作者分类 {d.manualSource.patchId}。手写候选保留此版本不变；修改请回章节编辑器分类保存、拒绝旧稿，再准备新稿。{d.requiresSemanticReview?'当前有已确认设定：仍须明确点击模型审查，并逐项解决冲突或未知判断；不会自动请求模型。':'当前无已确认设定：只做本地结构检查即可进入作者确认，不调用模型；语义一致性未评估。'}</p>}
    {active&&d.requiresExtraction&&contextCurrent[d.id]===false&&<div className="warning" aria-label="候选参考上下文已过期"><p>参考正文、故事状态或上下文格式已变化。可保留本稿正文并更新参考上下文，再重新提取或明确选择不提取记忆，然后重新审阅。旧批准不能沿用。</p><button disabled={busy} onClick={()=>onRefreshContext?.(d.id)}>更新参考上下文</button></div>}
    {editing===d.id&&<><textarea className="draft-edit" aria-label="编辑候选稿" value={text} onChange={e=>setText(e.target.value)}/><button onClick={()=>{onEdit(d.id,text);setEditing(null)}}>保存候选稿修改</button><button onClick={()=>setEditing(null)}>取消候选稿修改</button></>}
