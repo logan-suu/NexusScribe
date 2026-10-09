@@ -9,7 +9,7 @@ const field = (outline, key) => {
 
 /** Read-only display reference, never generation evidence or acceptance authority.
  * The existing generator maps config.outline by chapter position, not outline IDs.
- * Draft context does not retain goal/exitState; never reconstruct them from plans.
+ * Legacy drafts do not retain request intent; never reconstruct it from plans.
  */
 export function getSceneIntentReference(state, chapterId, draft = null) {
   const targetId = draft ? (draft.chapterId || 'ch3') : chapterId;
@@ -42,6 +42,8 @@ export function getSceneIntentReference(state, chapterId, draft = null) {
     id:draft.id, revision:draft.revision, textHash:hash(draft.text), baseVersion:draft.baseVersion,
     contextVersion:context?.version ?? null, contextSchemaVersion:context?.contextSchemaVersion ?? null,
     contextStatus, archived:['ACCEPTED','REJECTED'].includes(draft.status), status:draft.status,
+    generationIntent:draft.generationIntent ? structuredClone(draft.generationIntent) : null,
+    manual:Boolean(draft.manualSource) || draft.provider === 'author-manuscript',
   };
   return reference;
 }

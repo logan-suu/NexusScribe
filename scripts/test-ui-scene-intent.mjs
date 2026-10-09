@@ -132,3 +132,79 @@ assert.match(intent().textContent, /第二章 门槛 · ch2/);
 assert.doesNotMatch(intent().textContent, /draft-1|第一章 日期/);
 cleanup();
 console.log('PASS async chapter switch: one explicit synthetic generation returns late; current chapter intent remains correct and no late candidate is inserted (no real model calls)');
+
+// Exercise the real App request boundary with one synthetic response. The
+// provider-returned metadata is deliberately false and must never be trusted.
+const blank = engine.createProjectFromConfig(fixture().config);
+blank.config.outline[0].goal = '';
+delete blank.config.outline[0].exitState;
+boot(blank);
+const generatedRequests = [];
+globalThis.fetch = async (url, options) => {
+  assert.equal(url, '/api/agent');
+  const request = JSON.parse(options.body);
+  assert.equal(request.action, 'generateProse');
+  generatedRequests.push(request);
+  return {ok:true, status:200, json:async () => ({output:{text:PROSE, chapterId:'ch1', provider,
+    generationIntent:{goal:{status:'present',value:'Untrusted provider metadata'}}}})};
+};
+await user.click(button('生成当前章'));
+await waitFor(() => assert.equal(stored().state.drafts.length, 1));
+const generated = stored(), origin = structuredClone(generated.state.drafts[0].generationIntent);
+assert.equal(origin.goal.value, generatedRequests[0].input.project.outline[0].goal);
+assert.equal(origin.goal.value, '沿已有线索推进，保持角色知识边界');
+assert.deepEqual(origin.exitState, {status:'missing',value:null});
+assert.equal(origin.chapterId, 'ch1'); assert.equal(origin.chapterIndex, 0);
+assert.equal(within(intent()).getByLabelText('章节目标 · goal').textContent, '已保存为空');
+assert.equal(within(intent()).getByLabelText('请求目标 · goal').textContent, origin.goal.value);
+assert.equal(within(intent()).getByLabelText('请求退出状态 · exitState').textContent, '未保存此字段');
+assert.match(intent().textContent, /这两个字段与当前已保存意图不同/);
+assert.doesNotMatch(intent().textContent, /Untrusted provider metadata/);
+assert.equal(Object.hasOwn(generatedRequests[0].input,'generationIntent'), false);
+await user.click(button('编辑此稿'));
+assert.match(intent().textContent, /候选编辑尚未保存/);
+fireEvent.change(screen.getByLabelText('编辑候选稿', {exact:true}), {target:{value:PROSE+'\n后续作者编辑。'}});
+await user.click(button('保存候选稿修改'));
+assert.match(intent().textContent, /当前候选已是 r2/);
+assert.deepEqual(stored().state.drafts[0].generationIntent, origin);
+const changed = stored().state;
+changed.config.outline[0].goal = '后来修改的目标';
+changed.config.outline[0].exitState = '后来才填写的结尾';
+changed.config.tone = '后来修改的语调';
+boot(changed);
+assert.equal(within(intent()).getByLabelText('请求目标 · goal').textContent, origin.goal.value);
+assert.equal(within(intent()).getByLabelText('章节目标 · goal').textContent, changed.config.outline[0].goal);
+assert.match(intent().textContent, /参考上下文已过期或不匹配/);
+await user.click(button('更新参考上下文'));
+await user.click(button('确认更新参考上下文'));
+assert.match(intent().textContent, /参考上下文与当前已保存状态一致/);
+assert.deepEqual(stored().state.drafts[0].generationIntent, origin);
+assert.equal(generatedRequests.length, 1);
+assert.deepEqual(stored().state.events, []);
+cleanup();
+console.log('PASS initial request provenance: real App fallback captured before synthetic response, provider metadata ignored, current/request fields differ honestly, saved edit/reload/context refresh retain r1 origin with one mocked call');
+
+// Offline template generation uses the same capture without any HTTP request.
+const templateState = engine.createProjectFromConfig({...fixture().config,idea:'一封没有署名的信。'});
+localStorage.clear(); localStorage.setItem(KEY, JSON.stringify({...workspace(templateState),providerMode:'template'}));
+globalThis.fetch = async () => {throw Error('Template intent must not request network');};
+render(React.createElement(App));
+await user.click(button('生成当前章'));
+await waitFor(() => assert.equal(stored().state.drafts.length, 1));
+assert.equal(stored().state.drafts[0].generationIntent.goal.value, GOAL);
+assert.equal(within(intent()).getByLabelText('请求退出状态 · exitState').textContent, EXIT);
+assert.match(intent().textContent, /这两个字段与当前已保存意图一致/);
+cleanup();
+console.log('PASS template App generation captures exact initial goal/exitState locally; no HTTP/model requests');
+
+// Imported JSON object key order cannot manufacture a changed-intent warning.
+const reordered = stored().state;
+for (const key of ['goal','exitState']) {
+  const field = reordered.drafts[0].generationIntent[key];
+  reordered.drafts[0].generationIntent[key] = {value:field.value,status:field.status};
+}
+boot(reordered);
+assert.match(intent().textContent, /这两个字段与当前已保存意图一致/);
+assert.doesNotMatch(intent().textContent, /这两个字段与当前已保存意图不同/);
+cleanup();
+console.log('PASS equivalent imported field key order preserves exact status/value comparison');

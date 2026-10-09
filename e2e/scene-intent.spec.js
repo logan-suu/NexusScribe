@@ -10,14 +10,14 @@ const card = page => page.getByRole('region', {name:'本章创作意图'});
 const button = (page, name) => page.getByRole('button', {name, exact:true});
 const chapter = (page, index) => page.getByRole('navigation', {name:'章节'}).getByRole('button').nth(index);
 const stored = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)), KEY);
-async function boot(page, context, state = fixture()) {
+async function boot(page, context, state = fixture(), onGeneration = null) {
   const errors = [], requests = [], external = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => {if (['error','warning'].includes(message.type())) errors.push(message.text());});
   await context.route('**/*', route => {
     const url = new URL(route.request().url());
     if (!['127.0.0.1','localhost'].includes(url.hostname)) {external.push(url.href); return route.abort('blockedbyclient');}
-    if (url.pathname.startsWith('/api/')) {requests.push(url.pathname); return route.fulfill({status:503, json:{error:{message:'No provider requests permitted'}}});}
+    if (url.pathname.startsWith('/api/')) {requests.push(url.pathname); if (onGeneration && url.pathname === '/api/agent') return onGeneration(route); return route.fulfill({status:503, json:{error:{message:'No provider requests permitted'}}});}
     return route.continue();
   });
   await page.addInitScript(({key, data}) => {if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(data));}, {key:KEY, data:workspace(state)});
@@ -127,4 +127,63 @@ test('manual draft with outline-only edits displays current intent without claim
   await chapter(page, 1).click(); await chapter(page, 0).click();
   expect(await stored(page)).toEqual(before);
   clean(run);
+});
+
+test('new generation preserves initial request intent across edit, reload and explicit context refresh', async ({page, context}, testInfo) => {
+  const state = engine.createProjectFromConfig(fixture().config);
+  state.config.outline[0].goal = '';
+  delete state.config.outline[0].exitState;
+  const captured = [];
+  const run = await boot(page, context, state, async route => {
+    const body = route.request().postDataJSON();
+    expect(body.action).toBe('generateProse'); captured.push(body);
+    return route.fulfill({status:200, json:{output:{text:PROSE, chapterId:'ch1', provider,
+      generationIntent:{goal:{status:'present',value:'untrusted response metadata'}}}}});
+  });
+  await button(page, '生成当前章').click();
+  await expect(card(page).getByLabel('初次生成请求意图')).toBeVisible();
+  const initial = await stored(page), snapshot = initial.state.drafts[0].generationIntent;
+  expect(snapshot.goal.value).toBe(captured[0].input.project.outline[0].goal);
+  expect(snapshot.goal.value).toBe('沿已有线索推进，保持角色知识边界');
+  expect(snapshot.exitState).toEqual({status:'missing',value:null});
+  expect(snapshot.chapterId).toBe('ch1');
+  await expect(card(page).getByLabel('章节目标 · goal')).toHaveText('已保存为空');
+  await expect(card(page).getByLabel('请求目标 · goal')).toHaveText(snapshot.goal.value);
+  await expect(card(page)).toContainText('这两个字段与当前已保存意图不同');
+  await expect(card(page)).not.toContainText('untrusted response metadata');
+  await screenshot(page, testInfo, 'initial-request-fallback');
+  await button(page, '编辑此稿').click();
+  await page.getByLabel('编辑候选稿', {exact:true}).fill(PROSE+'\n作者后来增加的句子。');
+  await expect(card(page)).toContainText('候选编辑尚未保存');
+  await button(page, '保存候选稿修改').click();
+  await expect(card(page)).toContainText('当前候选已是 r2');
+  expect((await stored(page)).state.drafts[0].generationIntent).toEqual(snapshot);
+  // Simulate a later saved outline/config from the same supported workspace.
+  // This is provenance testing, not a claim that an outline-edit UI exists.
+  await page.evaluate(key => {
+    const current = JSON.parse(localStorage.getItem(key));
+    current.state.config.outline[0].goal = '后来保存的新目标';
+    current.state.config.outline[0].exitState = '后来保存的新结尾';
+    current.state.config.tone = '后来保存的新语调';
+    localStorage.setItem(key, JSON.stringify(current));
+  }, KEY);
+  await page.reload();
+  await expect(card(page).getByLabel('章节目标 · goal')).toHaveText('后来保存的新目标');
+  await expect(card(page).getByLabel('请求目标 · goal')).toHaveText(snapshot.goal.value);
+  await expect(card(page)).toContainText('参考上下文已过期或不匹配');
+  await button(page, '更新参考上下文').click();
+  await button(page, '取消更新').click();
+  expect((await stored(page)).state.drafts[0].generationIntent).toEqual(snapshot);
+  await button(page, '更新参考上下文').click();
+  await button(page, '确认更新参考上下文').click();
+  await expect(card(page)).toContainText('参考上下文与当前已保存状态一致');
+  expect((await stored(page)).state.drafts[0].generationIntent).toEqual(snapshot);
+  await screenshot(page, testInfo, 'request-retained-after-refresh');
+  await chapter(page, 1).click();
+  await expect(card(page).getByLabel('初次生成请求意图')).toHaveCount(0);
+  await chapter(page, 0).click();
+  await expect(card(page).getByLabel('请求目标 · goal')).toHaveText(snapshot.goal.value);
+  expect(run.requests).toEqual(['/api/agent']); expect(captured).toHaveLength(1);
+  expect(run.errors).toEqual([]); expect(run.external).toEqual([]);
+  expect((await stored(page)).state.events).toEqual([]);
 });

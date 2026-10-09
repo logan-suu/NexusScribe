@@ -4,16 +4,16 @@
   "sha256": {
     "eval/MULTICHAPTER-PROTOCOL.md": "86611d4ec543b987691d1318dc242284e075e6206e95c05f1502f742e28532a8",
     "eval/multichapter-fixtures.mjs": "5f46c2b7a27fc839f1f60cec28679305477d24731f613e163a9a2b27afcfe53e",
-    "scripts/multichapter-eval.mjs": "f2e9f0c22acde9dbb48251850430707c2a6fbe92d290982dbf4ea5a5eeab989d",
+    "scripts/multichapter-eval.mjs": "49c3c54589c8d3b328c27bae98ad1c6fd714dc3d2e18fb96c294bc0ebdd748dc",
     "tests/multichapter-eval.test.js": "bbec880ddd9462d509aedd41dd66444f692834cc591088554572cd83a5005d95",
     "server/provider.js": "cbd2d3ad2123e9ba8cc0fad56443a13e5e73531876b507b111fe1ee0bbe131e7",
     "server/index.js": "d1d63c6636fc43fba2b9e50d6e9d57e4bca738076b9176c0898a3246650d0d72",
-    "src/App.jsx": "e46bd925f915b3ffe1ea31e7525c03b3a78150cdfb9092a71ddc75b62350ac70",
-    "src/domain/engine.js": "c858fd2d1ec2bacfd933de4d3f7595f21eb0cff1413964b8b8ba8c79a11f6050",
+    "src/App.jsx": "73a4afc2d121f643a4802f9d8f08470acd37857ae64c8f6643add8cffd6e3acb",
+    "src/domain/engine.js": "7859fd4df86320a0b179d4a6675175b94d73560242670f7949dd167de23bd173",
     "src/domain/memory-review.js": "efde168b9a52c1f59df06a0d571515f4260ee95ab5db23b5f6ae6eaa0f75cf05",
     "src/domain/fact-review.js": "bce3e4cb59a263e079aeeb5f184b578f8dcef27a4976d48c67ba33728bbadb05",
     "src/domain/prose.js": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
-    "src/storage.js": "e89aaef5b5de6cd99038fbf25f8d966ab48ff14aa3d9dc152d8dd34b222f234d",
+    "src/storage.js": "c67de962ee94959da9870d77417a4118c4efce431b15a1731e343f420cc7b2e4",
     "src/adapters/provider.js": "3cc066ec3b9df83eee372582a20d676760ed65a02335ea2464d8114b021229d0",
     "src/authoring/live-provider.js": "3a83337bd47b5414e4d81ae8230488c5318b34a1990cc738b9976fdce184b786",
     "src/components/DraftPanel.jsx": "985cb492e3ad49a0fe21b31ee941f1dc1060a0f6784fda26fda939ba3e45136d",
@@ -27,7 +27,7 @@
     "src/components/HistoryView.jsx": "d02bc378eac0dea60798177edee342992df4f9955dccf5239b43cbfb048bb5be",
     "src/components/ModelTaskStatus.jsx": "841efe2185a29c89b5419b3af0a36f04d46c646d561324e3da5a885b829253c4",
     "src/main.jsx": "bff7940aa0d526751cacd8f05d24891ee890a2f74f653fb3128ead4638a256d9",
-    "src/styles.css": "339c49c0a176c20ba51716d7d24d167427aa8654950bfdb892b1e7533f7d602a",
+    "src/styles.css": "42e23dda348148d6d5060b571ea7f57f9c0bb6bae7b4bbdf7131b8b1e3c5db1b",
     "src/authoring/index.js": "62e1aaac2d4cef1fe4cb96c10dc9952752da37fc8ee0ec2951dfae3c8ce0cb6d",
     "src/authoring/wizard.css": "e2969f2d6eb6653e7190405689ba3a1cacc801affcc455c2ad5d2c1f3418f3cf",
     "index.html": "a821efcbd93ad4f2954725cda50074708a3c2dbb3f655a43279115b54cc7e535",
@@ -36,7 +36,9 @@
     "package-lock.json": "41f4dafa8e6ba98465d641b6bd86d7ab2755b9a86dd9c528853faddabef1008e",
     ".github/workflows/live-smoke.yml": "805bc3dd704496a797bef14c523e51e9542ea386fbd950f7e9ba9ce0e7f6401e",
     "server/provider-transport.js": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195",
-    "src/components/SceneIntent.jsx": "54fa309bc8128ae5b02e7fdecb7cac8b78c4f21af409c6b24aa9e693334bb677",
-    "src/domain/scene-intent.js": "30c928e05185c793a2dbc48af8d5f7434560cb311d59dd991b8a7b7aedfd7192"
-  }
+    "src/components/SceneIntent.jsx": "4c9a44d5294bf5de7d2b8be7da17f7325c0be1e28e9798001d7ff43455525436",
+    "src/domain/scene-intent.js": "cd339f60f8d03fcc54bb63457781c3eed6bd6b15dbb55279084a6dd5c9e16828",
+    "src/domain/generation-intent.js": "15ac4d101bba56f88db4c77180e29ac186194dcd133474a1f913104fd202e11b"
+  },
+  "maintenanceNote": "2026-10-09: credential-free maintenance replay tracks optional initial-generation intent provenance and its new local module. This changes no retained trial evidence, retired live authority, prompt or model budget."
 }

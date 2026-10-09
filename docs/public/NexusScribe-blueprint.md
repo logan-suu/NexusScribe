@@ -1494,3 +1494,10 @@ B5 从 Mem0、Graphiti 或 Letta 等候选中按能力匹配选择至少一个�
 候选稿旁原样展示当前已保存大纲的 `goal` 与 `exitState`，遵循现有生成入口的映射：规范章节 ID → 当前章节顺序 → `config.outline[index]`。同时标注该位置、原大纲 ID、意图指纹及候选正文 revision／指纹、基准状态和参考上下文版本；缺失、主动留空、旧上下文与历史候选明确区分。指纹仅用于展示，不能授予接受权限。草稿没有保留准备／生成时的完整大纲快照，不能把当前目标说成当时实际使用的目标；更新参考上下文也不自动重写正文。
 
 This read-only panel displays exact current saved intent, with positional outline provenance and per-candidate revision/reference-context metadata. It never scores fulfillment, substitutes missing goals, changes generation or acceptance, or adds provider calls, schemas or memory. Author intent remains separate from Canon and long-term plot obligations. The retained six-output trial used fixed contexts that do **not uniformly use the current schema-3 context**; it is not a current-app end-to-end validation. Historical output bytes, judgments, retired guards and the unchanged production instruction remain intact. See [scene-intent boundaries](SCENE-INTENT.md) for the bilingual explanation and offline test scope.
+
+
+### 2026-10-09 初次生成意图来源 / Initial generation intent provenance
+
+补齐作者对照的一个具体缺口：当前已保存大纲可能与实际生成输入不同（例如入口已有的目标默认值），旧稿却无法回溯。今后从应用生成的新稿，在调用前保存映射后 `goal`／`exitState` 的精确字段状态，并绑定初次 r1、目标章节、源 revision 和状态版本；界面分别显示当前大纲与初次请求。后续编辑／按意见改稿／上下文刷新保留此记录，明确不能把它当成后续版本的指令。旧稿、手写稿不补造来源。
+
+New App-generated drafts retain optional initial-input provenance at the browser adapter boundary (App → gateway in server mode). This bounded addition changes local provenance storage, not provider instructions, Canon, memory semantics, intent-fulfillment detection or acceptance gates. It is neither a full wire request nor authenticated evidence that the model obeyed it. Legacy imports remain supported; no historical prose, trial, verdict or retired budget is reopened. Offline synthetic coverage verifies behavior without claiming improved literary quality. See [scope and compatibility](SCENE-INTENT.md).
