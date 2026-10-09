@@ -1,6 +1,7 @@
 # Dependencies and generated output
 node_modules/
 dist/
+dist-server/
 coverage/
 playwright-report/
 test-results/

@@ -1,3 +1,4 @@
+import {readHistoricalSource} from '../scripts/eval-source-inventory.mjs';
 // Offline only: injected fake transports, fictional prose and public fake credentials.
 import test,{mock} from 'node:test';
 import assert from 'node:assert/strict';
@@ -126,7 +127,7 @@ test('retired main rejects every mode without touching arguments, environment, I
  const before=globalThis.fetch.mock.calls.length;
  for(const mode of ['prepare','execute','offline','invalid',undefined])await assert.rejects(main(mode,forbidden,forbidden),hasCode('RETIRED'));
  assert.equal(reads,0);assert.equal(globalThis.fetch.mock.calls.length,before);
- const cli=spawnSync(process.execPath,['scripts/run-causal-quality.mjs','execute'],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{...process.env,NEXUS_API_KEY:key,GH_TOKEN:gh}});
+ const cli=spawnSync(process.execPath,['--import','tsx','scripts/run-causal-quality.mjs','execute'],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{...process.env,NEXUS_API_KEY:key,GH_TOKEN:gh}});
  assert.equal(cli.status,1);assert.equal(cli.stdout,'');assert.deepEqual(JSON.parse(cli.stderr),{status:'blocked',code:'RETIRED'});assert.equal(cli.stderr.includes(key),false);
 });
 test('retired replay requires literal opt-in and injected non-global transport before all protected access',async()=>{
@@ -158,7 +159,7 @@ test('original artifact bytes and exact executed source are immutable and hash-l
  const original=JSON.parse(await read('source-manifest.json')),record=JSON.parse(await read('reservation.json'));
  assert.equal(original.status,'new_separately_approved_not_dispatched');assert.equal(digest(original),record.manifestSha256);
  const sources={'scripts/run-causal-quality.mjs':'source-runner.mjs','.github/workflows/causal-quality-trial.yml':'source-workflow.yml','eval/CAUSAL-QUALITY-PROTOCOL.md':'source-protocol.md','tests/causal-quality.test.js':'source-tests.js'};
- for(const [path,h]of Object.entries(original.sha256)){const bytes=sources[path]?await read(sources[path]):await readFile(new URL('../'+path,import.meta.url));assert.equal(digest(bytes),h,path);}
+ for(const [path,h]of Object.entries(original.sha256)){const bytes=sources[path]?await read(sources[path]):await readHistoricalSource(path,h);assert.equal(digest(bytes),h,path);}
  const source=(await read('source-runner.mjs')).toString();assert.match(source,/export async function main\(mode=/);assert.doesNotMatch(source,/offlineReplay|fail\('RETIRED'\)/);
 });
 test('retained scoreable baseline reproduces the over-strict historical paragraph stop with no B or pair',async()=>{

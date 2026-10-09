@@ -1,3 +1,4 @@
+import {readHistoricalSourceSync} from '../scripts/eval-source-inventory.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync, readdirSync} from 'node:fs';
@@ -124,10 +125,10 @@ test('source hashes bind the frozen inputs and actual production implementation'
   assert.equal(artifact.sha256[sourcePaths[0]], '5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73');
   for (const path of [...sourcePaths, 'src/App.jsx','src/domain/engine.js','src/domain/scene-intent.js'])
     assert.equal(typeof artifact.sha256[path], 'string');
-  for (const [path, digest] of Object.entries(artifact.sha256)) assert.equal(sha256(bytes(path)), digest, path);
+  for (const [path, digest] of Object.entries(artifact.sha256)) assert.equal(sha256(readHistoricalSourceSync(path,digest)), digest, path);
   assert.deepEqual(Object.keys(artifact.validationOnlySha256), ['server/provider.js','server/provider-transport.js']);
   for (const [path, digest] of Object.entries(artifact.validationOnlySha256)) {
-    assert.equal(sha256(bytes(path)), digest, path);
+    assert.equal(sha256(readHistoricalSourceSync(path,digest)), digest, path);
     assert.equal(Object.hasOwn(artifact.sha256, path), false);
   }
 });
@@ -151,21 +152,23 @@ test('real App export is byte-reproducible with poisoned network and live flags,
     import net from 'node:net'; import tls from 'node:tls';
     const denied = () => { throw Error('NETWORK_FORBIDDEN_IN_FIXTURE_EXPORT'); };
     http.request = http.get = https.request = https.get = net.connect = net.createConnection = tls.connect = globalThis.fetch = denied;
-    const {exportSchema3Fixtures, serializeFixtures} = await import('./scripts/export-schema3-causal-fixtures.mjs');
+    const {exportSchema3Fixtures, serializeFixtures, verifySchema3FixtureParity} = await import('./scripts/export-schema3-causal-fixtures.mjs');
     const {readFileSync} = await import('node:fs'); const {default:assert} = await import('node:assert/strict');
-    const first = serializeFixtures(await exportSchema3Fixtures());
-    assert.equal(first, readFileSync('${fixturePath}', 'utf8'));
+    const current = await exportSchema3Fixtures();
+    await verifySchema3FixtureParity(current);
+    const first = serializeFixtures(current);
+    assert.deepEqual(current.fixtures, JSON.parse(readFileSync('${fixturePath}', 'utf8')).fixtures);
     assert.equal(serializeFixtures(await exportSchema3Fixtures()), first);
     assert.equal(globalThis.fetch, denied);
   `;
   const env = {PATH:process.env.PATH, NEXUS_LIVE_ENABLED:'true',
     NEXUS_OVERAGE_CONFIRMED_OFF:'true', NEXUS_CAUSAL_APPROVED:'true',
     NEXUS_API_KEY:'OFFLINE_TEST_NOT_A_CREDENTIAL', GITHUB_ACTIONS:'true'};
-  const run = spawnSync(process.execPath, ['--input-type=module','-e',code],
+  const run = spawnSync(process.execPath, ['--import','tsx','--input-type=module','-e',code],
     {cwd:root, env, encoding:'utf8', timeout:30000});
   assert.equal(run.status, 0, run.stderr);
   for (const flag of ['--live','--run','--approved']) {
-    const rejected = spawnSync(process.execPath, ['scripts/export-schema3-causal-fixtures.mjs',flag],
+    const rejected = spawnSync(process.execPath, ['--import','tsx','scripts/export-schema3-causal-fixtures.mjs',flag],
       {cwd:root, env, encoding:'utf8', timeout:5000});
     assert.equal(rejected.status, 1);
     assert.match(rejected.stderr, /no live mode/);

@@ -158,6 +158,6 @@ test('CLI and public main remain credential-free read-only preflight; live/resta
   const result = await main(['--offline']); assert.equal(result.liveCalls, 0); assert.equal(result.mode, 'offline_preparation_only'); assert.equal(result.liveRetired, true); assert.equal(result.historicalLiveAttempts, 1); assert.equal(result.additionalLiveAllowance, 0); assert.equal(result.nextStage, 'none_retired');
   const source = await readFile(resolve(root, 'scripts/run-author-revision-eval.mjs'), 'utf8');
   assert.doesNotMatch(source, /\bfetch\s*\(|createAgentService\s*\(|process\.env|writeFile\s*\(/);
-  const cli = spawnSync(process.execPath, ['scripts/run-author-revision-eval.mjs', '--offline'], { cwd: root, encoding: 'utf8', env: {} });
+  const cli = spawnSync(process.execPath, ['--import','tsx','scripts/run-author-revision-eval.mjs', '--offline'], { cwd: root, encoding: 'utf8', env: {} });
   assert.equal(cli.status, 0, cli.stderr); assert.equal(JSON.parse(cli.stdout).liveCalls, 0);
 });

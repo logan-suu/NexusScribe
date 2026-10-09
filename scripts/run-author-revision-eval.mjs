@@ -1,3 +1,4 @@
+import {currentMaintenancePaths} from './eval-source-inventory.mjs';
 /** Offline preregistration validator only. No live transport, dispatch, credential read, or application mutation. */
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
@@ -20,7 +21,7 @@ export const SOURCE_HASHES = Object.freeze({
   acceptedPriorText: 'c093b4d5bf0ae51a4cdf9bc9b62aa7f5f20a1851493b429acac6eec974178a73',
   project: '3e0cb449d4cb55e9b949a6de940ca526febed706d2c0fda3f5a649fd6765f5ed'
 });
-export const FROZEN_PATHS = Object.freeze([
+export const FROZEN_PATHS = Object.freeze(currentMaintenancePaths(Object.freeze([
   'eval/AUTHOR-REVISION-PROTOCOL.md', 'scripts/run-author-revision-eval.mjs', 'tests/author-revision-eval.test.js',
   'server/provider.js', 'server/provider-transport.js', 'src/domain/prose.js',
   'scripts/run-author-revision-live.mjs', 'tests/author-revision-live.test.js', '.github/workflows/author-revision-trial.yml',
@@ -29,7 +30,7 @@ export const FROZEN_PATHS = Object.freeze([
   'eval/history/multichapter-v1/source-manifest.json', 'eval/history/multichapter-v1/artifact-index.json',
   'eval/MULTICHAPTER-RESULTS.md',
   ...['completed-01.json','dispatch-01.json','index-01.json','intent-01.json','ledger-01.json','raw-01.bin','request-01.json','source-manifest.json'].map(name => 'eval/history/author-revision-v1/'+name)
-]);
+])));
 export const digest = value => createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);

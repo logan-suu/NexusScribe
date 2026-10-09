@@ -256,7 +256,7 @@ test('new workflow scope is opt-in, no-rerun, credentials-isolated and artifact-
       assert.match(block, /NEXUS_API_KEY: \$\{\{ secrets.NEXUS_API_KEY \}\}/);
       assert.match(block, /NEXUS_PROSE_PIPELINE_APPROVED: 'true'/); assert.match(block, /NEXUS_OVERAGE_CONFIRMED_OFF: 'true'/);
     }
-    if (/run: (?:npm ci|node --test)/.test(block)) assert.equal(block.includes('NEXUS_API_KEY'), false);
+    if (/run: (?:npm ci|node --import tsx --test)/.test(block)) assert.equal(block.includes('NEXUS_API_KEY'), false);
     if (block.includes('scripts/writing-quality-eval.mjs')) assert.match(block, /if: inputs.test_scope == 'quality-pilot'/);
     if (block.includes('name: synthetic-prose-pipeline-pilot')) {
       const paths = [...block.matchAll(/^\s+prose-pipeline-evidence\/(.+)$/gm)].map(match => match[1]);

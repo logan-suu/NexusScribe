@@ -128,15 +128,22 @@ NEXUS_MAX_CALLS=10
 | `src/authoring/` | 访谈、故事约定、大纲、模板与真实模型流程 |
 | `src/adapters/` | 浏览器侧模型调用边界 |
 | `src/components/` | 中文创作工作台 |
-| `src/storage.js` | 本地保存与导出 |
+| `src/storage.ts` | 本地保存与导出 |
 | `server/` | 供应商协议、schema、超时与请求限制 |
 | `tests/` 与 `scripts/` | 叙事内核、模型适配和 UI 工作流检查 |
 
 详见[验收记录](docs/public/ACCEPTANCE.md)、[启动清单](docs/public/LAUNCH.md)与[运行时架构](docs/public/ARCHITECTURE.md)与[完整产品蓝图](docs/public/NexusScribe-blueprint.md)。蓝图包含规划中的能力，不代表全部已实现。
 
+## TypeScript 实现
+
+生产代码中的 React 界面、领域引擎、浏览器适配器、存储层和 Node 网关均使用严格 TypeScript（`.ts` / `.tsx`）。`npm run typecheck` 检查共享类型约定和编译期反例测试。供应商响应与导入 JSON 仍须通过运行时校验；静态类型不证明模型判断正确，也不赋予导入历史可信身份。
+
+`npm run build` 先检查类型，再构建前端并将网关编译到 `dist-server/`；`npm run server:built` 用普通 Node 运行编译后的网关。`npm start` 与 `npm run server` 使用锁定版本的 `tsx` 执行开发源码。测试、工具及不可变的历史评估源码可继续保留 JavaScript。此次迁移不改变备份格式或已有正文数据；历史证据保留原 JS 源码身份，与当前 TS 维护检查分开。详见[迁移范围与重放](docs/public/TYPESCRIPT.md)。
+
 ## 开发与验证
 
 ```sh
+npm run typecheck     # 严格生产 TypeScript 与类型约定检查
 npm run dev           # 仅前端，端口 5173
 npm run server        # 仅 API，端口 8787
 npm test              # 领域、契约与假供应商测试
@@ -145,6 +152,7 @@ npm run test:ui:live  # 假模型五环节 UI 工作流
 npm run test:ui:race  # 在途跨项目审阅竞态回归
 npm run check         # 上述检查与 production build
 npm run build
+npm run server:built  # 编译后的网关，无需 TypeScript loader
 npm run preview       # 构建预览，端口 4173；API 需另行启动
 ```
 

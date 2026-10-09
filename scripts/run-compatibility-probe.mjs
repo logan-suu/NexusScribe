@@ -1,3 +1,4 @@
+import {currentMaintenancePaths} from './eval-source-inventory.mjs';
 /** Consumed and retired after one HTTP-200 request. Explicit fake replay only. */
 import {readFile,mkdir,open,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -9,7 +10,7 @@ export const WORKFLOW='compatibility-probe.yml';
 export const ENDPOINT='https://opencode.ai/zen/go/v1/chat/completions';
 export const BODY_SHA='2b598fa0db1271b0024150b80afab36bf2bb86ae7573dedb5bbe3bb9c664241c';
 export const FREEZE_SHA='5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73';
-export const PATHS=['scripts/run-compatibility-probe.mjs','server/provider-transport.js','.github/workflows/compatibility-probe.yml','eval/COMPATIBILITY-PROBE-PROTOCOL.md','eval/causal-continuity-requests.json','tests/compatibility-probe.test.js'];
+export const PATHS=Object.freeze(currentMaintenancePaths(['scripts/run-compatibility-probe.mjs','server/provider-transport.js','.github/workflows/compatibility-probe.yml','eval/COMPATIBILITY-PROBE-PROTOCOL.md','eval/causal-continuity-requests.json','tests/compatibility-probe.test.js']));
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const digest=x=>createHash('sha256').update(typeof x==='string'||Buffer.isBuffer(x)?x:JSON.stringify(x)).digest('hex');
 const fail=code=>{throw Object.assign(Error(code),{code});};

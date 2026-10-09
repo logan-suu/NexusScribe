@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import * as engine from '../src/domain/engine.js';
 const out='/tmp/nexusscribe-ui-fact-review';await mkdir(out+'/node_modules',{recursive:true});
 for(const name of ['react','react-dom','lucide-react']){try{await symlink(resolve('node_modules',name),out+'/node_modules/'+name)}catch(e){if(e.code!=='EEXIST')throw e}}
-await build({entryPoints:['src/App.jsx'],bundle:true,packages:'external',format:'esm',outfile:out+'/App.mjs',loader:{'.css':'empty'},jsx:'automatic'});
+await build({entryPoints:['src/App.tsx'],bundle:true,packages:'external',format:'esm',outfile:out+'/App.mjs',loader:{'.css':'empty'},jsx:'automatic'});
 const dom=new JSDOM('<!doctype html><html><body></body></html>',{url:'http://localhost/'});
 for(const key of ['window','document','HTMLElement','Element','Node','MutationObserver','localStorage','getComputedStyle'])globalThis[key]=dom.window[key];Object.defineProperty(globalThis,'navigator',{value:dom.window.navigator,configurable:true});globalThis.IS_REACT_ACT_ENVIRONMENT=true;dom.window.HTMLElement.prototype.scrollIntoView=function(){};
 const React=await import('react');const {render,screen,within,waitFor,cleanup}=await import('@testing-library/react');const user=(await import('@testing-library/user-event')).default.setup();const {default:App}=await import(out+'/App.mjs');

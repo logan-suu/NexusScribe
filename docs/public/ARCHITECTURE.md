@@ -75,3 +75,9 @@ A proposal never changes the accepted manuscript or memory by itself. Explicit a
 The browser checks process budget before storing a request proposal, then rechecks the durable workspace before dispatch. Proposals reference deduplicated exact source/context snapshots; terminal records keep their result once, and active proposal currency is evaluated in one pass per draft. The 2 MiB workspace limit still bounds genuinely new retained content; no audit history is silently deleted. Server limits remain authoritative.
 
 A received proposal survives a failed save in current-window state for export/retry-save. Stale results, instruction changes (even away and back), cancellation, reload/import and confirmation races cannot silently acquire adoption authority. These are workflow properties; neither author choice, model review nor count compliance certifies literary quality.
+
+## TypeScript contracts / 类型约定
+
+Production `src/` and `server/` use strict TypeScript. Shared domain types describe lifecycle states, patches, source revisions, review/extraction bindings and provenance; React props and request cancellation are typed. External JSON starts as `unknown` and retains runtime validation. Compiler checks supplement the existing runtime, storage and browser regressions. The v1 storage schema is unchanged. Historical JavaScript evaluation evidence remains separate from current TypeScript source inventories. See [scope and replay](TYPESCRIPT.md).
+
+生产界面、领域逻辑、存储与服务端已迁移至严格 TypeScript；外部 JSON 仍由运行时校验，备份格式不变。类型检查不会把模型判断、导入历史或语义评估变成可信事实。

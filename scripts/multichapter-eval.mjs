@@ -1,3 +1,4 @@
+import {currentMaintenancePaths} from './eval-source-inventory.mjs';
 /** Credential-free maintenance replay of the retired live journey. Optional model judgments are mocked; quote selection does not depend on them. Never retries or dispatches on import. */
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile, mkdir, writeFile, unlink } from 'node:fs/promises';
@@ -18,7 +19,7 @@ export const protocol = Object.freeze({ id: 'multichapter-v1', version: 1,
   maxCalls: 12, maxTokens: 3000, maxOutputTokens: 36000, temperature: 0.7, thinking: 'disabled', minimumGapMs: 11000,
   chapters: 3, targetHan: Object.freeze([350, 500]), targetParagraphs: Object.freeze([4, 7]),
   actions: Object.freeze(['generateProse', 'extractMemory', 'reviewChapter', 'auditMemoryCandidate']) });
-export const FROZEN_PATHS = Object.freeze([
+export const FROZEN_PATHS = Object.freeze(currentMaintenancePaths(Object.freeze([
   'eval/MULTICHAPTER-PROTOCOL.md', 'eval/multichapter-fixtures.mjs', 'scripts/multichapter-eval.mjs',
   'tests/multichapter-eval.test.js', 'server/provider.js', 'server/provider-transport.js', 'server/index.js', 'src/App.jsx',
   'src/domain/engine.js', 'src/domain/memory-review.js', 'src/domain/fact-review.js', 'src/domain/prose.js',
@@ -29,7 +30,7 @@ export const FROZEN_PATHS = Object.freeze([
   'src/components/ProjectWizard.jsx', 'src/components/Inspector.jsx', 'src/components/HistoryView.jsx',
   'src/components/ModelTaskStatus.jsx', 'src/main.jsx', 'src/styles.css', 'src/authoring/index.js',
   'src/authoring/wizard.css', 'index.html', 'vite.config.js', 'package.json', 'package-lock.json', '.github/workflows/live-smoke.yml'
-]);
+])));
 export const ARTIFACT_NAMES = Object.freeze(['inputs.json', 'diagnostics.json', 'final-workspace.json',
   'author-fact-checkpoint.json', 'chapter-1.png', 'chapter-2.png', 'chapter-3.png', 'stopped.png',
   ...Array.from({ length: 12 }, (_, i) => `request-${String(i + 1).padStart(2, '0')}.json`),

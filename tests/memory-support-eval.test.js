@@ -89,7 +89,7 @@ test('frozen audit source hashes and artifact allowlist match preregistration',a
 test('workflow audit scope is explicit, first-attempt-only and artifact allowlisted',async()=>{
  const workflow=await readFile(new URL('../.github/workflows/live-smoke.yml',import.meta.url),'utf8');
  assert.match(workflow,/memory-support' && github.run_attempt == 1/);assert.match(workflow,/default: review-probe/);
- const block=workflow.split(/\n      - name:/).find(x=>x.includes('run: node scripts/memory-support-eval.mjs'));
+ const block=workflow.split(/\n      - name:/).find(x=>x.includes('run: node --import tsx scripts/memory-support-eval.mjs'));
  assert.match(block,/NEXUS_MEMORY_SUPPORT_APPROVED: 'true'/);assert.match(block,/NEXUS_API_KEY:/);
  const artifact=workflow.split(/\n      - name:/).find(x=>x.includes('name: synthetic-memory-support-audit'));
  for(const name of ARTIFACT_NAMES)assert.ok(artifact.includes('memory-support-evidence/'+name));

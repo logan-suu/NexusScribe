@@ -333,9 +333,9 @@ test('workflow isolates manual scope, credentials, first attempt and exact artif
   assert.match(workflow, /isolated-memory-support' && github.run_attempt == 1/); assert.match(workflow, /default: review-probe/);
   assert.match(workflow, /options: \[[^\n]*, isolated-memory-support, multichapter\]/);
   const blocks = workflow.split(/\n      - name:/);
-  const check = blocks.find(block => block.includes('run: node --test tests/isolated-memory-support-eval.test.js'));
+  const check = blocks.find(block => block.includes('run: node --import tsx --test tests/isolated-memory-support-eval.test.js'));
   assert.ok(check); assert.ok(!check.includes('NEXUS_API_KEY'));
-  const run = blocks.find(block => block.includes('run: node scripts/isolated-memory-support-eval.mjs'));
+  const run = blocks.find(block => block.includes('run: node --import tsx scripts/isolated-memory-support-eval.mjs'));
   assert.match(run, /if: inputs.test_scope == 'isolated-memory-support' && github.run_attempt == 1/);
   assert.match(run, /NEXUS_ISOLATED_MEMORY_SUPPORT_APPROVED: 'true'/); assert.match(run, /NEXUS_API_KEY: \$\{\{ secrets.NEXUS_API_KEY \}\}/);
   assert.ok(!run.includes('NEXUS_MEMORY_SUPPORT_APPROVED')); assert.ok(!run.includes('retry'));

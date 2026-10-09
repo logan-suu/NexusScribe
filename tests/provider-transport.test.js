@@ -124,14 +124,14 @@ test('all four current source freezes include and reject a modified transport de
   const root=fileURLToPath(new URL('../',import.meta.url)),directory=await mkdtemp(join(tmpdir(),'nexus-transport-freeze-'));
   try{
     for(const path of ['server','src','scripts','eval'])await cp(join(root,path),join(directory,path),{recursive:true});
-    for(const path of ['.github','tests'])await cp(join(root,path),join(directory,path),{recursive:true});
-    for(const path of ['package.json','package-lock.json','index.html','vite.config.js'])await copyFile(join(root,path),join(directory,path));
+    for(const path of ['.github','tests','type-tests'])await cp(join(root,path),join(directory,path),{recursive:true});
+    for(const path of ['package.json','package-lock.json','index.html','vite.config.js','tsconfig.json','tsconfig.server.json'])await copyFile(join(root,path),join(directory,path));
     const validators=[];
     for(const [path,name]of [['run-causal-continuity.mjs','loadFrozen'],['run-author-revision-eval.mjs','verifyFrozenManifest'],['isolated-memory-support-eval.mjs','verifyFrozenManifest'],['multichapter-eval.mjs','verifyFrozenManifest']]){
-      const module=await import(pathToFileURL(join(directory,'scripts',path)));assert.ok(module.FROZEN_PATHS.includes('server/provider-transport.js'));
+      const module=await import(pathToFileURL(join(directory,'scripts',path)));assert.ok(module.FROZEN_PATHS.includes('server/provider-transport.ts'));
       await module[name]();validators.push(module[name]);
     }
-    const target=join(directory,'server/provider-transport.js');await writeFile(target,(await readFile(target,'utf8'))+'\n// synthetic mutation\n');
+    const target=join(directory,'server/provider-transport.ts');await writeFile(target,(await readFile(target,'utf8'))+'\n// synthetic mutation\n');
     for(const validate of validators)await assert.rejects(validate());
   }finally{await rm(directory,{recursive:true,force:true});}
 });

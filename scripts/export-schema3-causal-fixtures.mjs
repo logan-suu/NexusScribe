@@ -1,11 +1,12 @@
 /** Credential-free export/check. Capture the real App input; never run a provider. */
 import {JSDOM} from 'jsdom';
 import {build} from 'esbuild';
-import {readFile, readdir, writeFile, mkdtemp, symlink, rm} from 'node:fs/promises';
+import {readFile, readdir, mkdtemp, symlink, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {resolve, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import assert from 'node:assert/strict';
+import {CURRENT_RUNTIME_PATHS, readHistoricalSource} from './eval-source-inventory.mjs';
 import {fixtureSetId, baselineCommit, sourcePaths, sha256, buildSchema3FixtureStates, describeFixture}
   from '../eval/schema3-causal-fixtures.mjs';
 import {getContext} from '../src/domain/engine.js';
@@ -13,9 +14,10 @@ import {KEY} from '../src/storage.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const outputPath = join(root, 'eval/schema3-causal-fixtures.json');
+export const MAINTENANCE_MANIFEST_PATH = 'eval/schema3-causal-maintenance-manifest.json';
 
 async function sourceHashes() {
-  const paths = [...sourcePaths, 'package.json', 'package-lock.json', 'eval/schema3-causal-fixtures.mjs',
+  const paths = [...sourcePaths, ...CURRENT_RUNTIME_PATHS.filter(path => !path.startsWith('server/') && path !== 'tsconfig.server.json'), 'eval/schema3-causal-fixtures.mjs',
     'scripts/export-schema3-causal-fixtures.mjs', 'tests/schema3-causal-fixtures.test.js'];
   async function walk(path) {
     for (const entry of await readdir(join(root, path), {withFileTypes:true})) {
@@ -24,14 +26,14 @@ async function sourceHashes() {
     }
   }
   await walk('src');
-  return Object.fromEntries(await Promise.all(paths.sort().map(async path =>
+  return Object.fromEntries(await Promise.all([...new Set(paths)].sort().map(async path =>
     [path, sha256(await readFile(join(root, path)))])));
 }
 
 // These modules are used only by the fixture test's current-input validator.
 // They are not imported or executed by the App capture/export runtime.
 async function validationOnlyHashes() {
-  return Object.fromEntries(await Promise.all(['server/provider.js', 'server/provider-transport.js']
+  return Object.fromEntries(await Promise.all(['server/provider.ts', 'server/provider-transport.ts', 'server/types.ts', 'tsconfig.server.json']
     .map(async path => [path, sha256(await readFile(join(root, path)))])));
 }
 
@@ -45,7 +47,7 @@ export async function exportSchema3Fixtures() {
   let dom, cleanup;
   try {
     await symlink(join(root, 'node_modules'), join(out, 'node_modules'));
-    await build({absWorkingDir:root, entryPoints:['src/App.jsx'], bundle:true,
+    await build({absWorkingDir:root, entryPoints:['src/App.tsx'], bundle:true,
       packages:'external', format:'esm', outfile:join(out, 'App.mjs'),
       loader:{'.css':'empty'}, jsx:'automatic', logLevel:'silent'});
     dom = new JSDOM('<!doctype html><html><body></body></html>', {url:'http://localhost/'});
@@ -93,7 +95,10 @@ export async function exportSchema3Fixtures() {
       baselineCommit, capture:'App-to-gateway input, before server-injected chapterId, model messages and settings',
       authority:'Synthetic offline reconstruction only; no new model judgments, story facts or real author acceptance',
       providerCalls:0, sha256:await sourceHashes(),
-      validationOnlySha256:await validationOnlyHashes(), fixtures};
+      validationOnlySha256:await validationOnlyHashes(), fixtures,
+      maintenance:{scope:'current TypeScript implementation; not original executed JavaScript sources',
+        manifest:MAINTENANCE_MANIFEST_PATH, frozenArtifact:'eval/schema3-causal-fixtures.json',
+        frozenArtifactSha256:sha256(await readFile(outputPath))}};
   } finally {
     cleanup?.(); dom?.window.close();
     for (const [key, descriptor] of savedGlobals) {
@@ -104,6 +109,27 @@ export async function exportSchema3Fixtures() {
 }
 
 export const serializeFixtures = value => JSON.stringify(value, null, 2)+'\n';
+/** Compare all frozen data/metadata, while keeping current implementation hashes separate. */
+export async function verifySchema3FixtureParity(current) {
+  const frozenBytes = await readFile(outputPath), frozen = JSON.parse(frozenBytes);
+  const {sha256:oldSources, validationOnlySha256:oldValidation, ...oldContent} = frozen;
+  const {sha256:currentSources, validationOnlySha256:currentValidation, maintenance, ...currentContent} = current;
+  assert.deepEqual(currentContent, oldContent, 'Schema-3 fixture content drift');
+  assert.equal(maintenance.frozenArtifactSha256, sha256(frozenBytes));
+  for (const [path, hash] of Object.entries({...oldSources, ...oldValidation})) {
+    await readHistoricalSource(path, hash);
+  }
+  const manifest = JSON.parse(await readFile(join(root, MAINTENANCE_MANIFEST_PATH), 'utf8'));
+  assert.equal(manifest.protocol, 'schema3-causal-typescript-maintenance-v1');
+  assert.equal(manifest.frozenArtifactSha256, sha256(frozenBytes));
+  assert.deepEqual(manifest.sha256, currentSources, 'Current TypeScript fixture source drift');
+  assert.deepEqual(manifest.validationOnlySha256, currentValidation, 'Current TypeScript validator drift');
+  for (const [path, hash] of Object.entries({...currentSources, ...currentValidation})) {
+    assert.equal(sha256(await readFile(join(root, path))), hash, path);
+  }
+  return true;
+}
+
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const args = process.argv.slice(2);
@@ -111,9 +137,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     console.error('Only --check (default) or --write is supported; no live mode.');
     process.exitCode = 1;
   } else {
-    const bytes = serializeFixtures(await exportSchema3Fixtures());
-    if (args[0] === '--write') await writeFile(outputPath, bytes);
-    else assert.equal(await readFile(outputPath, 'utf8'), bytes, 'Schema-3 fixture export drift');
-    console.log(`${args[0] === '--write' ? 'Wrote' : 'Verified'} 3 schema-3 fictional fixtures; 0 provider calls; SHA-256 ${sha256(bytes)}`);
+    const current = await exportSchema3Fixtures();
+    await verifySchema3FixtureParity(current);
+    // --write is retained as a compatibility alias for verification. Frozen evidence is immutable.
+    console.log(`Verified 3 unchanged schema-3 fictional fixtures against current TypeScript sources; 0 provider calls; frozen SHA-256 ${current.maintenance.frozenArtifactSha256}`);
   }
 }

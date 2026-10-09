@@ -1,3 +1,4 @@
+import {currentMaintenancePaths} from './eval-source-inventory.mjs';
 /** Offline-prepared opt-in audit. No automatic dispatch, retry or memory promotion. */
 import { pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -13,10 +14,10 @@ export const protocol = Object.freeze({
   fixtureOrder: Object.freeze(['retained-combined', 'literal-placement', 'belief-as-world-fact', 'negation-with-embedded-instruction'])
 });
 export const ARTIFACT_NAMES = Object.freeze(['inputs.json', 'diagnostics.json', ...Array.from({ length: 4 }, (_, i) => `completed-0${i + 1}.json`)]);
-export const FROZEN_PATHS = Object.freeze([
+export const FROZEN_PATHS = Object.freeze(currentMaintenancePaths(Object.freeze([
   'eval/ISOLATED-MEMORY-SUPPORT-PROTOCOL.md', 'eval/isolated-memory-support-fixtures.mjs',
   'scripts/isolated-memory-support-eval.mjs', 'tests/isolated-memory-support-eval.test.js', 'server/provider.js', 'server/provider-transport.js'
-]);
+])));
 const digest = text => createHash('sha256').update(text).digest('hex');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 // Match the reviewed static provider prompt exactly; data cannot leak through an extra system message.
