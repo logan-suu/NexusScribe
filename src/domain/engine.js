@@ -2,6 +2,7 @@ import {buildFactLedger} from './fact-review.js';
 import {initializeMemoryReview, archiveMemoryReview, replaceMemoryCandidates, memoryCandidatesIntact, buildMemoryLedger, validateMemoryDraftRecord, memoryReviewSnapshot, registerMemoryAuthority, compactMemoryBinding, expandMemoryBinding, memoryAssessmentSnapshot, ISOLATED_MEMORY_PROTOCOL, initializeMemorySupport, memorySupportHead, MEMORY_SELECTION_PROTOCOL, MEMORY_ATTESTATION_STATEMENT, deriveQuoteCard, compactQuoteCard, validMemoryAttestation, memorySelectionValid} from './memory-review.js';
 export {validateMemoryDraftRecord, MEMORY_SELECTION_PROTOCOL, MEMORY_ATTESTATION_STATEMENT} from './memory-review.js';
 import {segmentProse, MAX_PROSE_LENGTH} from './prose.js';
+import {bindGenerationIntent} from './generation-intent.js';
 /** Deterministic, local demonstration runtime. No LLM is called. */
 export const NEVER_MET = '陈默从未见过死者。';
 export const HAS_MET = '陈默三年前见过死者，但一直隐瞒。';
@@ -235,7 +236,7 @@ export function proposeCustomPatch(state,chapterId,instruction) {
  return {id:`author-patch-${state.projectId}-${chapterId}-${c.revision}-${state.version}-${instructionHash}`,projectId:state.projectId,baseVersion:state.version,chapterId,revision:c.revision,textHash:hash(c.text),intents:[instruction.intent],scope:instruction.intent==='author_fact'?'story':'chapter',status:'proposed',summary:instruction.intent==='author_fact'?(target?'替代作者明确选择的现有设定，保留原记录与出处':'记录作者明确确认的设定，不进行额外语义推断'):'按作者分类保存局部表达，不提升为长期设定',operations:instruction.intent==='author_fact'?[{op:target?'supersede_author_fact':'append_author_fact',...(target?{targetId:target.id,expectedRecordVersion:target.recordVersion}:{}),statement,source:evidence}]:[],questions:[],evidence:[evidence],authorInstruction,instructionHash};
 }
 /** Stage a provider result against the exact context snapshot it consumed. */
-export function stageProviderDraft(state,result,chapterId) {
+export function stageProviderDraft(state,result,chapterId,generationIntent) {
  chapter(state,chapterId);
  if(state.chapters.some(c=>c.syncStatus!=='CLEAN'))fail('UNSYNCED_TEXT','先处理未同步的作者修改，再保存生成候选');
  if(!result||typeof result.text!=='string'||!result.text.trim())fail('INVALID_TEXT','模型结果缺少有效正文');
@@ -246,7 +247,10 @@ export function stageProviderDraft(state,result,chapterId) {
  if(result.staging!==undefined&&!Array.isArray(result.staging))fail('INVALID_STAGING','草稿暂存变化必须是数组');
  const staging=(result.staging??[]).map((e,i)=>{if(!e||typeof e.label!=='string'||!e.label.trim()||typeof e.sourceQuote!=='string'||!e.sourceQuote.trim()||!result.text.includes(e.sourceQuote))fail('INVALID_STAGING','草稿事件需要当前候选正文中的原文证据');if(Object.hasOwn(e,'sourceParagraphIndex')&&(!Number.isInteger(e.sourceParagraphIndex)||e.sourceParagraphIndex<0||result.text.split('\n')[e.sourceParagraphIndex]!==e.sourceQuote))fail('INVALID_STAGING','草稿事件段落引用必须对应当前正文原文');return {id:`staged-${state.sequence+1}-${i+1}`,label:e.label,sourceQuote:e.sourceQuote,...(Object.hasOwn(e,'sourceParagraphIndex')?{sourceParagraphIndex:e.sourceParagraphIndex}:{}),status:'proposed'};});
  const s=copy(state);s.sequence++;const id=`draft-${s.sequence}`;
- s.drafts.push({id,projectId:s.projectId,chapterId,runId:`run-${s.sequence}`,revision:1,baseVersion:s.version,chapterRevisions:Object.fromEntries(s.chapters.map(c=>[c.id,c.revision])),status:'DRAFT',text:result.text,textHash:hash(result.text),provider:typeof result.provider==='string'?result.provider:(result.provider?.id||'external-provider'),providerInfo:typeof result.provider==='object'&&result.provider?copy(result.provider):null,requiresSemanticReview:Boolean(result.provider?.isLive),modelReview:null,staging,context:copy(context),review:null});initializeMemoryReview(s.drafts.at(-1));return s;
+ s.drafts.push({id,projectId:s.projectId,chapterId,runId:`run-${s.sequence}`,revision:1,baseVersion:s.version,chapterRevisions:Object.fromEntries(s.chapters.map(c=>[c.id,c.revision])),status:'DRAFT',text:result.text,textHash:hash(result.text),provider:typeof result.provider==='string'?result.provider:(result.provider?.id||'external-provider'),providerInfo:typeof result.provider==='object'&&result.provider?copy(result.provider):null,requiresSemanticReview:Boolean(result.provider?.isLive),modelReview:null,staging,context:copy(context),review:null});
+ // Only the local caller can supply request provenance; provider fields are ignored.
+ const generated=s.drafts.at(-1);if(generationIntent!==undefined)generated.generationIntent=bindGenerationIntent(s,generated,generationIntent);
+ initializeMemoryReview(generated);return s;
 }
 
 /** The presence of pipeline metadata also gates malformed/forged draft flags. */
@@ -310,10 +314,10 @@ export function validateProseDraftRecord(d){
 }
 
 /** Save prose first. A generation response cannot smuggle memory into staging. */
-export function stageProseDraft(state,result,chapterId){
+export function stageProseDraft(state,result,chapterId,generationIntent){
  if(!result||typeof result.text!=='string'||!result.text.trim()||result.text.length>MAX_PROSE_LENGTH)fail('INVALID_TEXT','模型结果需要 1 至 30000 字符的非空正文');
  if(result.chapterId!==undefined&&result.chapterId!==chapterId)fail('CHAPTER_MISMATCH','模型正文的目标章节不一致');
- const s=stageProviderDraft(state,{...result,staging:[]},chapterId),d=s.drafts.at(-1);
+ const s=stageProviderDraft(state,{...result,staging:[]},chapterId,generationIntent),d=s.drafts.at(-1);
  if(JSON.stringify(result.context)!==JSON.stringify(getContext(state)))fail('STALE_CONTEXT','模型结果的创作上下文已变化');
  d.requiresExtraction=true;
  d.proseVersions=[proseVersion(d.text,1)];

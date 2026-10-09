@@ -43,6 +43,8 @@
 .scene-intent{min-width:0;margin:16px 0;padding:14px 16px;border:1px solid var(--line);border-radius:5px;background:#f5f7f1;overflow-wrap:anywhere}
 .scene-intent h3{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;margin:0 0 10px;font-size:13px}
 .scene-intent h3 span{font-size:11px;font-weight:400;color:var(--muted)}
+.scene-intent h4{font-size:12px;margin:14px 0 8px;color:var(--pine)}
+.scene-intent-request{border-top:1px dashed var(--line);margin-top:12px;padding-top:2px}
 .scene-intent p{font-size:11px;line-height:1.8;margin:7px 0}
 .scene-intent-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin:14px 0}
 .scene-intent-fields dt{font-size:11px;color:var(--pine);font-weight:600;margin-bottom:7px}

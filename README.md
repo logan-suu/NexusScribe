@@ -34,7 +34,7 @@ Offline mode supports the three-chapter template workflow. The normal live flow 
 
 ### Saved scene intent beside the draft
 
-The read-only “本章创作意图” panel shows the current chapter's exact saved `goal` and `exitState`, their outline slot/ID, and the candidate revision/reference-context status. Missing and deliberately empty values stay explicit; no substitute goal is invented. Chapter switching and edits update the display locally with **zero model calls**. Current intent is not a record of what the generator originally received, and context freshness is not proof the prose fulfills either target. This creates no new acceptance gate or Canon/plot-obligation record. See the [binding and evidence limits](docs/public/SCENE-INTENT.md).
+The read-only “本章创作意图” panel shows the current chapter's exact saved `goal` and `exitState`, their outline slot/ID, and the candidate revision/reference-context status. Missing and deliberately empty values stay explicit; no substitute goal is invented. Chapter switching and edits update the display locally with **zero model calls**. New drafts generated through the app additionally retain the exact `goal`/`exitState` fields from their initial generation input, including existing goal fallbacks. The panel separates that r1 request from current saved intent and later edits; legacy and handwritten drafts are never backfilled. This is local input provenance, not a complete provider prompt or proof of fulfillment. This creates no new acceptance gate or Canon/plot-obligation record. See the [binding and evidence limits](docs/public/SCENE-INTENT.md).
 
 ## Quick start
 
