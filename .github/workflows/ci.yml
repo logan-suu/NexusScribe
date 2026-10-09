@@ -39,7 +39,7 @@ jobs:
       - name: Prepare fictional imports and verify clean offline launch
         run: |
           npm run demo:prepare
-          node scripts/verify-demo-start.mjs
+          node --import tsx scripts/verify-demo-start.mjs
 
   browser-e2e:
     name: Chromium desktop and mobile
@@ -67,7 +67,7 @@ jobs:
       - name: Exercise browser workflows
         run: npm run test:e2e
       - name: Exercise exact multi-chapter live harness with fake transport only
-        run: node scripts/multichapter-eval.mjs --offline-smoke
+        run: node --import tsx scripts/multichapter-eval.mjs --offline-smoke
       - name: Preserve synthetic browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

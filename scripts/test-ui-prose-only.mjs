@@ -16,7 +16,7 @@ for (const name of ['react','react-dom','lucide-react']) {
   try {await symlink(resolve('node_modules', name), out+'/node_modules/'+name);}
   catch (error) {if (error.code !== 'EEXIST') throw error;}
 }
-await build({entryPoints:['src/App.jsx'], bundle:true, packages:'external', format:'esm', outfile:out+'/App.mjs', loader:{'.css':'empty'}, jsx:'automatic'});
+await build({entryPoints:['src/App.tsx'], bundle:true, packages:'external', format:'esm', outfile:out+'/App.mjs', loader:{'.css':'empty'}, jsx:'automatic'});
 const dom = new JSDOM('<!doctype html><html><body></body></html>', {url:'http://localhost/'});
 for (const key of ['window','document','HTMLElement','Element','Node','MutationObserver','localStorage','getComputedStyle','File']) globalThis[key] = dom.window[key];
 Object.defineProperty(globalThis, 'navigator', {value:dom.window.navigator, configurable:true});

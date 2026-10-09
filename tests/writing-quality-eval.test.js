@@ -41,7 +41,7 @@ test('registered workflow quality scope is opt-in and isolated from existing liv
  assert.match(workflow,/default: review-probe/);assert.match(workflow,/quality-pilot' && github.run_attempt == 1/);
  for(const block of workflow.split(/\n      - name:/).slice(1)){
   if(block.includes('scripts/writing-quality-eval.mjs')){assert.match(block,/if: inputs.test_scope == 'quality-pilot'/);assert.match(block,/NEXUS_API_KEY:/);assert.match(block,/NEXUS_QUALITY_EVAL_APPROVED: 'true'/);}
-  if(/run: (?:npm ci|node --test)/.test(block))assert.equal(block.includes('NEXUS_API_KEY'),false);
+  if(/run: (?:npm ci|node --import tsx --test)/.test(block))assert.equal(block.includes('NEXUS_API_KEY'),false);
   if(block.includes('scripts/live-writing-journey.mjs'))assert.match(block,/if: inputs.test_scope == 'journey'/);
   if(block.includes('scripts/live-review-probe.mjs'))assert.match(block,/if: inputs.test_scope == 'review-probe'/);
   if(block.includes('scripts/live-generation-probe.mjs'))assert.match(block,/if: inputs.test_scope == 'generation-probe'/);

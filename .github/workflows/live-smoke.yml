@@ -37,7 +37,6 @@ jobs:
         with:
           node-version: '22'
       - name: Install locked dependencies without credentials
-        if: inputs.test_scope == 'journey' || inputs.test_scope == 'multichapter'
         run: npm ci
       - name: Install Chromium and Chinese fonts without credentials
         if: inputs.test_scope == 'journey' || inputs.test_scope == 'multichapter'
@@ -46,7 +45,7 @@ jobs:
           sudo apt-get update && sudo apt-get install --yes fonts-noto-cjk
       - name: Run approved bounded real-browser journey
         if: inputs.test_scope == 'journey'
-        run: node scripts/live-writing-journey.mjs
+        run: node --import tsx scripts/live-writing-journey.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_JOURNEY_APPROVED: 'true'
@@ -54,7 +53,7 @@ jobs:
           NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
       - name: Run approved one-call synthetic review probe
         if: inputs.test_scope == 'review-probe'
-        run: node scripts/live-review-probe.mjs
+        run: node --import tsx scripts/live-review-probe.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_REVIEW_PROBE_APPROVED: 'true'
@@ -63,7 +62,7 @@ jobs:
           NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
       - name: Run approved one-call synthetic generation probe
         if: inputs.test_scope == 'generation-probe'
-        run: node scripts/live-generation-probe.mjs
+        run: node --import tsx scripts/live-generation-probe.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_GENERATION_PROBE_APPROVED: 'true'
@@ -80,10 +79,10 @@ jobs:
           retention-days: 7
       - name: Check frozen quality pilot offline without credentials
         if: inputs.test_scope == 'quality-pilot'
-        run: node --test tests/writing-quality-eval.test.js
+        run: node --import tsx --test tests/writing-quality-eval.test.js
       - name: Generate approved six-call synthetic quality pilot
         if: inputs.test_scope == 'quality-pilot'
-        run: node scripts/writing-quality-eval.mjs
+        run: node --import tsx scripts/writing-quality-eval.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_QUALITY_EVAL_APPROVED: 'true'
@@ -109,10 +108,10 @@ jobs:
           retention-days: 7
       - name: Check frozen prose pipeline offline without credentials
         if: inputs.test_scope == 'prose-pipeline'
-        run: node --test tests/prose-pipeline-eval.test.js
+        run: node --import tsx --test tests/prose-pipeline-eval.test.js
       - name: Generate approved nine-call synthetic prose pipeline pilot
         if: inputs.test_scope == 'prose-pipeline' && github.run_attempt == 1
-        run: node scripts/prose-pipeline-eval.mjs
+        run: node --import tsx scripts/prose-pipeline-eval.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_PROSE_PIPELINE_APPROVED: 'true'
@@ -141,10 +140,10 @@ jobs:
           retention-days: 7
       - name: Check frozen memory support audit offline without credentials
         if: inputs.test_scope == 'memory-support'
-        run: node --test tests/memory-support-eval.test.js
+        run: node --import tsx --test tests/memory-support-eval.test.js
       - name: Run approved four-call synthetic memory support audit
         if: inputs.test_scope == 'memory-support' && github.run_attempt == 1
-        run: node scripts/memory-support-eval.mjs
+        run: node --import tsx scripts/memory-support-eval.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_MEMORY_SUPPORT_APPROVED: 'true'
@@ -166,10 +165,10 @@ jobs:
           retention-days: 7
       - name: Check frozen isolated memory support audit offline without credentials
         if: inputs.test_scope == 'isolated-memory-support'
-        run: node --test tests/isolated-memory-support-eval.test.js
+        run: node --import tsx --test tests/isolated-memory-support-eval.test.js
       - name: Run separately approved four-call isolated memory support audit
         if: inputs.test_scope == 'isolated-memory-support' && github.run_attempt == 1
-        run: node scripts/isolated-memory-support-eval.mjs
+        run: node --import tsx scripts/isolated-memory-support-eval.mjs
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_ISOLATED_MEMORY_SUPPORT_APPROVED: 'true'
@@ -191,10 +190,10 @@ jobs:
           retention-days: 7
       - name: Verify frozen multi-chapter sources and guard tests without credentials
         if: inputs.test_scope == 'multichapter'
-        run: node --test tests/multichapter-eval.test.js
+        run: node --import tsx --test tests/multichapter-eval.test.js
       - name: Run approved single twelve-call multi-chapter validation
         if: inputs.test_scope == 'multichapter' && github.run_attempt == 1
-        run: node scripts/multichapter-eval.mjs multichapter-evidence
+        run: node --import tsx scripts/multichapter-eval.mjs multichapter-evidence
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_MULTICHAPTER_APPROVED: 'true'

@@ -156,7 +156,7 @@ test('second transport attempt in one stage is blocked independently before disp
   assert.equal(count, 1); assert.equal(h.c.attempts, 1); assert.equal(h.saved['diagnostics.json'].validationReason, 'REQUEST_COUNT'); assert.equal(h.saved['completed-01.json'], undefined);
 });
 test('allowlist and freeze cover effective UI, context, protocol and workflow; no old evidence edits', async () => {
-  for (const path of ['src/main.jsx', 'src/App.jsx', 'src/styles.css', 'src/domain/engine.js', 'src/domain/memory-review.js', 'src/domain/fact-review.js', 'src/domain/prose.js', 'src/storage.js', 'src/authoring/index.js', 'src/authoring/wizard.css', 'server/provider.js', 'server/index.js', 'package-lock.json', '.github/workflows/live-smoke.yml']) assert.ok(FROZEN_PATHS.includes(path), path);
+  for (const path of ['src/main.tsx', 'src/App.tsx', 'src/styles.css', 'src/domain/engine.ts', 'src/domain/memory-review.ts', 'src/domain/fact-review.ts', 'src/domain/prose.ts', 'src/storage.ts', 'src/authoring/index.ts', 'src/authoring/wizard.css', 'server/provider.ts', 'server/index.ts', 'package-lock.json', '.github/workflows/live-smoke.yml']) assert.ok(FROZEN_PATHS.includes(path), path);
   assert.equal(new Set(FROZEN_PATHS).size, FROZEN_PATHS.length); assert.equal(new Set(ARTIFACT_NAMES).size, ARTIFACT_NAMES.length);
   assert.ok(!ARTIFACT_NAMES.some(x => x.includes('*') || x.includes('/') || /raw|headers/i.test(x)));
   const source = await readFile(new URL('../scripts/multichapter-eval.mjs', import.meta.url), 'utf8');

@@ -128,15 +128,22 @@ Chinese writing workspace (React + Vite)
 | `src/authoring/` | Interview, story agreement, outline, template and live workflows |
 | `src/adapters/` | Browser-side model boundary |
 | `src/components/` | Chinese-language writing workspace |
-| `src/storage.js` | Local persistence and export |
+| `src/storage.ts` | Local persistence and export |
 | `server/` | Provider protocol, schemas, timeouts, and request limits |
 | `tests/` and `scripts/` | Runtime, provider, and UI workflow checks |
 
 See the [acceptance record](docs/public/ACCEPTANCE.md), [launch checklist](docs/public/LAUNCH.md), and [runtime architecture](docs/public/ARCHITECTURE.md) for boundaries and the [product blueprint](docs/public/NexusScribe-blueprint.md) for the broader design. The blueprint includes planned capabilities.
 
+## TypeScript implementation
+
+The production React interface, domain engine, browser adapters, storage layer and Node gateway are implemented in strict TypeScript (`.ts` / `.tsx`). `npm run typecheck` checks their shared contracts and compile-time negative tests. Provider responses and imported JSON still require runtime validation; static types do not certify model claims or make imported history trusted.
+
+`npm run build` checks types, builds the frontend and emits the gateway to `dist-server/`. `npm run server:built` runs that compiled gateway with plain Node; `npm start` and `npm run server` use the pinned `tsx` loader for source development. Tests, tooling and immutable historical evaluation sources may remain JavaScript. The migration changes no backup format or saved manuscript data. Historical evidence keeps its original JS source identity separately from current TS maintenance checks. See [migration scope and replay](docs/public/TYPESCRIPT.md).
+
 ## Development and verification
 
 ```sh
+npm run typecheck     # Strict production TypeScript and contract checks
 npm run dev           # Frontend only, port 5173
 npm run server        # API only, port 8787
 npm test              # Domain, contract, and mocked-provider tests
@@ -145,6 +152,7 @@ npm run test:ui:live  # Mocked five-action model UI workflow
 npm run test:ui:race  # In-flight cross-project review regression
 npm run check         # Above checks plus production build
 npm run build
+npm run server:built  # Compiled gateway, no TypeScript loader
 npm run preview       # Production preview, port 4173; start API separately
 ```
 

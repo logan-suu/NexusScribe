@@ -1,0 +1,182 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev_v1.0]
+  pull_request:
+    branches: [main, dev_v1.0]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEXUS_LIVE_ENABLED: 'false'
+      NEXUS_OVERAGE_CONFIRMED_OFF: 'false'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run all checks
+        run: npm run check
+      - name: Prepare fictional imports and verify clean offline launch
+        run: |
+          npm run demo:prepare
+          node scripts/verify-demo-start.mjs
+
+  browser-e2e:
+    name: Chromium desktop and mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXUS_LIVE_ENABLED: 'false'
+      NEXUS_OVERAGE_CONFIRMED_OFF: 'false'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install Chromium and operating-system dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Install Chinese fonts
+        run: sudo apt-get update && sudo apt-get install --yes fonts-noto-cjk
+      - name: Exercise browser workflows
+        run: npm run test:e2e
+      - name: Exercise exact multi-chapter live harness with fake transport only
+        run: node scripts/multichapter-eval.mjs --offline-smoke
+      - name: Preserve synthetic browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: chromium-browser-evidence
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve compact desktop memory review screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: memory-review-desktop-screenshots
+          path: test-results/memory-review*-desktop-chromium*/*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve compact mobile memory review screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: memory-review-mobile-screenshots
+          path: test-results/memory-review*-mobile-chromium*/*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve compact multi-chapter screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: multichapter-screenshots
+          path: test-results/multichapter*/*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve compact manual acceptance screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: manual-acceptance-screenshots
+          path: |
+            test-results/manual-chapter*/manual-zero-memory-confirmation.png
+            test-results/manual-chapter*/manual-accepted-exact-author-chapter.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve compact author revision screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: author-revision-screenshots
+          path: test-results/author-revision*/*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve compact prose-only acceptance screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: prose-only-acceptance-screenshots
+          path: test-results/prose-only*/*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve curated offline acceptance package evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: acceptance-demo-evidence
+          path: |
+            test-results/acceptance-demo*/*.png
+            test-results/acceptance-demo*/acceptance-receipt.json
+            test-results/acceptance-demo*/accepted-backup.json
+            test-results/acceptance-demo*/unsaved-recovery-backup.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve offline multi-chapter harness evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: multichapter-offline-harness
+          path: |
+            multichapter-offline-evidence/inputs.json
+            multichapter-offline-evidence/diagnostics.json
+            multichapter-offline-evidence/final-workspace.json
+            multichapter-offline-evidence/author-fact-checkpoint.json
+            multichapter-offline-evidence/chapter-1.png
+            multichapter-offline-evidence/chapter-2.png
+            multichapter-offline-evidence/chapter-3.png
+            multichapter-offline-evidence/stopped.png
+            multichapter-offline-evidence/request-01.json
+            multichapter-offline-evidence/request-02.json
+            multichapter-offline-evidence/request-03.json
+            multichapter-offline-evidence/request-04.json
+            multichapter-offline-evidence/request-05.json
+            multichapter-offline-evidence/request-06.json
+            multichapter-offline-evidence/request-07.json
+            multichapter-offline-evidence/request-08.json
+            multichapter-offline-evidence/request-09.json
+            multichapter-offline-evidence/request-10.json
+            multichapter-offline-evidence/request-11.json
+            multichapter-offline-evidence/request-12.json
+            multichapter-offline-evidence/completed-01.json
+            multichapter-offline-evidence/completed-02.json
+            multichapter-offline-evidence/completed-03.json
+            multichapter-offline-evidence/completed-04.json
+            multichapter-offline-evidence/completed-05.json
+            multichapter-offline-evidence/completed-06.json
+            multichapter-offline-evidence/completed-07.json
+            multichapter-offline-evidence/completed-08.json
+            multichapter-offline-evidence/completed-09.json
+            multichapter-offline-evidence/completed-10.json
+            multichapter-offline-evidence/completed-11.json
+            multichapter-offline-evidence/completed-12.json
+          if-no-files-found: ignore
+          retention-days: 7

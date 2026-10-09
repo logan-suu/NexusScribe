@@ -430,7 +430,7 @@ test('retired main and CLI reject before environment, credentials, API, files or
   await assert.rejects(loadRunHistory(env), error => error.code === 'PROTOCOL_RETIRED');
   const root = await mkdtemp(join(tmpdir(), 'nexus-retired-cli-'));
   try {
-    const cli = spawnSync(process.execPath, [new URL('../scripts/run-author-revision-live.mjs', import.meta.url).pathname],
+    const cli = spawnSync(process.execPath, ['--import',import.meta.resolve('tsx'),new URL('../scripts/run-author-revision-live.mjs', import.meta.url).pathname],
       { cwd: root, encoding: 'utf8', env: { ...environment('revise'), GH_TOKEN: 'OFFLINE_GITHUB_SENTINEL' } });
     assert.equal(cli.status, 1); assert.equal(JSON.parse(cli.stderr).code, 'PROTOCOL_RETIRED');
     assert.equal(cli.stdout, ''); assert.doesNotMatch(cli.stderr, /PRIVATE_FAKE_TEST_KEY|OFFLINE_GITHUB_SENTINEL/);

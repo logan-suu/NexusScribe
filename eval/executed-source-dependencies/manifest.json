@@ -1,0 +1,284 @@
+{
+  "format": 1,
+  "scope": "Exact historical dependencies only; never current TypeScript runtime or live-run authority",
+  "baselineCommit": "d437d3e83b78802d8bfccc1cd90d5e0c07043969",
+  "source": "Pre-migration package, each file verified against the baseline Git blob and referenced historical SHA-256",
+  "sources": [
+    {
+      "originalPath": ".github/workflows/ci.yml",
+      "sha256": "ecd518f9e25063c66e6357949ea17454c095a727b59ef99ee77c460fae575db0",
+      "archivePath": "eval/executed-source-dependencies/ecd518f9e25063c66e6357949ea17454c095a727b59ef99ee77c460fae575db0/.github/workflows/ci.yml",
+      "gitBlob": "56968380b73814ed91aba5759ff53e1c66b4b6e1"
+    },
+    {
+      "originalPath": ".github/workflows/live-smoke.yml",
+      "sha256": "805bc3dd704496a797bef14c523e51e9542ea386fbd950f7e9ba9ce0e7f6401e",
+      "archivePath": "eval/executed-source-dependencies/805bc3dd704496a797bef14c523e51e9542ea386fbd950f7e9ba9ce0e7f6401e/.github/workflows/live-smoke.yml",
+      "gitBlob": "99398d0f6c80a6c0954da360eff5e4f7fc6dae9d"
+    },
+    {
+      "originalPath": "eval/MULTICHAPTER-RESULTS.md",
+      "sha256": "00e6a844b8aa26cd2c3e6e66f87453f58a73d33974aa387ef9d7eb4ca46e3f73",
+      "archivePath": "eval/executed-source-dependencies/00e6a844b8aa26cd2c3e6e66f87453f58a73d33974aa387ef9d7eb4ca46e3f73/eval/MULTICHAPTER-RESULTS.md",
+      "gitBlob": "8662883e6bcaf104088d6f2c404393e40b2f1712"
+    },
+    {
+      "originalPath": "eval/causal-continuity-requests.json",
+      "sha256": "5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73",
+      "archivePath": "eval/executed-source-dependencies/5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73/eval/causal-continuity-requests.json",
+      "gitBlob": "a6470cca234bd6afcc61b3bb87cd70eae361471b"
+    },
+    {
+      "originalPath": "eval/multichapter-fixtures.mjs",
+      "sha256": "5f46c2b7a27fc839f1f60cec28679305477d24731f613e163a9a2b27afcfe53e",
+      "archivePath": "eval/executed-source-dependencies/5f46c2b7a27fc839f1f60cec28679305477d24731f613e163a9a2b27afcfe53e/eval/multichapter-fixtures.mjs",
+      "gitBlob": "7194e1364bc3049d5b478233d89bdd9370b59964"
+    },
+    {
+      "originalPath": "eval/schema3-causal-fixtures.mjs",
+      "sha256": "7d5878dc9fce0f99892cf56b572fc0b5dce2200ffe918202d51d3e438a4c0b71",
+      "archivePath": "eval/executed-source-dependencies/7d5878dc9fce0f99892cf56b572fc0b5dce2200ffe918202d51d3e438a4c0b71/eval/schema3-causal-fixtures.mjs",
+      "gitBlob": "47a3c5d585ec340cbd766867bb77d1d7b1cd2ba2"
+    },
+    {
+      "originalPath": "eval/writing-quality-fixtures.mjs",
+      "sha256": "7ccc665810cf8aa8c101b4615be1bbdabfe802e2020da6ff08170f7bbf6480b4",
+      "archivePath": "eval/executed-source-dependencies/7ccc665810cf8aa8c101b4615be1bbdabfe802e2020da6ff08170f7bbf6480b4/eval/writing-quality-fixtures.mjs",
+      "gitBlob": "9f345ecf9f25cc0538468fa34b093d45d79695ec"
+    },
+    {
+      "originalPath": "index.html",
+      "sha256": "a821efcbd93ad4f2954725cda50074708a3c2dbb3f655a43279115b54cc7e535",
+      "archivePath": "eval/executed-source-dependencies/a821efcbd93ad4f2954725cda50074708a3c2dbb3f655a43279115b54cc7e535/index.html",
+      "gitBlob": "460baad1823584e770143508ff6751bed1910233"
+    },
+    {
+      "originalPath": "package-lock.json",
+      "sha256": "41f4dafa8e6ba98465d641b6bd86d7ab2755b9a86dd9c528853faddabef1008e",
+      "archivePath": "eval/executed-source-dependencies/41f4dafa8e6ba98465d641b6bd86d7ab2755b9a86dd9c528853faddabef1008e/package-lock.json",
+      "gitBlob": "468aac23e564c67c54f0f5b7130ea7e6fb359487"
+    },
+    {
+      "originalPath": "package.json",
+      "sha256": "273fb78def358fb77dbb05ed85e4c8f4b1ca73f96246e13444355cd99ba13e12",
+      "archivePath": "eval/executed-source-dependencies/273fb78def358fb77dbb05ed85e4c8f4b1ca73f96246e13444355cd99ba13e12/package.json",
+      "gitBlob": "d2974366c3870398cc030fbb3d4c2dada25c6dd5"
+    },
+    {
+      "originalPath": "scripts/export-schema3-causal-fixtures.mjs",
+      "sha256": "ef0ed2ab4a721c970621c70d49af7a18f2af58804c2e9362dd356c3b4e57c409",
+      "archivePath": "eval/executed-source-dependencies/ef0ed2ab4a721c970621c70d49af7a18f2af58804c2e9362dd356c3b4e57c409/scripts/export-schema3-causal-fixtures.mjs",
+      "gitBlob": "08c5e6182e61d0e83bbd9aef95a0e116a4bd791a"
+    },
+    {
+      "originalPath": "scripts/run-author-revision-live.mjs",
+      "sha256": "f3edc9097bd880256175e2f12a7743aa0260cbb1b983d93c94d64acb8e0dfc55",
+      "archivePath": "eval/executed-source-dependencies/f3edc9097bd880256175e2f12a7743aa0260cbb1b983d93c94d64acb8e0dfc55/scripts/run-author-revision-live.mjs",
+      "gitBlob": "7b36f3626adf1e779862174db9b1a9d67bc77d68"
+    },
+    {
+      "originalPath": "server/index.js",
+      "sha256": "d1d63c6636fc43fba2b9e50d6e9d57e4bca738076b9176c0898a3246650d0d72",
+      "archivePath": "eval/executed-source-dependencies/d1d63c6636fc43fba2b9e50d6e9d57e4bca738076b9176c0898a3246650d0d72/server/index.js",
+      "gitBlob": "ca1de328be14dbc24ab59ea82fe539f5d385f2ba"
+    },
+    {
+      "originalPath": "server/provider-transport.js",
+      "sha256": "bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195",
+      "archivePath": "eval/executed-source-dependencies/bbc46ad61797e779fca6b1faff9e3f673736090408b1ab45fe59ca558903c195/server/provider-transport.js",
+      "gitBlob": "dabf66fbb30367634d99199950e722fc8ee705cc"
+    },
+    {
+      "originalPath": "server/provider.js",
+      "sha256": "cbd2d3ad2123e9ba8cc0fad56443a13e5e73531876b507b111fe1ee0bbe131e7",
+      "archivePath": "eval/executed-source-dependencies/cbd2d3ad2123e9ba8cc0fad56443a13e5e73531876b507b111fe1ee0bbe131e7/server/provider.js",
+      "gitBlob": "c60172d6d52b2da8670748e3cefcdd7122e07b5d"
+    },
+    {
+      "originalPath": "src/App.jsx",
+      "sha256": "73a4afc2d121f643a4802f9d8f08470acd37857ae64c8f6643add8cffd6e3acb",
+      "archivePath": "eval/executed-source-dependencies/73a4afc2d121f643a4802f9d8f08470acd37857ae64c8f6643add8cffd6e3acb/src/App.jsx",
+      "gitBlob": "59908ea797a9593f70619c195cf8689d6bb6420d"
+    },
+    {
+      "originalPath": "src/adapters/provider.js",
+      "sha256": "3cc066ec3b9df83eee372582a20d676760ed65a02335ea2464d8114b021229d0",
+      "archivePath": "eval/executed-source-dependencies/3cc066ec3b9df83eee372582a20d676760ed65a02335ea2464d8114b021229d0/src/adapters/provider.js",
+      "gitBlob": "01d03785dbc968f082fac04589594af3c52702a5"
+    },
+    {
+      "originalPath": "src/authoring/index.js",
+      "sha256": "62e1aaac2d4cef1fe4cb96c10dc9952752da37fc8ee0ec2951dfae3c8ce0cb6d",
+      "archivePath": "eval/executed-source-dependencies/62e1aaac2d4cef1fe4cb96c10dc9952752da37fc8ee0ec2951dfae3c8ce0cb6d/src/authoring/index.js",
+      "gitBlob": "647cb65510059d076bcc5dfe0a591a08f0d421c7"
+    },
+    {
+      "originalPath": "src/authoring/live-provider.js",
+      "sha256": "3a83337bd47b5414e4d81ae8230488c5318b34a1990cc738b9976fdce184b786",
+      "archivePath": "eval/executed-source-dependencies/3a83337bd47b5414e4d81ae8230488c5318b34a1990cc738b9976fdce184b786/src/authoring/live-provider.js",
+      "gitBlob": "b6ef018479a73baba3e33abfc3124b192fcba3b4"
+    },
+    {
+      "originalPath": "src/authoring/wizard.css",
+      "sha256": "e2969f2d6eb6653e7190405689ba3a1cacc801affcc455c2ad5d2c1f3418f3cf",
+      "archivePath": "eval/executed-source-dependencies/e2969f2d6eb6653e7190405689ba3a1cacc801affcc455c2ad5d2c1f3418f3cf/src/authoring/wizard.css",
+      "gitBlob": "c1f9d3e51b513d7039579f45765a481fac61a387"
+    },
+    {
+      "originalPath": "src/components/DraftPanel.jsx",
+      "sha256": "985cb492e3ad49a0fe21b31ee941f1dc1060a0f6784fda26fda939ba3e45136d",
+      "archivePath": "eval/executed-source-dependencies/985cb492e3ad49a0fe21b31ee941f1dc1060a0f6784fda26fda939ba3e45136d/src/components/DraftPanel.jsx",
+      "gitBlob": "fa6d22f3ca96e8c6a220d34e553e5f412d37677f"
+    },
+    {
+      "originalPath": "src/components/Editor.jsx",
+      "sha256": "aff9f0c38f4592120ba597b8308ef6e623178be17d5ed5056b1c2f17570849d5",
+      "archivePath": "eval/executed-source-dependencies/aff9f0c38f4592120ba597b8308ef6e623178be17d5ed5056b1c2f17570849d5/src/components/Editor.jsx",
+      "gitBlob": "b970fce60966fd328d859048d6912df47a5b6c95"
+    },
+    {
+      "originalPath": "src/components/HistoryView.jsx",
+      "sha256": "d02bc378eac0dea60798177edee342992df4f9955dccf5239b43cbfb048bb5be",
+      "archivePath": "eval/executed-source-dependencies/d02bc378eac0dea60798177edee342992df4f9955dccf5239b43cbfb048bb5be/src/components/HistoryView.jsx",
+      "gitBlob": "760bf3ded8d88dd596cc535bad4a5531f499f518"
+    },
+    {
+      "originalPath": "src/components/Inspector.jsx",
+      "sha256": "d37324e86cab2a99c1aa34850aae0598b9ecfc6bdc2612b2fabd65b976145137",
+      "archivePath": "eval/executed-source-dependencies/d37324e86cab2a99c1aa34850aae0598b9ecfc6bdc2612b2fabd65b976145137/src/components/Inspector.jsx",
+      "gitBlob": "b226d138c815b8b4e0d2231d3df06b86e0b40cb8"
+    },
+    {
+      "originalPath": "src/components/ModelTaskStatus.jsx",
+      "sha256": "841efe2185a29c89b5419b3af0a36f04d46c646d561324e3da5a885b829253c4",
+      "archivePath": "eval/executed-source-dependencies/841efe2185a29c89b5419b3af0a36f04d46c646d561324e3da5a885b829253c4/src/components/ModelTaskStatus.jsx",
+      "gitBlob": "d125d1aa7866252cc2c6975d5da669dc7ae8729d"
+    },
+    {
+      "originalPath": "src/components/PatchPanel.jsx",
+      "sha256": "80eab1449a125a8fd9bb0b3a82f5aa0d5510b323745942d1f978fce8ad9a4dd8",
+      "archivePath": "eval/executed-source-dependencies/80eab1449a125a8fd9bb0b3a82f5aa0d5510b323745942d1f978fce8ad9a4dd8/src/components/PatchPanel.jsx",
+      "gitBlob": "ba5f7ee52f7f2c305201df959ac40cb590c54e76"
+    },
+    {
+      "originalPath": "src/components/ProjectWizard.jsx",
+      "sha256": "a49d1f2cd20176bcfb6488a081931748655c1ee5b48a6f76ae47dd7ff80b13f3",
+      "archivePath": "eval/executed-source-dependencies/a49d1f2cd20176bcfb6488a081931748655c1ee5b48a6f76ae47dd7ff80b13f3/src/components/ProjectWizard.jsx",
+      "gitBlob": "f8a70c25c7a5aaf235ef914660c6f9fb3faf5010"
+    },
+    {
+      "originalPath": "src/components/ProviderPanel.jsx",
+      "sha256": "158f70f2c2351e627fb756425c13c2a8a1b930ba3e358cfa64af489e6c75ba19",
+      "archivePath": "eval/executed-source-dependencies/158f70f2c2351e627fb756425c13c2a8a1b930ba3e358cfa64af489e6c75ba19/src/components/ProviderPanel.jsx",
+      "gitBlob": "551f5995804bb26279a832081a0ebcbda61043e5"
+    },
+    {
+      "originalPath": "src/components/RevisionAdoptionDialog.jsx",
+      "sha256": "cbceb02777ba2f43ccea7a348d6ed35652d6f029500c787fb1507e610fb179df",
+      "archivePath": "eval/executed-source-dependencies/cbceb02777ba2f43ccea7a348d6ed35652d6f029500c787fb1507e610fb179df/src/components/RevisionAdoptionDialog.jsx",
+      "gitBlob": "f2eca6ee778cab72c13f75fd5696a5cf7099b0c8"
+    },
+    {
+      "originalPath": "src/components/RevisionPanel.jsx",
+      "sha256": "a304217745ad96038b164bf539d42b89a2656753657f181b53dba713f3b73203",
+      "archivePath": "eval/executed-source-dependencies/a304217745ad96038b164bf539d42b89a2656753657f181b53dba713f3b73203/src/components/RevisionPanel.jsx",
+      "gitBlob": "a01feff14ace1c73d70e1fd2d3417615f1d1a08e"
+    },
+    {
+      "originalPath": "src/components/SceneIntent.jsx",
+      "sha256": "4c9a44d5294bf5de7d2b8be7da17f7325c0be1e28e9798001d7ff43455525436",
+      "archivePath": "eval/executed-source-dependencies/4c9a44d5294bf5de7d2b8be7da17f7325c0be1e28e9798001d7ff43455525436/src/components/SceneIntent.jsx",
+      "gitBlob": "ccc4c6d4dc162da00567ccb23f48b45708b3c634"
+    },
+    {
+      "originalPath": "src/components/Sidebar.jsx",
+      "sha256": "876028488f15955a592b99de3287c6fd363375c3671497789bfe2fe159f8de7c",
+      "archivePath": "eval/executed-source-dependencies/876028488f15955a592b99de3287c6fd363375c3671497789bfe2fe159f8de7c/src/components/Sidebar.jsx",
+      "gitBlob": "8798f3851ecae311ace21a2cbc084158166bc1d7"
+    },
+    {
+      "originalPath": "src/domain/author-revision.js",
+      "sha256": "ec37ee86a41c9814216e75410426b99643e70736957fc6441c17527415ab158d",
+      "archivePath": "eval/executed-source-dependencies/ec37ee86a41c9814216e75410426b99643e70736957fc6441c17527415ab158d/src/domain/author-revision.js",
+      "gitBlob": "16f1e6b2664660ac2ae7268471998c04595ba4a9"
+    },
+    {
+      "originalPath": "src/domain/engine.js",
+      "sha256": "7859fd4df86320a0b179d4a6675175b94d73560242670f7949dd167de23bd173",
+      "archivePath": "eval/executed-source-dependencies/7859fd4df86320a0b179d4a6675175b94d73560242670f7949dd167de23bd173/src/domain/engine.js",
+      "gitBlob": "407786b80e2ca947d3473937742f8df2e56e1cfe"
+    },
+    {
+      "originalPath": "src/domain/fact-review.js",
+      "sha256": "bce3e4cb59a263e079aeeb5f184b578f8dcef27a4976d48c67ba33728bbadb05",
+      "archivePath": "eval/executed-source-dependencies/bce3e4cb59a263e079aeeb5f184b578f8dcef27a4976d48c67ba33728bbadb05/src/domain/fact-review.js",
+      "gitBlob": "412b4ef6a2a24315b2a2bc0663b6e0d8f765e813"
+    },
+    {
+      "originalPath": "src/domain/generation-intent.js",
+      "sha256": "15ac4d101bba56f88db4c77180e29ac186194dcd133474a1f913104fd202e11b",
+      "archivePath": "eval/executed-source-dependencies/15ac4d101bba56f88db4c77180e29ac186194dcd133474a1f913104fd202e11b/src/domain/generation-intent.js",
+      "gitBlob": "d849c4a7093d66067a47cc5048249b220dfa49dc"
+    },
+    {
+      "originalPath": "src/domain/memory-review.js",
+      "sha256": "efde168b9a52c1f59df06a0d571515f4260ee95ab5db23b5f6ae6eaa0f75cf05",
+      "archivePath": "eval/executed-source-dependencies/efde168b9a52c1f59df06a0d571515f4260ee95ab5db23b5f6ae6eaa0f75cf05/src/domain/memory-review.js",
+      "gitBlob": "9bc5442a8b79bb5fe6189be4ca6618ad52b52526"
+    },
+    {
+      "originalPath": "src/domain/prose.js",
+      "sha256": "efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f",
+      "archivePath": "eval/executed-source-dependencies/efa1be045cc0f4bf26850562b69d7354b4c701ae3dc970a8203fa1dc133f5e0f/src/domain/prose.js",
+      "gitBlob": "d0557cda121fac2853e57b72d967f8fc88b5874a"
+    },
+    {
+      "originalPath": "src/domain/scene-intent.js",
+      "sha256": "cd339f60f8d03fcc54bb63457781c3eed6bd6b15dbb55279084a6dd5c9e16828",
+      "archivePath": "eval/executed-source-dependencies/cd339f60f8d03fcc54bb63457781c3eed6bd6b15dbb55279084a6dd5c9e16828/src/domain/scene-intent.js",
+      "gitBlob": "d50b063e54b6b014771ee0bae5aaa989f50eeb61"
+    },
+    {
+      "originalPath": "src/hooks/useModelTask.js",
+      "sha256": "075e1083f7bafca47daac85cb053a343babc3d52b986de7456b5e8089be6f569",
+      "archivePath": "eval/executed-source-dependencies/075e1083f7bafca47daac85cb053a343babc3d52b986de7456b5e8089be6f569/src/hooks/useModelTask.js",
+      "gitBlob": "109b68954e6153393a836f3b2697081125680e3b"
+    },
+    {
+      "originalPath": "src/main.jsx",
+      "sha256": "bff7940aa0d526751cacd8f05d24891ee890a2f74f653fb3128ead4638a256d9",
+      "archivePath": "eval/executed-source-dependencies/bff7940aa0d526751cacd8f05d24891ee890a2f74f653fb3128ead4638a256d9/src/main.jsx",
+      "gitBlob": "5c11806e025e423bd8945bfe0aeb520ece80fcd2"
+    },
+    {
+      "originalPath": "src/storage.js",
+      "sha256": "c67de962ee94959da9870d77417a4118c4efce431b15a1731e343f420cc7b2e4",
+      "archivePath": "eval/executed-source-dependencies/c67de962ee94959da9870d77417a4118c4efce431b15a1731e343f420cc7b2e4/src/storage.js",
+      "gitBlob": "f28d07fed7a176a7d725b2aac240a0691c3c2a50"
+    },
+    {
+      "originalPath": "src/styles.css",
+      "sha256": "42e23dda348148d6d5060b571ea7f57f9c0bb6bae7b4bbdf7131b8b1e3c5db1b",
+      "archivePath": "eval/executed-source-dependencies/42e23dda348148d6d5060b571ea7f57f9c0bb6bae7b4bbdf7131b8b1e3c5db1b/src/styles.css",
+      "gitBlob": "7511e3539fc24c9fe95ce60f60238a93ddd84aa5"
+    },
+    {
+      "originalPath": "tests/multichapter-eval.test.js",
+      "sha256": "bbec880ddd9462d509aedd41dd66444f692834cc591088554572cd83a5005d95",
+      "archivePath": "eval/executed-source-dependencies/bbec880ddd9462d509aedd41dd66444f692834cc591088554572cd83a5005d95/tests/multichapter-eval.test.js",
+      "gitBlob": "c8911b3384fc8b506051fcd470b91023582461de"
+    },
+    {
+      "originalPath": "tests/schema3-causal-fixtures.test.js",
+      "sha256": "e97810bc6c868d27fadd02c25c58c5311621096804c82a237743e6400267b86b",
+      "archivePath": "eval/executed-source-dependencies/e97810bc6c868d27fadd02c25c58c5311621096804c82a237743e6400267b86b/tests/schema3-causal-fixtures.test.js",
+      "gitBlob": "8e1aa1b14dd9118cfeb11cea012d160ebb863a71"
+    },
+    {
+      "originalPath": "vite.config.js",
+      "sha256": "cf5960e8774cfa10916c06661dbb956474538088fdfc5fb2c96fac21b471ec87",
+      "archivePath": "eval/executed-source-dependencies/cf5960e8774cfa10916c06661dbb956474538088fdfc5fb2c96fac21b471ec87/vite.config.js",
+      "gitBlob": "c837192ec0ae1158fafbc894fb0d2820d9052dcb"
+    }
+  ]
+}

@@ -19,8 +19,8 @@ test('retained live evidence preserves eight calls, the false positive and the t
 });
 
 test('the consumed live protocol cannot be rerun by repeating its old approval flags',()=>{
- const result=spawnSync(process.execPath,['scripts/multichapter-eval.mjs'],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{PATH:process.env.PATH,GITHUB_ACTIONS:'true',GITHUB_RUN_ATTEMPT:'1',NEXUS_MULTICHAPTER_APPROVED:'true',NEXUS_LIVE_ENABLED:'true',NEXUS_OVERAGE_CONFIRMED_OFF:'true',NEXUS_API_KEY:'OFFLINE_RETIRED_TEST_NOT_A_CREDENTIAL'},timeout:5000});
+ const result=spawnSync(process.execPath,['--import','tsx','scripts/multichapter-eval.mjs'],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{PATH:process.env.PATH,GITHUB_ACTIONS:'true',GITHUB_RUN_ATTEMPT:'1',NEXUS_MULTICHAPTER_APPROVED:'true',NEXUS_LIVE_ENABLED:'true',NEXUS_OVERAGE_CONFIRMED_OFF:'true',NEXUS_API_KEY:'OFFLINE_RETIRED_TEST_NOT_A_CREDENTIAL'},timeout:5000});
  assert.equal(result.status,1);assert.equal(result.signal,null);assert.equal(JSON.parse(result.stderr.trim()).code,'PROTOCOL_RETIRED');
  const source=readFileSync(new URL('../scripts/multichapter-eval.mjs',import.meta.url),'utf8');assert.ok(source.includes("if (!offline) throw Object.assign(Error('COMPLETED_PROTOCOL_REQUIRES_NEW_APPROVAL'), {code:'PROTOCOL_RETIRED'});"));
- const ui=readFileSync(new URL('../src/components/DraftPanel.jsx',import.meta.url),'utf8');assert.match(ui,/模型判断：原文支持（可能误判）/);assert.match(ui,/真实测试曾在缺少标签细节时误报支持/);
+ const ui=readFileSync(new URL('../src/components/DraftPanel.tsx',import.meta.url),'utf8');assert.match(ui,/模型判断：原文支持（可能误判）/);assert.match(ui,/真实测试曾在缺少标签细节时误报支持/);
 });

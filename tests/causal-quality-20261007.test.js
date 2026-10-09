@@ -1,3 +1,4 @@
+import {readHistoricalSource} from '../scripts/eval-source-inventory.mjs';
 // Offline only: injected fake transports, fictional prose and public fake credentials.
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
@@ -39,10 +40,12 @@ async function archiveFiles(dir,prefix=''){
 }
 async function executedSource(t){
  const root=await mkdtemp(join(tmpdir(),'nexus-quality07-executed-source-'));t.after(()=>rm(root,{recursive:true,force:true}));
+ // The original repository executes these exact .js bytes as ESM. Preserve that package context in the temporary historical replay.
+ await writeFile(join(root,'package.json'),JSON.stringify({type:'module'}));
  const history=new URL('../eval/history/causal-quality-20261007/',import.meta.url),m=JSON.parse(await readFile(new URL('source-manifest.json',history)));
  const archived={'scripts/run-causal-quality-20261007.mjs':'source-runner.mjs','.github/workflows/causal-quality-20261007-trial.yml':'source-workflow.yml','eval/CAUSAL-QUALITY-20261007-PROTOCOL.md':'source-protocol.md','tests/causal-quality-20261007.test.js':'source-tests.js'};
  for(const [p,h]of Object.entries(m.sha256)){
-  const bytes=await readFile(archived[p]?new URL(archived[p],history):new URL('../'+p,import.meta.url));assert.equal(digest(bytes),h);
+  const bytes=archived[p]?await readFile(new URL(archived[p],history)):await readHistoricalSource(p,h);assert.equal(digest(bytes),h);
   await mkdir(dirname(join(root,p)),{recursive:true});await writeFile(join(root,p),bytes);
  }
  await writeFile(join(root,'eval/causal-quality-20261007-manifest.json'),await readFile(new URL('source-manifest.json',history)));
@@ -270,7 +273,7 @@ test('retired main and CLI reject all modes before argument/environment/evidence
  for(const mode of [undefined,'prepare','execute','offline','restart',forbidden])await assert.rejects(main(mode,forbidden,forbidden),hasCode('RETIRED'));
  assert.equal(reads,0);assert.equal(safeCode({code:'RETIRED'}),'RETIRED');
  for(const args of [[],['prepare'],['execute'],['--offline-replay']]){
-  const cli=spawnSync(process.execPath,['scripts/run-causal-quality-20261007.mjs',...args],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{...process.env,...env,NEXUS_LIVE_ENABLED:'true'}});
+  const cli=spawnSync(process.execPath,['--import','tsx','scripts/run-causal-quality-20261007.mjs',...args],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{...process.env,...env,NEXUS_LIVE_ENABLED:'true'}});
   assert.equal(cli.status,1);assert.equal(cli.stdout,'');assert.deepEqual(JSON.parse(cli.stderr),{status:'blocked',code:'RETIRED'});assert.equal(cli.stderr.includes(key),false);
  }
 });
@@ -300,7 +303,7 @@ test('39 original evidence files and five exact executed sources stay byte-for-b
  const originalBytes=await read('source-manifest.json'),original=JSON.parse(originalBytes),record=JSON.parse(await read('reservation.json'));
  assert.equal(digest(originalBytes),'bcfdc4f0100655dcc39950ef5f00f545e591a8d4bccc54e107193ca9da204557');assert.equal(original.status,'new_separately_approved_not_dispatched');assert.equal(digest(original),record.manifestSha256);assert.equal(record.manifestSha256,'7226ddbae0c7eddec10971becd36b42ab729ce3da7f9303f0f1d6d200b53261c');
  const sources={'scripts/run-causal-quality-20261007.mjs':'source-runner.mjs','.github/workflows/causal-quality-20261007-trial.yml':'source-workflow.yml','eval/CAUSAL-QUALITY-20261007-PROTOCOL.md':'source-protocol.md','tests/causal-quality-20261007.test.js':'source-tests.js'};
- for(const [path,h]of Object.entries(original.sha256)){const bytes=sources[path]?await read(sources[path]):await readFile(new URL('../'+path,import.meta.url));assert.equal(digest(bytes),h,path);}
+ for(const [path,h]of Object.entries(original.sha256)){const bytes=sources[path]?await read(sources[path]):await readHistoricalSource(path,h);assert.equal(digest(bytes),h,path);}
  const source=(await read('source-runner.mjs')).toString();assert.match(source,/export async function main\(mode=/);assert.doesNotMatch(source,/offlineReplay|fail\('RETIRED'\)/);
 });
 

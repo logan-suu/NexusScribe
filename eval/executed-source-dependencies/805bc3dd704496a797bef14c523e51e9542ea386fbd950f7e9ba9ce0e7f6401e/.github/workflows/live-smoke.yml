@@ -1,0 +1,242 @@
+name: Manual bounded real-browser writing journey
+
+on:
+  workflow_dispatch:
+    inputs:
+      approve_live_smoke:
+        description: 'Approve selected synthetic test and confirm Use balance OFF (journey cap12, probe cap1, quality-pilot cap6, prose-pipeline cap9, memory-support cap4, isolated-memory-support cap4, multichapter cap12 at 3000 tokens)'
+        type: boolean
+        required: true
+        default: false
+      test_scope:
+        description: 'Choose journey, one-call probe, six-call quality pilot, nine-call prose pipeline, four-call memory support audit, four-call isolated memory audit, or twelve-call multichapter validation'
+        type: choice
+        required: true
+        default: review-probe
+        options: [journey, review-probe, generation-probe, quality-pilot, prose-pipeline, memory-support, isolated-memory-support, multichapter]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-live-smoke
+  cancel-in-progress: false
+
+jobs:
+  live-writing-journey:
+    if: github.event_name == 'workflow_dispatch' && inputs.approve_live_smoke == true && (inputs.test_scope == 'journey' || inputs.test_scope == 'review-probe' || inputs.test_scope == 'generation-probe' || (inputs.test_scope == 'quality-pilot' && github.run_attempt == 1) || (inputs.test_scope == 'prose-pipeline' && github.run_attempt == 1) || (inputs.test_scope == 'memory-support' && github.run_attempt == 1) || (inputs.test_scope == 'isolated-memory-support' && github.run_attempt == 1) || (inputs.test_scope == 'multichapter' && github.run_attempt == 1))
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.test_scope == 'multichapter' && 15 || 8 }}
+    steps:
+      - name: Check out the reviewed dispatch commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Install locked dependencies without credentials
+        if: inputs.test_scope == 'journey' || inputs.test_scope == 'multichapter'
+        run: npm ci
+      - name: Install Chromium and Chinese fonts without credentials
+        if: inputs.test_scope == 'journey' || inputs.test_scope == 'multichapter'
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get update && sudo apt-get install --yes fonts-noto-cjk
+      - name: Run approved bounded real-browser journey
+        if: inputs.test_scope == 'journey'
+        run: node scripts/live-writing-journey.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_JOURNEY_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Run approved one-call synthetic review probe
+        if: inputs.test_scope == 'review-probe'
+        run: node scripts/live-review-probe.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_REVIEW_PROBE_APPROVED: 'true'
+          NEXUS_JOURNEY_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Run approved one-call synthetic generation probe
+        if: inputs.test_scope == 'generation-probe'
+        run: node scripts/live-generation-probe.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_GENERATION_PROBE_APPROVED: 'true'
+          NEXUS_JOURNEY_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve synthetic UI screenshots only
+        if: always() && inputs.test_scope == 'journey'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-live-journey-screenshots
+          path: live-journey-evidence/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Check frozen quality pilot offline without credentials
+        if: inputs.test_scope == 'quality-pilot'
+        run: node --test tests/writing-quality-eval.test.js
+      - name: Generate approved six-call synthetic quality pilot
+        if: inputs.test_scope == 'quality-pilot'
+        run: node scripts/writing-quality-eval.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_QUALITY_EVAL_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve allowlisted synthetic quality evidence
+        if: always() && inputs.test_scope == 'quality-pilot'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-writing-quality-pilot
+          path: |
+            writing-quality-evidence/inputs.json
+            writing-quality-evidence/blind-pairs.json
+            writing-quality-evidence/unblinding.json
+            writing-quality-evidence/diagnostics.json
+            writing-quality-evidence/completed-01.json
+            writing-quality-evidence/completed-02.json
+            writing-quality-evidence/completed-03.json
+            writing-quality-evidence/completed-04.json
+            writing-quality-evidence/completed-05.json
+            writing-quality-evidence/completed-06.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Check frozen prose pipeline offline without credentials
+        if: inputs.test_scope == 'prose-pipeline'
+        run: node --test tests/prose-pipeline-eval.test.js
+      - name: Generate approved nine-call synthetic prose pipeline pilot
+        if: inputs.test_scope == 'prose-pipeline' && github.run_attempt == 1
+        run: node scripts/prose-pipeline-eval.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_PROSE_PIPELINE_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve allowlisted synthetic prose pipeline evidence
+        if: always() && inputs.test_scope == 'prose-pipeline'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-prose-pipeline-pilot
+          path: |
+            prose-pipeline-evidence/inputs.json
+            prose-pipeline-evidence/diagnostics.json
+            prose-pipeline-evidence/blind-pairs.json
+            prose-pipeline-evidence/unblinding.json
+            prose-pipeline-evidence/completed-01.json
+            prose-pipeline-evidence/completed-02.json
+            prose-pipeline-evidence/completed-03.json
+            prose-pipeline-evidence/completed-04.json
+            prose-pipeline-evidence/completed-05.json
+            prose-pipeline-evidence/completed-06.json
+            prose-pipeline-evidence/completed-07.json
+            prose-pipeline-evidence/completed-08.json
+            prose-pipeline-evidence/completed-09.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Check frozen memory support audit offline without credentials
+        if: inputs.test_scope == 'memory-support'
+        run: node --test tests/memory-support-eval.test.js
+      - name: Run approved four-call synthetic memory support audit
+        if: inputs.test_scope == 'memory-support' && github.run_attempt == 1
+        run: node scripts/memory-support-eval.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_MEMORY_SUPPORT_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve allowlisted synthetic memory support evidence
+        if: always() && inputs.test_scope == 'memory-support'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-memory-support-audit
+          path: |
+            memory-support-evidence/inputs.json
+            memory-support-evidence/diagnostics.json
+            memory-support-evidence/completed-01.json
+            memory-support-evidence/completed-02.json
+            memory-support-evidence/completed-03.json
+            memory-support-evidence/completed-04.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Check frozen isolated memory support audit offline without credentials
+        if: inputs.test_scope == 'isolated-memory-support'
+        run: node --test tests/isolated-memory-support-eval.test.js
+      - name: Run separately approved four-call isolated memory support audit
+        if: inputs.test_scope == 'isolated-memory-support' && github.run_attempt == 1
+        run: node scripts/isolated-memory-support-eval.mjs
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_ISOLATED_MEMORY_SUPPORT_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve allowlisted synthetic isolated memory support evidence
+        if: always() && inputs.test_scope == 'isolated-memory-support'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-isolated-memory-support-audit
+          path: |
+            isolated-memory-support-evidence/inputs.json
+            isolated-memory-support-evidence/diagnostics.json
+            isolated-memory-support-evidence/completed-01.json
+            isolated-memory-support-evidence/completed-02.json
+            isolated-memory-support-evidence/completed-03.json
+            isolated-memory-support-evidence/completed-04.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Verify frozen multi-chapter sources and guard tests without credentials
+        if: inputs.test_scope == 'multichapter'
+        run: node --test tests/multichapter-eval.test.js
+      - name: Run approved single twelve-call multi-chapter validation
+        if: inputs.test_scope == 'multichapter' && github.run_attempt == 1
+        run: node scripts/multichapter-eval.mjs multichapter-evidence
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_MULTICHAPTER_APPROVED: 'true'
+          NEXUS_LIVE_ENABLED: 'true'
+          NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+      - name: Preserve allowlisted synthetic multi-chapter evidence
+        if: always() && inputs.test_scope == 'multichapter'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-multichapter-validation
+          path: |
+            multichapter-evidence/inputs.json
+            multichapter-evidence/diagnostics.json
+            multichapter-evidence/final-workspace.json
+            multichapter-evidence/author-fact-checkpoint.json
+            multichapter-evidence/chapter-1.png
+            multichapter-evidence/chapter-2.png
+            multichapter-evidence/chapter-3.png
+            multichapter-evidence/stopped.png
+            multichapter-evidence/request-01.json
+            multichapter-evidence/request-02.json
+            multichapter-evidence/request-03.json
+            multichapter-evidence/request-04.json
+            multichapter-evidence/request-05.json
+            multichapter-evidence/request-06.json
+            multichapter-evidence/request-07.json
+            multichapter-evidence/request-08.json
+            multichapter-evidence/request-09.json
+            multichapter-evidence/request-10.json
+            multichapter-evidence/request-11.json
+            multichapter-evidence/request-12.json
+            multichapter-evidence/completed-01.json
+            multichapter-evidence/completed-02.json
+            multichapter-evidence/completed-03.json
+            multichapter-evidence/completed-04.json
+            multichapter-evidence/completed-05.json
+            multichapter-evidence/completed-06.json
+            multichapter-evidence/completed-07.json
+            multichapter-evidence/completed-08.json
+            multichapter-evidence/completed-09.json
+            multichapter-evidence/completed-10.json
+            multichapter-evidence/completed-11.json
+            multichapter-evidence/completed-12.json
+          if-no-files-found: ignore
+          retention-days: 7
