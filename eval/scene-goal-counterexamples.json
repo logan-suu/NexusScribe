@@ -1,0 +1,652 @@
+{
+  "formatVersion": 1,
+  "kind": "offline-review-calibration",
+  "providerCalls": 0,
+  "records": [
+    {
+      "id": "S-mention",
+      "origin": "synthetic",
+      "syntheticCaseId": "mention",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "mention",
+          "dimension": "goalfulfillment",
+          "requirement": "场景结束前两人约定明早九点来查记录。",
+          "status": "missing",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/0/constraint",
+            "start": 0,
+            "end": 18,
+            "quote": "场景结束前两人约定明早九点来查记录。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/0/text",
+              "start": 0,
+              "end": 18,
+              "quote": "她提到明早九点查记录，随即独自离开。"
+            }
+          ],
+          "reasoning": "Only mentions a plan; no response or mutual commitment appears in this complete synthetic passage. 仅提到计划，不等于双方约定。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-agreement",
+      "origin": "synthetic",
+      "syntheticCaseId": "agreement",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "agreement",
+          "dimension": "goalfulfillment",
+          "requirement": "场景结束前两人约定明早九点来查记录。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/1/constraint",
+            "start": 0,
+            "end": 18,
+            "quote": "场景结束前两人约定明早九点来查记录。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/1/text",
+              "start": 0,
+              "end": 30,
+              "quote": "“明早九点一起来查记录？”她问。“好，九点门口见。”他回答。"
+            }
+          ],
+          "reasoning": "Question and unqualified acceptance establish the specified mutual arrangement. 明确邀请与接受构成约定。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-refusal",
+      "origin": "synthetic",
+      "syntheticCaseId": "refusal",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "refusal",
+          "dimension": "goalfulfillment",
+          "requirement": "场景结束前两人约定明早九点来查记录。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/2/constraint",
+            "start": 0,
+            "end": 18,
+            "quote": "场景结束前两人约定明早九点来查记录。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/2/text",
+              "start": 0,
+              "end": 28,
+              "quote": "“明早九点来查记录？”她问。他摇头：“我不来，也不约。”"
+            }
+          ],
+          "reasoning": "Explicit refusal defeats this mutual agreement; it does not establish what he will actually do tomorrow. 明确拒绝本次约定，不推断未来行为。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-tentative",
+      "origin": "synthetic",
+      "syntheticCaseId": "tentative",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "tentative",
+          "dimension": "goalfulfillment",
+          "requirement": "场景结束前两人约定明早九点来查记录。",
+          "status": "missing",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/3/constraint",
+            "start": 0,
+            "end": 18,
+            "quote": "场景结束前两人约定明早九点来查记录。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/3/text",
+              "start": 0,
+              "end": 27,
+              "quote": "“明早九点来查记录？”她问。“我也许能来，到时再说。”"
+            }
+          ],
+          "reasoning": "Invitation advances the obligation but conditional possibility is not acceptance. 邀请已提出，可能到场并非同意。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-compound_partial",
+      "origin": "synthetic",
+      "syntheticCaseId": "compound_partial",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "compound_partial",
+          "dimension": "goalfulfillment",
+          "requirement": "她取出纸屑交给管理员查看，并与管理员约定明早查记录。",
+          "status": "partial",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/4/constraint",
+            "start": 0,
+            "end": 26,
+            "quote": "她取出纸屑交给管理员查看，并与管理员约定明早查记录。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/4/text",
+              "start": 0,
+              "end": 36,
+              "quote": "她取出纸屑，管理员查看后还给她。她问明早能否查记录，管理员说尚不能答应。"
+            }
+          ],
+          "reasoning": "The completed inspection fulfills one explicit component; the second, agreement, is missing. 查看已完成，但复合目标中的约定未落实。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-speculation",
+      "origin": "synthetic",
+      "syntheticCaseId": "speculation",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "speculation",
+          "dimension": "boundaries",
+          "requirement": "纸屑来源仍不确定；角色的猜测不得升级为叙述事实。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/5/constraint",
+            "start": 0,
+            "end": 24,
+            "quote": "纸屑来源仍不确定；角色的猜测不得升级为叙述事实。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/5/text",
+              "start": 0,
+              "end": 27,
+              "quote": "“也许是车票。”阿青说。许宁摇头：“半个字看不出来。”"
+            }
+          ],
+          "reasoning": "Attributed conjecture is explicitly qualified and not promoted to truth. 有归属的猜测被保留为不确定。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-fact_upgrade",
+      "origin": "synthetic",
+      "syntheticCaseId": "fact_upgrade",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "fact_upgrade",
+          "dimension": "boundaries",
+          "requirement": "纸屑来源仍不确定；角色的猜测不得升级为叙述事实。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/6/constraint",
+            "start": 0,
+            "end": 24,
+            "quote": "纸屑来源仍不确定；角色的猜测不得升级为叙述事实。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/6/text",
+              "start": 0,
+              "end": 19,
+              "quote": "纸屑确实来自那张旧车票，许宁已经查明。"
+            }
+          ],
+          "reasoning": "Narration asserts the very fact required to remain unresolved. 叙述直接坐实仍须未知的来源。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-custody_preserved",
+      "origin": "synthetic",
+      "syntheticCaseId": "custody_preserved",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "custody_preserved",
+          "dimension": "causaltransitions",
+          "requirement": "许宁将装有纸屑的纸盒保管在拉好拉链的工具袋内。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/7/constraint",
+            "start": 0,
+            "end": 23,
+            "quote": "许宁将装有纸屑的纸盒保管在拉好拉链的工具袋内。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/7/text",
+              "start": 0,
+              "end": 38,
+              "quote": "许宁拉开工具袋，取出纸盒递给管理员。看完后，她接回纸盒，放进袋内，拉好拉链。"
+            }
+          ],
+          "reasoning": "Explicit access, temporary transfer and return explain custody continuity. 取出、暂交与收回解释保管转移。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-custody_gap",
+      "origin": "synthetic",
+      "syntheticCaseId": "custody_gap",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "custody_gap",
+          "dimension": "causaltransitions",
+          "requirement": "许宁将装有纸屑的纸盒保管在拉好拉链的工具袋内。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/8/constraint",
+            "start": 0,
+            "end": 23,
+            "quote": "许宁将装有纸屑的纸盒保管在拉好拉链的工具袋内。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/8/text",
+              "start": 0,
+              "end": 13,
+              "quote": "管理员低头看着手里的纸盒。"
+            }
+          ],
+          "reasoning": "Transfer is unexplained, not explicitly impossible; the omitted step warrants clarification rather than a hard contradiction. 交接缺少交代，但并非明确不可能。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-custody_contradiction",
+      "origin": "synthetic",
+      "syntheticCaseId": "custody_contradiction",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "custody_contradiction",
+          "dimension": "boundaries",
+          "requirement": "许宁始终保管纸屑；管理员不能拿走。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/9/constraint",
+            "start": 0,
+            "end": 17,
+            "quote": "许宁始终保管纸屑；管理员不能拿走。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/9/text",
+              "start": 0,
+              "end": 22,
+              "quote": "管理员把装着纸屑的纸盒带回家，许宁没有取回。"
+            }
+          ],
+          "reasoning": "Explicit removal without return in this passage conflicts with the required custody. 明确带走与保管要求冲突。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-bell_shell",
+      "origin": "synthetic",
+      "syntheticCaseId": "bell_shell",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "bell_shell",
+          "dimension": "causaltransitions",
+          "requirement": "门铃已经坏了，拉绳不会使门铃正常响起。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/10/constraint",
+            "start": 0,
+            "end": 19,
+            "quote": "门铃已经坏了，拉绳不会使门铃正常响起。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/10/text",
+              "start": 0,
+              "end": 37,
+              "quote": "她拉了一下绳。门铃没响，松动的金属壳却磕在门板上。管理员听见碰撞声出来了。"
+            }
+          ],
+          "reasoning": "Non-bell shell impact supplies the stated sound mechanism without repairing the bell. 壳体碰撞声不等于门铃恢复。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-bell_working",
+      "origin": "synthetic",
+      "syntheticCaseId": "bell_working",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "bell_working",
+          "dimension": "boundaries",
+          "requirement": "门铃已经坏了，拉绳不会使门铃正常响起。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/11/constraint",
+            "start": 0,
+            "end": 19,
+            "quote": "门铃已经坏了，拉绳不会使门铃正常响起。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/11/text",
+              "start": 0,
+              "end": 27,
+              "quote": "她拉绳，门铃正常响起了清脆的铃声；此前没有修理或更换。"
+            }
+          ],
+          "reasoning": "Explicitly normal bell operation without a change conflicts with the fixed broken-bell constraint. 无修复却明确正常响铃，与约束冲突。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-needle_alternative",
+      "origin": "synthetic",
+      "syntheticCaseId": "needle_alternative",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "needle_alternative",
+          "dimension": "boundaries",
+          "requirement": "唯一的长针已折断；普通手缝针仍可用于临时补缀。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/12/constraint",
+            "start": 0,
+            "end": 23,
+            "quote": "唯一的长针已折断；普通手缝针仍可用于临时补缀。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/12/text",
+              "start": 0,
+              "end": 32,
+              "quote": "师傅收起断长针，拿普通手缝针做了两针临时补缀，没有完成正式修复。"
+            }
+          ],
+          "reasoning": "A broken long needle does not remove the explicitly available ordinary needle. 长针断裂不排除普通针。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-needle_overclaim",
+      "origin": "synthetic",
+      "syntheticCaseId": "needle_overclaim",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "needle_overclaim",
+          "dimension": "boundaries",
+          "requirement": "唯一的长针已折断；普通手缝针仍可用于临时补缀。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/13/constraint",
+            "start": 0,
+            "end": 23,
+            "quote": "唯一的长针已折断；普通手缝针仍可用于临时补缀。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/13/text",
+              "start": 0,
+              "end": 29,
+              "quote": "长针一断，店里所有针具都不能用了，任何临时补缀也绝无可能。"
+            }
+          ],
+          "reasoning": "The universal tool claim contradicts the available ordinary hand needle. 将一根断针扩大为全部工具不可用。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    },
+    {
+      "id": "S-knowledge_gap",
+      "origin": "synthetic",
+      "syntheticCaseId": "knowledge_gap",
+      "source": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "text": {
+        "path": "eval/scene-goal-synthetic-sources.json",
+        "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f"
+      },
+      "obligations": [
+        {
+          "id": "knowledge_gap",
+          "dimension": "causaltransitions",
+          "requirement": "管理员没有在场听到刚才的柜号讨论；故事未交代他是否另有信息来源。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/scene-goal-synthetic-sources.json",
+            "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+            "pointer": "/cases/14/constraint",
+            "start": 0,
+            "end": 32,
+            "quote": "管理员没有在场听到刚才的柜号讨论；故事未交代他是否另有信息来源。"
+          },
+          "evidence": [
+            {
+              "path": "eval/scene-goal-synthetic-sources.json",
+              "sha256": "ebbede1d143e98946c4f52ecf25b784055efb872d8c716cf61f19ffb2bb2aa6f",
+              "pointer": "/cases/14/text",
+              "start": 0,
+              "end": 17,
+              "quote": "管理员开门便问：“十七号柜的事？”"
+            }
+          ],
+          "reasoning": "No supplied source for knowledge, but absence of a narrated source is not proof he could not know otherwise. 信息来源未交代，不等于证实不可能知道。"
+        }
+      ],
+      "notes": [
+        "Expected labels are manual calibration targets, not predictions. 预期标签来自人工标注，不是检测器输出。"
+      ]
+    }
+  ]
+}

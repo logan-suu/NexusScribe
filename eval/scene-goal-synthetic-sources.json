@@ -1,0 +1,82 @@
+{
+  "formatVersion": 1,
+  "origin": "synthetic-counterexamples",
+  "notice": "Manually written complete micro-passages; not model output, historical evidence, or new story Canon. 人工合成反例，非模型输出、历史证据或新增设定。",
+  "cases": [
+    {
+      "id": "mention",
+      "constraint": "场景结束前两人约定明早九点来查记录。",
+      "text": "她提到明早九点查记录，随即独自离开。"
+    },
+    {
+      "id": "agreement",
+      "constraint": "场景结束前两人约定明早九点来查记录。",
+      "text": "“明早九点一起来查记录？”她问。“好，九点门口见。”他回答。"
+    },
+    {
+      "id": "refusal",
+      "constraint": "场景结束前两人约定明早九点来查记录。",
+      "text": "“明早九点来查记录？”她问。他摇头：“我不来，也不约。”"
+    },
+    {
+      "id": "tentative",
+      "constraint": "场景结束前两人约定明早九点来查记录。",
+      "text": "“明早九点来查记录？”她问。“我也许能来，到时再说。”"
+    },
+    {
+      "id": "compound_partial",
+      "constraint": "她取出纸屑交给管理员查看，并与管理员约定明早查记录。",
+      "text": "她取出纸屑，管理员查看后还给她。她问明早能否查记录，管理员说尚不能答应。"
+    },
+    {
+      "id": "speculation",
+      "constraint": "纸屑来源仍不确定；角色的猜测不得升级为叙述事实。",
+      "text": "“也许是车票。”阿青说。许宁摇头：“半个字看不出来。”"
+    },
+    {
+      "id": "fact_upgrade",
+      "constraint": "纸屑来源仍不确定；角色的猜测不得升级为叙述事实。",
+      "text": "纸屑确实来自那张旧车票，许宁已经查明。"
+    },
+    {
+      "id": "custody_preserved",
+      "constraint": "许宁将装有纸屑的纸盒保管在拉好拉链的工具袋内。",
+      "text": "许宁拉开工具袋，取出纸盒递给管理员。看完后，她接回纸盒，放进袋内，拉好拉链。"
+    },
+    {
+      "id": "custody_gap",
+      "constraint": "许宁将装有纸屑的纸盒保管在拉好拉链的工具袋内。",
+      "text": "管理员低头看着手里的纸盒。"
+    },
+    {
+      "id": "custody_contradiction",
+      "constraint": "许宁始终保管纸屑；管理员不能拿走。",
+      "text": "管理员把装着纸屑的纸盒带回家，许宁没有取回。"
+    },
+    {
+      "id": "bell_shell",
+      "constraint": "门铃已经坏了，拉绳不会使门铃正常响起。",
+      "text": "她拉了一下绳。门铃没响，松动的金属壳却磕在门板上。管理员听见碰撞声出来了。"
+    },
+    {
+      "id": "bell_working",
+      "constraint": "门铃已经坏了，拉绳不会使门铃正常响起。",
+      "text": "她拉绳，门铃正常响起了清脆的铃声；此前没有修理或更换。"
+    },
+    {
+      "id": "needle_alternative",
+      "constraint": "唯一的长针已折断；普通手缝针仍可用于临时补缀。",
+      "text": "师傅收起断长针，拿普通手缝针做了两针临时补缀，没有完成正式修复。"
+    },
+    {
+      "id": "needle_overclaim",
+      "constraint": "唯一的长针已折断；普通手缝针仍可用于临时补缀。",
+      "text": "长针一断，店里所有针具都不能用了，任何临时补缀也绝无可能。"
+    },
+    {
+      "id": "knowledge_gap",
+      "constraint": "管理员没有在场听到刚才的柜号讨论；故事未交代他是否另有信息来源。",
+      "text": "管理员开门便问：“十七号柜的事？”"
+    }
+  ]
+}
