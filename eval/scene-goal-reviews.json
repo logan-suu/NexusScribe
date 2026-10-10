@@ -1,0 +1,2988 @@
+{
+  "formatVersion": 1,
+  "kind": "offline-review-calibration",
+  "providerCalls": 0,
+  "records": [
+    {
+      "id": "retained-F1-A",
+      "origin": "retained",
+      "source": {
+        "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+        "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4"
+      },
+      "text": {
+        "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+        "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064"
+      },
+      "obligations": [
+        {
+          "id": "discover-paper",
+          "dimension": "goalfulfillment",
+          "requirement": "发现锁柜底下的纸屑。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 187,
+            "end": 196,
+            "quote": "发现锁柜底下的纸屑"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 224,
+              "end": 256,
+              "quote": "她拿手电照柜门底缝，光斜进去，照见一层灰、两根头发，还有几片纸屑"
+            }
+          ],
+          "reasoning": "先照见柜底的纸屑，再夹取，目标动作在当前场景实际发生；不是仅复述目标或未来打算。"
+        },
+        {
+          "id": "decide-tomorrow",
+          "dimension": "goalfulfillment",
+          "requirement": "决定次日向管理员询问。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 197,
+            "end": 205,
+            "quote": "决定次日问管理员"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 549,
+              "end": 573,
+              "quote": "“明早问管理员。”她说，“他管钥匙，也管监控。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 682,
+              "end": 699,
+              "quote": "阿陶张了张嘴，最后只“嗯”了一声。"
+            }
+          ],
+          "reasoning": "程岚作出明早询问的决定，阿陶以回应接受。管理员不在说明延期缘由；预约尚未履行，不等于已经问到答案。"
+        },
+        {
+          "id": "sender-unknown",
+          "dimension": "goalfulfillment",
+          "requirement": "本场景不揭晓寄信人。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 206,
+            "end": 212,
+            "quote": "不揭晓寄信人"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 294,
+              "end": 321,
+              "quote": "上面只剩半个字，印刷体，横折钩，像“到”，也像“列”。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 436,
+              "end": 466,
+              "quote": "“可能。”程岚站起来，膝盖响了一声，“也可能是一直在底下。”"
+            }
+          ],
+          "reasoning": "完整阅读未出现寄信人身份答案。字形用“像”，来源有两种“可能”；人物猜测未被叙述认证为答案。"
+        },
+        {
+          "id": "locked-cabinet",
+          "dimension": "causaltransitions",
+          "requirement": "找钥匙、取纸屑的小线索推进不得被误判为已经打开锁柜。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 553,
+            "end": 576,
+            "quote": "程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 199,
+              "end": 224,
+              "quote": "锁是老式的铜挂锁，锁舌卡死，钥匙插进去只能转半圈。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 279,
+              "end": 294,
+              "quote": "她用镊子夹出一片，就着手电看。"
+            }
+          ],
+          "reasoning": "尝试钥匙只转半圈且锁舌卡死，取证经柜底缝进行。完整输出没有开柜动作；动作失败与局部取证成功分别保留。"
+        },
+        {
+          "id": "paper-custody",
+          "dimension": "advancement",
+          "requirement": "新线索应在当前场景产生可追踪的行动变化。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 567,
+            "end": 576,
+            "quote": "柜底纸屑提供小线索"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 344,
+              "end": 357,
+              "quote": "程岚把纸屑放进证物袋，封口"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 631,
+              "end": 652,
+              "quote": "程岚把证物袋揣进口袋，又拍了拍，确认不会掉"
+            }
+          ],
+          "reasoning": "原先只与锁僵持，现在取得并保存纸片，保管链是夹出、封袋、入口袋；不是只保持边界而没有推进。输入未禁止普通证物袋，不能把新增袋子自动判作工具违规。"
+        },
+        {
+          "id": "ticket-secret",
+          "dimension": "boundaries",
+          "requirement": "阿陶不无来源知道车票内容，本场景不向他揭露。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 292,
+            "end": 314,
+            "quote": "阿陶不能无来源知道车票内容；本场景不向他揭露"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 495,
+              "end": 547,
+              "quote": "阿陶不知道那封信里装着什么，她也没打算在这儿说。信封还压在她修表垫下面，边角有点卷，她出门前特意压平了。"
+            }
+          ],
+          "reasoning": "明确否定阿陶知情，信封记忆归程岚；完整输出没有把旧车票作为对阿陶说出的消息。关键词或内心回忆不能视为泄密。"
+        },
+        {
+          "id": "left-ear",
+          "dimension": "boundaries",
+          "requirement": "不能把左耳听声写成真实感知。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 315,
+            "end": 328,
+            "quote": "不能把左耳听声写成真实感知"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 719,
+              "end": 775,
+              "quote": "程岚经过他身边时，右耳里是雨声，左耳里什么都没有——没有水管的咕噜，没有灯管的电流，也没有阿陶那声“嗯”的回音。"
+            }
+          ],
+          "reasoning": "发声对象被列在左耳“没有”的否定范围内；右耳感知雨声。完整阅读无左耳真实听见，不能按声音词命中误判。"
+        },
+        {
+          "id": "current-scene",
+          "dimension": "boundaries",
+          "requirement": "只写当前场景，未来计划不当作已发生。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 253,
+            "end": 259,
+            "quote": "只写当前场景"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 623,
+              "end": 631,
+              "quote": "“现在他不在。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 780,
+              "end": 806,
+              "quote": "她只是把伞撑开，走进雨里，心里记着明早要问的那句话。"
+            }
+          ],
+          "reasoning": "当前雨夜从柜前到离门连续，次日始终是打算。回想修表垫下信封不另开实演场景，也不宣称明日已经询问。"
+        },
+        {
+          "id": "continuation-replay",
+          "dimension": "causaltransitions",
+          "requirement": "当前续写与此前已有对白连贯衔接。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 711,
+            "end": 720,
+            "quote": "先问这锁，收费低。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 161,
+              "end": 171,
+              "quote": "“你总得问点什么。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 173,
+              "end": 197,
+              "quote": "“先问这锁。”程岚把右耳又贴近了些，“收费低。”"
+            }
+          ],
+          "reasoning": "此前相同问答再次完整演出，没有清楚标记回述或有意重说，衔接显得重复；也可能是同一场景再次说笑。因此只记衔接疑点，不新增一条输入未给出的绝对禁止回述规则，不判硬时间矛盾。"
+        },
+        {
+          "id": "voice-agency",
+          "dimension": "voiceagency",
+          "requirement": "程岚简短、实物相关而干涩；阿陶着急但不逼迫，保留人物行动。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 260,
+            "end": 292,
+            "quote": "人物声音：程岚用简短、实物相关的干涩回应；阿陶着急但不咄咄逼人。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 338,
+              "end": 357,
+              "quote": "“半个字。”程岚把纸屑放进证物袋，封口"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 377,
+              "end": 392,
+              "quote": "阿陶的呼吸急了一点，但他没催。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 735,
+              "end": 780,
+              "quote": "左耳里什么都没有——没有水管的咕噜，没有灯管的电流，也没有阿陶那声“嗯”的回音。她习惯了。"
+            }
+          ],
+          "reasoning": "短答、取证和未催满足核心声音/能动性；程岚主动操作并决定，阿陶提出可能性及接受等待。没有材料支持实质声音或能动性失败。结尾说明较重的经济性意见不降低此项状态。"
+        },
+        {
+          "id": "limited-pov",
+          "dimension": "boundaries",
+          "requirement": "第三人称限知只跟随程岚。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 165,
+            "end": 177,
+            "quote": "第三人称限知，只跟随程岚"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 468,
+              "end": 495,
+              "quote": "她没说是哪种。她把手电关了，柜门底缝重新变成一条黑线。"
+            }
+          ],
+          "reasoning": "全篇在程岚的观察、动作和回忆中；阿陶焦急通过呼吸、提问、扶门等外在表现，没有由无来源内心知识揭底。"
+        },
+        {
+          "id": "soft-counts",
+          "dimension": "countssoft",
+          "requirement": "软目标：450–600个汉字，4–7段。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-6ec68745fa48e2b9e4ecb484674c5b7e.json",
+            "sha256": "b7df3c970ebd82f97d1ce3edcf14d29e27aa881495953dc330e063fcb7b877b4",
+            "pointer": "/storyInput",
+            "start": 232,
+            "end": 252,
+            "quote": "写450–600个汉字的一场戏，4–7段"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-01.bin",
+              "sha256": "93432d06ba844bead146c3b972fca2efae2f3a20dfc6fe558a83c64b91ac3064",
+              "pointer": "",
+              "start": 0,
+              "end": 806,
+              "quote": "雨下得没有脾气，只是不停。寄存室的日光灯管坏了一根，剩下那根每隔几秒抖一下，把柜门上的号码照得忽明忽暗。程岚蹲在第三排最下面那格前，右耳对着锁孔，左耳朝着墙。水管在墙里咕噜一声，像谁咽了口唾沫。\n\n“还是那把？”阿陶站在她身后，鞋底在地上蹭来蹭去。他从雨里跑进来，裤脚湿到膝盖，手里攥着一串钥匙，挨个试过了，没一个对得上。“你总得问点什么。”\n\n“先问这锁。”程岚把右耳又贴近了些，“收费低。”\n\n锁是老式的铜挂锁，锁舌卡死，钥匙插进去只能转半圈。她拿手电照柜门底缝，光斜进去，照见一层灰、两根头发，还有几片纸屑，白的，边缘毛糙，像是从什么地方撕下来又踩过。她用镊子夹出一片，就着手电看。上面只剩半个字，印刷体，横折钩，像“到”，也像“列”。\n\n“写的什么？”阿陶凑过来。\n\n“半个字。”程岚把纸屑放进证物袋，封口，动作跟她收表芯一样慢，“看不出。”\n\n阿陶的呼吸急了一点，但他没催。他在寄存室门口来回走了两步，又停下，看那排柜子。“会不会是有人取过东西，掉出来的？”\n\n“可能。”程岚站起来，膝盖响了一声，“也可能是一直在底下。”\n\n她没说是哪种。她把手电关了，柜门底缝重新变成一条黑线。阿陶不知道那封信里装着什么，她也没打算在这儿说。信封还压在她修表垫下面，边角有点卷，她出门前特意压平了。\n\n“明早问管理员。”她说，“他管钥匙，也管监控。”\n\n“明早？”阿陶看了一眼窗外。雨还在下，玻璃上全是水痕，把街灯拉成一条一条的。“现在不能问？”\n\n“现在他不在。”程岚把证物袋揣进口袋，又拍了拍，确认不会掉，“而且他脾气不好。早上他喝第一杯茶的时候，脾气最好。”\n\n阿陶张了张嘴，最后只“嗯”了一声。他退到门口，替她扶着那扇有点变形的铁门。程岚经过他身边时，右耳里是雨声，左耳里什么都没有——没有水管的咕噜，没有灯管的电流，也没有阿陶那声“嗯”的回音。她习惯了。她只是把伞撑开，走进雨里，心里记着明早要问的那句话。"
+            }
+          ],
+          "reasoning": "完整原文为644个汉字、13个按空行分隔的非空段，与原始packet.counts一致。汉字目标未满足，段数目标未满足。这是软计数约束的状态，不是内容硬矛盾、技术失败或文学优劣评分；不据此补生成或剔除输出。"
+        }
+      ],
+      "notes": [
+        "Retained dispatch 1; decoded fixture F1, arm A; original candidate C-6ec68745fa48e2b9e4ecb484674c5b7e. Read the complete source packet and exact raw output before assigning statuses.",
+        "Retrospective unmasked calibration only. Historical packets, raw text, original locked reports and corrected RESULTS remain unchanged. This is not a new sample, independent blind reading, provider judgment, production acceptance or schema-version-3 generation.",
+        "Only the requested current-scene goal is binding here. Earlier reference events and later outline plans are not added as requirements to perform again or treated as already completed. Repeated source constraints are represented once per distinct obligation.",
+        "Economy observation: the repeated old joke and extended negative hearing explanation may be tightened; this is not a material voice/agency regression or hearing violation."
+      ]
+    },
+    {
+      "id": "retained-F1-B",
+      "origin": "retained",
+      "source": {
+        "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+        "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626"
+      },
+      "text": {
+        "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+        "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2"
+      },
+      "obligations": [
+        {
+          "id": "discover-paper",
+          "dimension": "goalfulfillment",
+          "requirement": "发现锁柜底下的纸屑。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 187,
+            "end": 196,
+            "quote": "发现锁柜底下的纸屑"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 224,
+              "end": 277,
+              "quote": "程岚从工具袋里摸出一把小钳子，蹲下去看锁柜底下的缝隙。那里卡着东西，不是灰。她用钳尖拨了两下，夹出一片纸屑"
+            }
+          ],
+          "reasoning": "发现、拨动、夹出都有实际动作，新线索来自柜底而非凭空得到的结论。"
+        },
+        {
+          "id": "decide-tomorrow",
+          "dimension": "goalfulfillment",
+          "requirement": "决定次日向管理员询问。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 197,
+            "end": 205,
+            "quote": "决定次日问管理员"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 468,
+              "end": 492,
+              "quote": "“看不出。明天问管理员，他管钥匙，也管丢东西。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 559,
+              "end": 574,
+              "quote": "“那我明早来。”他说。程岚点头"
+            }
+          ],
+          "reasoning": "程岚提出明天询问，阿陶承诺明早来，程岚点头形成下一步决定；没有把未来访问写成已完成。"
+        },
+        {
+          "id": "sender-unknown",
+          "dimension": "goalfulfillment",
+          "requirement": "不揭晓寄信人。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 206,
+            "end": 212,
+            "quote": "不揭晓寄信人"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 336,
+              "end": 363,
+              "quote": "上面只剩半个印痕，像是某个数字的下半截，又像一道划痕。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 435,
+              "end": 445,
+              "quote": "“那能看出是谁的？”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 468,
+              "end": 492,
+              "quote": "“看不出。明天问管理员，他管钥匙，也管丢东西。”"
+            }
+          ],
+          "reasoning": "完整输出只给不清楚的印痕与身份问题的否定答复；没有身份答案。“像”属于不确定观察，不是寄信人线索的事实确认。"
+        },
+        {
+          "id": "locked-cabinet",
+          "dimension": "causaltransitions",
+          "requirement": "试钥匙与柜底取证的动作衔接保持锁柜未打开。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 553,
+            "end": 576,
+            "quote": "程岚和阿陶找一只锁柜的钥匙，柜底纸屑提供小线索"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 119,
+              "end": 143,
+              "quote": "“锁舌老了，别硬拧。”阿陶停手，钥匙还插在锁眼里"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 540,
+              "end": 559,
+              "quote": "最后只把钥匙从锁眼里拔出来，搁在柜顶。"
+            }
+          ],
+          "reasoning": "插钥匙、停手、拔出有明确顺序。全文没有柜门打开，不能把“这把像”的角色判断当作开锁成功。"
+        },
+        {
+          "id": "paper-custody",
+          "dimension": "advancement",
+          "requirement": "纸屑发现转化为可保留的小线索。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 567,
+            "end": 576,
+            "quote": "柜底纸屑提供小线索"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 363,
+              "end": 376,
+              "quote": "程岚把它放进掌心，合拢手指"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 445,
+              "end": 458,
+              "quote": "程岚把纸屑收进工具袋的夹层"
+            }
+          ],
+          "reasoning": "纸片从柜底到掌心再到工具袋夹层，形成真实且可追踪的变化；未加封袋不等于丢失或违反此输入。"
+        },
+        {
+          "id": "ticket-secret",
+          "dimension": "boundaries",
+          "requirement": "阿陶不无来源知道车票内容，本场景不向他揭露。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 292,
+            "end": 314,
+            "quote": "阿陶不能无来源知道车票内容；本场景不向他揭露"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 391,
+              "end": 416,
+              "quote": "阿陶在旁边说：“是不是收据？寄存东西总得有收据。”"
+            }
+          ],
+          "reasoning": "完整阅读没有车票内容的披露。阿陶问的是新纸屑是否收据，疑问不是知道信封内旧车票。此片段是相关情境证据，缺席结论基于全篇而非关键词未出现一次。"
+        },
+        {
+          "id": "left-ear",
+          "dimension": "boundaries",
+          "requirement": "左耳不能被写成真实听觉来源。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 315,
+            "end": 328,
+            "quote": "不能把左耳听声写成真实感知"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 492,
+              "end": 530,
+              "quote": "她说这话时，右耳还留着雨声，左耳那边始终是安静的，像有人把那一侧的窗关死了。"
+            }
+          ],
+          "reasoning": "明确右耳有雨声而左耳安静；窗被关死是比喻，不是听觉恢复事件。"
+        },
+        {
+          "id": "concealment-motivation",
+          "dimension": "causaltransitions",
+          "requirement": "与阿陶协作寻信时，遮挡新纸屑的行为应有可读动机。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 100,
+            "end": 117,
+            "quote": "修表师替邻居寻找一封没有署名的信。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 291,
+              "end": 309,
+              "quote": "阿陶凑过来，她把手一偏，没让他看清。"
+            }
+          ],
+          "reasoning": "动作确实是不给阿陶看清新纸片，但来源只要求保密旧车票，不能自动套用为遮挡纸屑的理由。可能是先自行检查或防止先入为主；动机未写清，非必然违例或秘密已泄露。"
+        },
+        {
+          "id": "receipt-inference",
+          "dimension": "causaltransitions",
+          "requirement": "把纸屑作为小线索时，不将人物无足够证据的判断当作已证实结论。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 567,
+            "end": 576,
+            "quote": "柜底纸屑提供小线索"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 416,
+              "end": 430,
+              "quote": "她摇头：“收据不撕这么碎。”"
+            }
+          ],
+          "reasoning": "从破碎程度直接排除收据证据不足，但句子明确出自程岚之口，可能是经验或可错的判断；叙述未认证，后续仍说看不出。故保留推理疑点而不判客观事实矛盾。"
+        },
+        {
+          "id": "current-scene",
+          "dimension": "boundaries",
+          "requirement": "只写当前雨夜场景，未来询问不提前执行。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 253,
+            "end": 259,
+            "quote": "只写当前场景"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 180,
+              "end": 196,
+              "quote": "“管理员明天才来，可这柜子——”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 581,
+              "end": 618,
+              "quote": "雨还在下，她推开门时，风把寄存室里那股铁锈和潮纸混在一起的气味吹散了一点。"
+            }
+          ],
+          "reasoning": "从钥匙尝试到取证再离门均在同一雨夜。明早来是未来承诺，无提前见管理员或取得答案。"
+        },
+        {
+          "id": "voice-agency",
+          "dimension": "voiceagency",
+          "requirement": "程岚简短、实物相关而干涩；阿陶着急但不咄咄逼人。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 260,
+            "end": 292,
+            "quote": "人物声音：程岚用简短、实物相关的干涩回应；阿陶着急但不咄咄逼人。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 119,
+              "end": 134,
+              "quote": "“锁舌老了，别硬拧。”阿陶停手"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 309,
+              "end": 329,
+              "quote": "“先别急，”她说，“急出来的话不结实。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 559,
+              "end": 574,
+              "quote": "“那我明早来。”他说。程岚点头"
+            }
+          ],
+          "reasoning": "保护锁舌、取证、收纸与短答保持程岚能动性；阿陶提问、停手、接受明早，焦急未变成逼迫。“不结实”略抽象但仍借实物作干涩回应。"
+        },
+        {
+          "id": "limited-pov",
+          "dimension": "boundaries",
+          "requirement": "第三人称限知只跟随程岚。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 165,
+            "end": 177,
+            "quote": "第三人称限知，只跟随程岚"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 363,
+              "end": 391,
+              "quote": "程岚把它放进掌心，合拢手指，感觉那点干燥的硬度硌着掌纹。"
+            }
+          ],
+          "reasoning": "触感和观察归程岚，阿陶由对话/动作呈现；未跳入阿陶的隐藏知识。"
+        },
+        {
+          "id": "soft-counts",
+          "dimension": "countssoft",
+          "requirement": "软目标：450–600个汉字，4–7段。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-cd731f5e836adb51f8a072cc0d8b92af.json",
+            "sha256": "4e30d31e861595b603534e9019609060b2efdb25dea5af10edb2cb41ed06e626",
+            "pointer": "/storyInput",
+            "start": 232,
+            "end": 252,
+            "quote": "写450–600个汉字的一场戏，4–7段"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-02.bin",
+              "sha256": "82a55d1676c3482863246f526cb9776088fcc592dafddc549d0bb7c957eb22d2",
+              "pointer": "",
+              "start": 0,
+              "end": 644,
+              "quote": "雨从寄存室的门缝里进来，先在水泥地上铺了薄薄一层，又被两人的鞋底踩成乱七八糟的印子。阿陶蹲在第三排锁柜前，手里捏着一串钥匙，试到第七把时终于说：“这把像。”程岚没接话，把右耳贴近柜门，里面只有铁皮的回音和隔壁水管闷闷的响。她退开半步，说：“锁舌老了，别硬拧。”阿陶停手，钥匙还插在锁眼里，像一根没拔出来的鱼刺。\n\n“你总得问点什么。”阿陶站起来，裤脚湿了一截，“管理员明天才来，可这柜子——”他指指柜门上的号码牌，漆掉了一半，“——总得有个说法。”程岚从工具袋里摸出一把小钳子，蹲下去看锁柜底下的缝隙。那里卡着东西，不是灰。她用钳尖拨了两下，夹出一片纸屑，边缘毛糙，像被谁匆忙撕过。阿陶凑过来，她把手一偏，没让他看清。“先别急，”她说，“急出来的话不结实。”\n\n纸屑很小，上面只剩半个印痕，像是某个数字的下半截，又像一道划痕。程岚把它放进掌心，合拢手指，感觉那点干燥的硬度硌着掌纹。阿陶在旁边说：“是不是收据？寄存东西总得有收据。”她摇头：“收据不撕这么碎。”阿陶又问：“那能看出是谁的？”程岚把纸屑收进工具袋的夹层，站起来拍了拍膝盖。“看不出。明天问管理员，他管钥匙，也管丢东西。”她说这话时，右耳还留着雨声，左耳那边始终是安静的，像有人把那一侧的窗关死了。\n\n阿陶还想说什么，最后只把钥匙从锁眼里拔出来，搁在柜顶。“那我明早来。”他说。程岚点头，先往门口走。雨还在下，她推开门时，风把寄存室里那股铁锈和潮纸混在一起的气味吹散了一点。她没回头，工具袋里那片纸屑很轻，轻得像没放进去一样。"
+            }
+          ],
+          "reasoning": "完整原文为535个汉字、4个按空行分隔的非空段，与原始packet.counts一致。汉字目标满足，段数目标满足。这是软计数约束的状态，不是内容硬矛盾、技术失败或文学优劣评分；不据此补生成或剔除输出。"
+        }
+      ],
+      "notes": [
+        "Retained dispatch 2; decoded fixture F1, arm B; original candidate C-cd731f5e836adb51f8a072cc0d8b92af. Read the complete source packet and exact raw output before assigning statuses.",
+        "Retrospective unmasked calibration only. Historical packets, raw text, original locked reports and corrected RESULTS remain unchanged. This is not a new sample, independent blind reading, provider judgment, production acceptance or schema-version-3 generation.",
+        "Only the requested current-scene goal is binding here. Earlier reference events and later outline plans are not added as requirements to perform again or treated as already completed. Repeated source constraints are represented once per distinct obligation."
+      ]
+    },
+    {
+      "id": "retained-F2-A",
+      "origin": "retained",
+      "source": {
+        "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+        "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9"
+      },
+      "text": {
+        "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+        "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07"
+      },
+      "obligations": [
+        {
+          "id": "return-next-morning",
+          "dimension": "goalfulfillment",
+          "requirement": "次日上午携前章保管的纸屑来问管理员。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 696,
+            "end": 713,
+            "quote": "次日上午携前章保管的纸屑来问管理员"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 0,
+              "end": 11,
+              "quote": "雨后的上午比夜里更冷。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 35,
+              "end": 64,
+              "quote": "许宁站在檐下，工具袋斜挎着，纸盒还在最里层，橡皮筋箍得紧。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 471,
+              "end": 493,
+              "quote": "“四片，昨天夜里发现的。柜门锁着，没动过。”"
+            }
+          ],
+          "reasoning": "时间明确为雨后上午，纸盒、最里层、橡皮筋和四片纸屑延续前章，实际带到管理员面前。不是重新发现纸屑或只打算去问。"
+        },
+        {
+          "id": "compatible-greeting",
+          "dimension": "goalfulfillment",
+          "requirement": "在门边用符合当前设定的方法招呼管理员。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 714,
+            "end": 730,
+            "quote": "在门边用符合当前设定的方法招呼他"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 149,
+              "end": 180,
+              "quote": "他走到门边，抬手敲了三下。门里没有动静。他又敲两下，间隔长些。"
+            }
+          ],
+          "reasoning": "实际敲门两次后等待，后文脚步与开门形成可读响应链；敲门无需坏铃发声，目标达成。"
+        },
+        {
+          "id": "bell-cannot-sound",
+          "dimension": "boundaries",
+          "requirement": "损坏的铜铃不能发出声音。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 2515,
+            "end": 2533,
+            "quote": "寄存室的铜铃已经损坏，不能发出声音。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 201,
+              "end": 212,
+              "quote": "铃舌卡死了，晃不出声。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 745,
+              "end": 758,
+              "quote": "铜铃跟着晃了晃，依旧没声。"
+            }
+          ],
+          "reasoning": "两次铃的动作都在无声否定范围内。门轴“响了一声”属于门轴而非铜铃；不因附近声音词误判。"
+        },
+        {
+          "id": "administrator-responds",
+          "dimension": "goalfulfillment",
+          "requirement": "管理员出来应门。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 779,
+            "end": 786,
+            "quote": "管理员出来应门"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 344,
+              "end": 361,
+              "quote": "门里终于有了脚步。管理员老周拉开门"
+            }
+          ],
+          "reasoning": "敲门及等待在前，管理员实际拉开门在后，回应发生而非只有设想。"
+        },
+        {
+          "id": "show-paper",
+          "dimension": "goalfulfillment",
+          "requirement": "管理员查看带来的纸屑。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 787,
+            "end": 791,
+            "quote": "查看纸屑"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 450,
+              "end": 471,
+              "quote": "许宁把纸盒递过去，没松手，只掀开盖让他看。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 495,
+              "end": 533,
+              "quote": "老周低头看了几秒，没碰纸屑。他从褂子口袋里掏出一副老花镜，架上去又看了一遍。"
+            }
+          ],
+          "reasoning": "许宁展示且仍持盒，管理员看而不拿纸屑；查看目标不要求把证物交给管理员保管。"
+        },
+        {
+          "id": "records-tomorrow",
+          "dimension": "goalfulfillment",
+          "requirement": "管理员确认柜号旧记录明天才能查。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 731,
+            "end": 747,
+            "quote": "管理员只确认柜号旧记录明天才能查"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 533,
+              "end": 575,
+              "quote": "“柜号旧记录不在我这儿。”他说，“这排柜子换过两回锁，登记本归库房，得明天上午调。”"
+            }
+          ],
+          "reasoning": "信息由管理员回答提供，明确登记本在库房且明日上午调取；当前没有获得记录或寄放人答案。"
+        },
+        {
+          "id": "limited-answer",
+          "dimension": "boundaries",
+          "requirement": "管理员本场景仅给有限记录安排，不提前得到寄信人答案。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 731,
+            "end": 747,
+            "quote": "管理员只确认柜号旧记录明天才能查"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 533,
+              "end": 546,
+              "quote": "“柜号旧记录不在我这儿。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 618,
+              "end": 656,
+              "quote": "“你们来之前别自己开柜。钥匙在我这儿，锁没坏，坏了要报修，报修单也得明天。”"
+            }
+          ],
+          "reasoning": "换锁、钥匙和报修是现场办事背景，不提供身份答案或现在获得记录；范围虽有日常补充，未实质跨到新调查发现。"
+        },
+        {
+          "id": "agree-return",
+          "dimension": "goalfulfillment",
+          "requirement": "三人约明早再来。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 748,
+            "end": 755,
+            "quote": "三人约明早再来"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 679,
+              "end": 722,
+              "quote": "许宁把纸盒盖好，橡皮筋重新箍上，放回工具袋最里层。他朝老周点了下头，说：“明天九点。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 724,
+              "end": 737,
+              "quote": "老周也点头，退回去把门带上"
+            }
+          ],
+          "reasoning": "许宁明确给明天九点，管理员点头接受，阿青同行在场未反对；与上文管理员的明日上午一致。未要求每人必须同样口头复述；形成三人所在场景中的约定。"
+        },
+        {
+          "id": "paper-remains-with-xu",
+          "dimension": "goalfulfillment",
+          "requirement": "许宁继续保管纸屑。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 800,
+            "end": 808,
+            "quote": "许宁继续保管纸屑"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 450,
+              "end": 471,
+              "quote": "许宁把纸盒递过去，没松手，只掀开盖让他看。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 695,
+              "end": 703,
+              "quote": "放回工具袋最里层"
+            }
+          ],
+          "reasoning": "盒子展示时未松手，结束重回原来工具袋最里层；完整阅读无交付或丢失。"
+        },
+        {
+          "id": "cabinet-stays-locked",
+          "dimension": "goalfulfillment",
+          "requirement": "柜门仍未打开。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 809,
+            "end": 815,
+            "quote": "柜门仍未打开"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 471,
+              "end": 493,
+              "quote": "“四片，昨天夜里发现的。柜门锁着，没动过。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 618,
+              "end": 656,
+              "quote": "“你们来之前别自己开柜。钥匙在我这儿，锁没坏，坏了要报修，报修单也得明天。”"
+            }
+          ],
+          "reasoning": "角色明确报告柜门锁着，管理员要求不私开。全篇只开办公室门和纸盒，不开柜门；不能把“拉开门”跨对象算作开柜。"
+        },
+        {
+          "id": "administrator-knows-number",
+          "dimension": "causaltransitions",
+          "requirement": "新询问的知识来源应有可理解的传递链。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 238,
+            "end": 243,
+            "quote": "查问管理员"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 408,
+              "end": 439,
+              "quote": "“十七号柜的事？”老周问。他说话慢，像在核对一张看不见的单子。"
+            }
+          ],
+          "reasoning": "这是管理员先问出准确柜号，当前对话尚未有许宁告知，原packet也未交代其先前获知渠道。管理员可能有普通背景知识；是来源缺口，不是被事实证明不可能知道，也不是阿青车票禁令的违反。"
+        },
+        {
+          "id": "ticket-secret",
+          "dimension": "boundaries",
+          "requirement": "阿青不无来源知道旧车票，本三章不向他揭露。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 376,
+            "end": 401,
+            "quote": "阿青不得无来源知道信封中的旧车票，本三章不向他揭露"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 441,
+              "end": 471,
+              "quote": "“柜底夹出来的。”许宁把纸盒递过去，没松手，只掀开盖让他看。"
+            }
+          ],
+          "reasoning": "当前对话对象始终是柜底纸屑和旧记录，完整输出没有透露信封内车票或使阿青表现知情；不是把所有“旧”字都当车票知识。"
+        },
+        {
+          "id": "sender-and-speculation",
+          "dimension": "boundaries",
+          "requirement": "寄信人保持未知，不引入宏大阴谋，纸屑和锁痕猜测不成为世界事实。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 402,
+            "end": 438,
+            "quote": "不得揭晓寄信人，不引入宏大阴谋。对纸屑和锁痕的猜测不能直接成为世界事实。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 533,
+              "end": 575,
+              "quote": "“柜号旧记录不在我这儿。”他说，“这排柜子换过两回锁，登记本归库房，得明天上午调。”"
+            }
+          ],
+          "reasoning": "完整阅读只有柜号、纸屑、程序与日常换锁背景，未命名寄信人、引入阴谋或认证对纸屑来历的推测。有限信息由管理员具名说出。"
+        },
+        {
+          "id": "left-ear",
+          "dimension": "boundaries",
+          "requirement": "不得写成许宁用左耳听声。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 364,
+            "end": 376,
+            "quote": "不得写成许宁用左耳听声。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 344,
+              "end": 353,
+              "quote": "门里终于有了脚步。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 738,
+              "end": 758,
+              "quote": "门轴响了一声，铜铃跟着晃了晃，依旧没声。"
+            }
+          ],
+          "reasoning": "普通脚步和门轴声没有指定为左耳感知。完整阅读没有左耳听见的叙述；既定单耳失聪不禁止一般声音或右耳听觉。"
+        },
+        {
+          "id": "advance-current-scene",
+          "dimension": "advancement",
+          "requirement": "接续已接受正文，不重演前夜发现；只写当前询问并保留未履行约定。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 297,
+            "end": 327,
+            "quote": "只写指定当前场景，接续已接受正文，不重演已发生的对白和动作。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 471,
+              "end": 493,
+              "quote": "“四片，昨天夜里发现的。柜门锁着，没动过。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 713,
+              "end": 722,
+              "quote": "说：“明天九点。”"
+            }
+          ],
+          "reasoning": "“昨天夜里发现”是对来源的简要报告，不是再次实演发现；本场景从未问转到已询问和有约定，明早记录仍待调取。"
+        },
+        {
+          "id": "voice-agency",
+          "dimension": "voiceagency",
+          "requirement": "许宁话短而具体，阿青急而不逼迫，管理员通过办事规矩表达关心。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 327,
+            "end": 364,
+            "quote": "许宁说话简短、与实物相关；阿青着急但不咄咄逼人；管理员用办事规矩表达关心。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 262,
+              "end": 271,
+              "quote": "“先等。”许宁说。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 658,
+              "end": 679,
+              "quote": "阿青张了张嘴，看了许宁一眼，把话咽了回去。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 577,
+              "end": 609,
+              "quote": "“明天上午。”许宁重复了一遍。\n\n“明天上午。”老周把眼镜摘下来"
+            }
+          ],
+          "reasoning": "许宁自行敲门、展示和保管纸屑，阿青提出寻找方案但接受先等，管理员用报修程序保护柜锁。重复确认可体现谨慎；没有实质声音或能动性失败，经济性意见另留notes。"
+        },
+        {
+          "id": "soft-counts",
+          "dimension": "countssoft",
+          "requirement": "软目标：350–500个汉字，4–7段。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-4a87feaee3792cbac47dbb27426a6019.json",
+            "sha256": "6a20165df6084ffa14963b821bad7c67d358fa2552a198abdb4d417fe6f150a9",
+            "pointer": "/storyInput",
+            "start": 279,
+            "end": 297,
+            "quote": "每章350–500个汉字，4–7段。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-04.bin",
+              "sha256": "b3bf9b643006e5ed0169cd1967bdc854a54af9a1d8aed27b83fbc5f73caf0b07",
+              "pointer": "",
+              "start": 0,
+              "end": 758,
+              "quote": "雨后的上午比夜里更冷。寄存室的门廊下积着一汪浅水，映出门框和半截电线。许宁站在檐下，工具袋斜挎着，纸盒还在最里层，橡皮筋箍得紧。阿青比他早到，鞋尖已经湿了，来回在门槛外踩了两趟。\n\n“管理员平时几点来？”阿青问。\n\n“九点前后。”许宁看了眼门上的作息牌，字迹被雨气泡得发胀，只认得出“上午”两个字。他走到门边，抬手敲了三下。门里没有动静。他又敲两下，间隔长些。铜铃挂在门框上方，锈得发黑，他伸手碰了碰，铃舌卡死了，晃不出声。\n\n阿青凑到窗边往里看，玻璃反光，只能瞧见一排排柜顶。他说：“要不我去后面看看，兴许人在库房。”\n\n“先等。”许宁说。他把工具袋换到另一边肩，从袋侧摸出那只纸盒，掀开盖看了一眼。四片纸屑还在，潮气散了些，边缘比昨夜更卷。他合上盖，重新箍好橡皮筋，没让阿青接手。\n\n门里终于有了脚步。管理员老周拉开门，穿着那件洗得发白的蓝布褂，手里捏着一串钥匙。他先看许宁，再看阿青，最后看许宁手里的纸盒。\n\n“十七号柜的事？”老周问。他说话慢，像在核对一张看不见的单子。\n\n“柜底夹出来的。”许宁把纸盒递过去，没松手，只掀开盖让他看。“四片，昨天夜里发现的。柜门锁着，没动过。”\n\n老周低头看了几秒，没碰纸屑。他从褂子口袋里掏出一副老花镜，架上去又看了一遍。“柜号旧记录不在我这儿。”他说，“这排柜子换过两回锁，登记本归库房，得明天上午调。”\n\n“明天上午。”许宁重复了一遍。\n\n“明天上午。”老周把眼镜摘下来，折好，放回口袋。“你们来之前别自己开柜。钥匙在我这儿，锁没坏，坏了要报修，报修单也得明天。”\n\n阿青张了张嘴，看了许宁一眼，把话咽了回去。许宁把纸盒盖好，橡皮筋重新箍上，放回工具袋最里层。他朝老周点了下头，说：“明天九点。”\n\n老周也点头，退回去把门带上，门轴响了一声，铜铃跟着晃了晃，依旧没声。"
+            }
+          ],
+          "reasoning": "完整原文为610个汉字、13个按空行分隔的非空段，与原始packet.counts一致。汉字目标未满足，段数目标未满足。这是软计数约束的状态，不是内容硬矛盾、技术失败或文学优劣评分；不据此补生成或剔除输出。"
+        }
+      ],
+      "notes": [
+        "Retained dispatch 4; decoded fixture F2, arm A; original candidate C-4a87feaee3792cbac47dbb27426a6019. Read the complete source packet and exact raw output before assigning statuses.",
+        "Retrospective unmasked calibration only. Historical packets, raw text, original locked reports and corrected RESULTS remain unchanged. This is not a new sample, independent blind reading, provider judgment, production acceptance or schema-version-3 generation.",
+        "Only the requested current-scene goal is binding here. Earlier reference events and later outline plans are not added as requirements to perform again or treated as already completed. Repeated source constraints are represented once per distinct obligation.",
+        "Economy observation: checking the box twice and repeating tomorrow morning can be tightened, but also plausibly express caution; these do not establish a material voice/agency failure."
+      ]
+    },
+    {
+      "id": "retained-F2-B",
+      "origin": "retained",
+      "source": {
+        "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+        "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c"
+      },
+      "text": {
+        "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+        "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27"
+      },
+      "obligations": [
+        {
+          "id": "return-next-morning",
+          "dimension": "goalfulfillment",
+          "requirement": "次日上午携前章保管的纸屑来问管理员。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 696,
+            "end": 713,
+            "quote": "次日上午携前章保管的纸屑来问管理员"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 0,
+              "end": 70,
+              "quote": "雨在夜里住了，天亮时只剩檐口偶尔坠下一滴，砸在寄存室门口的水泥台阶上，碎得干脆。许宁到得比九点早，工具袋斜挎着，纸盒还在最里层，橡皮筋没松。"
+            }
+          ],
+          "reasoning": "明确由雨夜至天亮、到场比九点早，原纸盒仍在原处且橡皮筋未松；没有重新发现纸屑。"
+        },
+        {
+          "id": "compatible-greeting",
+          "dimension": "goalfulfillment",
+          "requirement": "在门边用符合当前设定的方法招呼管理员。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 714,
+            "end": 730,
+            "quote": "在门边用符合当前设定的方法招呼他"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 165,
+              "end": 232,
+              "quote": "许宁没敲门。他看见门边挂着一根拉绳，绳头系着半截铜铃的残壳——铃早坏了，拉一下只发出铁皮碰铁皮的闷响。他拉了一下。隔了几秒，又拉一下。"
+            }
+          ],
+          "reasoning": "实际招呼并接着应门，但依赖坏铃残壳拉绳制造闷响，和不能发声的设定存在解释张力。残壳碰别的金属可能响；也没有说铃被修好。不能将目标因应门结果而自动判全满足，亦不能判物理不可能。"
+        },
+        {
+          "id": "bell-cannot-sound",
+          "dimension": "boundaries",
+          "requirement": "损坏铜铃不能发出声音。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 2515,
+            "end": 2533,
+            "quote": "寄存室的铜铃已经损坏，不能发出声音。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 196,
+              "end": 216,
+              "quote": "铃早坏了，拉一下只发出铁皮碰铁皮的闷响。"
+            }
+          ],
+          "reasoning": "“不能发声”可指不能正常鸣铃，残壳碰撞仍可能有声；若要求任何机械响声皆无，则有冲突。没有独立撞击物的清晰交代，需澄清。与招呼目标是同一歧义的两个观察面，不能累计成两项独立失败。"
+        },
+        {
+          "id": "administrator-responds",
+          "dimension": "goalfulfillment",
+          "requirement": "管理员出来应门。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 779,
+            "end": 786,
+            "quote": "管理员出来应门"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 234,
+              "end": 271,
+              "quote": "门开了一条缝，老周的脸从缝里露出来，眼镜架在鼻尖上，手里还捏着一支蘸水笔。"
+            }
+          ],
+          "reasoning": "老周实际出现并随后开大门，响应结果已发生；此状态不等于招呼机制完全符合坏铃限制。"
+        },
+        {
+          "id": "show-paper",
+          "dimension": "goalfulfillment",
+          "requirement": "管理员查看纸屑。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 787,
+            "end": 791,
+            "quote": "查看纸屑"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 469,
+              "end": 503,
+              "quote": "四片纸屑躺在盒底，潮气干了些，边缘卷起来。老周没伸手，只低头看了几秒"
+            }
+          ],
+          "reasoning": "明确看到原四片纸屑；没有手碰纸屑不影响查看完成，随后合盖推回的是盒子。"
+        },
+        {
+          "id": "records-tomorrow",
+          "dimension": "goalfulfillment",
+          "requirement": "管理员确认柜号旧记录明天才能查。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 731,
+            "end": 747,
+            "quote": "管理员只确认柜号旧记录明天才能查"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 403,
+              "end": 440,
+              "quote": "“库房。”老周说，“装订成册的，按年份。今天的活排满了，明天早上才能翻。”"
+            }
+          ],
+          "reasoning": "由具名管理员说明库房和次日才翻，当前未取得记录。后续公示条件另评，不能抹掉已完成的有限记录回答。"
+        },
+        {
+          "id": "limited-answer",
+          "dimension": "boundaries",
+          "requirement": "管理员仅确认旧记录次日可查，不把条件性公示当既成结果。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 731,
+            "end": 747,
+            "quote": "管理员只确认柜号旧记录明天才能查"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 584,
+              "end": 614,
+              "quote": "记录上要是没有寄放人姓名，那这柜子就是无主件，按规矩得公示。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 661,
+              "end": 671,
+              "quote": "“三十天。”老周说完"
+            }
+          ],
+          "reasoning": "额外三十天公示程序使“只确认”的范围变宽；也可读成仅限定确定的调查发现而容许条件性办事规则。“要是”统辖无主件结论，绝不等于记录已经无姓名、柜子已确认无主或已经公示。"
+        },
+        {
+          "id": "agree-return",
+          "dimension": "goalfulfillment",
+          "requirement": "三人约明早再来。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 748,
+            "end": 755,
+            "quote": "三人约明早再来"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 569,
+              "end": 584,
+              "quote": "“明天八点半来，我带你去库房。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 686,
+              "end": 710,
+              "quote": "“明天别迟到，库房钥匙在主任那儿，我替你们约。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 712,
+              "end": 732,
+              "quote": "许宁把纸盒收回工具袋最里层，拉链拉到底。"
+            }
+          ],
+          "reasoning": "管理员向在场二人提出明天八点半并承诺带路、代约钥匙，但访客没有明确接受该时间的回应。收好纸盒离开可以读为默认接受，也可能只是结束询问；未拒绝本身不足以证明达成协议，因此这里保留uncertain，不判必然未约成。锁定P3将该安排视为已落实，本次非盲回顾标注采取更保守的证据阈值，属于明确解释差异，不改写历史评价。也未声称主任已经同意或记录已查到。"
+        },
+        {
+          "id": "paper-remains-with-xu",
+          "dimension": "goalfulfillment",
+          "requirement": "许宁继续保管纸屑。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 800,
+            "end": 808,
+            "quote": "许宁继续保管纸屑"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 541,
+              "end": 566,
+              "quote": "老周把盒盖重新合上，推回许宁手边。“东西你收着。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 712,
+              "end": 732,
+              "quote": "许宁把纸盒收回工具袋最里层，拉链拉到底。"
+            }
+          ],
+          "reasoning": "展示后管理员推回盒子，许宁实收回最里层并拉链；保管链闭合，不因管理员短暂接触盒盖而变成永久交付。"
+        },
+        {
+          "id": "cabinet-stays-locked",
+          "dimension": "goalfulfillment",
+          "requirement": "柜门仍未打开。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 809,
+            "end": 815,
+            "quote": "柜门仍未打开"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 794,
+              "end": 826,
+              "quote": "柜门仍锁着，十七号的铜牌在门里那排暗处，他看不见，但知道它还在。"
+            }
+          ],
+          "reasoning": "叙述明确柜仍锁；完整输出开的是办公室门与纸盒，不是柜门。结尾不能看见牌而知道其位置是既有地点记忆，不是神秘新知识。"
+        },
+        {
+          "id": "administrator-knows-number",
+          "dimension": "causaltransitions",
+          "requirement": "询问柜号的知识有可追踪来源。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 238,
+            "end": 243,
+            "quote": "查问管理员"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 288,
+              "end": 320,
+              "quote": "“不取东西。”许宁把工具袋往身前挪了挪，“问十七号柜的旧记录。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 346,
+              "end": 366,
+              "quote": "“十七号。”他重复了一遍，像在核对什么。"
+            }
+          ],
+          "reasoning": "先许宁报柜号、再管理员复述，信息传递在场可见。“像在核对”是外部观察比拟，不是认定他暗中查过未提供记录。"
+        },
+        {
+          "id": "ticket-secret",
+          "dimension": "boundaries",
+          "requirement": "阿青不得无来源知道信封内旧车票，本三章不向他揭露。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 376,
+            "end": 401,
+            "quote": "阿青不得无来源知道信封中的旧车票，本三章不向他揭露"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 516,
+              "end": 539,
+              "quote": "“哪儿捡的？”\n\n“十七号柜门底缝。”许宁说。"
+            }
+          ],
+          "reasoning": "完整输出所展示的是柜底四片纸屑，所问是柜号和旧记录；没有揭露信封车票。此处来源答复不造成秘密转移。"
+        },
+        {
+          "id": "sender-and-speculation",
+          "dimension": "boundaries",
+          "requirement": "寄信人保持未知，猜测不直接成为世界事实。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 418,
+            "end": 438,
+            "quote": "对纸屑和锁痕的猜测不能直接成为世界事实。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 584,
+              "end": 614,
+              "quote": "记录上要是没有寄放人姓名，那这柜子就是无主件，按规矩得公示。"
+            }
+          ],
+          "reasoning": "完整输出没有姓名答案或纸屑来源认证。条件句未确认前提成真；寄放人也不自动等于寄信人，不能把两个身份偷换。管理员程序性话语不是揭露宏大阴谋。"
+        },
+        {
+          "id": "left-ear",
+          "dimension": "boundaries",
+          "requirement": "不得写成许宁用左耳听声。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 364,
+            "end": 376,
+            "quote": "不得写成许宁用左耳听声。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 767,
+              "end": 794,
+              "quote": "许宁没接话，抬手把工具袋的搭扣按紧，搭扣“咔”地扣死。"
+            }
+          ],
+          "reasoning": "全文普通声响未归给左耳。搭扣有声、坏铃机制是否合理、许宁左耳听觉是不同问题，不应混淆对象和感知归属。"
+        },
+        {
+          "id": "advance-current-scene",
+          "dimension": "advancement",
+          "requirement": "续写当前询问，不重演前夜事件，不提前跳到查到记录。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 297,
+            "end": 327,
+            "quote": "只写指定当前场景，接续已接受正文，不重演已发生的对白和动作。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 423,
+              "end": 439,
+              "quote": "今天的活排满了，明天早上才能翻。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 686,
+              "end": 710,
+              "quote": "“明天别迟到，库房钥匙在主任那儿，我替你们约。”"
+            }
+          ],
+          "reasoning": "前夜纸屑来源已被承接，当前新增实际询问和次日八点半安排。记录、代约钥匙和可能公示均留在未来，没有把计划升级为既成事实。"
+        },
+        {
+          "id": "voice-agency",
+          "dimension": "voiceagency",
+          "requirement": "人物声音和自主行动保持，管理员用规矩表达关心。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 327,
+            "end": 364,
+            "quote": "许宁说话简短、与实物相关；阿青着急但不咄咄逼人；管理员用办事规矩表达关心。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 288,
+              "end": 295,
+              "quote": "“不取东西。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 387,
+              "end": 401,
+              "quote": "阿青往前半步：“那在哪儿？”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 686,
+              "end": 710,
+              "quote": "“明天别迟到，库房钥匙在主任那儿，我替你们约。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 732,
+              "end": 746,
+              "quote": "阿青站在台阶下，包子已经凉了"
+            }
+          ],
+          "reasoning": "短答、主动询问、递包子和代约钥匙满足人物声音/行动；管理员的程序口吻也含实际帮助。程序篇幅较重不等于声音或能动性失败，因此不因经济性或超字数降低本项状态。"
+        },
+        {
+          "id": "soft-counts",
+          "dimension": "countssoft",
+          "requirement": "软目标：350–500个汉字，4–7段。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-bfc3f1a0d643da85aac2694a33300b98.json",
+            "sha256": "3b7bbdee31c72169bfb32029889892c868723a3fa92a3a9f4a1553f70be7014c",
+            "pointer": "/storyInput",
+            "start": 279,
+            "end": 297,
+            "quote": "每章350–500个汉字，4–7段。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-03.bin",
+              "sha256": "91a448334179a16da8b9da909d6e767d6076c8b9f9dfc39da5162b2470759e27",
+              "pointer": "",
+              "start": 0,
+              "end": 826,
+              "quote": "雨在夜里住了，天亮时只剩檐口偶尔坠下一滴，砸在寄存室门口的水泥台阶上，碎得干脆。许宁到得比九点早，工具袋斜挎着，纸盒还在最里层，橡皮筋没松。阿青从街口拐过来，裤脚沾着泥点，手里拎着两只包子，递了一只给许宁，自己那只咬了两口就捏在手里。\n\n管理员老周的门在寄存室侧墙，漆成和柜子一样的灰绿色，门框上钉着一块小铁牌，写着“办公时间”。许宁没敲门。他看见门边挂着一根拉绳，绳头系着半截铜铃的残壳——铃早坏了，拉一下只发出铁皮碰铁皮的闷响。他拉了一下。隔了几秒，又拉一下。\n\n门开了一条缝，老周的脸从缝里露出来，眼镜架在鼻尖上，手里还捏着一支蘸水笔。“寄存室九点半才开柜。”他说。\n\n“不取东西。”许宁把工具袋往身前挪了挪，“问十七号柜的旧记录。”\n\n老周把门开大些，目光从许宁移到阿青，又移回许宁。“十七号。”他重复了一遍，像在核对什么。“那排柜子换过三回锁，记录不在手边。”\n\n阿青往前半步：“那在哪儿？”\n\n“库房。”老周说，“装订成册的，按年份。今天的活排满了，明天早上才能翻。”他顿了顿，看见许宁从袋里取出那只纸盒，解开橡皮筋，掀开盖。四片纸屑躺在盒底，潮气干了些，边缘卷起来。老周没伸手，只低头看了几秒，把蘸水笔夹到耳朵上。\n\n“哪儿捡的？”\n\n“十七号柜门底缝。”许宁说。\n\n老周把盒盖重新合上，推回许宁手边。“东西你收着。”他说，“明天八点半来，我带你去库房。记录上要是没有寄放人姓名，那这柜子就是无主件，按规矩得公示。”他看了阿青一眼，“公示期里谁也不能开。”\n\n阿青张了张嘴，到底只问了一句：“公示多久？”\n\n“三十天。”老周说完，把门带上，门缝里又补出一句，“明天别迟到，库房钥匙在主任那儿，我替你们约。”\n\n许宁把纸盒收回工具袋最里层，拉链拉到底。阿青站在台阶下，包子已经凉了，他三两口塞进嘴里，含混地说：“三十天。”许宁没接话，抬手把工具袋的搭扣按紧，搭扣“咔”地扣死。柜门仍锁着，十七号的铜牌在门里那排暗处，他看不见，但知道它还在。"
+            }
+          ],
+          "reasoning": "完整原文为665个汉字、13个按空行分隔的非空段，与原始packet.counts一致。汉字目标未满足，段数目标未满足。这是软计数约束的状态，不是内容硬矛盾、技术失败或文学优劣评分；不据此补生成或剔除输出。"
+        }
+      ],
+      "notes": [
+        "Retained dispatch 3; decoded fixture F2, arm B; original candidate C-bfc3f1a0d643da85aac2694a33300b98. Read the complete source packet and exact raw output before assigning statuses.",
+        "Retrospective unmasked calibration only. Historical packets, raw text, original locked reports and corrected RESULTS remain unchanged. This is not a new sample, independent blind reading, provider judgment, production acceptance or schema-version-3 generation.",
+        "Only the requested current-scene goal is binding here. Earlier reference events and later outline plans are not added as requirements to perform again or treated as already completed. Repeated source constraints are represented once per distinct obligation.",
+        "Economy observation: conditional thirty-day publicity procedure broadens a limited inquiry and adds weight; it remains attributed conditional dialogue, not an established ownerless-cabinet finding.",
+        "Retrospective interpretation difference: the locked P3 reader treated the next-morning arrangement as settled; this annotation marks the visitors’ tacit acceptance uncertain because absence of refusal is not affirmative agreement. The original judgment remains unchanged."
+      ]
+    },
+    {
+      "id": "retained-F3-A",
+      "origin": "retained",
+      "source": {
+        "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+        "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999"
+      },
+      "text": {
+        "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+        "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0"
+      },
+      "obligations": [
+        {
+          "id": "temporary-repair",
+          "dimension": "goalfulfillment",
+          "requirement": "做出临时修补。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 209,
+            "end": 215,
+            "quote": "做出临时修补"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 305,
+              "end": 335,
+              "quote": "她把针从内侧穿出，又从外侧绕回来，一针压一针，走了一道浅弧。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 505,
+              "end": 526,
+              "quote": "赵姨穿上试了试，脚趾弯了两下，带子没再断。"
+            }
+          ],
+          "reasoning": "有实际穿针、缝带、调整与试穿结果，鞋带由断裂到当前可用；后文限制跑动说明只是临时修补。"
+        },
+        {
+          "id": "enable-last-bus",
+          "dimension": "goalfulfillment",
+          "requirement": "让邻居赶上末班车。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 216,
+            "end": 224,
+            "quote": "让邻居赶上末班车"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 125,
+              "end": 137,
+              "quote": "“末班车还有二十分钟。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 471,
+              "end": 480,
+              "quote": "能走到车站，别跑。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 564,
+              "end": 581,
+              "quote": "赵姨把钱压在铁盒底下，拎起鞋走了。"
+            }
+          ],
+          "reasoning": "二十分钟时限、可走到车站的修补及离摊支持赶车目的，历史读者可合理认为当前场景已实现帮助赶车。完整输出未直接确认登车；来源也没有要求必须另写登车，因此不把省略登车制造为missing。uncertain仅保留场外是否实际赶上的结果不确定性，不能当作已错过车。"
+        },
+        {
+          "id": "agree-next-day",
+          "dimension": "goalfulfillment",
+          "requirement": "双方约定明天再补牢。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 225,
+            "end": 233,
+            "quote": "并约定明天再补牢"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 480,
+              "end": 502,
+              "quote": "明天拿过来，我再用皮线从底下走一道，就牢了。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 505,
+              "end": 544,
+              "quote": "赵姨穿上试了试，脚趾弯了两下，带子没再断。“明天几点？”\n\n“四点以后都在。”"
+            }
+          ],
+          "reasoning": "提出明日再补之后，赵姨追问时间并得到四点以后，场景中的双方约定成立。未来是否实际履约尚未知；不能因此撤销现在已经达成的约定。"
+        },
+        {
+          "id": "hesitation-and-correction",
+          "dimension": "causaltransitions",
+          "requirement": "出现动作犹豫，并由实际问题引出修补调整。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 611,
+            "end": 619,
+            "quote": "一处动作上的犹豫"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 359,
+              "end": 434,
+              "quote": "走到一半，她停了。断带的位置靠近脚趾弯折的地方，线拉得太紧，脚一弯就会再崩。她盯着那个弧度，手指在线上来回蹭了蹭，最后把这一段拆了两针，重新走松一点。"
+            }
+          ],
+          "reasoning": "停顿由过紧、弯折易崩解释，拆两针放松针对具体风险；犹豫改变动作而非只有抽象心理说明。"
+        },
+        {
+          "id": "white-thread-only",
+          "dimension": "boundaries",
+          "requirement": "当前修补只能用现有白线。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 316,
+            "end": 325,
+            "quote": "修补只能用现有白线"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 153,
+              "end": 168,
+              "quote": "摊上只剩白色线，线轴搁在铁盒里"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 335,
+              "end": 357,
+              "quote": "线是白的，缝在深色皮面上，像一道没藏住的疤。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 480,
+              "end": 497,
+              "quote": "明天拿过来，我再用皮线从底下走一道"
+            }
+          ],
+          "reasoning": "本次实际缝补明确白线。皮线由“明天”“再”管辖，属于尚待取得/使用的未来材料，不能算当前凭空出现黑线或改用皮线。"
+        },
+        {
+          "id": "no-magical-tools-or-helpers",
+          "dimension": "boundaries",
+          "requirement": "不凭空出现工具或帮手。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 326,
+            "end": 336,
+            "quote": "不凭空出现工具或帮手"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 265,
+              "end": 291,
+              "quote": "师傅的锥子摆在右手边，她没动，只拿了自己那把小钳子。"
+            }
+          ],
+          "reasoning": "锥子和小钳子没有先文铺垫，和特定工具边界存在张力；“摆在右手边”“自己那把”也可指修鞋摊既存物件首次被叙述，且未成为异常解决问题的关键。完整阅读无突然帮手。故不把来源未写清升级为物理矛盾。"
+        },
+        {
+          "id": "master-absent",
+          "dimension": "boundaries",
+          "requirement": "师傅不在场。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 337,
+            "end": 342,
+            "quote": "师傅不在场"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 39,
+              "end": 57,
+              "quote": "“小满，你师傅呢？”\n\n“回去了。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 600,
+              "end": 617,
+              "quote": "周小满没接话。她低头把针插回线轴上"
+            }
+          ],
+          "reasoning": "回答师傅回去了，全篇实际操作者为小满，无师傅出场。师傅所有的锥子不是师傅本人到场。"
+        },
+        {
+          "id": "broken-needle-secret",
+          "dimension": "boundaries",
+          "requirement": "师傅不能突然知道断针的事。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 343,
+            "end": 353,
+            "quote": "不能突然知道断针的事"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 618,
+              "end": 653,
+              "quote": "那截裹在纸里的断针还在零钱盒旁边，纸角被风吹得翘起来。她把它往里按了按"
+            }
+          ],
+          "reasoning": "纸里断针只在小满视角被整理；完整输出无向师傅告知、通信或师傅反应。断针被叙述提到不等于信息传给师傅。"
+        },
+        {
+          "id": "not-perfect-permanent",
+          "dimension": "boundaries",
+          "requirement": "不得把临时修补写成无缺陷的永久修复。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 354,
+            "end": 371,
+            "quote": "不可让临时修补成为无缺陷的永久修复"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 470,
+              "end": 503,
+              "quote": "“能走到车站，别跑。明天拿过来，我再用皮线从底下走一道，就牢了。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 335,
+              "end": 357,
+              "quote": "线是白的，缝在深色皮面上，像一道没藏住的疤。"
+            }
+          ],
+          "reasoning": "当前使用受“别跑”限制，外观可见，进一步加固留待明天。未来“就牢了”不认证现在已经完美永久，也不是明日修补已经执行。"
+        },
+        {
+          "id": "footwear-transition",
+          "dimension": "causaltransitions",
+          "requirement": "试穿、交还与离开的物件状态应能连续理解。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 604,
+            "end": 610,
+            "quote": "周小满修断带"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 505,
+              "end": 526,
+              "quote": "赵姨穿上试了试，脚趾弯了两下，带子没再断。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 564,
+              "end": 581,
+              "quote": "赵姨把钱压在铁盒底下，拎起鞋走了。"
+            }
+          ],
+          "reasoning": "先试穿后又拎鞋离开，脱下鞋的动作省略。普通脱鞋可以补足，不是人体/物件物理不可能；但会让赶车时究竟如何穿鞋的读法略迟疑。"
+        },
+        {
+          "id": "continuation-replay",
+          "dimension": "causaltransitions",
+          "requirement": "当前场景与此前白线交流连贯衔接。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 722,
+            "end": 743,
+            "quote": "周小满把线轴转到缺口朝里，赵姨还是看见了。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 0,
+              "end": 20,
+              "quote": "天擦黑的时候，赵姨拎着一只凉鞋从巷口过来"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 169,
+              "end": 196,
+              "quote": "缺口朝里，她伸手的时候顺手转了一下，可赵姨还是看见了。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 198,
+              "end": 215,
+              "quote": "“白的就白的，鞋底谁看。”赵姨说。"
+            }
+          ],
+          "reasoning": "原参考已经转线轴并有同一句白线交流，输出重写到摊与对白，未标记回述。可能是同场镜头回拉或角色再次安慰；输入未绝对禁止回述，故仅衔接疑点，不能称不可能的时间回退。"
+        },
+        {
+          "id": "consequential-advance",
+          "dimension": "advancement",
+          "requirement": "当前场景产生临时修复和下一步安排。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 209,
+            "end": 233,
+            "quote": "做出临时修补，让邻居赶上末班车；并约定明天再补牢"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 416,
+              "end": 434,
+              "quote": "最后把这一段拆了两针，重新走松一点。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 535,
+              "end": 544,
+              "quote": "“四点以后都在。”"
+            }
+          ],
+          "reasoning": "修补方法因风险而调整、鞋可试穿、明日时间落定，构成真实推进。此行汇总变化，不把同一目标重复累计成额外独立成功。"
+        },
+        {
+          "id": "voice-agency",
+          "dimension": "voiceagency",
+          "requirement": "小满回答易停顿但不自怜；赵姨实际体贴，不讲人生大道理。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 286,
+            "end": 316,
+            "quote": "周小满回答容易停顿但不自怜；赵姨实际、体贴，不讲人生大道理。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 217,
+              "end": 229,
+              "quote": "“不……不是这个意思。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 434,
+              "end": 454,
+              "quote": "赵姨在旁边没催，只把手机翻过去扣在腿上。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 558,
+              "end": 574,
+              "quote": "周小满摆手。赵姨把钱压在铁盒底下"
+            }
+          ],
+          "reasoning": "小满短答停顿且主动纠正针脚，没有自怜；赵姨扣手机与留钱把体贴落在动作中，未讲大道理。"
+        },
+        {
+          "id": "limited-pov",
+          "dimension": "boundaries",
+          "requirement": "只跟随周小满的限知视角。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 186,
+            "end": 199,
+            "quote": "第三人称限知，只跟随周小满"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 397,
+              "end": 415,
+              "quote": "她盯着那个弧度，手指在线上来回蹭了蹭"
+            }
+          ],
+          "reasoning": "技术判断与犹豫归小满，赵姨心理未被直接读出；师傅的未知状态不被擅自填入。"
+        },
+        {
+          "id": "current-scene-only",
+          "dimension": "boundaries",
+          "requirement": "只写当前场景，不写评析，不把明日修补提前执行。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 274,
+            "end": 280,
+            "quote": "只写当前场景"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 480,
+              "end": 502,
+              "quote": "明天拿过来，我再用皮线从底下走一道，就牢了。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 645,
+              "end": 659,
+              "quote": "她把它往里按了按，开始收摊。"
+            }
+          ],
+          "reasoning": "全篇留在傍晚修鞋摊，明日仅约定，结尾当前收摊；没有明日已补牢事件或作者评析。"
+        },
+        {
+          "id": "soft-counts",
+          "dimension": "countssoft",
+          "requirement": "软目标：450–600个汉字，4–7段。",
+          "status": "partial",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-259473bbc4e726be48ed91c2321a2a54.json",
+            "sha256": "7f73c0d471f9a357ab6993d016aa7bad4b9f8a4829c8d060a0538657e7659999",
+            "pointer": "/storyInput",
+            "start": 253,
+            "end": 273,
+            "quote": "写450–600个汉字的一场戏，4–7段"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-05.bin",
+              "sha256": "7e1063be2063531d9f85621e50f43c1fe9694bdc2324fe45718f3c474eeaf4f0",
+              "pointer": "",
+              "start": 0,
+              "end": 659,
+              "quote": "天擦黑的时候，赵姨拎着一只凉鞋从巷口过来，鞋跟敲在水泥地上，一下一下，急。\n\n“小满，你师傅呢？”\n\n“回去了。”周小满把凳子往外挪了挪，“赵姨，坐。”\n\n赵姨没坐，把凉鞋搁在摊板上。左脚那只，带子从中间断开，断口毛糙，像被什么硬扯过。她看了看手机。“末班车还有二十分钟。”\n\n周小满拿起鞋，翻过来看断口。摊上只剩白色线，线轴搁在铁盒里，缺口朝里，她伸手的时候顺手转了一下，可赵姨还是看见了。\n\n“白的就白的，鞋底谁看。”赵姨说。\n\n“不……不是这个意思。”周小满把线抽出一截，用牙咬断。她低头去穿针，针眼小，线头捻了两回才过去。师傅的锥子摆在右手边，她没动，只拿了自己那把小钳子。断口两边的皮还软，能扎进去。她把针从内侧穿出，又从外侧绕回来，一针压一针，走了一道浅弧。线是白的，缝在深色皮面上，像一道没藏住的疤。\n\n走到一半，她停了。断带的位置靠近脚趾弯折的地方，线拉得太紧，脚一弯就会再崩。她盯着那个弧度，手指在线上来回蹭了蹭，最后把这一段拆了两针，重新走松一点。赵姨在旁边没催，只把手机翻过去扣在腿上。\n\n“好了。”周小满把鞋递过去，“能走到车站，别跑。明天拿过来，我再用皮线从底下走一道，就牢了。”\n\n赵姨穿上试了试，脚趾弯了两下，带子没再断。“明天几点？”\n\n“四点以后都在。”\n\n赵姨从兜里摸出两张零钱，周小满摆手。赵姨把钱压在铁盒底下，拎起鞋走了。走到巷口又回头。“白的也挺好认。”\n\n周小满没接话。她低头把针插回线轴上，那截裹在纸里的断针还在零钱盒旁边，纸角被风吹得翘起来。她把它往里按了按，开始收摊。"
+            }
+          ],
+          "reasoning": "完整原文为529个汉字、13个按空行分隔的非空段，与原始packet.counts一致。汉字目标满足，段数目标未满足。这是软计数约束的状态，不是内容硬矛盾、技术失败或文学优劣评分；不据此补生成或剔除输出。"
+        }
+      ],
+      "notes": [
+        "Retained dispatch 5; decoded fixture F3, arm A; original candidate C-259473bbc4e726be48ed91c2321a2a54. Read the complete source packet and exact raw output before assigning statuses.",
+        "Retrospective unmasked calibration only. Historical packets, raw text, original locked reports and corrected RESULTS remain unchanged. This is not a new sample, independent blind reading, provider judgment, production acceptance or schema-version-3 generation.",
+        "Only the requested current-scene goal is binding here. Earlier reference events and later outline plans are not added as requirements to perform again or treated as already completed. Repeated source constraints are represented once per distinct obligation.",
+        "The bus clause is deliberately uncertain about the off-scene outcome, not missing for lack of an obligatory boarding shot. Source wording permits a scene-purpose/enabling reading, which the preserved historical report used reasonably. No new requirement to portray boarding is imposed."
+      ]
+    },
+    {
+      "id": "retained-F3-B",
+      "origin": "retained",
+      "source": {
+        "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+        "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901"
+      },
+      "text": {
+        "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+        "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0"
+      },
+      "obligations": [
+        {
+          "id": "temporary-repair",
+          "dimension": "goalfulfillment",
+          "requirement": "做出临时修补。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 209,
+            "end": 215,
+            "quote": "做出临时修补"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 531,
+              "end": 549,
+              "quote": "这回她没再对齐断口，而是把两头叠着缝"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 583,
+              "end": 597,
+              "quote": "她缝了四针，线头打结，剪断。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 690,
+              "end": 702,
+              "quote": "带子没断，但皱的那块鼓着"
+            }
+          ],
+          "reasoning": "实际改叠缝、缝四针、打结并测试，断带转成暂时吃力而不再断；保留外观缺陷。目标之一真实完成，不能因后续约定缺失把修补也抹掉。"
+        },
+        {
+          "id": "enable-last-bus",
+          "dimension": "goalfulfillment",
+          "requirement": "让邻居赶上末班车。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 216,
+            "end": 224,
+            "quote": "让邻居赶上末班车"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 286,
+              "end": 300,
+              "quote": "“赶得上末班车不？”赵姨问。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 787,
+              "end": 810,
+              "quote": "已经转身往站牌走了，步子有点快，拖鞋换成了凉鞋"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 867,
+              "end": 884,
+              "quote": "站牌那边，末班车的前灯从街角拐过来"
+            }
+          ],
+          "reasoning": "修好鞋离摊走向站牌，车同时到来，是支持赶车目的的强因果线索；全文没有明确登车或错过车。源要求未强制描绘登车，故不将未描绘制造为missing；uncertain仅限定实际场外结果，尊重可合理认为场景目的已达的读法。"
+        },
+        {
+          "id": "agree-next-day",
+          "dimension": "goalfulfillment",
+          "requirement": "双方约定明天再补牢。",
+          "status": "missing",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 225,
+            "end": 233,
+            "quote": "并约定明天再补牢"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 628,
+              "end": 665,
+              "quote": "“能走。但你别使劲拽，明天拿来我再补。叠缝的地方得用胶粘一下，线才不磨。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 762,
+              "end": 771,
+              "quote": "“明天补了再算。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 773,
+              "end": 796,
+              "quote": "“明天我可能不来。”赵姨说，已经转身往站牌走了"
+            }
+          ],
+          "reasoning": "完整阅读从建议明天补、暂缓收钱到赵姨表示可能不来并离开，始终没有双方确定明天再补的共同安排。只有提议不等于达成约定；“可能不来”可能是客气付钱，也不排除她明日真来，但未来可能履约不能补出当前缺失的协议。missing针对已达成约定的缺失，不断言明日一定不来，也不把模态话语标成硬矛盾。"
+        },
+        {
+          "id": "hesitation-and-retry",
+          "dimension": "causaltransitions",
+          "requirement": "一处动作上的犹豫，修补有可读的尝试与调整。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 611,
+            "end": 619,
+            "quote": "一处动作上的犹豫"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 254,
+              "end": 284,
+              "quote": "锥子在师傅的工具袋里，袋口系着死结。她看了那个结一眼，没动。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 328,
+              "end": 354,
+              "quote": "第一针歪了，线从断口旁边穿出来，没咬住。她拆了重来。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 531,
+              "end": 549,
+              "quote": "这回她没再对齐断口，而是把两头叠着缝"
+            }
+          ],
+          "reasoning": "看结而停手、失针重来及改叠缝都有外化动作，策略调整产生实际效果。多次失手的经济性另议，不否认这一动作目标。"
+        },
+        {
+          "id": "white-thread-only",
+          "dimension": "boundaries",
+          "requirement": "当前修补只能用现有白线。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 316,
+            "end": 325,
+            "quote": "修补只能用现有白线"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 92,
+              "end": 107,
+              "quote": "黑线昨天用完了。摊上只剩白的。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 156,
+              "end": 164,
+              "quote": "她把白线穿进针眼"
+            }
+          ],
+          "reasoning": "提到黑线轴但紧接否定还有黑线，可自然是空轴；实际穿的是白线。不能因“黑线”关键词出现忽略用完的否定。未来胶粘亦未变成本次实际材料。"
+        },
+        {
+          "id": "no-magical-tools-or-helpers",
+          "dimension": "boundaries",
+          "requirement": "不凭空出现工具或帮手。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 326,
+            "end": 336,
+            "quote": "不凭空出现工具或帮手"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 165,
+              "end": 189,
+              "quote": "针是师傅常用的那根大号针，针尖有点弯，但还能用。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 254,
+              "end": 272,
+              "quote": "锥子在师傅的工具袋里，袋口系着死结。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 589,
+              "end": 597,
+              "quote": "线头打结，剪断。"
+            }
+          ],
+          "reasoning": "大针和锥子作为已有工具被首次叙述，剪断未说明具体工具，来源铺垫偏弱。但一次断针不代表再无针，普通修鞋摊有常用针/剪线手段合理；未调用锥子或突然帮手救场。uncertain为边界解释张力，不宣称工具物理凭空生成。"
+        },
+        {
+          "id": "master-absent",
+          "dimension": "boundaries",
+          "requirement": "师傅不在场。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 337,
+            "end": 342,
+            "quote": "师傅不在场"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 254,
+              "end": 284,
+              "quote": "锥子在师傅的工具袋里，袋口系着死结。她看了那个结一眼，没动。"
+            }
+          ],
+          "reasoning": "完整阅读没有师傅出场，师傅只作为工具所属者被提及，小满独自修补。师傅工具不是人在场的证据。"
+        },
+        {
+          "id": "broken-needle-secret",
+          "dimension": "boundaries",
+          "requirement": "师傅不能突然知道断针的事。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 343,
+            "end": 353,
+            "quote": "不能突然知道断针的事"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 406,
+              "end": 437,
+              "quote": "她弯腰去捡，看见纸里裹着的那截断针，纸角翘着，露出一点黑铁色。"
+            }
+          ],
+          "reasoning": "断针只被小满看到；全篇无师傅得知、来电、传话或他人向师傅告知。叙述包含秘密不等于角色间泄露。"
+        },
+        {
+          "id": "not-perfect-permanent",
+          "dimension": "boundaries",
+          "requirement": "临时修补不可变成无缺陷的永久修复。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 354,
+            "end": 371,
+            "quote": "不可让临时修补成为无缺陷的永久修复"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 628,
+              "end": 665,
+              "quote": "“能走。但你别使劲拽，明天拿来我再补。叠缝的地方得用胶粘一下，线才不磨。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 690,
+              "end": 712,
+              "quote": "带子没断，但皱的那块鼓着，像皮肤上的一道疤。"
+            }
+          ],
+          "reasoning": "可走仍不许使劲拽、叠缝凸起、磨线需补，当前明确有缺陷。胶粘是未来建议，未写成现在已用胶或永久无缺陷。"
+        },
+        {
+          "id": "footwear-transition",
+          "dimension": "causaltransitions",
+          "requirement": "脚、拖鞋、凉鞋与缝补时的持有/穿着状态应能连续理解。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 604,
+            "end": 610,
+            "quote": "周小满修断带"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 121,
+              "end": 139,
+              "quote": "把脚从拖鞋里抽出来，踩在摊边的报纸上"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 510,
+              "end": 531,
+              "quote": "她把赵姨的脚往自己这边扳了扳，让鞋底朝上。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 667,
+              "end": 677,
+              "quote": "赵姨把鞋穿上，踩了踩"
+            }
+          ],
+          "reasoning": "先赤脚站报纸，后扳脚却使鞋底朝上，修完才写穿鞋；中途何时套鞋/脱鞋没有交代。可由省略试穿比位置或最终穿妥补足，故是动作衔接不清，不断言身体不可能或虚构硬错。"
+        },
+        {
+          "id": "continuation-replay",
+          "dimension": "causaltransitions",
+          "requirement": "当前修补与此前白线交流连贯衔接。",
+          "status": "uncertain",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 722,
+            "end": 743,
+            "quote": "周小满把线轴转到缺口朝里，赵姨还是看见了。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 109,
+              "end": 147,
+              "quote": "“白的就白的。”赵姨说，把脚从拖鞋里抽出来，踩在摊边的报纸上，“鞋底谁看。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 903,
+              "end": 918,
+              "quote": "她把线轴转了个方向，缺口朝里。"
+            }
+          ],
+          "reasoning": "原参考已有白线安慰与转线轴，输出再次说相同内容，可能重复安慰或形成动作回声。来源没有一概禁止回述，结尾转轴也可有意呼应；不能将重用表述自动判已发生事件重演的硬违规。"
+        },
+        {
+          "id": "consequential-advance",
+          "dimension": "advancement",
+          "requirement": "本场景改变断带状态并使人物采取下一步行动。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 209,
+            "end": 233,
+            "quote": "做出临时修补，让邻居赶上末班车；并约定明天再补牢"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 573,
+              "end": 583,
+              "quote": "不好看，但吃得住力。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 787,
+              "end": 802,
+              "quote": "已经转身往站牌走了，步子有点快"
+            }
+          ],
+          "reasoning": "修补后能穿着走向车站，是实际新变化。此维度承认局部推进，不据此自动满足完整复合目标，尤其不能覆盖缺失的明日约定。"
+        },
+        {
+          "id": "voice-agency",
+          "dimension": "voiceagency",
+          "requirement": "小满停顿而不自怜、主动修补；赵姨实际体贴，不讲大道理。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 286,
+            "end": 316,
+            "quote": "周小满回答容易停顿但不自怜；赵姨实际、体贴，不讲人生大道理。"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 748,
+              "end": 762,
+              "quote": "周小满看着那张钱，没马上拿。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 348,
+              "end": 354,
+              "quote": "她拆了重来。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 820,
+              "end": 827,
+              "quote": "“你先拿着。”"
+            }
+          ],
+          "reasoning": "看钱时停顿、修补中主动重试、赵姨坚持先付钱支持人物轮廓。全文无自怜或人生大道理；小满说话仍短，不能要求必须有省略号才算停顿。比喻和失手较多是可编辑的经济性意见，不足以建立实质声音/能动性失败。"
+        },
+        {
+          "id": "limited-pov",
+          "dimension": "boundaries",
+          "requirement": "只跟随周小满的限知视角。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 186,
+            "end": 199,
+            "quote": "第三人称限知，只跟随周小满"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 228,
+              "end": 254,
+              "quote": "她应该先用锥子把皮面挑开一点，再缝，那样能藏住线脚。"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 461,
+              "end": 473,
+              "quote": "赵姨没看她，在看街对面。"
+            }
+          ],
+          "reasoning": "“应该”是小满的技术判断与未实施方案，赵姨由可观察动作呈现。没有借全知旁白说明师傅或赵姨隐藏想法。"
+        },
+        {
+          "id": "current-scene-only",
+          "dimension": "boundaries",
+          "requirement": "只写当前场景，不写评析，不把明日修补提前执行。",
+          "status": "fulfilled",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 274,
+            "end": 280,
+            "quote": "只写当前场景"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 773,
+              "end": 783,
+              "quote": "“明天我可能不来。”"
+            },
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 867,
+              "end": 884,
+              "quote": "站牌那边，末班车的前灯从街角拐过来"
+            }
+          ],
+          "reasoning": "明日只在人物有模态的对话内，结尾仍是当晚车到；无明日完成补胶或作者评析。不能用未遂未来约定反过来判时间已跳到明天。"
+        },
+        {
+          "id": "soft-counts",
+          "dimension": "countssoft",
+          "requirement": "软目标：450–600个汉字，4–7段。",
+          "status": "contradicted",
+          "constraint": {
+            "path": "eval/history/causal-quality-20261007/candidate-C-61f0bae42550589bed842be6eaddfa7c.json",
+            "sha256": "cfbb352b69d5ae114ad0659fbc1d5cc9004faa14e725c8a6714193da8b7bd901",
+            "pointer": "/storyInput",
+            "start": 253,
+            "end": 273,
+            "quote": "写450–600个汉字的一场戏，4–7段"
+          },
+          "evidence": [
+            {
+              "path": "eval/history/causal-quality-20261007/raw-prose-06.bin",
+              "sha256": "303c4ccc05e71af166251dc27ced7790c0a0762d8ece66c7a9acf9208f2f2cd0",
+              "pointer": "",
+              "start": 0,
+              "end": 918,
+              "quote": "赵姨把凉鞋搁在摊板上，鞋跟朝外，断掉的那根带子垂下来，像根没系好的鞋带。周小满拿起来翻了个面，断口在带子中段，边缘毛糙，是硬扯开的，不是磨断的。她伸手去够黑线轴，手指碰到线轴才想起来，黑线昨天用完了。摊上只剩白的。\n\n“白的就白的。”赵姨说，把脚从拖鞋里抽出来，踩在摊边的报纸上，“鞋底谁看。”\n\n周小满没接话。她把白线穿进针眼，针是师傅常用的那根大号针，针尖有点弯，但还能用。她把断带两头对齐，捏在拇指和食指之间。断口对不严，中间鼓着一小块，像骨头错位。她应该先用锥子把皮面挑开一点，再缝，那样能藏住线脚。锥子在师傅的工具袋里，袋口系着死结。她看了那个结一眼，没动。\n\n“赶得上末班车不？”赵姨问。\n\n“我快点。”周小满说。她低下头，针从皮带侧面扎进去。第一针歪了，线从断口旁边穿出来，没咬住。她拆了重来。第二针扎进去，针尖碰到硬东西，咯了一下。她手一抖，针从指间滑出去，掉在摊板上，弹了一下，滚到零钱盒旁边。她弯腰去捡，看见纸里裹着的那截断针，纸角翘着，露出一点黑铁色。她把大号针捡起来，在裤子上蹭了蹭，重新穿线。\n\n赵姨没看她，在看街对面。末班车的站牌下站了两个人，都低头看手机。\n\n“赵姨，你脚别动。”周小满说。她把赵姨的脚往自己这边扳了扳，让鞋底朝上。这回她没再对齐断口，而是把两头叠着缝，线从叠缝里穿过去，拉紧的时候带子皱起来一小撮。不好看，但吃得住力。她缝了四针，线头打结，剪断。剩下的线头很短，她用手指捻了捻，按在结上。\n\n“好了。”她说，“能走。但你别使劲拽，明天拿来我再补。叠缝的地方得用胶粘一下，线才不磨。”\n\n赵姨把鞋穿上，踩了踩，又蹲下来用手掰了掰带子。带子没断，但皱的那块鼓着，像皮肤上的一道疤。\n\n“行。”赵姨站起来，从兜里掏出一张五块的，搁在摊板上，“够不？”\n\n周小满看着那张钱，没马上拿。“明天补了再算。”\n\n“明天我可能不来。”赵姨说，已经转身往站牌走了，步子有点快，拖鞋换成了凉鞋，脚后跟一抬一抬的，“你先拿着。”\n\n周小满把钱收进零钱盒。盒盖合上时碰到那卷纸，纸滚了半圈，停在盒边。她没去扶。站牌那边，末班车的前灯从街角拐过来，光扫过摊板，照见白线轴上缺的那一块。她把线轴转了个方向，缺口朝里。"
+            }
+          ],
+          "reasoning": "完整原文为750个汉字、13个按空行分隔的非空段，与原始packet.counts一致。汉字目标未满足，段数目标未满足。这是软计数约束的状态，不是内容硬矛盾、技术失败或文学优劣评分；不据此补生成或剔除输出。"
+        }
+      ],
+      "notes": [
+        "Retained dispatch 6; decoded fixture F3, arm B; original candidate C-61f0bae42550589bed842be6eaddfa7c. Read the complete source packet and exact raw output before assigning statuses.",
+        "Retrospective unmasked calibration only. Historical packets, raw text, original locked reports and corrected RESULTS remain unchanged. This is not a new sample, independent blind reading, provider judgment, production acceptance or schema-version-3 generation.",
+        "Only the requested current-scene goal is binding here. Earlier reference events and later outline plans are not added as requirements to perform again or treated as already completed. Repeated source constraints are represented once per distinct obligation.",
+        "The missing next-day agreement is one unmet goal obligation. Related advancement, temporal and boundary comments must not multiply it into independent failures.",
+        "The bus clause is uncertain only about the off-scene outcome. Both the source and the preserved report permit interpreting the repair/departure as sufficient scene-purpose enablement; no mandatory boarding shot is added.",
+        "Economy observation: repeated failed attempts and several body/repair similes make the scene heavier; those editorial choices do not negate the characters’ agency or establish a material voice regression."
+      ]
+    }
+  ],
+  "notes": [
+    "Hand-specified retrospective calibration annotations prepared offline by an assistant from retained source packets and complete outputs, informed by the corrected RESULTS and preserved reader reports. These are assistant-authored annotations, not a new human-authored or independent masked-reader experiment.",
+    "Zero-based UTF-16 code-unit offsets, end exclusive. Source path hashes bind exact candidate file bytes; pointer /storyInput resolves the outer JSON-decoded string. Quotes/offsets are inside that string, without inventing a nonstandard nested-JSON pointer. Text path hashes bind raw UTF-8 prose bytes; pointer empty string refers to the decoded whole raw text.",
+    "Statuses are hand-authored semantic assessments, never inferred from a keyword hit. fulfilled = obligation evidenced under stated interpretation; partial = substantive subset or degree achieved; missing = required result absent after full reading; contradicted = explicit incompatibility (including a separately soft count target); uncertain = evidence supports materially different readings.",
+    "For omissions and negative boundaries, the quoted context anchors the relevant scene while reasoning states that the full output was inspected. Absence is not claimed from a local snippet alone. Character dialogue, negation, speculation, future plans and observable events retain distinct attribution.",
+    "The preserved six samples predate the new scene contract. No new exitState is supplied or inferred, no historical evidence is rewritten, no provider calls occur, and these annotations do not imply that any retained output was generated from context schema 3.",
+    "No numerical quality score, automatic manuscript mutation, prompt adoption or general model-quality claim follows. Soft Han/paragraph targets stay separate from goal and boundary adjudication. Overlapping comments about the same issue are not independent failures."
+  ]
+}
