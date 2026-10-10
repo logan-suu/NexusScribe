@@ -19,3 +19,14 @@ test('oversized and stalled envelope bounded',async()=>{const b=bodyFor(f,1,[],n
 
 test('current gateway target is preserved',()=>{assert.equal(f.providerInput.chapterId,'ch2');assert.equal(f.providerInput.project.outline[f.providerInput.chapterIndex].id,'ch2');});
 test('consumed live transport cannot be invoked without explicit fake',async()=>{await assert.rejects(one(bodyFor(f,1,[],null),'test-key'),/RETIRED/);await assert.rejects(one(bodyFor(f,1,[],null),'test-key',globalThis.fetch),/RETIRED/);});
+test('retained four-call ledger, requests and dependencies reconcile',()=>{
+ const read=p=>JSON.parse(readFileSync(new URL('../eval/scene-workflows-20261010/'+p,import.meta.url)));
+ const freezeBytes=readFileSync(new URL('../eval/scene-workflows-20261010/freeze.json',import.meta.url));const stages=[1,2,3,4].map(n=>read('completed-'+n+'.json')),feedback=read('feedback.json');
+ for(const c of stages){const n=c.stage,res=read('reservation-'+n+'.json'),dispatch=read('dispatch-'+n+'.json');assert.equal(c.status,'complete');assert.equal(c.freezeSha256,hash(freezeBytes));assert.equal(c.textSha256,hash(c.text));assert.equal(c.bodySha256,hash(bodyFor(f,n,stages.slice(0,n-1),feedback)));assert.equal(hash(res.body),c.bodySha256);assert.equal(dispatch.bodySha256,c.bodySha256);assert.equal(res.runId,c.runId);assert.equal(dispatch.runId,c.runId);assert.deepEqual(res.mapping,f.mapping);}
+ const ledger=read('ledger.json');assert.equal(ledger.attempts,4);assert.equal(ledger.remainingAttempts,0);for(const k of ['promptTokens','completionTokens','totalTokens','reasoningTokens'])assert.equal(ledger.usage[k],stages.reduce((n,c)=>n+c.usage[k],0));assert.equal(ledger.usage.completionTokens<=9800,true);
+});
+test('locked individual reviews have exact hashes and UTF-16 evidence pointers',()=>{
+ const root=new URL('../eval/scene-workflows-20261010/reading/',import.meta.url);const lock=JSON.parse(readFileSync(new URL('individual-lock-manifest.json',root)));let count=0;
+ for(const entry of lock.files){const bytes=readFileSync(new URL(entry.path,root));assert.equal(hash(bytes),entry.sha256);const review=JSON.parse(bytes),packet=JSON.parse(readFileSync(new URL(entry.candidateId+'.json',root)));assert.equal(review.textSha256,hash(packet.text));for(const obligation of review.obligations){const pointer=obligation.inputPointer.split('/').slice(1);let value=packet;for(const part of pointer)value=value[part.replaceAll('~1','/').replaceAll('~0','~')];assert.notEqual(value,undefined);for(const e of obligation.evidence){assert.equal(packet.text.slice(e.start,e.end),e.quote);count++;}}}
+ assert.equal(count,lock.verification.quoteCount);
+});

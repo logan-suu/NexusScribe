@@ -18,6 +18,8 @@
     "eval/scene-workflows-20261010/reading/C-58170384cc8546508340358ab7af75d3.json": "dd30eb6983117721baf417bd89fdabefadb4f08711908ba79dbe3e3e672fc2c9",
     "eval/scene-workflows-20261010/reading/C-5eec07adb515400a8640dab929445afc.json": "b0a8647498805c9aa3a57c79214df7cc5b43ff1f4ce3ff907823746f49241925",
     "eval/scene-workflows-20261010/reading/C-f2bba794b9ac4b5680f36e589fdceb27.json": "503e54a7330f23b0ffadfc3541683f6442287180df22e6809a0c38537c62ec67",
+    "eval/scene-workflows-20261010/reading/comparison-lock-manifest.json": "8eadd57b110ce28a979a2e8c063c0d3e1fd99c14e016dbb77cd17dd93741a9a4",
+    "eval/scene-workflows-20261010/reading/comparison.json": "16be2857489a41f1937a5e3a3ae04609a8451e54e98a8bbec257fbe5d6ccf193",
     "eval/scene-workflows-20261010/reading/individual-lock-manifest.json": "6b420a261ce5c4c694797ca2a78e2b1dd616537d23ce2d1176af6e447cea91f5",
     "eval/scene-workflows-20261010/reading/individual/C-58170384cc8546508340358ab7af75d3.json": "1af5f16ec2fbe0359f84465a8e26d4fe89f0960d271209cf114c70735412aae0",
     "eval/scene-workflows-20261010/reading/individual/C-5eec07adb515400a8640dab929445afc.json": "5dfb187d9a91c5842fe7e993c29e64a02d39c8f19feea3496a6e42ec35117475",
@@ -37,6 +39,6 @@
     "server/provider-transport.ts": "79bc9df89d84161f058f76517d62e9e6a07fd25e25064b05c7665c980c49135f",
     "server/provider.ts": "86b1e6ffdd30eddb318b8c0be6336c58be5d70fddda4916a9acb7a58f22719d8",
     "src/domain/prose.ts": "b24eee840958f3bf252e6a10edbc92cae4bbd1e0a810142b8ca73d088cba3033",
-    "tests/scene-workflows.test.js": "0d114697a354ec6d60025ded28a2b8f80b9975733cee51fd9bae087eaa282eb1"
+    "tests/scene-workflows.test.js": "d3929d42dad05725996684203e0a3e783654ddd35723c58aaaa91a0ca27ec4c1"
   }
 }
