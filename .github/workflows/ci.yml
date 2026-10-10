@@ -1,5 +1,5 @@
 name: CI
-run-name: ${{ github.event_name == 'workflow_dispatch' && 'scene-workflows-20261010-stage-3' || 'CI' }}
+run-name: ${{ github.event_name == 'workflow_dispatch' && 'scene-workflows-20261010-stage-4' || 'CI' }}
 
 on:
   push:
@@ -215,7 +215,7 @@ jobs:
         id: reserve
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: scene-workflows-20261010-reservation-3
+          name: scene-workflows-20261010-reservation-4
           path: artifacts/scene-workflows-20261010/reservation.json
           if-no-files-found: error
           retention-days: 90
@@ -230,7 +230,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: scene-workflows-20261010-evidence-3
+          name: scene-workflows-20261010-evidence-4
           path: |
             artifacts/scene-workflows-20261010/reservation.json
             artifacts/scene-workflows-20261010/dispatch.json
