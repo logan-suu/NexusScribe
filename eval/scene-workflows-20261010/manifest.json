@@ -1,0 +1,19 @@
+{
+  "protocol": "scene-workflows-20261010",
+  "sha256": {
+    ".github/workflows/ci.yml": "4401cc8e559d6176e24b3f1e87239497ba94e5e084c63f6cee59a497f7dcfbe7",
+    "eval/SCENE-GOAL-REVIEW.md": "fa50f1a7e40d97735b708f41cad7047978170be9a091783b4e464b79386c224e",
+    "eval/scene-workflows-20261010/PROTOCOL.md": "4d57f26bb8870dde8dc632377ee66936d7ec59822abfaf94e539fe8605082868",
+    "eval/scene-workflows-20261010/freeze.json": "695d7b014c72a24307b1aeda2cfb4aa77c64e38ac4e396c6712719f295964f73",
+    "eval/scene-workflows-20261010/stage.json": "ecc3ad12236f4b05d5fceebb3b852e5f2900917030e7a2c479a357bb3ca443c5",
+    "eval/schema3-causal-fixtures.json": "71191c39e5baa4cd319820b3c04942fcf07a1ca11673448962d241462959b018",
+    "package-lock.json": "ea8aa4815b0661d97079afb12971e02add207afb5d71e743f2b9c0f83daabf72",
+    "package.json": "d73141e6597a315a6ecfed7eedb3b7a6dd522d636e94ff70d79be5f4585c7ce6",
+    "scripts/run-causal-quality-20261007.mjs": "9163c9abece58746907456bd77760aadec6b177af2813ec40538027cf75883bf",
+    "scripts/run-scene-workflows.mjs": "7d0ff08aab4e06cb5b68cadaab6a695e2d8db811607dcecd6541dda6d628e76d",
+    "server/provider-transport.ts": "79bc9df89d84161f058f76517d62e9e6a07fd25e25064b05c7665c980c49135f",
+    "server/provider.ts": "86b1e6ffdd30eddb318b8c0be6336c58be5d70fddda4916a9acb7a58f22719d8",
+    "src/domain/prose.ts": "b24eee840958f3bf252e6a10edbc92cae4bbd1e0a810142b8ca73d088cba3033",
+    "tests/scene-workflows.test.js": "2a1af3121a7fb60e7375872f99897ecdb5f0c9519552a5f992406dc841571618"
+  }
+}

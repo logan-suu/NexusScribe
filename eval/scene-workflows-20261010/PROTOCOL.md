@@ -1,0 +1,26 @@
+# F3 workflow pilot preregistration — 2026-10-10
+
+Separately approved bounded synthetic development-case diagnostic. Four provider attempts maximum; calls 1/2/4 capped at 3000 output tokens, call 3 at 800, total requested output ceiling 9800. No retries, substitutions, fallback model, extra generation or provider judge. Technical failure, uncertain accounting, refusal, truncation, hidden reasoning or persistence failure terminates remaining allowance. Soft Han/paragraph misses are retained and scored, never a technical stop. Monetary cost remains unknown without an explicit billing figure; token ceiling is not a dollar ceiling. Existing user confirmation that Use balance is OFF is not a fresh console observation.
+
+## Frozen input and interventions
+
+freeze.json retains the full current schema-3 F3 fixture and provider-ready input. chapterId is injected as the current gateway does; exitState remains missing. Baseline system text uses the current generateProse schema; temperature is explicitly 0.7 for this diagnostic, so this is not claimed to be identical to every UI default. All model settings, four intervention templates, neutral IDs and targets are frozen before any request. Original goal requires temporary repair, catching the last bus, and mutual next-day reinforcement agreement. The input does not assert those events already occurred.
+
+1. Fresh baseline from frozen input, max 3000
+2. Full targeted revision from same input + exact baseline + bounded native editorial feedback, max 3000
+3. Compact 4–6 beat scene plan from frozen input only, max 800
+4. Prose from frozen input + exact plan only, max 3000
+
+The feedback author reads full baseline and original input, writes at most six evidence-grounded items with exact quotations or explicit whole-text absence, distinguishes uncertainty from contradiction, and preserves good passages. Instruction <=2500 UTF-16 units. No feedback is transmitted to steps 3 or 4; no baseline/revision text is in their provider request. Step 4's plan is fallible subordinate guidance. Native assistant editorial review is not human participant data and is not a fifth provider call. This intervention includes editorial feedback; differences cannot isolate architecture or count as four independent prose samples.
+
+## Ledger, dispatch and retention
+
+One feature branch, draft PR, original offline CI jobs intact. The registered CI workflow receives a manual-dispatch-only live job on this branch. PR and push events never access the provider secret. Only the provider step receives the existing secret. No new credentials. Exact-head successful PR CI and both dispatch CI jobs must pass. Each stage has one uniquely named dispatch run, first attempt only; duplicate, rerun, missing history or previous failed run blocks. All four IDs are committed before call 1. Each stage uploads its exact request/global mapping/attempt claim before provider access and verifies that artifact's metadata. Complete safe output, elapsed time, usage and errors are uploaded; no raw envelope, credential or arbitrary provider error retained. Between stages the previous artifact is verified and committed with its hash; request and dependency hashes are retained. Ambiguous submissions count as consumed. Retire executable entrypoint after stage 4 or any terminal failure. No reusing old trial allowance.
+
+## Reading and decisions
+
+Three prose outputs receive neutral IDs from the frozen map. Presentation order is ascending lexical neutral-ID order, frozen before generation. A separate native scoring reader gets only original input, prose, targets and six-dimension rubric, not workflow labels, plan or feedback. The feedback author is not the masked reader. Lock all three individual reviews durably before comparative judgments and decoding. Evidence uses exact UTF-16 spans plus full-text absence review. Native model-assisted reading is disclosed, not human or fully independent human evaluation.
+
+Score goalfulfillment, causaltransitions, boundaries, advancement, voiceagency and countssoft separately. Use fulfilled/partial/missing/contradicted/uncertain without manufactured facts. Agreement needs both parties; next-day invitation/refusal/possibility is insufficient. Do not require a clock time absent from input. Temporary repair and future reinforcement can coexist. One broken needle is not every tool. Separate an actual missing causal bridge from impossible physical contradiction. Preserve ordinary plausible alternative interpretations.
+
+Success for this case means all explicit scene obligations supported with no clear boundary contradiction and no material voice/agency regression against baseline. Partial or uncertain results stay separate; no aggregate score automatically wins. Compare baseline→revision and baseline→planned prose, then the two complete workflows including tokens/latency and editorial intervention. A single known development fixture cannot justify general superiority or changing production defaults. Failed/incomplete dependency stops make comparisons unavailable; readable soft-count misses remain evaluable. Current baseline is retained unless later separate evidence warrants change. No broader budget or deployment authority is created.

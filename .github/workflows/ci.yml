@@ -1,4 +1,5 @@
 name: CI
+run-name: ${{ github.event_name == 'workflow_dispatch' && 'scene-workflows-20261010-stage-1' || 'CI' }}
 
 on:
   push:
@@ -180,3 +181,59 @@ jobs:
             multichapter-offline-evidence/completed-12.json
           if-no-files-found: ignore
           retention-days: 7
+
+  bounded-scene-trial:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/scene-workflows-20261010' && github.run_attempt == 1
+    needs: [check, browser-e2e]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    concurrency:
+      group: scene-workflows-20261010
+      cancel-in-progress: false
+    env:
+      NEXUS_APPROVED: scene-workflows-20261010
+      NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Claim one trial stage and freeze its exact request
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --import tsx scripts/run-scene-workflows.mjs prepare
+          echo "sha256=$(sha256sum artifacts/scene-workflows-20261010/reservation.json | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Persist immutable pre-call ledger and full neutral mapping
+        id: reserve
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scene-workflows-20261010-reservation-1
+          path: artifacts/scene-workflows-20261010/reservation.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Make at most one provider attempt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_ARTIFACT_ID: ${{ steps.reserve.outputs.artifact-id }}
+          NEXUS_RESERVATION_SHA256: ${{ steps.prepare.outputs.sha256 }}
+        run: node --import tsx scripts/run-scene-workflows.mjs execute
+      - name: Preserve safe synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scene-workflows-20261010-evidence-1
+          path: |
+            artifacts/scene-workflows-20261010/reservation.json
+            artifacts/scene-workflows-20261010/dispatch.json
+            artifacts/scene-workflows-20261010/completed.json
+          if-no-files-found: warn
+          retention-days: 90
