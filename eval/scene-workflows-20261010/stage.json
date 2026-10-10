@@ -1,5 +1,5 @@
 {
-  "stage": 2,
+  "stage": 3,
   "status": "authorized_single_attempt",
   "prior": [
     {
@@ -7,6 +7,12 @@
       "sha256": "861a831e1b1d692f07dc4aaf243119d9d2196f57cf65d89f34360e333625bcc2",
       "artifactId": 11681187401,
       "artifactZipSha256": "5db21c3bf0d5a68a146d84206e67c08b749ef191c37548b2e8ee84e0f4d0606a"
+    },
+    {
+      "stage": 2,
+      "sha256": "d0eb60c703799452085cfbba8bbd8a1021d8a34a807d8fa79d68bfb1da65869d",
+      "artifactId": 11681169071,
+      "artifactZipSha256": "12f286b24820754fc42b631f173abd4e235fa4f780fcd0929dbb108edde2d7fe"
     }
   ]
 }
