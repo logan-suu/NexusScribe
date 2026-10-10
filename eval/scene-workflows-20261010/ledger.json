@@ -1,6 +1,6 @@
 {
   "protocol": "scene-workflows-20261010",
-  "status": "four_calls_complete_retired_pending_masked_read",
+  "status": "complete_retired_no_workflow_adoption",
   "attempts": 4,
   "remainingAttempts": 0,
   "maxRequestedOutputTokens": 9800,

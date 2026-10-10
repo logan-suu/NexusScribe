@@ -18,7 +18,7 @@ test('timeout cannot be overwritten by late response',async()=>{const x=await on
 test('oversized and stalled envelope bounded',async()=>{const b=bodyFor(f,1,[],null);const x=await one(b,'test-key',async()=>new Response(new ReadableStream({start(){}})),20);assert.equal(x.error,'UPSTREAM_TIMEOUT');const y=await one(b,'test-key',async()=>new Response('x'.repeat(131073)));assert.equal(y.error,'RESPONSE_TOO_LARGE');});
 
 test('current gateway target is preserved',()=>{assert.equal(f.providerInput.chapterId,'ch2');assert.equal(f.providerInput.project.outline[f.providerInput.chapterIndex].id,'ch2');});
-test('consumed live transport cannot be invoked without explicit fake',async()=>{await assert.rejects(one(bodyFor(f,1,[],null),'test-key'),/RETIRED/);await assert.rejects(one(bodyFor(f,1,[],null),'test-key',globalThis.fetch),/RETIRED/);});
+test('retired transport helper requires explicit nonglobal injection',async()=>{await assert.rejects(one(bodyFor(f,1,[],null),'test-key'),/RETIRED/);await assert.rejects(one(bodyFor(f,1,[],null),'test-key',globalThis.fetch),/RETIRED/);});
 test('retained four-call ledger, requests and dependencies reconcile',()=>{
  const read=p=>JSON.parse(readFileSync(new URL('../eval/scene-workflows-20261010/'+p,import.meta.url)));
  const freezeBytes=readFileSync(new URL('../eval/scene-workflows-20261010/freeze.json',import.meta.url));const stages=[1,2,3,4].map(n=>read('completed-'+n+'.json')),feedback=read('feedback.json');
@@ -29,4 +29,7 @@ test('locked individual reviews have exact hashes and UTF-16 evidence pointers',
  const root=new URL('../eval/scene-workflows-20261010/reading/',import.meta.url);const lock=JSON.parse(readFileSync(new URL('individual-lock-manifest.json',root)));let count=0;
  for(const entry of lock.files){const bytes=readFileSync(new URL(entry.path,root));assert.equal(hash(bytes),entry.sha256);const review=JSON.parse(bytes),packet=JSON.parse(readFileSync(new URL(entry.candidateId+'.json',root)));assert.equal(review.textSha256,hash(packet.text));for(const obligation of review.obligations){const pointer=obligation.inputPointer.split('/').slice(1);let value=packet;for(const part of pointer)value=value[part.replaceAll('~1','/').replaceAll('~0','~')];assert.notEqual(value,undefined);for(const e of obligation.evidence){assert.equal(packet.text.slice(e.start,e.end),e.quote);count++;}}}
  assert.equal(count,lock.verification.quoteCount);
+});
+test('comparison lock and all comparative quote pointers are exact',()=>{
+ const root=new URL('../eval/scene-workflows-20261010/reading/',import.meta.url);const bytes=readFileSync(new URL('comparison.json',root));const lock=JSON.parse(readFileSync(new URL('comparison-lock-manifest.json',root)));const packets=Object.fromEntries(JSON.parse(readFileSync(new URL('order.json',root))).map(id=>[id,JSON.parse(readFileSync(new URL(id+'.json',root)))]));let count=0;const pending=[JSON.parse(bytes)];while(pending.length){const v=pending.pop();if(v&&typeof v==='object'){if(typeof v.quote==='string'&&v.candidateId){assert.equal(packets[v.candidateId].text.slice(v.start,v.end),v.quote);count++;}for(const x of Object.values(v))if(x&&typeof x==='object')pending.push(x);}}assert.equal(count,53);assert.ok(JSON.stringify(lock).includes(hash(bytes)));
 });
