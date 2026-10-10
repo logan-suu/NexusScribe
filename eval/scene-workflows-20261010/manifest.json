@@ -1,29 +1,33 @@
 {
   "protocol": "scene-workflows-20261010",
   "sha256": {
-    ".github/workflows/ci.yml": "cd09600fb43dd780cdab96c396ef30251053af15a6c40b203923ee4036e88d06",
+    ".github/workflows/ci.yml": "a8b52194d26e7299c8d9ec2d9ec54f28531115c9de72d8d046d9eebe023567c4",
     "eval/SCENE-GOAL-REVIEW.md": "fa50f1a7e40d97735b708f41cad7047978170be9a091783b4e464b79386c224e",
     "eval/scene-workflows-20261010/PROTOCOL.md": "4d57f26bb8870dde8dc632377ee66936d7ec59822abfaf94e539fe8605082868",
     "eval/scene-workflows-20261010/completed-1.json": "861a831e1b1d692f07dc4aaf243119d9d2196f57cf65d89f34360e333625bcc2",
     "eval/scene-workflows-20261010/completed-2.json": "d0eb60c703799452085cfbba8bbd8a1021d8a34a807d8fa79d68bfb1da65869d",
     "eval/scene-workflows-20261010/completed-3.json": "ac3d591e909bd0f0f848e2e1d36b2b7a258ad60035d38719bbfb2267f1538808",
+    "eval/scene-workflows-20261010/completed-4.json": "908a847cff7b3d7913c800fb35690bf614548b6e05d8d26a49e006d8ca98c82a",
     "eval/scene-workflows-20261010/dispatch-1.json": "bf2fd2e9c585a13dd868e15b04ccafe1885a25e3d772d318b31ca95827ea2b3b",
     "eval/scene-workflows-20261010/dispatch-2.json": "b52caf2ef5085edad4c06fcfb3ba1bf2d9259e5d2ddebd40881789419eab92e7",
     "eval/scene-workflows-20261010/dispatch-3.json": "8d553d25f72fcbf980cdb07a5c6e8dbf1d34fd0ea9305bf095c1999c52974d78",
+    "eval/scene-workflows-20261010/dispatch-4.json": "3ed1ea50bc3d126868fefda3357c59ce6b05e19fed9ce8d77350a220a7767ecf",
     "eval/scene-workflows-20261010/feedback.json": "1fd62ef345ee307c1a0cac63f0e227389670ae0a55c1a0fc01acae703c26ba67",
     "eval/scene-workflows-20261010/freeze.json": "695d7b014c72a24307b1aeda2cfb4aa77c64e38ac4e396c6712719f295964f73",
+    "eval/scene-workflows-20261010/ledger.json": "45a0afb6749cb05bd675daacae2588c5c8896b296814357efeae0c58ad07866e",
     "eval/scene-workflows-20261010/reservation-1.json": "f4aa172187e5125e0b8a208190b110c28204ef36845f860de0c027cc9030e11b",
     "eval/scene-workflows-20261010/reservation-2.json": "3bf40811550dc8a5e457052f1cbd8ee4ff4fbb5e3604906a3f775b462721c8f4",
     "eval/scene-workflows-20261010/reservation-3.json": "d3e50059d8fec112853f7f2d274f60fd55b89b42e5c1bf4bfcac8482c29751a0",
-    "eval/scene-workflows-20261010/stage.json": "a29c232666aa3e99c5c6b0f2d4d84ddd27f28ed4c7825b3fc041330cfa3b14cb",
+    "eval/scene-workflows-20261010/reservation-4.json": "26b76859cb61b91aab042d83a6c0be4297e671f162a2a25fcd24795a577854d1",
+    "eval/scene-workflows-20261010/stage.json": "dc28a48e7adece7d33230feba4b69ba1b0791e1be8e752357d95adc69b2c22bb",
     "eval/schema3-causal-fixtures.json": "71191c39e5baa4cd319820b3c04942fcf07a1ca11673448962d241462959b018",
     "package-lock.json": "ea8aa4815b0661d97079afb12971e02add207afb5d71e743f2b9c0f83daabf72",
     "package.json": "d73141e6597a315a6ecfed7eedb3b7a6dd522d636e94ff70d79be5f4585c7ce6",
     "scripts/run-causal-quality-20261007.mjs": "9163c9abece58746907456bd77760aadec6b177af2813ec40538027cf75883bf",
-    "scripts/run-scene-workflows.mjs": "7d0ff08aab4e06cb5b68cadaab6a695e2d8db811607dcecd6541dda6d628e76d",
+    "scripts/run-scene-workflows.mjs": "ed287732f43629409394f73af402a53b7c2c0fc573f86ee3b1cca5fcf7eaf031",
     "server/provider-transport.ts": "79bc9df89d84161f058f76517d62e9e6a07fd25e25064b05c7665c980c49135f",
     "server/provider.ts": "86b1e6ffdd30eddb318b8c0be6336c58be5d70fddda4916a9acb7a58f22719d8",
     "src/domain/prose.ts": "b24eee840958f3bf252e6a10edbc92cae4bbd1e0a810142b8ca73d088cba3033",
-    "tests/scene-workflows.test.js": "2a1af3121a7fb60e7375872f99897ecdb5f0c9519552a5f992406dc841571618"
+    "tests/scene-workflows.test.js": "0d114697a354ec6d60025ded28a2b8f80b9975733cee51fd9bae087eaa282eb1"
   }
 }

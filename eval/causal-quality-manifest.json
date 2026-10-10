@@ -19,7 +19,7 @@
     "server/provider-transport.ts": "79bc9df89d84161f058f76517d62e9e6a07fd25e25064b05c7665c980c49135f",
     "src/domain/prose.ts": "b24eee840958f3bf252e6a10edbc92cae4bbd1e0a810142b8ca73d088cba3033",
     ".github/workflows/causal-quality-trial.yml": "66e92f06d3ac37e868421a4b203dbe33e2b703885f69108df39a45da7e8238e3",
-    ".github/workflows/ci.yml": "cd09600fb43dd780cdab96c396ef30251053af15a6c40b203923ee4036e88d06",
+    ".github/workflows/ci.yml": "a8b52194d26e7299c8d9ec2d9ec54f28531115c9de72d8d046d9eebe023567c4",
     "eval/CAUSAL-QUALITY-PROTOCOL.md": "1efa2eaf40966a34628757d1cf0c1ae5720cadbd148807de415e6c543a58f90e",
     "eval/causal-continuity-requests.json": "5701b71bf86b7db9675095872606234b324a0e6e39930f6484000a45dff3fe73",
     "tests/causal-quality.test.js": "39c797b9c8513d73527b57ac249982ec95f7cca00c94e5617fbe937790fae0ae",

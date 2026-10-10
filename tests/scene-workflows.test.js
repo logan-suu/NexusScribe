@@ -18,3 +18,4 @@ test('timeout cannot be overwritten by late response',async()=>{const x=await on
 test('oversized and stalled envelope bounded',async()=>{const b=bodyFor(f,1,[],null);const x=await one(b,'test-key',async()=>new Response(new ReadableStream({start(){}})),20);assert.equal(x.error,'UPSTREAM_TIMEOUT');const y=await one(b,'test-key',async()=>new Response('x'.repeat(131073)));assert.equal(y.error,'RESPONSE_TOO_LARGE');});
 
 test('current gateway target is preserved',()=>{assert.equal(f.providerInput.chapterId,'ch2');assert.equal(f.providerInput.project.outline[f.providerInput.chapterIndex].id,'ch2');});
+test('consumed live transport cannot be invoked without explicit fake',async()=>{await assert.rejects(one(bodyFor(f,1,[],null),'test-key'),/RETIRED/);await assert.rejects(one(bodyFor(f,1,[],null),'test-key',globalThis.fetch),/RETIRED/);});
