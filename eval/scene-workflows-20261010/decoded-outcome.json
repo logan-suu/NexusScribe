@@ -1,0 +1,116 @@
+{
+  "protocol": "scene-workflows-20261010",
+  "decodedAfterIndividualLockCommit": "477dc600c142230d6fd75d62336f84a5fe890bb5",
+  "decodedAfterComparisonLockCommit": "e16b9db787f05cdfa50665610138221b23aa8b15",
+  "decision": "retain_baseline_no_broad_adoption",
+  "caseScope": "one already-seen synthetic schema3 F3 development case",
+  "reviewType": "masked native-assistant review, not human participant evaluation",
+  "anyOutputCompletesAllGoals": false,
+  "outputs": [
+    {
+      "stage": 1,
+      "workflow": "baseline",
+      "candidateId": "C-5eec07adb515400a8640dab929445afc",
+      "goals": [
+        {
+          "constraint": "做出临时修补",
+          "status": "fulfilled"
+        },
+        {
+          "constraint": "让邻居赶上末班车",
+          "status": "missing"
+        },
+        {
+          "constraint": "并约定明天再补牢",
+          "status": "uncertain"
+        }
+      ],
+      "counts": {
+        "han": 553,
+        "hanTarget": [
+          450,
+          600
+        ],
+        "paragraphs": 16,
+        "paragraphTarget": [
+          4,
+          7
+        ],
+        "method": "Han Unicode ranges; blank-line paragraphs; exact UTF-16 evidence offsets"
+      }
+    },
+    {
+      "stage": 2,
+      "workflow": "targeted_revision",
+      "candidateId": "C-58170384cc8546508340358ab7af75d3",
+      "goals": [
+        {
+          "constraint": "做出临时修补",
+          "status": "fulfilled"
+        },
+        {
+          "constraint": "让邻居赶上末班车",
+          "status": "missing"
+        },
+        {
+          "constraint": "并约定明天再补牢",
+          "status": "fulfilled"
+        }
+      ],
+      "counts": {
+        "han": 436,
+        "hanTarget": [
+          450,
+          600
+        ],
+        "paragraphs": 8,
+        "paragraphTarget": [
+          4,
+          7
+        ],
+        "method": "Han Unicode ranges; paragraphs split on blank lines; UTF-16 offsets into exact text"
+      }
+    },
+    {
+      "stage": 4,
+      "workflow": "planning_first_prose",
+      "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+      "goals": [
+        {
+          "constraint": "做出临时修补",
+          "status": "fulfilled"
+        },
+        {
+          "constraint": "让邻居赶上末班车",
+          "status": "missing"
+        },
+        {
+          "constraint": "并约定明天再补牢",
+          "status": "fulfilled"
+        }
+      ],
+      "counts": {
+        "han": 546,
+        "hanTarget": [
+          450,
+          600
+        ],
+        "paragraphs": 6,
+        "paragraphTarget": [
+          4,
+          7
+        ],
+        "method": "Han Unicode ranges; blank-line paragraphs; UTF-16 offsets into exact output"
+      }
+    }
+  ],
+  "providerUsage": {
+    "promptTokens": 9916,
+    "completionTokens": 1900,
+    "totalTokens": 11816,
+    "reasoningTokens": 0
+  },
+  "providerLatencyMs": 19273,
+  "monetaryCost": "unknown",
+  "remainingAttempts": 0
+}

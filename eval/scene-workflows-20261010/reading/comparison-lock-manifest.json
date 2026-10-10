@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "path": "comparison.json",
+      "sha256": "16be2857489a41f1937a5e3a3ae04609a8451e54e98a8bbec257fbe5d6ccf193",
+      "bytes": 20942
+    }
+  ],
+  "immutableIndividualManifestSha256": "6b420a261ce5c4c694797ca2a78e2b1dd616537d23ce2d1176af6e447cea91f5",
+  "verification": {
+    "individualFilesUnchanged": true,
+    "exactUTF16QuoteOffsets": true,
+    "quoteCount": 53
+  },
+  "masking": "Preserved; no repository inspection, label decoding, origin inference or external sources."
+}

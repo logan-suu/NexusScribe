@@ -1,0 +1,212 @@
+{
+  "candidateId": "C-5eec07adb515400a8640dab929445afc",
+  "input": {
+    "project": {
+      "projectId": "quality-slice-of-life",
+      "title": "末班车前",
+      "idea": "社区修鞋摊的学徒第一次独自守摊，邻居送来一只断带凉鞋。",
+      "protagonist": "周小满",
+      "tone": "平实、轻微尴尬，感情藏在动作里",
+      "pov": "第三人称限知，只跟随周小满",
+      "goal": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+      "boundaries": "纯虚构。写450–600个汉字的一场戏，4–7段，只写当前场景。人物声音：周小满回答容易停顿但不自怜；赵姨实际、体贴，不讲人生大道理。修补只能用现有白线，不凭空出现工具或帮手；师傅不在场，不能突然知道断针的事；不可让临时修补成为无缺陷的永久修复。不写评析。",
+      "constraints": [
+        "修补只能用现有白线，不凭空出现工具或帮手",
+        "师傅不在场，不能突然知道断针的事",
+        "不可让临时修补成为无缺陷的永久修复"
+      ],
+      "outline": [
+        {
+          "id": "ch1",
+          "title": "此前",
+          "goal": "仅作参考"
+        },
+        {
+          "id": "ch2",
+          "title": "末班车前",
+          "goal": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+          "scene": "傍晚社区修鞋摊；末班车快到，周小满修断带；一处动作上的犹豫，结尾约明日再补牢"
+        },
+        {
+          "id": "ch3",
+          "title": "以后",
+          "goal": "未来计划，不可当作已发生"
+        }
+      ],
+      "chapters": [
+        {
+          "text": "摊上只剩白色线，不能变出黑线。周小满把线轴转到缺口朝里，赵姨还是看见了。“白的就白的，鞋底谁看。”周小满还没有告诉师傅自己把针折断过一次。她把那截断针裹进纸里，搁在零钱盒旁。"
+        },
+        {
+          "text": "【创作规划，尚非生成正文】傍晚社区修鞋摊；末班车快到，周小满修断带；一处动作上的犹豫，结尾约明日再补牢"
+        },
+        {
+          "text": "【创作规划，尚非生成正文】后续发展未定。"
+        }
+      ]
+    },
+    "chapterIndex": 1,
+    "context": {
+      "constitution": {
+        "title": "末班车前",
+        "idea": "社区修鞋摊的学徒第一次独自守摊，邻居送来一只断带凉鞋。",
+        "protagonist": "周小满",
+        "tone": "平实、轻微尴尬，感情藏在动作里",
+        "pov": "第三人称限知，只跟随周小满",
+        "goal": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+        "boundaries": "纯虚构。写450–600个汉字的一场戏，4–7段，只写当前场景。人物声音：周小满回答容易停顿但不自怜；赵姨实际、体贴，不讲人生大道理。修补只能用现有白线，不凭空出现工具或帮手；师傅不在场，不能突然知道断针的事；不可让临时修补成为无缺陷的永久修复。不写评析。"
+      },
+      "contextSchemaVersion": 3,
+      "projectId": "quality-slice-of-life",
+      "version": 4,
+      "view": "writer",
+      "sceneTime": null,
+      "pov": "周小满",
+      "facts": [
+        {
+          "id": "author-fact-author-patch-quality-slice-of-life-ch1-1-1-5d038518",
+          "projectId": "quality-slice-of-life",
+          "label": "摊上只剩白色线，不能变出黑线。",
+          "value": "摊上只剩白色线，不能变出黑线。",
+          "predicate": "作者确认的设定",
+          "subject": "作者决定",
+          "status": "confirmed",
+          "authority": "explicit_author_decision",
+          "recordVersion": 1,
+          "recordedFromVersion": 2,
+          "source": {
+            "chapterId": "ch1",
+            "revision": 1,
+            "revisionId": "ch1-r1",
+            "paragraphId": "p1",
+            "quote": "摊上只剩白色线，不能变出黑线。",
+            "start": 0,
+            "end": 15
+          }
+        },
+        {
+          "id": "author-fact-author-patch-quality-slice-of-life-ch1-1-2-80542229",
+          "projectId": "quality-slice-of-life",
+          "label": "周小满还没有告诉师傅自己把针折断过一次。",
+          "value": "周小满还没有告诉师傅自己把针折断过一次。",
+          "predicate": "作者确认的设定",
+          "subject": "作者决定",
+          "status": "confirmed",
+          "authority": "explicit_author_decision",
+          "recordVersion": 1,
+          "recordedFromVersion": 3,
+          "source": {
+            "chapterId": "ch1",
+            "revision": 1,
+            "revisionId": "ch1-r1",
+            "paragraphId": "p1",
+            "quote": "周小满还没有告诉师傅自己把针折断过一次。",
+            "start": 49,
+            "end": 69
+          }
+        }
+      ],
+      "knowledge": [],
+      "events": [],
+      "memoryContext": {
+        "included": 0,
+        "staleSource": 0,
+        "unverifiedSelection": 0,
+        "omittedByLimit": 0,
+        "maxBytes": 16384,
+        "maxEntries": 100,
+        "policy": "Events are a bounded auxiliary projection of explicitly selected draft memories, not independently verified truth or exhaustive story state. A textual_excerpt proves only exact textual presence, never world truth or entailment of an associated model label. Read its complete paragraph and adjacent context from the exact source offsets; retain dialogue attribution, beliefs, negation, uncertainty and hypothetical scope. A speaker claim is not a world fact. author_attested_paraphrase remains unverified despite explicit informed author attestation; legacy_unverified_paraphrase preserves earlier selections without upgrading their authority. Model assessments are optional fallible advice, never selection authority. Rejected or omitted memory labels do not erase facts expressed by the accepted manuscript. Read source roles: planned_content is a plan, not an event that has happened; unaccepted_manuscript is not accepted continuity. Follow input.chapterIndex and project.outline as the generation target. Earlier accepted chapters record prior prose; later accepted chapters constrain future continuity, not knowledge already acquired. Advance with a new consequential action rather than replaying prior dialogue or discoveries, unless a purposeful callback is needed. All source/context offsets are JavaScript UTF-16 indices into the exact matching sources text. Older-revision memories are excluded until reviewed again; their history is preserved. Adjacent paragraphs are local context, not an exhaustive interpretation; consult the full manuscript when needed."
+      },
+      "forbiddenReveals": [
+        "修补只能用现有白线，不凭空出现工具或帮手",
+        "师傅不在场，不能突然知道断针的事",
+        "不可让临时修补成为无缺陷的永久修复"
+      ],
+      "plans": [
+        {
+          "id": "outline-1",
+          "title": "此前",
+          "chapter": 1,
+          "description": "仅作参考",
+          "status": "ready",
+          "condition": "author_outline",
+          "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+        },
+        {
+          "id": "outline-2",
+          "title": "末班车前",
+          "chapter": 2,
+          "description": "做出临时修补，让邻居赶上末班车；并约定明天再补牢",
+          "status": "ready",
+          "condition": "author_outline",
+          "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+        },
+        {
+          "id": "outline-3",
+          "title": "以后",
+          "chapter": 3,
+          "description": "未来计划，不可当作已发生",
+          "status": "ready",
+          "condition": "author_outline",
+          "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+        }
+      ],
+      "obligations": [],
+      "sources": [
+        {
+          "chapterId": "ch1",
+          "chapterIndex": 0,
+          "revision": 2,
+          "revisionId": "ch1-r2",
+          "text": "摊上只剩白色线，不能变出黑线。周小满把线轴转到缺口朝里，赵姨还是看见了。“白的就白的，鞋底谁看。”周小满还没有告诉师傅自己把针折断过一次。她把那截断针裹进纸里，搁在零钱盒旁。",
+          "channel": "original_text",
+          "chapterStatus": "ACCEPTED",
+          "syncStatus": "CLEAN",
+          "role": "accepted_manuscript"
+        },
+        {
+          "chapterId": "ch2",
+          "chapterIndex": 1,
+          "revision": 1,
+          "revisionId": "ch2-r1",
+          "text": "【创作规划，尚非生成正文】傍晚社区修鞋摊；末班车快到，周小满修断带；一处动作上的犹豫，结尾约明日再补牢",
+          "channel": "planning_text",
+          "chapterStatus": "PLANNED",
+          "syncStatus": "CLEAN",
+          "role": "planned_content"
+        },
+        {
+          "chapterId": "ch3",
+          "chapterIndex": 2,
+          "revision": 1,
+          "revisionId": "ch3-r1",
+          "text": "【创作规划，尚非生成正文】后续发展未定。",
+          "channel": "planning_text",
+          "chapterStatus": "PLANNED",
+          "syncStatus": "CLEAN",
+          "role": "planned_content"
+        }
+      ],
+      "summaries": [],
+      "support": {
+        "status": "unsupported",
+        "validPaths": [],
+        "sourceIds": []
+      },
+      "staging": []
+    },
+    "chapterId": "ch2"
+  },
+  "text": "傍晚的光从卷帘门斜进来，落在摊子上那排鞋掌上，一只只像晒着的干鱼。周小满刚把零钱盒摆正，赵姨就来了，手里拎着一只凉鞋，带子从中间断开，晃悠悠地垂着。\n\n“小满，你师傅呢？”\n\n“回去了。”周小满站起来，又停了一下，“我……我看摊。”\n\n赵姨把鞋搁在台面上，看了眼手表。“末班车八点二十，能弄吗？弄不好我就光脚回去。”\n\n周小满接过鞋，断口在带子根部，皮面还软。她翻过鞋底看了看，又去摸线轴。盒子里只剩白色线，黑的用完了，师傅临走前没补。她把线轴转了一圈，缺口朝里，赵姨还是看见了。\n\n“白的就白的，鞋底谁看。”赵姨说，把脚往凳边一搁，“你缝你的。”\n\n周小满穿线，针尖对准断口。她捏着带子，先比了比位置，又放下，拿剪子把断口两边的毛边修平。针扎进去的时候手很稳，出来的时候慢了一拍。她没说话，赵姨也没催，只看着街对面那盏路灯亮起来。\n\n缝到一半，周小满停了一下。线是白的，走的是明线，绕了两圈才把断带接上。她拽了拽，带子没松，可接头处鼓着一小团，像打了个结。她拿拇指按了按，按不平。\n\n“先这样。”她把鞋递过去，“能走，但别使劲拽。明天你拿来，我用黑线再补一道，牢。”\n\n赵姨穿上试了试，脚背上的白线显眼，她笑了笑。“行，赶得上。”她从兜里掏钱，周小满摆手。\n\n“明天一起算。”\n\n赵姨没再推，拎起包往车站走。走了几步又回头：“小满，你师傅那针，断过一回吧？”\n\n周小满的手停在零钱盒上。\n\n“我上回看见纸里裹着半截。”赵姨说，“没跟他说。”\n\n周小满低下头，把那截裹断针的纸往盒边挪了挪。“……我明天说。”\n\n赵姨点点头，转身走了。周小满看着她的背影拐过街角，才把白线轴收回盒里，盒盖合上时，发出很轻的一声响。",
+  "targets": {
+    "han": [
+      450,
+      600
+    ],
+    "paragraphs": [
+      4,
+      7
+    ]
+  },
+  "textSha256": "85a700b40f8dcb68641513ec820250e68e18a1c8d4da1d872752fdc7752f9312"
+}

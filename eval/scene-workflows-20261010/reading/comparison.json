@@ -1,0 +1,523 @@
+{
+  "reviewType": "masked native-assistant single-case comparison; not human participant evaluation",
+  "candidateOrder": [
+    "C-58170384cc8546508340358ab7af75d3",
+    "C-5eec07adb515400a8640dab929445afc",
+    "C-f2bba794b9ac4b5680f36e589fdceb27"
+  ],
+  "scope": "Only allowed packets, rubric and immutable individual reviews. No origin or workflow inference.",
+  "anyCandidateFulfillsAllSceneGoals": false,
+  "allGoalsConclusion": "None establishes that Zhao catches the last bus. Each completes temporary repair. First and third explicitly establish mutual tomorrow reinforcement; second leaves assent scope uncertain.",
+  "pairwiseComparisons": [
+    {
+      "candidateIds": [
+        "C-58170384cc8546508340358ab7af75d3",
+        "C-5eec07adb515400a8640dab929445afc"
+      ],
+      "differences": [
+        {
+          "dimension": "goalfulfillment",
+          "finding": "First candidate explicitly secures a mutual tomorrow reinforcement agreement. Second has an invitation and generic assent with ambiguous scope.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "明天这个点，我拿来，你别嫌烦。",
+              "start": 410,
+              "end": 425
+            },
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "“不嫌。”周小满说。",
+              "start": 428,
+              "end": 438
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "明天你拿来，我用黑线再补一道，牢。",
+              "start": 466,
+              "end": 483
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“行，赶得上。”",
+              "start": 508,
+              "end": 516
+            }
+          ],
+          "uncertainty": "The second assent could accept the whole invitation or only the temporary repair’s fitness for travel. Tomorrow payment supports, but does not settle, the return-agreement reading."
+        },
+        {
+          "dimension": "goalfulfillment",
+          "finding": "Neither establishes catching the last bus. First supplies distant bus sound; second supplies a forecast and departure.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "听见街口那边公交车进站的刹车声，比平时短，像是停了一下又起步。",
+              "start": 484,
+              "end": 515
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“行，赶得上。”",
+              "start": 508,
+              "end": 516
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "周小满看着她的背影拐过街角",
+              "start": 667,
+              "end": 680
+            }
+          ],
+          "uncertainty": "Full-text absence finding: either may allow a successful trip, but neither establishes one. Failure is not proven."
+        },
+        {
+          "dimension": "voiceagency",
+          "finding": "First has weaker realization of halting spoken replies. Second explicitly supplies pauses and a self-directed disclosure choice; both retain practical agency.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "“先这样。”她把鞋递过去",
+              "start": 333,
+              "end": 345
+            },
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "“不嫌。”周小满说。",
+              "start": 428,
+              "end": 438
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“我……我看摊。”",
+              "start": 107,
+              "end": 116
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“……我明天说。”",
+              "start": 645,
+              "end": 654
+            }
+          ],
+          "uncertainty": "First retains hesitation in action, so this is a localized voice difference, not wholesale loss of agency."
+        },
+        {
+          "dimension": "advancement",
+          "finding": "Both replay the accepted white-thread exchange. Second additionally resets Zhao’s arrival; first keeps the wrapped needle near the box while proceeding to repair.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "那截裹着断针的纸就在旁边。",
+              "start": 119,
+              "end": 132
+            },
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "“白的就白的，鞋底谁看。”",
+              "start": 134,
+              "end": 147
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "赵姨就来了，手里拎着一只凉鞋",
+              "start": 44,
+              "end": 58
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“白的就白的，鞋底谁看。”",
+              "start": 242,
+              "end": 255
+            }
+          ],
+          "uncertainty": "None material beyond overall limitations."
+        },
+        {
+          "dimension": "boundaries",
+          "finding": "Both have unverified scissors provenance. Second adds plans for black thread and disclosure tomorrow, which establish no current black-thread use or master knowledge.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "拿剪子把断口两边的毛边修平",
+              "start": 196,
+              "end": 209
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "拿剪子把断口两边的毛边修平",
+              "start": 306,
+              "end": 319
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "明天你拿来，我用黑线再补一道，牢。",
+              "start": 466,
+              "end": 483
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“……我明天说。”",
+              "start": 645,
+              "end": 654
+            }
+          ],
+          "uncertainty": "Future supply is unexplained, but a proposal is not a current world fact; no clear hard-boundary regression is proven."
+        }
+      ]
+    },
+    {
+      "candidateIds": [
+        "C-58170384cc8546508340358ab7af75d3",
+        "C-f2bba794b9ac4b5680f36e589fdceb27"
+      ],
+      "differences": [
+        {
+          "dimension": "goalfulfillment",
+          "finding": "Both complete temporary repair and explicitly establish mutual tomorrow reinforcement; neither establishes last-bus success.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "明天这个点，我拿来，你别嫌烦。",
+              "start": 410,
+              "end": 425
+            },
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "“不嫌。”周小满说。",
+              "start": 428,
+              "end": 438
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "“明天……您再拿来，”她说，“我给您补牢。”",
+              "start": 559,
+              "end": 581
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "赵姨应了一声，说好，明天顺路带过来。",
+              "start": 581,
+              "end": 599
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "她拎起菜兜往车站走",
+              "start": 599,
+              "end": 608
+            }
+          ],
+          "uncertainty": "No exact tomorrow clock time is required. Bus absence was checked against both complete texts."
+        },
+        {
+          "dimension": "voiceagency",
+          "finding": "Third explicitly realizes halting speech and motivates a failed extra winding through concern about durability. First conveys hesitation mainly through handling and fluent short replies.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "她拿拇指按了按，按不平。",
+              "start": 319,
+              "end": 331
+            },
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "“先这样。”她把鞋递过去",
+              "start": 333,
+              "end": 345
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "“师傅……出去了。”",
+              "start": 168,
+              "end": 178
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "针尖悬在皮面上，她多绕了一圈线，没绕成",
+              "start": 420,
+              "end": 439
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "“明天……您再拿来，”",
+              "start": 559,
+              "end": 570
+            }
+          ],
+          "uncertainty": "Third briefly explains fear directly, but mostly action-led tone remains supported. Both characters retain choices."
+        },
+        {
+          "dimension": "advancement",
+          "finding": "Both replay the retained spool/concession material. Third also restages waiting and a fresh arrival; meeting length targets does not solve that continuation problem.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "“白的就白的，鞋底谁看。”",
+              "start": 134,
+              "end": 147
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "她应了，从下午应到天暗，只应过两个问路的。",
+              "start": 61,
+              "end": 82
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "赵姨是从菜场那头过来的，手里拎着一只凉鞋",
+              "start": 84,
+              "end": 104
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "“白的就白的，”赵姨说，“鞋底谁看。”",
+              "start": 279,
+              "end": 298
+            }
+          ],
+          "uncertainty": "None material beyond overall limitations."
+        },
+        {
+          "dimension": "boundaries",
+          "finding": "Both preserve imperfect temporary repair. First explicitly warns against pulling hard; third withholds a contemplated one-night warning, but offers reinforcement. There is no explicit warning-disclosure obligation to violate.",
+          "evidence": [
+            {
+              "candidateId": "C-58170384cc8546508340358ab7af75d3",
+              "quote": "能走，但别使劲拽。",
+              "start": 347,
+              "end": 356
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "她想说“只能撑一晚”，话到嘴边又咽回去",
+              "start": 390,
+              "end": 409
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "“我给您补牢。”",
+              "start": 573,
+              "end": 581
+            }
+          ],
+          "uncertainty": "Third’s future-loosening prediction is not a realized future fact. Newly implied cutting tool and reached-for awl remain provenance uncertainties, not proven magical resources."
+        }
+      ]
+    },
+    {
+      "candidateIds": [
+        "C-5eec07adb515400a8640dab929445afc",
+        "C-f2bba794b9ac4b5680f36e589fdceb27"
+      ],
+      "differences": [
+        {
+          "dimension": "goalfulfillment",
+          "finding": "Third clearly records Zhao agreeing to bring the shoe tomorrow; second leaves the scope of assent ambiguous. Both finish temporary repair and leave actual bus success unestablished.",
+          "evidence": [
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“行，赶得上。”",
+              "start": 508,
+              "end": 516
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“明天一起算。”",
+              "start": 531,
+              "end": 539
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "赵姨应了一声，说好，明天顺路带过来。",
+              "start": 581,
+              "end": 599
+            }
+          ],
+          "uncertainty": "Second may imply the return commitment; third removes that interpretation gap."
+        },
+        {
+          "dimension": "voiceagency",
+          "finding": "Both realize halting replies and meaningful choices. Second supplies a choice to disclose the broken needle; third supplies hesitation tied to durability and an explicit reinforcement agreement.",
+          "evidence": [
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“……我明天说。”",
+              "start": 645,
+              "end": 654
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "针尖悬在皮面上，她多绕了一圈线，没绕成",
+              "start": 420,
+              "end": 439
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "“明天……您再拿来，”她说，“我给您补牢。”",
+              "start": 559,
+              "end": 581
+            }
+          ],
+          "uncertainty": "No clear voice or agency regression between these two is established."
+        },
+        {
+          "dimension": "causaltransitions",
+          "finding": "Second describes the same break first at the middle and then the root. Third uses middle then loaded portion, which need not be inconsistent. Both show plausible temporary stitching sequences.",
+          "evidence": [
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "带子从中间断开",
+              "start": 59,
+              "end": 66
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "断口在带子根部",
+              "start": 167,
+              "end": 174
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "鞋带从中间断开",
+              "start": 105,
+              "end": 112
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "断口在受力那一段",
+              "start": 223,
+              "end": 231
+            }
+          ],
+          "uncertainty": "Different reference portions might explain the second description; this remains ambiguity, not established physical impossibility."
+        },
+        {
+          "dimension": "boundaries",
+          "finding": "Second adds a character claim about an earlier glimpse of the broken needle and future black-thread repair; these create attribution/future-supply questions absent in the third, not proven current violations.",
+          "evidence": [
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“我上回看见纸里裹着半截。”赵姨说，“没跟他说。”",
+              "start": 596,
+              "end": 621
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "明天你拿来，我用黑线再补一道，牢。",
+              "start": 466,
+              "end": 483
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "她把线轴从盒底摸出来，只有白的。",
+              "start": 241,
+              "end": 257
+            }
+          ],
+          "uncertainty": "No clear hard-boundary regression. Both have underspecified tool inventories."
+        },
+        {
+          "dimension": "advancement",
+          "finding": "Both restart Zhao’s arrival and repeat the accepted spool/concession exchange, then advance to repair. Endings add different commitments: future disclosure versus explicit reinforcement return.",
+          "evidence": [
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "赵姨就来了，手里拎着一只凉鞋",
+              "start": 44,
+              "end": 58
+            },
+            {
+              "candidateId": "C-5eec07adb515400a8640dab929445afc",
+              "quote": "“……我明天说。”",
+              "start": 645,
+              "end": 654
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "赵姨是从菜场那头过来的，手里拎着一只凉鞋",
+              "start": 84,
+              "end": 104
+            },
+            {
+              "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+              "quote": "赵姨应了一声，说好，明天顺路带过来。",
+              "start": 581,
+              "end": 599
+            }
+          ],
+          "uncertainty": "None material beyond overall limitations."
+        }
+      ]
+    }
+  ],
+  "regressionAssessment": {
+    "voiceagency": {
+      "candidateId": "C-58170384cc8546508340358ab7af75d3",
+      "relativeTo": [
+        "C-5eec07adb515400a8640dab929445afc",
+        "C-f2bba794b9ac4b5680f36e589fdceb27"
+      ],
+      "clearLocalizedDifference": "Weaker realization of requested halting spoken replies. Practical agency, restrained tone and limited viewpoint remain supported."
+    },
+    "boundaries": {
+      "clearProvenRegression": false,
+      "finding": "All preserve present white-thread use, absent uninformed master and temporary repair. Tool provenance is uncertain; later plans and character claims are not current world facts."
+    },
+    "advancement": {
+      "finding": "All replay accepted spool/concession material; second and third additionally restage arrival. Concision alone proves no continuity gain."
+    }
+  },
+  "countObservations": [
+    {
+      "candidateId": "C-58170384cc8546508340358ab7af75d3",
+      "han": 436,
+      "hanTarget": [
+        450,
+        600
+      ],
+      "paragraphs": 8,
+      "paragraphTarget": [
+        4,
+        7
+      ],
+      "method": "Han Unicode ranges; paragraphs split on blank lines; UTF-16 offsets into exact text"
+    },
+    {
+      "candidateId": "C-5eec07adb515400a8640dab929445afc",
+      "han": 553,
+      "hanTarget": [
+        450,
+        600
+      ],
+      "paragraphs": 16,
+      "paragraphTarget": [
+        4,
+        7
+      ],
+      "method": "Han Unicode ranges; blank-line paragraphs; exact UTF-16 evidence offsets"
+    },
+    {
+      "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+      "han": 546,
+      "hanTarget": [
+        450,
+        600
+      ],
+      "paragraphs": 6,
+      "paragraphTarget": [
+        4,
+        7
+      ],
+      "method": "Han Unicode ranges; blank-line paragraphs; UTF-16 offsets into exact output"
+    }
+  ],
+  "limitations": [
+    "Single-scene findings cannot establish general quality or workflow architecture.",
+    "No overall ranking or aggregate score is given.",
+    "Missing bus fulfillment is based on complete text, and is not proof the bus was missed.",
+    "One broken needle does not ban ordinary hand needles; omitted handling is not physical impossibility.",
+    "No additional clock-time requirement was imposed for tomorrow agreement.",
+    "Counts are soft diagnostics, not acceptance criteria."
+  ],
+  "individualReviewsUnchanged": true
+}

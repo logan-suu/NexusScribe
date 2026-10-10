@@ -1,0 +1,32 @@
+{
+  "stage": 4,
+  "status": "retired_consumed",
+  "prior": [
+    {
+      "stage": 1,
+      "sha256": "861a831e1b1d692f07dc4aaf243119d9d2196f57cf65d89f34360e333625bcc2",
+      "artifactId": 11681187401,
+      "artifactZipSha256": "5db21c3bf0d5a68a146d84206e67c08b749ef191c37548b2e8ee84e0f4d0606a"
+    },
+    {
+      "stage": 2,
+      "sha256": "d0eb60c703799452085cfbba8bbd8a1021d8a34a807d8fa79d68bfb1da65869d",
+      "artifactId": 11681169071,
+      "artifactZipSha256": "12f286b24820754fc42b631f173abd4e235fa4f780fcd0929dbb108edde2d7fe"
+    },
+    {
+      "stage": 3,
+      "sha256": "ac3d591e909bd0f0f848e2e1d36b2b7a258ad60035d38719bbfb2267f1538808",
+      "artifactId": 11682301137,
+      "artifactZipSha256": "d87f5e06182897043aadbbaf4edc1b1474c364dc9ff6c3b609a982839dfa1d83"
+    },
+    {
+      "stage": 4,
+      "sha256": "908a847cff7b3d7913c800fb35690bf614548b6e05d8d26a49e006d8ca98c82a",
+      "artifactId": 11682532332,
+      "artifactZipSha256": "bafd82f2d71b8de8574e8f5d695b213f7d6b8b31f74c510b91cbc0f7bb519890"
+    }
+  ],
+  "remainingAttempts": 0,
+  "attemptsObserved": 4
+}
