@@ -1,11 +1,15 @@
 {
   "protocol": "scene-workflows-20261010",
   "sha256": {
-    ".github/workflows/ci.yml": "4401cc8e559d6176e24b3f1e87239497ba94e5e084c63f6cee59a497f7dcfbe7",
+    ".github/workflows/ci.yml": "0f4df00665110c6ca6ccab031887c65f1f0865bf89a37b78326cb5a97bb2c345",
     "eval/SCENE-GOAL-REVIEW.md": "fa50f1a7e40d97735b708f41cad7047978170be9a091783b4e464b79386c224e",
     "eval/scene-workflows-20261010/PROTOCOL.md": "4d57f26bb8870dde8dc632377ee66936d7ec59822abfaf94e539fe8605082868",
+    "eval/scene-workflows-20261010/completed-1.json": "861a831e1b1d692f07dc4aaf243119d9d2196f57cf65d89f34360e333625bcc2",
+    "eval/scene-workflows-20261010/dispatch-1.json": "bf2fd2e9c585a13dd868e15b04ccafe1885a25e3d772d318b31ca95827ea2b3b",
+    "eval/scene-workflows-20261010/feedback.json": "1fd62ef345ee307c1a0cac63f0e227389670ae0a55c1a0fc01acae703c26ba67",
     "eval/scene-workflows-20261010/freeze.json": "695d7b014c72a24307b1aeda2cfb4aa77c64e38ac4e396c6712719f295964f73",
-    "eval/scene-workflows-20261010/stage.json": "ecc3ad12236f4b05d5fceebb3b852e5f2900917030e7a2c479a357bb3ca443c5",
+    "eval/scene-workflows-20261010/reservation-1.json": "f4aa172187e5125e0b8a208190b110c28204ef36845f860de0c027cc9030e11b",
+    "eval/scene-workflows-20261010/stage.json": "5c81ca4cba0574a0fd9e489f26ae28a2c8978c9076eb2ce4c259cf267d0fc70b",
     "eval/schema3-causal-fixtures.json": "71191c39e5baa4cd319820b3c04942fcf07a1ca11673448962d241462959b018",
     "package-lock.json": "ea8aa4815b0661d97079afb12971e02add207afb5d71e743f2b9c0f83daabf72",
     "package.json": "d73141e6597a315a6ecfed7eedb3b7a6dd522d636e94ff70d79be5f4585c7ce6",

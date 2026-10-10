@@ -1,5 +1,12 @@
 {
-  "stage": 1,
+  "stage": 2,
   "status": "authorized_single_attempt",
-  "prior": []
+  "prior": [
+    {
+      "stage": 1,
+      "sha256": "861a831e1b1d692f07dc4aaf243119d9d2196f57cf65d89f34360e333625bcc2",
+      "artifactId": 11681187401,
+      "artifactZipSha256": "5db21c3bf0d5a68a146d84206e67c08b749ef191c37548b2e8ee84e0f4d0606a"
+    }
+  ]
 }
