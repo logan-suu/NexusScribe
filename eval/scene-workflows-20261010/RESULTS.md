@@ -33,7 +33,7 @@ Soft targets were 450–600 Han and 4–7 paragraphs. Only planning-first prose 
 
 1. **Tomorrow agreement:** baseline's “行，赶得上” may accept the repair or the whole proposal; the reader retained that uncertainty. Revision adds “明天这个点，我拿来，你别嫌烦” and an answer. Planned prose says Zhao agrees to bring it tomorrow. Both interventions improve explicit support for this obligation
 2. **Bus outcome remains absent:** baseline ends with departure around a corner; revision adds distant braking and restarting; planned prose sends Zhao toward the stop. None establishes boarding or reaching the last bus in time. Sound, a forecast or an intention is not itself proof of the required result
-3. **Continuation remains weak:** all repeat the prior white-thread exchange; planning-first also restarts Zhao's arrival. A scene plan did not prevent replay; corrective feedback did not fully remove it
+3. **Continuation remains weak:** all repeat the prior white-thread exchange; baseline and planning-first also restart Zhao's arrival. A scene plan did not prevent replay; corrective feedback did not fully remove it
 4. **Voice and agency:** the targeted revision less clearly realizes the requested halting spoken replies, although hesitation remains in action and practical choices survive. Planned prose preserves explicit pauses. No wholesale agency loss or proven hard-boundary regression was established
 5. **Resource/knowledge scope:** all repairs remain temporary. A normal hand needle need not be the earlier broken needle. Tool provenance gaps stay uncertain. Baseline's future black-thread promise and Zhao's claimed earlier needle sighting are not proof of current black-thread supply or the absent master's knowledge
 
