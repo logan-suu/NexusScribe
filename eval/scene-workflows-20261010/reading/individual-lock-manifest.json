@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "reviewType": "native assistant masked individual review, not human participant evaluation",
+  "order": [
+    "C-58170384cc8546508340358ab7af75d3",
+    "C-5eec07adb515400a8640dab929445afc",
+    "C-f2bba794b9ac4b5680f36e589fdceb27"
+  ],
+  "files": [
+    {
+      "candidateId": "C-58170384cc8546508340358ab7af75d3",
+      "path": "individual/C-58170384cc8546508340358ab7af75d3.json",
+      "sha256": "1af5f16ec2fbe0359f84465a8e26d4fe89f0960d271209cf114c70735412aae0",
+      "bytes": 12921
+    },
+    {
+      "candidateId": "C-5eec07adb515400a8640dab929445afc",
+      "path": "individual/C-5eec07adb515400a8640dab929445afc.json",
+      "sha256": "5dfb187d9a91c5842fe7e993c29e64a02d39c8f19feea3496a6e42ec35117475",
+      "bytes": 13913
+    },
+    {
+      "candidateId": "C-f2bba794b9ac4b5680f36e589fdceb27",
+      "path": "individual/C-f2bba794b9ac4b5680f36e589fdceb27.json",
+      "sha256": "3d9649c691efdf6535ebeff61f5b04b45b9e85bd383074f91ff86b91e834b3d5",
+      "bytes": 14250
+    }
+  ],
+  "verification": {
+    "exactUTF16QuoteOffsets": true,
+    "quoteCount": 102,
+    "sixDimensionsPerCandidate": true,
+    "candidateTextHashesMatch": true
+  },
+  "protocol": "Read and finalized each individual review in order before reading the next candidate. No ranking or label decoding. No substantive revision of an earlier review after reading a later candidate."
+}
