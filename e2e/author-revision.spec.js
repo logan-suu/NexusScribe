@@ -1,3 +1,4 @@
+import {captureRequestSceneIntent} from '../src/domain/request-scene-intent.js';
 // Hosted desktop/mobile browser coverage. Every API endpoint is synthetic and
 // nonlocal traffic is blocked. No paid model call or literary-quality claim.
 import {test, expect} from '@playwright/test';
@@ -146,10 +147,10 @@ test('explicit revision preserves exact original, compares counts, then adopts o
   expect((await draft(page)).revisionSnapshots).toHaveLength(1);
   expect(advice.binding).not.toHaveProperty('textSnapshot');
   expect(advice.binding).not.toHaveProperty('contextSnapshot');
-  expect(getRevisionSource(await draft(page), advice)).toEqual({id:advice.binding.snapshotId, textSnapshot:BEFORE, contextSnapshot:engine.getContext(initial)});
+  expect(getRevisionSource(await draft(page), advice)).toEqual({id:advice.binding.snapshotId, textSnapshot:BEFORE, contextSnapshot:engine.getContext(initial),stagingSnapshot:original.staging,sceneIntent:captureRequestSceneIntent(initial,original,engine.getContext(initial))});
   expect(mock.calls.map(call => [call.url, call.method])).toEqual([['/api/status','GET'], ['/api/agent','POST']]);
   expect(mock.paid()[0].action).toBe('reviseProse');
-  expect(mock.paid()[0].input).toEqual({text:BEFORE, instruction:INSTRUCTION, chapterId:'ch1', context:engine.getContext(initial)});
+  expect(mock.paid()[0].input).toEqual({text:BEFORE, instruction:INSTRUCTION, chapterId:'ch1', context:engine.getContext(initial),sceneIntent:captureRequestSceneIntent(initial,original,engine.getContext(initial))});
   expect(await page.getByLabel('改稿前正文', {exact:true}).textContent()).toBe(BEFORE);
   expect(await page.getByLabel('改稿建议正文', {exact:true}).textContent()).toBe(AFTER);
   expect(advice.beforeCounts).toEqual({han:18, characters:29, paragraphs:2});
