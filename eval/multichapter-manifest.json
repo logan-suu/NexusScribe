@@ -4,8 +4,8 @@
   "sha256": {
     "eval/MULTICHAPTER-PROTOCOL.md": "86611d4ec543b987691d1318dc242284e075e6206e95c05f1502f742e28532a8",
     "eval/multichapter-fixtures.mjs": "5f46c2b7a27fc839f1f60cec28679305477d24731f613e163a9a2b27afcfe53e",
-    "scripts/multichapter-eval.mjs": "b1a844ab1d9c29240c10ae4ef7fa90ff496f2a7391809e801413534bc08a1bbc",
-    "tests/multichapter-eval.test.js": "74dae60fd7802cec484e0f7e94f4f65ef83cb128506dbacaffb927deaa0f3990",
+    "scripts/multichapter-eval.mjs": "9a7765cee5dabc1d59affccb2aa791a365f3ad2e52671c8a4ae363a4d175b529",
+    "tests/multichapter-eval.test.js": "66964101fa309bdb81b4eccb17c1f6ae3b560f663f7ef07e60b0233b3a0a415a",
     "server/provider.ts": "68f9a7fcef7806dd2bcb9677653a257f37e8e19a25ce7c06c70cc0a2138a5a88",
     "server/provider-transport.ts": "79bc9df89d84161f058f76517d62e9e6a07fd25e25064b05c7665c980c49135f",
     "server/index.ts": "d9fa6827556738307c63f60e659985635fba9307e9ac9f5614638f488d876627",
