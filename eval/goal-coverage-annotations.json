@@ -1,0 +1,337 @@
+{
+  "formatVersion": 1,
+  "kind": "manual-editorial-calibration",
+  "semanticQuality": "not_evaluated",
+  "providerCalls": 0,
+  "records": [
+    {
+      "caseId": "GC-01",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/0/input",
+        "start": 0,
+        "end": 14,
+        "quote": "本场结束前，赵姨赶上末班车。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/0/candidate",
+        "start": 0,
+        "end": 7,
+        "quote": "她往车站跑去。"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "missing",
+          "reasoning": "Departure is an attempt, not the required result. The complete passage does not establish boarding; it does not prove she missed the bus. / 出发不等于达成；全文未建立上车，也不证明错过末班车。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-02",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/1/input",
+        "start": 0,
+        "end": 14,
+        "quote": "本场结束前，赵姨赶上末班车。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/1/candidate",
+        "start": 0,
+        "end": 17,
+        "quote": "巷外传来刹车声，随后又响起加速声。"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "missing",
+          "reasoning": "The sound identifies neither this passenger nor boarding. Catching it remains possible, not established. / 声响未建立赵姨上车；仍可能赶上，但未确认。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-03",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/2/input",
+        "start": 0,
+        "end": 43,
+        "quote": "本场结束前，赵姨赶上末班车。小满站在能看清站台的位置，知道站牌标示的这一班就是末班车。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/2/candidate",
+        "start": 0,
+        "end": 28,
+        "quote": "小满看着赵姨踏上站牌标示的最后一班车，车门在她身后合拢。"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "fulfilled",
+          "reasoning": "Visible boarding of the identified service supports the result without requiring a keyword. Visibility and identification are synthetic added premises, not historical F3 facts. / 已识别班次的可见上车支持达成；视线与班次识别是新增合成前提。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-04",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/3/input",
+        "start": 0,
+        "end": 29,
+        "quote": "本场只写赵姨向车站出发，是否赶上末班车必须留到下一场揭晓。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/3/candidate",
+        "start": 0,
+        "end": 7,
+        "quote": "她往车站跑去。"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "fulfilled",
+          "reasoning": "This changed goal requires departure and preserved suspense, not catching the bus now. / 改变后的目标要求出发与留白，不要求本场确认赶上。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-05",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/4/input",
+        "start": 0,
+        "end": 45,
+        "quote": "goal：本场明确写出赵姨赶上末班车。exitState：本场不能确认赵姨是否赶上末班车。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/4/candidate",
+        "start": 0,
+        "end": 7,
+        "quote": "她往车站跑去。"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "uncertain",
+          "reasoning": "Inputs explicitly conflict. Do not silently choose one; ask which intention governs. Departure alone resolves neither editorial conflict nor catch result. / 输入明确冲突，需确认优先意图；出发不能解决冲突。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-06",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/5/input",
+        "start": 0,
+        "end": 22,
+        "quote": "本场结束前，小满和赵姨双方约定明天加固鞋子。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/5/candidate",
+        "start": 0,
+        "end": 33,
+        "quote": "小满说：“明天来，我给你再加固。”赵姨没听见这句邀请，拎起包走了。"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "missing",
+          "reasoning": "The text explicitly says she did not hear this invitation; no reciprocal commitment is established. Departure alone cannot supply acceptance. / 明确未听见邀请，未建立回应承诺；离开不能代替接受。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-07",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/6/input",
+        "start": 0,
+        "end": 43,
+        "quote": "本场结束前，小满和赵姨双方约定明天加固鞋子。两人正在谈这次临时修补能否让她赶上公交车。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/6/candidate",
+        "start": 0,
+        "end": 28,
+        "quote": "小满说：“明天再来加固。”赵姨摸摸鞋底：“行，赶得上。”"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "uncertain",
+          "reasoning": "The response can accept tomorrow or assess the current repair/bus timing. Preserve both readings rather than certify agreement. / 回答可能接受明日安排，也可能评价当前修补与赶车，保留歧义。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-08",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/7/input",
+        "start": 0,
+        "end": 22,
+        "quote": "本场结束前，小满和赵姨双方约定明天加固鞋子。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/7/candidate",
+        "start": 0,
+        "end": 39,
+        "quote": "小满说：“明天拿来加固吧。”赵姨说：“好，明天我拿来。”小满点头：“我等你。”"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "fulfilled",
+          "reasoning": "Both parties commit to tomorrow. This does not establish that tomorrow’s work has already happened. / 双方已约定；不代表明日加固已完成。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-09",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/8/input",
+        "start": 0,
+        "end": 22,
+        "quote": "本场结束前，小满和赵姨双方约定明天加固鞋子。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/8/candidate",
+        "start": 0,
+        "end": 24,
+        "quote": "小满请她明天来。赵姨说：“不，明天我不会回来。”"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "contradicted",
+          "reasoning": "The explicit refusal is incompatible with the requested mutual commitment in this scene. This goal-level failure is not automatically a contradiction of prior Canon. / 明确拒绝与本场双方约定不相容；目标层面的失败不自动构成旧设定矛盾。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-10",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/9/input",
+        "start": 0,
+        "end": 29,
+        "quote": "先前正文只确认那根锥针断了，没有说明其他针或工具是否可用。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/9/candidate",
+        "start": 0,
+        "end": 15,
+        "quote": "小满换了一根普通手缝针继续缝。"
+      },
+      "judgments": [
+        {
+          "dimension": "boundaries",
+          "status": "fulfilled",
+          "reasoning": "One broken awl needle does not prohibit another ordinary needle. The candidate introduces another resource; it does not retroactively prove prior availability or settle provenance. / 一根锥针断裂未禁止普通针；新出现的工具不反证此前可用或解释来源。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-11",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/10/input",
+        "start": 0,
+        "end": 26,
+        "quote": "当前店里只有白线。本场不得把黑线写成已经可用的资源。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/10/candidate",
+        "start": 0,
+        "end": 21,
+        "quote": "小满说：“如果明天买到黑线，我再替你换。”"
+      },
+      "judgments": [
+        {
+          "dimension": "boundaries",
+          "status": "fulfilled",
+          "reasoning": "A conditional future purchase neither supplies black thread now nor guarantees it tomorrow. / 条件性的未来购买不等于当前拥有，也未保证明日可得。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    },
+    {
+      "caseId": "GC-12",
+      "input": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/11/input",
+        "start": 0,
+        "end": 34,
+        "quote": "本场结束前，赵姨赶上末班车。禁止新角色突然送来完好的替代鞋解决困难。"
+      },
+      "candidate": {
+        "path": "eval/goal-coverage-pairs.json",
+        "sha256": "e6ff71dc43b9db6999d5a3609e1be54c5aff094a3fb5053b2f4ad8c6a6bf45af",
+        "pointer": "/cases/11/candidate",
+        "start": 0,
+        "end": 37,
+        "quote": "一个陌生人突然送来一双完好的鞋。赵姨换上它，登上末班车，车门在她身后关上。"
+      },
+      "judgments": [
+        {
+          "dimension": "goalfulfillment",
+          "status": "fulfilled",
+          "reasoning": "The result occurs, but its means violate a separate explicit prohibition. Never collapse these into a single pass. / 结果达成，但手段违反独立禁令，不能合并成一个通过。"
+        },
+        {
+          "dimension": "boundaries",
+          "status": "contradicted",
+          "reasoning": "The stranger supplies the explicitly forbidden perfect replacement. / 陌生人提供了明确禁止的完好替代鞋。"
+        }
+      ],
+      "reviewScope": "complete synthetic candidate / 完整合成正文"
+    }
+  ]
+}

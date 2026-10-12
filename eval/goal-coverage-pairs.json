@@ -1,0 +1,115 @@
+{
+  "formatVersion": 1,
+  "origin": "synthetic-editorial-pairs",
+  "providerCalls": 0,
+  "cases": [
+    {
+      "id": "GC-01",
+      "name": "intention",
+      "origin": "synthetic",
+      "input": "本场结束前，赵姨赶上末班车。",
+      "candidate": "她往车站跑去。",
+      "editorialRole": "goal",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    },
+    {
+      "id": "GC-02",
+      "name": "sound",
+      "origin": "synthetic",
+      "input": "本场结束前，赵姨赶上末班车。",
+      "candidate": "巷外传来刹车声，随后又响起加速声。",
+      "editorialRole": "goal",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    },
+    {
+      "id": "GC-03",
+      "name": "visible-result",
+      "origin": "synthetic",
+      "input": "本场结束前，赵姨赶上末班车。小满站在能看清站台的位置，知道站牌标示的这一班就是末班车。",
+      "candidate": "小满看着赵姨踏上站牌标示的最后一班车，车门在她身后合拢。",
+      "editorialRole": "goal",
+      "premiseChange": "Added visibility and service identification / 新增视线与班次识别"
+    },
+    {
+      "id": "GC-04",
+      "name": "deliberate-suspense",
+      "origin": "synthetic",
+      "input": "本场只写赵姨向车站出发，是否赶上末班车必须留到下一场揭晓。",
+      "candidate": "她往车站跑去。",
+      "editorialRole": "goal",
+      "premiseChange": "Replaced catch outcome with departure and deliberate suspense / 改为出发与悬念"
+    },
+    {
+      "id": "GC-05",
+      "name": "conflicting-intent",
+      "origin": "synthetic",
+      "input": "goal：本场明确写出赵姨赶上末班车。exitState：本场不能确认赵姨是否赶上末班车。",
+      "candidate": "她往车站跑去。",
+      "editorialRole": "goal",
+      "premiseChange": "Added explicitly conflicting goal and exitState / 新增明确冲突的字段"
+    },
+    {
+      "id": "GC-06",
+      "name": "invitation",
+      "origin": "synthetic",
+      "input": "本场结束前，小满和赵姨双方约定明天加固鞋子。",
+      "candidate": "小满说：“明天来，我给你再加固。”赵姨没听见这句邀请，拎起包走了。",
+      "editorialRole": "goal",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    },
+    {
+      "id": "GC-07",
+      "name": "ambiguous-acceptance",
+      "origin": "synthetic",
+      "input": "本场结束前，小满和赵姨双方约定明天加固鞋子。两人正在谈这次临时修补能否让她赶上公交车。",
+      "candidate": "小满说：“明天再来加固。”赵姨摸摸鞋底：“行，赶得上。”",
+      "editorialRole": "goal",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    },
+    {
+      "id": "GC-08",
+      "name": "mutual-commitment",
+      "origin": "synthetic",
+      "input": "本场结束前，小满和赵姨双方约定明天加固鞋子。",
+      "candidate": "小满说：“明天拿来加固吧。”赵姨说：“好，明天我拿来。”小满点头：“我等你。”",
+      "editorialRole": "goal",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    },
+    {
+      "id": "GC-09",
+      "name": "refusal",
+      "origin": "synthetic",
+      "input": "本场结束前，小满和赵姨双方约定明天加固鞋子。",
+      "candidate": "小满请她明天来。赵姨说：“不，明天我不会回来。”",
+      "editorialRole": "goal",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    },
+    {
+      "id": "GC-10",
+      "name": "one-needle",
+      "origin": "synthetic",
+      "input": "先前正文只确认那根锥针断了，没有说明其他针或工具是否可用。",
+      "candidate": "小满换了一根普通手缝针继续缝。",
+      "editorialRole": "boundary",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    },
+    {
+      "id": "GC-11",
+      "name": "future-thread",
+      "origin": "synthetic",
+      "input": "当前店里只有白线。本场不得把黑线写成已经可用的资源。",
+      "candidate": "小满说：“如果明天买到黑线，我再替你换。”",
+      "editorialRole": "boundary",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    },
+    {
+      "id": "GC-12",
+      "name": "forbidden-means",
+      "origin": "synthetic",
+      "input": "本场结束前，赵姨赶上末班车。禁止新角色突然送来完好的替代鞋解决困难。",
+      "candidate": "一个陌生人突然送来一双完好的鞋。赵姨换上它，登上末班车，车门在她身后关上。",
+      "editorialRole": "goal",
+      "premiseChange": "Standalone synthetic input; not an amendment to F3 / 独立合成输入，不修改F3"
+    }
+  ]
+}
