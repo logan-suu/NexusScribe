@@ -38,3 +38,66 @@ The retained [six-output causal writing trial](../../eval/CAUSAL-QUALITY-2026100
 Offline regression also exercises the actual App capture with synthetic responses, ignores provider-supplied provenance, retains the initial snapshot across edits/reload/context refresh/import, and checks zero-network template capture. Existing coverage includes exact/missing/empty/malformed fields, positional mapping and reordering, target ambiguity, context/schema staleness, explicit refresh without prose change, revision edits, historical candidates and chapter switching. DOM and desktop/mobile Chromium checks block model calls. These checks establish display/state behavior, not semantic or literary correctness.
 
 离线领域、模拟 DOM 和桌面／手机 Chromium 回归仅验证展示与版本行为；浏览器阻断模型请求。未进行新真实模型实验，不外推语义正确率或文学效果。
+
+## Saved intent in review and revision requests (2026-10-12)
+
+The production App now supplies a separate optional `sceneIntent` reference to
+`reviewChapter` and `reviseProse`. It captures the **current saved** positional
+`config.outline` goal and exitState without substituting plan descriptions or
+trimming their values. Missing, empty and unsupported fields remain explicitly
+missing, empty or invalid. Canonical chapter identity comes from project chapters,
+not legacy author-written outline IDs.
+
+The versioned reference binds project, chapter position/revision, draft/run/revision,
+state and context versions. The gateway checks its bounded shape and target
+coherence before consuming a call. Revision's prompt allowlist includes the same
+reference; no separate model call is introduced. A provider cannot assert this
+local provenance through its output.
+
+New reviews retain the separately captured reference. New revision proposals share
+an exact source snapshot (text, context, candidates and saved intent); request IDs
+also distinguish repeated attempts. Changing a goal or exitState without bumping
+state.version invalidates old reviews/proposal adoption. Delayed, cancelled and
+wrong-target results cannot gain current authority. Existing text/context/candidate
+checks remain necessary: the new reference is not a substitute for them.
+
+Legacy records without this optional reference remain readable and are not
+backfilled. Archived records describe their original inputs, not today's outline.
+Import retains the source audit and invalidates active proposal/review authority.
+`generationIntent` continues to describe initial generation only and is not
+rewritten when reviewing, revising, editing, or refreshing context.
+
+This closes an input-fidelity gap, not evidence of better fiction. In particular,
+the earlier F3 evaluation already received its full experimental input; these
+changes do not explain away that experiment's result. Saved goals are reference
+material, never confirmed world facts or proof that the chapter fulfilled them.
+
+### Next stages
+1. Bind production inputs and stale-result checks, with strict TypeScript and
+   fake-provider regression evidence (this change)
+2. Exercise the offline multi-chapter flow: review → explicit author revision →
+   comparison/adoption → re-review → author acceptance, including interruption,
+   backup and reload, without claiming synthetic cases measure model quality
+3. Only under a separate bounded model-test approval, compare actual writing
+   quality, goal fulfillment, continuity, latency and total usage. No automatic
+   new trial, prompt adoption or paid call follows from this change
+
+## 审阅与改稿请求中的已保存意图（2026-10-12）
+
+生产 App 向 reviewChapter / reviseProse 传递独立、可选、带版本的
+sceneIntent：逐项保存当前 config.outline 对应位置的 goal 与 exitState，
+不拿 description、计划说明或旧生成意图代替，也不裁剪原值。缺失、空白和
+不支持的值分别标记；规范章节身份取自项目章节，不借用旧大纲 ID。
+
+请求绑定项目、章节位置/版本、候选稿/运行/版本和上下文版本；网关在调用前
+检查字段长度、整数及目标一致性。新审阅保留本地来源；新改稿共享原文、
+上下文、候选记忆与意图快照，并区分请求次数。即使 state.version 不变，
+目标或退出状态改变也会令旧结果失效。模型输出不能冒充这份本地来源。
+
+旧备份、历史记录不回填；初次生成的 generationIntent 保持原义。导入后的
+活动建议仍需重新审阅。这是输入保真与失效保护修复，不是文学质量提升证明，
+也不能解释此前已收到完整试验输入的 F3 失败。
+
+后续按三步推进：①生产输入绑定与零真实调用回归；②离线多章审阅—明确改稿—
+比较采用—重审—作者接受闭环及中断恢复；③另行获得有上限的真实模型试验许可
+后，才评估目标达成、连续性、文笔、延迟与总用量。本改动不自动启动新试验。

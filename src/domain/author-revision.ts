@@ -1,3 +1,4 @@
+import {captureRequestSceneIntent, isRequestSceneIntentCurrent, validateSceneIntentContext} from './request-scene-intent.js';
 import type {Draft, ProjectState} from './types.js';
 import type {ProseCounts, RevisionLengthBounds, RevisionProposal, RevisionBinding, RevisionResult, RevisionSnapshot} from './review-types.js';
 /** Author-requested proposals are isolated from manuscript and memory authority. */
@@ -60,13 +61,13 @@ function sourceSnapshot(draft: Draft,snapshotId: string): RevisionSnapshot {
  return source;
 }
 export function getRevisionSource(draft: Draft,proposal: RevisionProposal) {return copy(sourceSnapshot(draft,proposal.binding.snapshotId));}
-function binding(state: ProjectState,draft: Draft,snapshotId: string): RevisionBinding {
- return {protocol:REVISION_PROTOCOL, projectId:state.projectId, draftId:draft.id, runId:draft.runId, chapterId:draft.chapterId!, stateVersion:state.version, draftRevision:draft.revision, snapshotId, instruction:draft.revisionInstruction || '', instructionVersion:draft.revisionInstructionVersion || 0};
+function binding(state: ProjectState,draft: Draft,snapshotId: string,requestId?:string): RevisionBinding {
+ return {...(requestId?{requestId}:{}),protocol:REVISION_PROTOCOL, projectId:state.projectId, draftId:draft.id, runId:draft.runId, chapterId:draft.chapterId!, stateVersion:state.version, draftRevision:draft.revision, snapshotId, instruction:draft.revisionInstruction || '', instructionVersion:draft.revisionInstructionVersion || 0};
 }
 function internSource(state: ProjectState,draft: Draft) {
- const contextSnapshot=engine.getContext(state),textSnapshot=draft.text;
- let source=draft.revisionSnapshots!.find(item=>item.textSnapshot===textSnapshot&&same(item.contextSnapshot,contextSnapshot));
- if(!source){source={id:`revision-source-${draft.revisionSnapshots!.length+1}`,textSnapshot,contextSnapshot};draft.revisionSnapshots!.push(source);}
+ const contextSnapshot=engine.getContext(state),textSnapshot=draft.text,sceneIntent=captureRequestSceneIntent(state,draft,contextSnapshot),stagingSnapshot=copy(draft.staging);
+ let source=draft.revisionSnapshots!.find(item=>item.textSnapshot===textSnapshot&&same(item.contextSnapshot,contextSnapshot)&&same(item.sceneIntent,sceneIntent)&&same(item.stagingSnapshot,stagingSnapshot));
+ if(!source){source={id:`revision-source-${draft.revisionSnapshots!.length+1}`,textSnapshot,contextSnapshot,sceneIntent,stagingSnapshot};draft.revisionSnapshots!.push(source);}
  return source.id;
 }
 export function validateDraftRevisions(draft: Draft) {
@@ -75,13 +76,18 @@ export function validateDraftRevisions(draft: Draft) {
  if (draft.requiresExtraction !== true || draft.providerInfo?.isLive !== true || Object.hasOwn(draft,'manualSource') || draft.provider === 'author-manuscript' || draft.providerInfo?.id === 'author-manuscript') invalid();
  if (typeof draft.revisionInstruction !== 'string' || draft.revisionInstruction.length > MAX_REVISION_INSTRUCTION || !integer(draft.revisionInstructionVersion) || !Array.isArray(draft.revisionProposals) || !Array.isArray(draft.revisionSnapshots)) invalid();
  const sourceIds=new Set<string>(),sourceMap=new Map<string,RevisionSnapshot>(),sourceCounts=new Map<string,ProseCounts>(),versionsByRevision=new Map((draft.proseVersions||[]).map(v=>[v.revision,v])),versionTexts=new Set((draft.proseVersions||[]).map(v=>v.text));
- for(const source of draft.revisionSnapshots){if(!object(source)||Object.keys(source).length!==3||typeof source.id!=='string'||!source.id||sourceIds.has(source.id)||!text(source.textSnapshot)||!versionTexts.has(source.textSnapshot)||!object(source.contextSnapshot)||source.contextSnapshot.projectId!==draft.projectId)invalid();sourceIds.add(source.id);sourceMap.set(source.id,source);sourceCounts.set(source.id,proseCounts(source.textSnapshot));}
+ for(const source of draft.revisionSnapshots){if(!object(source)||Object.keys(source).some(key=>!['id','textSnapshot','contextSnapshot','sceneIntent','stagingSnapshot'].includes(key))||Object.keys(source).length!==(Object.hasOwn(source,'sceneIntent')?5:3)||Object.hasOwn(source,'sceneIntent')&&!Array.isArray(source.stagingSnapshot)||typeof source.id!=='string'||!source.id||sourceIds.has(source.id)||!text(source.textSnapshot)||!versionTexts.has(source.textSnapshot)||!object(source.contextSnapshot)||source.contextSnapshot.projectId!==draft.projectId)invalid();if(Object.hasOwn(source,'sceneIntent')){validateSceneIntentContext(source.sceneIntent,source.contextSnapshot,source.sceneIntent?.chapterId);const intent=source.sceneIntent!;if(intent.projectId!==draft.projectId||intent.draftId!==draft.id||intent.runId!==draft.runId||intent.chapterId!==draft.chapterId||versionsByRevision.get(intent.draftRevision)?.text!==source.textSnapshot)invalid();}sourceIds.add(source.id);sourceMap.set(source.id,source);sourceCounts.set(source.id,proseCounts(source.textSnapshot));}
  const ids = new Set<string>();
  for (const proposal of draft.revisionProposals) {
   if (!object(proposal) || typeof proposal.id !== 'string' || !proposal.id || ids.has(proposal.id) || !['requesting','proposed','failed','cancelled','stale','discarded','adopted'].includes(proposal.status)) invalid();
   ids.add(proposal.id);
   const b = proposal.binding, source = sourceMap.get(b?.snapshotId);
-  if (!object(b) || b.protocol !== REVISION_PROTOCOL || b.projectId !== draft.projectId || b.draftId !== draft.id || b.runId !== draft.runId || b.chapterId !== draft.chapterId || !integer(b.stateVersion) || b.stateVersion < 1 || !integer(b.draftRevision) || b.draftRevision < 1 || Object.keys(b).length!==10 || !source || versionsByRevision.get(b.draftRevision)?.text !== source.textSnapshot || source.contextSnapshot.version !== b.stateVersion || typeof b.instruction !== 'string' || !b.instruction.trim() || b.instruction.length > MAX_REVISION_INSTRUCTION || !integer(b.instructionVersion) || b.instructionVersion > draft.revisionInstructionVersion) invalid();
+  if (!object(b) || b.protocol !== REVISION_PROTOCOL || b.projectId !== draft.projectId || b.draftId !== draft.id || b.runId !== draft.runId || b.chapterId !== draft.chapterId || !integer(b.stateVersion) || b.stateVersion < 1 || !integer(b.draftRevision) || b.draftRevision < 1 || Object.keys(b).length!==(Object.hasOwn(b,'requestId')?11:10)||Object.hasOwn(b,'requestId')&&b.requestId!==proposal.id || !source || versionsByRevision.get(b.draftRevision)?.text !== source.textSnapshot || source.contextSnapshot.version !== b.stateVersion || typeof b.instruction !== 'string' || !b.instruction.trim() || b.instruction.length > MAX_REVISION_INSTRUCTION || !integer(b.instructionVersion) || b.instructionVersion > draft.revisionInstructionVersion) invalid();
+  if(Object.hasOwn(source,'sceneIntent')) {
+   validateSceneIntentContext(source.sceneIntent,source.contextSnapshot,b.chapterId);
+   const intent=source.sceneIntent!;
+   if(intent.projectId!==b.projectId||intent.draftId!==b.draftId||intent.runId!==b.runId||intent.draftRevision!==b.draftRevision||intent.stateVersion!==b.stateVersion)invalid();
+  }
   if (!same(proposal.beforeCounts,sourceCounts.get(b.snapshotId))) invalid();
   if (proposal.result !== null) {
    const r = proposal.result;
@@ -119,14 +125,14 @@ export function beginDraftRevision(state: ProjectState,id: string) {
  validateRevisionRequest(state,id);
  const s = copy(state), d = get(s,id); s.sequence++;
  const snapshotId=internSource(s,d);
- d.revisionProposals!.push({id:`revision-${s.sequence}`, status:'requesting', binding:binding(s,d,snapshotId), beforeCounts:proseCounts(d.text), result:null, resultSnapshot:null, afterCounts:null});
+ d.revisionProposals!.push({id:`revision-${s.sequence}`, status:'requesting', binding:binding(s,d,snapshotId,`revision-${s.sequence}`), beforeCounts:proseCounts(d.text), result:null, resultSnapshot:null, afterCounts:null});
  return s;
 }
 export function createRevisionInput(state: ProjectState,id: string,proposalId: string) {
  const d = get(state,id), p = d.revisionProposals?.find(p => p.id === proposalId);
  if (!p || p.status !== 'requesting' || !isRevisionCurrent(state,id,proposalId)) fail('改稿请求已过期');
  const source=sourceSnapshot(d,p.binding.snapshotId);
- return copy({text:source.textSnapshot, instruction:p.binding.instruction, chapterId:p.binding.chapterId, context:source.contextSnapshot});
+ return copy({text:source.textSnapshot, instruction:p.binding.instruction, chapterId:p.binding.chapterId, context:source.contextSnapshot,...(source.sceneIntent?{sceneIntent:source.sceneIntent}:{})});
 }
 /** Render once per draft; terminal proposals never trigger repeated history validation. */
 export function getRevisionCurrency(state: ProjectState,id: string) {
@@ -134,8 +140,8 @@ export function getRevisionCurrency(state: ProjectState,id: string) {
  if(!(d.revisionProposals||[]).some(p=>['requesting','proposed'].includes(p.status)))return result;
  try{
   eligible(state,d);validateDraftRevisions(d);
-  const context=engine.getContext(state),currentSources=new Set(d.revisionSnapshots!.filter(source=>source.textSnapshot===d.text&&same(source.contextSnapshot,context)).map(source=>source.id));
-  for(const p of d.revisionProposals!)if(['requesting','proposed'].includes(p.status)&&currentSources.has(p.binding.snapshotId))result[p.id]=same(p.binding,binding(state,d,p.binding.snapshotId));
+  const context=engine.getContext(state),currentSources=new Set(d.revisionSnapshots!.filter(source=>source.textSnapshot===d.text&&same(source.contextSnapshot,context)&&(!Object.hasOwn(source,'sceneIntent')||isRequestSceneIntentCurrent(state,d,source.sceneIntent,context)&&same(source.stagingSnapshot,d.staging))).map(source=>source.id));
+  for(const p of d.revisionProposals!)if(['requesting','proposed'].includes(p.status)&&currentSources.has(p.binding.snapshotId))result[p.id]=same(p.binding,binding(state,d,p.binding.snapshotId,Object.hasOwn(p.binding,'requestId')?p.id:undefined));
  }catch{}
  return result;
 }

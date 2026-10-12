@@ -263,3 +263,5 @@ Edits and context refresh revoke the skip; pending backup imports require a fres
 Offline/domain and hosted desktop/mobile regressions exercise the retained failed revision, a simulated author correction, fresh mocked review, zero-memory acceptance and the next chapter's context without an extraction request. This establishes operational acceptance only. The [historical one-call revision trial](eval/AUTHOR-REVISION-RESULTS.md), raw output and failed close-read remain unchanged; real writing quality is unresolved. No new live call, release or deployment is part of this change.
 
 For the offline shared request contract, enum-only failure diagnostics and a separate, unapproved one-call compatibility proposal, see [Provider transport](docs/provider-transport.md).
+
+Review/revision requests now carry exact current saved scene intent with independent local provenance and same-version stale-result protection. See [input fidelity and staged follow-up](docs/public/SCENE-INTENT.md#saved-intent-in-review-and-revision-requests-2026-10-12); this is not a model-quality improvement claim.

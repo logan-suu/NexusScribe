@@ -1,4 +1,4 @@
-import {createInitialState, getImpacts, getFactReviewGate, validatePatch, validateProseDraftRecord, validateMemoryDraftRecord, validateManualDraftSource, hash} from './domain/engine.js';
+import {validateDraftReviewSceneIntents, createInitialState, getImpacts, getFactReviewGate, validatePatch, validateProseDraftRecord, validateMemoryDraftRecord, validateManualDraftSource, hash} from './domain/engine.js';
 import {validateDraftRevisions} from './domain/author-revision.js';
 import {archiveMemoryReview, replaceMemoryCandidates} from './domain/memory-review.js';
 import {validateGenerationIntentRecord} from './domain/generation-intent.js';
@@ -130,6 +130,7 @@ function validateProject(project: unknown): asserts project is CheckedProject {
       probe(validateDraftRevisions, draft);
       probe(validateManualDraftSource, state, draft);
     } catch {bad('候选稿正文版本或记忆提取记录无效');}
+    try {probe(validateDraftReviewSceneIntents,draft);} catch {bad('审阅创作意图来源记录无效');}
     if (draft.requiresExtraction !== undefined && typeof draft.requiresExtraction !== 'boolean') bad('候选稿提取标记无效');
     if (draft.requiresExtraction === true) {
       if (draft.projectId !== state.projectId) bad('候选稿提取记录不属于当前项目');

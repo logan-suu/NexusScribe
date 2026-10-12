@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --import tsx --test tests/*.test.js",
     "test:ui": "node --import tsx scripts/test-ui.mjs",
-    "check": "npm run typecheck && npm test && npm run test:ui && npm run test:ui:live && npm run test:ui:race && npm run test:ui:facts && npm run test:ui:storage && npm run test:ui:controls && npm run test:ui:prose && npm run test:ui:memory && npm run test:ui:multichapter && npm run test:ui:manual && npm run test:ui:revision && npm run test:ui:prose-only && npm run test:ui:scene-intent && npm run build && node scripts/verify-typescript-runtime.mjs",
+    "check": "npm run typecheck && npm test && npm run test:ui && npm run test:ui:live && npm run test:ui:race && npm run test:ui:facts && npm run test:ui:storage && npm run test:ui:controls && npm run test:ui:prose && npm run test:ui:memory && npm run test:ui:multichapter && npm run test:ui:manual && npm run test:ui:revision && npm run test:ui:prose-only && npm run test:ui:scene-intent && npm run test:ui:request-scene-intent && npm run build && node scripts/verify-typescript-runtime.mjs",
     "server": "tsx server/index.ts",
     "start": "node --import tsx scripts/start-demo.mjs",
     "test:ui:live": "node --import tsx scripts/test-ui-live.mjs",
@@ -28,7 +28,8 @@
     "demo:acceptance": "playwright test e2e/acceptance-demo.spec.js --workers=1",
     "test:ui:scene-intent": "node --import tsx scripts/test-ui-scene-intent.mjs",
     "typecheck": "tsc --noEmit",
-    "server:built": "node dist-server/server/index.js"
+    "server:built": "node dist-server/server/index.js",
+    "test:ui:request-scene-intent": "node --import tsx scripts/test-ui-request-scene-intent.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

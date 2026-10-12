@@ -1,3 +1,5 @@
+import {captureRequestSceneIntent, isRequestSceneIntentCurrent, validateSceneIntentContext} from './request-scene-intent.js';
+import type {RequestSceneIntent} from './request-scene-intent.js';
 import type { MemoryDecisionBinding, MemoryDecisionInstruction, MemorySupportBinding, State, Draft, ProseDraft, ManualDraft, Chapter, CanonFact, CanonSnapshot, SourceAnchor, Context, ContextMemoryEvent, ContextMemoryAnchor, MemoryContextPolicy, Paragraph, ProseVersion, ProjectConfig, AuthorConstitution, Patch, AuthorInstruction, ProviderDraftResult, Provider, StructuralIssue, ReviewBinding, ExtractionBinding, ExtractionRecord, ExtractionEntry, ExtractionReport, MemoryReview, FactDecisionInstruction, SemanticReviewReport, MemoryCandidate, MemoryAuthority, MemorySupportAttempt, MemorySupportResult, MemoryDecision, MemorySupportState, MemoryLedgerEntry, QuoteAnchor, GenerationIntentInput } from './types.js';
 import {buildFactLedger} from './fact-review.js';
 import {initializeMemoryReview, archiveMemoryReview, replaceMemoryCandidates, memoryCandidatesIntact, buildMemoryLedger, memoryReviewSnapshot, registerMemoryAuthority, compactMemoryBinding, expandMemoryBinding, memoryAssessmentSnapshot, ISOLATED_MEMORY_PROTOCOL, initializeMemorySupport, memorySupportHead, MEMORY_SELECTION_PROTOCOL, deriveQuoteCard, compactQuoteCard, validMemoryAttestation, memorySelectionValid} from './memory-review.js';
@@ -474,6 +476,11 @@ export function createReviewBinding(state:State,draftId:string):ReviewBinding {
  const d=draft(state,draftId);
  return {projectId:state.projectId,draftId:d.id,runId:d.runId,chapterId:d.chapterId||'ch3',stateVersion:state.version,draftRevision:d.revision,textHash:hash(d.text),stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:Object.fromEntries(state.chapters.map(c=>[c.id,c.revision])),contextHash:hash(JSON.stringify(getContext(state))),textSnapshot:d.text,stagingSnapshot:copy(d.staging),contextSnapshot:copy(getContext(state)),memoryReviewEpoch:d.memoryReviewEpoch??0,...(isProseDraft(d)?{extractionAttempt:d.extraction?.attempt,extractionHash:hash(JSON.stringify(d.extraction)),extractionSnapshot:reviewExtractionSnapshot(d.extraction)}:{})};
 }
+/** Capture the exact saved intent alongside the existing candidate/context binding. */
+export function createSemanticReviewRequest(state:State,draftId:string) {
+ const d=draft(state,draftId),expected=createReviewBinding(state,draftId),sceneIntent=captureRequestSceneIntent(state,d,expected.contextSnapshot);
+ return {expected,sceneIntent,input:{text:expected.textSnapshot,chapterId:expected.chapterId,context:copy(expected.contextSnapshot),sceneIntent:copy(sceneIntent)}};
+}
 function reviewBindingMatches(actual:ReviewBinding|null|undefined,expected:ReviewBinding|null|undefined) {
  if(!actual||!expected)return false;
  const fields:(keyof ReviewBinding)[]=['projectId','draftId','runId','chapterId','stateVersion','draftRevision','textHash','stagingHash','contextHash',...(Object.hasOwn(expected,'extractionAttempt')?['extractionAttempt','extractionHash'] as const:[])];
@@ -487,14 +494,15 @@ function reviewBindingMatches(actual:ReviewBinding|null|undefined,expected:Revie
 function currentSemanticReview(state:State,d:Draft) {
  const r=d.modelReview;
  let ledgerCurrent=false;try{ledgerCurrent=JSON.stringify(r?.factLedger??[])===JSON.stringify(buildFactLedger(state,d,r?.factChecks))&&JSON.stringify(r?.memoryLedger??[])===JSON.stringify(memoryAssessmentSnapshot(buildMemoryLedger(d,r?.memoryChecks)));}catch{return false;}
- return Boolean(r&&ledgerCurrent&&d.projectId===state.projectId&&reviewBindingMatches(expandMemoryBinding(d,r.binding),createReviewBinding(state,d.id))&&r.stateVersion===state.version&&r.draftRevision===d.revision&&r.textHash===hash(d.text)&&r.chapterId===(d.chapterId||'ch3')&&r.stagingHash===hash(JSON.stringify(d.staging))&&state.chapters.every(c=>r.chapterRevisions?.[c.id]===c.revision&&d.chapterRevisions?.[c.id]===c.revision)&&!issuesFor(state,d).length);
+ return Boolean(r&&(!Object.hasOwn(r,'sceneIntent')||isRequestSceneIntentCurrent(state,d,r.sceneIntent,getContext(state)))&&ledgerCurrent&&d.projectId===state.projectId&&reviewBindingMatches(expandMemoryBinding(d,r.binding),createReviewBinding(state,d.id))&&r.stateVersion===state.version&&r.draftRevision===d.revision&&r.textHash===hash(d.text)&&r.chapterId===(d.chapterId||'ch3')&&r.stagingHash===hash(JSON.stringify(d.staging))&&state.chapters.every(c=>r.chapterRevisions?.[c.id]===c.revision&&d.chapterRevisions?.[c.id]===c.revision)&&!issuesFor(state,d).length);
 }
 /** Attach a model's advisory, never a source of authoritative Canon changes. */
 /** External payloads are untrusted; the implementation retains its field-by-field runtime validation. */
-export function attachSemanticReview(state:State,draftId:string,payload:unknown,expected:ReviewBinding) {
+export function attachSemanticReview(state:State,draftId:string,payload:unknown,expected:ReviewBinding,sceneIntent?:RequestSceneIntent) {
  const report=payload as Partial<SemanticReviewReport>|null|undefined;
  const original=draft(state,draftId);
  if(!['DRAFT','IN_REVIEW'].includes(original.status))fail('DRAFT_STATUS','只能审查待定草稿');
+ if(sceneIntent!==undefined&&!isRequestSceneIntentCurrent(state,original,sceneIntent,getContext(state)))fail('STALE_SEMANTIC_REVIEW','已保存创作意图或目标已变化，请重新审阅');
  if(!reviewBindingMatches(expected,createReviewBinding(state,draftId))||original.baseVersion!==state.version)fail('STALE_SEMANTIC_REVIEW','模型审查结果与当前状态或草稿版本不一致');
  if(original.projectId!==state.projectId||state.chapters.some(c=>original.chapterRevisions?.[c.id]!==c.revision||c.syncStatus!=='CLEAN'))fail('STALE_SEMANTIC_REVIEW','模型审查使用的项目或源正文已变化');
  if(isProseDraft(original)&&!hasCurrentExtraction(state,draftId))fail('EXTRACTION_REQUIRED','当前正文尚未完成候选记忆提取');
@@ -505,7 +513,7 @@ export function attachSemanticReview(state:State,draftId:string,payload:unknown,
  const factLedger=buildFactLedger(state,original,report.factChecks),memoryLedger=buildMemoryLedger(original,report.memoryChecks);
  if(original.memoryReviewSchema!==undefined&&!memoryCandidatesIntact(original))fail('INVALID_MEMORY_REVIEW','原始候选已变化，不能把被改写的主张当作已提取候选');
  const s=copy(state),d=draft(s,draftId);archiveMemoryReview(d,'semantic_review_replaced');d.factDecisions=[];
- d.modelReview={binding:compactMemoryBinding(d,createReviewBinding(s,draftId)),memoryChecks:copy(report.memoryChecks??[]),memoryLedger:memoryAssessmentSnapshot(memoryLedger),factChecks:copy(report.factChecks??[]),factLedger,summary:report.summary,issues:copy(report.issues),checks:copy(report.checks),provider:copy(report.provider),stateVersion:s.version,draftRevision:d.revision,textHash:hash(d.text),chapterId:d.chapterId||'ch3',stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:copy(d.chapterRevisions),semanticStatus:'model_reviewed_unverified',advisory:true,limitations:['模型审查是候选判断，并非独立真实性或全面语义一致性证明；作者仍需核对来源与知识获取路径']};
+ d.modelReview={...(sceneIntent?{sceneIntent:copy(sceneIntent)}:{}),binding:compactMemoryBinding(d,createReviewBinding(s,draftId)),memoryChecks:copy(report.memoryChecks??[]),memoryLedger:memoryAssessmentSnapshot(memoryLedger),factChecks:copy(report.factChecks??[]),factLedger,summary:report.summary,issues:copy(report.issues),checks:copy(report.checks),provider:copy(report.provider),stateVersion:s.version,draftRevision:d.revision,textHash:hash(d.text),chapterId:d.chapterId||'ch3',stagingHash:hash(JSON.stringify(d.staging)),chapterRevisions:copy(d.chapterRevisions),semanticStatus:'model_reviewed_unverified',advisory:true,limitations:['模型审查是候选判断，并非独立真实性或全面语义一致性证明；作者仍需核对来源与知识获取路径']};
  return s;
 }
 
@@ -669,4 +677,22 @@ export function markMemorySupportFailure(state:State,id:string,candidateId:strin
  attempt.state=status;attempt.outcomeReason=status;
  d.memoryDecisions=d.memoryDecisions!.filter(item=>item.candidateId!==candidateId);
  return s;
+}
+
+export function validateDraftReviewSceneIntents(draft:Draft) {
+    // Optional provenance stays optional for legacy history. Validate saved shape and
+    // original source identity, never compare archived goals with today's outline.
+    for (const entry of [
+      ...(draft.modelReview ? [{report:draft.modelReview,binding:expandMemoryBinding(draft,draft.modelReview.binding)}] : []),
+      ...(draft.memoryAuthorities || []).map(a=>({report:a.reviewSnapshot,binding:expandMemoryBinding(draft,a.binding)})),
+      ...(draft.memoryArchives || []).flatMap(a=>a.legacyModelReview?[{report:a.legacyModelReview,binding:expandMemoryBinding(draft,a.legacyModelReview.binding)}]:[]),
+    ]) {
+      if(!('sceneIntent' in entry.report))continue;
+      try {
+        const intent=entry.report.sceneIntent,b=entry.binding;
+        validateSceneIntentContext(intent,b?.contextSnapshot,b?.chapterId);
+        if(!b||intent.projectId!==b.projectId||intent.draftId!==b.draftId||intent.runId!==b.runId||intent.projectId!==draft.projectId||intent.draftId!==draft.id||intent.runId!==draft.runId||intent.draftRevision!==b.draftRevision||intent.stateVersion!==b.stateVersion)fail('INVALID_REQUEST_SCENE_INTENT','审阅创作意图来源身份无效');
+      } catch {fail('INVALID_REQUEST_SCENE_INTENT','审阅创作意图来源记录无效');}
+    }
+ return true;
 }
