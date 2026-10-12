@@ -1,4 +1,5 @@
 /** Persisted review contracts. Runtime validators remain the authority at import boundaries. */
+import type {RequestSceneIntent} from './request-scene-intent.js';
 import type {Context, Draft, ExtractionRecord, MemoryCandidate, MemoryReview, ReviewBinding} from './types.js';
 
 export type MemoryAssessment = 'supported' | 'unsupported' | 'unknown';
@@ -32,7 +33,7 @@ export type MemoryBinding = ReviewBinding|CompactReviewBinding;
 export interface ContextRefreshBinding extends MemorySnapshotValues {projectId:string; baseVersion:number; chapterRevisions:Record<string,number>; draftRevision:number}
 export type CompactContextRefreshBinding = Omit<ContextRefreshBinding,keyof MemorySnapshotValues> & {snapshotId:string};
 export interface MemoryBindingSnapshot {id:string; values:MemorySnapshotValues}
-export type MemoryReviewSnapshot = Omit<MemoryReview,'binding'|'textSnapshot'|'stagingSnapshot'|'factLedger'|'memoryLedger'>;
+export type MemoryReviewSnapshot = Omit<MemoryReview,'binding'|'textSnapshot'|'stagingSnapshot'|'factLedger'|'memoryLedger'> & {sceneIntent?:RequestSceneIntent};
 export interface MemoryAuthority {id:string; binding:MemoryBinding; reviewSnapshot:MemoryReviewSnapshot; reviewHash:string}
 export interface MemoryArchive {
  reason:string; draftRevision:number; textSnapshot:string; candidates:MemoryCandidate[]; stagingSnapshot:MemoryCandidate[];
@@ -43,9 +44,9 @@ export type InitializedMemoryDraft = Draft & Required<Pick<Draft,'memoryReviewSc
 
 export interface ProseCounts {han:number; characters:number; paragraphs:number}
 export type RevisionLengthBounds = Partial<Record<'hanMin'|'hanMax'|'paragraphsMin'|'paragraphsMax',number>>;
-export interface RevisionSnapshot {id:string; textSnapshot:string; contextSnapshot:Context}
+export interface RevisionSnapshot {id:string; textSnapshot:string; contextSnapshot:Context; sceneIntent?:RequestSceneIntent; stagingSnapshot?:import('./types.js').MemoryCandidate[]}
 export interface RevisionBinding {
- protocol:'author-directed-revision-v1'; projectId:string; draftId:string; runId:string; chapterId:string;
+ requestId?:string; protocol:'author-directed-revision-v1'; projectId:string; draftId:string; runId:string; chapterId:string;
  stateVersion:number; draftRevision:number; snapshotId:string; instruction:string; instructionVersion:number;
 }
 export interface RevisionResult {text:string; chapterId:string; provider:{id:string; isLive:true; [key:string]:unknown}}

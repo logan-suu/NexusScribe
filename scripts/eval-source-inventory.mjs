@@ -35,6 +35,7 @@ export const CURRENT_RUNTIME_PATHS = Object.freeze([
   "src/domain/memory-review.ts",
   "src/domain/prose.ts",
   "src/domain/review-types.ts",
+  "src/domain/request-scene-intent.ts",
   "src/domain/scene-intent.ts",
   "src/domain/types.ts",
   "src/hooks/useModelTask.ts",

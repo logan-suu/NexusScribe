@@ -19,7 +19,7 @@ test('counts explicitly use Han codepoints, all codepoints and nonblank physical
 });
 test('one request makes a separate immutable bound proposal without altering manuscript or memory',()=>{
  const original=fresh(),s=begin(original),p=last(s),input=r.createRevisionInput(s,id(s),p.id),n=completed(s);
- assert.equal(r.getRevisionSource(s.drafts[0],p).textSnapshot,BEFORE);assert.deepEqual(input,{text:BEFORE,instruction:s.drafts[0].revisionInstruction,chapterId:'ch1',context:e.getContext(s)});
+ assert.equal(r.getRevisionSource(s.drafts[0],p).textSnapshot,BEFORE);assert.deepEqual(input,{text:BEFORE,instruction:s.drafts[0].revisionInstruction,chapterId:'ch1',context:e.getContext(s),sceneIntent:s.drafts[0].revisionSnapshots[0].sceneIntent});
  input.context.constitution.tone='tampered';assert.notEqual(r.getRevisionSource(s.drafts[0],p).contextSnapshot.constitution.tone,'tampered');
  assert.equal(n.drafts[0].text,BEFORE);assert.deepEqual(n.chapters,original.chapters);assert.deepEqual(n.facts,original.facts);assert.deepEqual(n.events,original.events);assert.deepEqual(n.drafts[0].proseVersions,original.drafts[0].proseVersions);
  assert.equal(last(n).status,'proposed');assert.equal(last(n).result.text,AFTER);assert.deepEqual(last(n).afterCounts,r.proseCounts(AFTER));assert.equal(r.isRevisionCurrent(n,id(n),p.id),true);

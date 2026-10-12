@@ -1,3 +1,4 @@
+import type {RequestSceneIntent} from '../src/domain/request-scene-intent.js';
 /** Server boundary contracts. Untrusted JSON is unknown until the runtime guards pass. */
 export type UnknownRecord = Record<string, unknown>;
 export type AgentAction = 'interview' | 'planStory' | 'generateChapter' | 'generateProse' | 'reviseProse' | 'interpretRevision' | 'auditMemoryCandidate' | 'reviewChapter' | 'extractMemory';
@@ -7,14 +8,15 @@ export type ContextSource = {chapterId: string; revision: number; text: string};
 /** Additional context and fact data remain unknown: they are reference material. */
 export type AgentContext = {projectId: string; version: number; sources: ContextSource[]; facts?: unknown} & UnknownRecord;
 export type GenerationInput = {project: {idea: string; projectId: string; outline: unknown[]} & UnknownRecord; chapterIndex: number; chapterId?: string; context: AgentContext};
-export type RevisionInput = {text: string; instruction: string; chapterId: string; context: AgentContext};
+export type RevisionInput = {text: string; instruction: string; chapterId: string; context: AgentContext; sceneIntent?: RequestSceneIntent};
 export type InterpretationInput = {beforeText: string; afterText: string; chapterId: string; context: AgentContext};
 export type MemoryCandidateInput = {candidateId: string; label: string; sourceQuote: string};
 export type TextContextInput = {text: string; chapterId: string; context: AgentContext; memoryCandidates?: MemoryCandidateInput[]};
+export type ReviewInput = TextContextInput & {sceneIntent?: RequestSceneIntent};
 export type AuditInput = {label: string; sourceQuote: string};
 export type AgentInputs = {
  interview: StoryInput; planStory: StoryInput; generateChapter: GenerationInput; generateProse: GenerationInput;
- reviseProse: RevisionInput; interpretRevision: InterpretationInput; auditMemoryCandidate: AuditInput; reviewChapter: TextContextInput; extractMemory: TextContextInput;
+ reviseProse: RevisionInput; interpretRevision: InterpretationInput; auditMemoryCandidate: AuditInput; reviewChapter: ReviewInput; extractMemory: TextContextInput;
 };
 export type ValidatedRequest = {[A in AgentAction]: {action: A; input: AgentInputs[A]}}[AgentAction];
 export type SupportStatus = 'supported' | 'unsupported' | 'unknown';

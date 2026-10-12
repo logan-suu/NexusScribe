@@ -9,7 +9,7 @@ import http from 'node:http';
 import { performance } from 'node:perf_hooks';
 import { createAgentService, SAFE_VALIDATION_REASONS } from '../server/provider.js';
 import { createHandler } from '../server/index.js';
-import { createProjectFromConfig, proposeCustomPatch, commitPatch, getContext, getFactReviewGate } from '../src/domain/engine.js';
+import { createProjectFromConfig, proposeCustomPatch, commitPatch, getContext, getFactReviewGate, createSemanticReviewRequest } from '../src/domain/engine.js';
 import { segmentProse } from '../src/domain/prose.js';
 import { parseBackup, KEY } from '../src/storage.js';
 import { buildMultichapterFixture } from '../eval/multichapter-fixtures.mjs';
@@ -216,6 +216,9 @@ export function generationInput(workspace, index) {
   const state = workspace.state;
   return { project: { ...state.config, outline: state.chapters.map((ch, i) => ({ ...state.config.outline[i], id: ch.id, title: state.config.outline[i].title || ch.title, goal: state.config.outline[i].goal || '沿已有线索推进，保持角色知识边界' })) }, chapterIndex: index, context: getContext(state) };
 }
+export function reviewInput(workspace, draft) {
+  return createSemanticReviewRequest(workspace.state, draft.id).input;
+}
 export function verifyContinuityInput(workspace, index, retained) {
   const context = getContext(workspace.state), fixture = buildMultichapterFixture();
   for (let i = 0; i < index; i++) {
@@ -258,7 +261,7 @@ export async function browserJourney({ page, controller, screenshot, baseURL = '
     if (draft.text !== prose.text || !draft.proseVersions.some(v => v.text === prose.text)) fail('PROSE_RETENTION');
     const extraction = await perform('extractMemory', { text: draft.text, chapterId: draft.chapterId, context: getContext(workspace.state) }, '提取候选记忆', w => w.state.drafts.at(-1)?.extraction?.status === 'complete');
     workspace = await readWorkspace(); draft = workspace.state.drafts.at(-1);
-    await perform('reviewChapter', { text: draft.text, chapterId: draft.chapterId, context: getContext(workspace.state) }, '审查候选稿', w => !!w.state.drafts.at(-1)?.modelReview);
+    await perform('reviewChapter', reviewInput(workspace, draft), '审查候选稿', w => !!w.state.drafts.at(-1)?.modelReview);
     workspace = await readWorkspace(); draft = workspace.state.drafts.at(-1);
     if (getFactReviewGate(workspace.state, draft.id).some(x => x.blocking && !x.resolved) || draft.modelReview.issues.some(x => x.severity === 'error')) fail('BLOCKING_REVIEW');
     const first = draft.staging[0]; if (!first || extraction.staging.length !== draft.staging.length) fail('EMPTY_EXTRACTION');

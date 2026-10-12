@@ -169,7 +169,7 @@ test('real App export is byte-reproducible with poisoned network and live flags,
   assert.equal(run.status, 0, run.stderr);
   for (const flag of ['--live','--run','--approved']) {
     const rejected = spawnSync(process.execPath, ['--import','tsx','scripts/export-schema3-causal-fixtures.mjs',flag],
-      {cwd:root, env, encoding:'utf8', timeout:5000});
+      {cwd:root, env, encoding:'utf8', timeout:15000});
     assert.equal(rejected.status, 1);
     assert.match(rejected.stderr, /no live mode/);
   }

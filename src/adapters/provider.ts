@@ -1,3 +1,4 @@
+import {validateSceneIntentContext} from '../domain/request-scene-intent.js';
 import type {Action, ActionOutputMap, ProviderAdapter, RequestOptions, ServerProvider, ProviderStatus} from './types.js';
 export type {ProviderAdapter, ProviderStatus} from './types.js';
 /** Browser adapters propose outputs. Only the domain runtime may commit state. */
@@ -27,8 +28,9 @@ const safeKey=(key: unknown): key is string =>typeof key==='string'&&/^[A-Za-z][
 function validateProseRevisionInput(input: unknown){
  const validString=(value: unknown,max: number,empty=false): value is string =>typeof value==='string'&&value.length<=max&&(empty||!!value.trim());
  const context=object(input)?input.context:undefined;
- if(!object(input)||Object.keys(input).length!==4||Object.keys(input).some(key=>!['text','instruction','chapterId','context'].includes(key))||!validString(input.text,MAX_PROSE_LENGTH)||!validString(input.instruction,4000)||!validString(input.chapterId,200)||!object(context)||!validString(context.projectId,200)||!Number.isInteger(context.version)||typeof context.version!=='number'||context.version<1||!Array.isArray(context.sources)||context.sources.length>100||context.sources.some(source=>!object(source)||!validString(source.chapterId,200)||!Number.isInteger(source.revision)||typeof source.revision!=='number'||source.revision<1||!validString(source.text,40000,true)))throw Error('改稿需要完整原文、明确的作者指令、目标章节与有效上下文');
- const isolated={text:input.text,instruction:input.instruction,chapterId:input.chapterId,context};
+ if(!object(input)||Object.keys(input).length!==(Object.hasOwn(input,'sceneIntent')?5:4)||Object.keys(input).some(key=>!['text','instruction','chapterId','context','sceneIntent'].includes(key))||!validString(input.text,MAX_PROSE_LENGTH)||!validString(input.instruction,4000)||!validString(input.chapterId,200)||!object(context)||!validString(context.projectId,200)||!Number.isInteger(context.version)||typeof context.version!=='number'||context.version<1||!Array.isArray(context.sources)||context.sources.length>100||context.sources.some(source=>!object(source)||!validString(source.chapterId,200)||!Number.isInteger(source.revision)||typeof source.revision!=='number'||source.revision<1||!validString(source.text,40000,true)))throw Error('改稿需要完整原文、明确的作者指令、目标章节与有效上下文');
+ if(Object.hasOwn(input,'sceneIntent'))validateSceneIntentContext(input.sceneIntent,context,input.chapterId);
+ const isolated={text:input.text,instruction:input.instruction,chapterId:input.chapterId,context,...(Object.hasOwn(input,'sceneIntent')?{sceneIntent:input.sceneIntent}:{})};
  if(new TextEncoder().encode(JSON.stringify({action:'reviseProse',input:isolated})).byteLength>128*1024)throw Error('改稿请求过大；请缩小参考上下文');
  return isolated;
 }

@@ -1501,3 +1501,23 @@ This read-only panel displays exact current saved intent, with positional outlin
 补齐作者对照的一个具体缺口：当前已保存大纲可能与实际生成输入不同（例如入口已有的目标默认值），旧稿却无法回溯。今后从应用生成的新稿，在调用前保存映射后 `goal`／`exitState` 的精确字段状态，并绑定初次 r1、目标章节、源 revision 和状态版本；界面分别显示当前大纲与初次请求。后续编辑／按意见改稿／上下文刷新保留此记录，明确不能把它当成后续版本的指令。旧稿、手写稿不补造来源。
 
 New App-generated drafts retain optional initial-input provenance at the browser adapter boundary (App → gateway in server mode). This bounded addition changes local provenance storage, not provider instructions, Canon, memory semantics, intent-fulfillment detection or acceptance gates. It is neither a full wire request nor authenticated evidence that the model obeyed it. Legacy imports remain supported; no historical prose, trial, verdict or retired budget is reopened. Offline synthetic coverage verifies behavior without claiming improved literary quality. See [scope and compatibility](SCENE-INTENT.md).
+
+### 24.12 审阅与改稿的输入保真及后续顺序（2026-10-12）
+
+已保存章节目标的界面展示不等于模型实际收到该目标。生产请求新增可选的
+request-scene-intent-v1 参考，逐项传递当前保存的 goal / exitState 及其
+缺失、空白、无效状态；绑定规范章节、项目、候选版本和上下文身份。
+审阅与改稿的实际模型输入均保留它。本地来源不得由模型输出声明。
+同状态版本的大纲修改也必须使旧审阅/改稿采用资格失效；原始生成意图仍独立保留。
+
+路线：第一阶段完成这一输入保真修复和假提供方回归；第二阶段进行零真实调用的
+多章审阅—改稿—采用—重审—接受与中断/备份/恢复验证；第三阶段在单独有界许可
+后开展真实质量比较。不得把接口/格式通过当作质量达标，也不得借本次修复否定
+此前完整试验输入下得到的失败结论。完整协议和兼容边界见 SCENE-INTENT.md。
+
+English: Current saved scene intent now has its own optional, versioned reference
+for production review/revision requests. Exact saved values and explicit absence
+states are bound to canonical source identity; same-version outline edits invalidate
+current result authority. Initial generation provenance stays separate. Follow with
+zero-live-call closed-loop QA, then separately approved bounded quality experiments.
+This is input fidelity, not demonstrated writing-quality improvement.

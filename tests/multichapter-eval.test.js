@@ -5,7 +5,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createAgentService } from '../server/provider.js';
 import { approvedConfig, protocol, ARTIFACT_NAMES, FROZEN_PATHS, proseStats, safeUsage, aggregateUsage,
-  blockingOutput, createEvalController, buildSeedWorkspace, generationInput, offlineOptions, offlineTransport, createFileSaver } from '../scripts/multichapter-eval.mjs';
+  blockingOutput, createEvalController, buildSeedWorkspace, generationInput, reviewInput, offlineOptions, offlineTransport, createFileSaver } from '../scripts/multichapter-eval.mjs';
+import { stageProseDraft, getContext } from '../src/domain/engine.js';
 import { buildMultichapterFixture } from '../eval/multichapter-fixtures.mjs';
 
 // No sockets, browser launch, process credentials or real upstream calls in this suite.
@@ -161,4 +162,19 @@ test('allowlist and freeze cover effective UI, context, protocol and workflow; n
   assert.ok(!ARTIFACT_NAMES.some(x => x.includes('*') || x.includes('/') || /raw|headers/i.test(x)));
   const source = await readFile(new URL('../scripts/multichapter-eval.mjs', import.meta.url), 'utf8');
   assert.ok(source.includes('--offline-smoke')); assert.ok(source.includes('HOSTED_CI_ONLY')); assert.ok(source.includes('60000'));
+});
+
+test('current offline UI replay arms exact saved scene intent without changing legacy fixture inputs', () => {
+  const workspace = structuredClone(seed);
+  workspace.state.config.outline[0].goal = '  保存的目标，不是 description  ';
+  workspace.state.config.outline[0].exitState = '   ';
+  workspace.state = stageProseDraft(workspace.state, {text:'她保留了约定。',context:getContext(workspace.state),provider:{id:'synthetic',isLive:true}}, 'ch1');
+  const draft = workspace.state.drafts.at(-1), input = reviewInput(workspace,draft);
+  assert.deepEqual(Object.keys(input),['text','chapterId','context','sceneIntent']);
+  assert.equal(input.sceneIntent.chapterId,'ch1');
+  assert.deepEqual(input.sceneIntent.goal,{status:'present',value:'  保存的目标，不是 description  '});
+  assert.deepEqual(input.sceneIntent.exitState,{status:'empty',value:'   '});
+  assert.equal(input.sceneIntent.draftId,draft.id);
+  assert.equal(input.sceneIntent.draftRevision,draft.revision);
+  assert.deepEqual(seed,buildSeedWorkspace());
 });
