@@ -4,7 +4,7 @@
   "sha256": {
     "scripts/run-goal-clarification.mjs": "945e7158e3e472ae12c88cdb2056905f94137a955a37e809c82e150722c574a2",
     ".github/workflows/ci.yml": "a8b52194d26e7299c8d9ec2d9ec54f28531115c9de72d8d046d9eebe023567c4",
-    "tests/goal-clarification.test.js": "a4e58a5ed53232a042253ff5e50f1d9f2a353f47ae23a319d4c7399b6b22cb58",
+    "tests/goal-clarification.test.js": "5f026e3dff1f6a85a8c5be316653e8188c7584cf7b7180e14e6ee65a399f67d5",
     "eval/goal-clarification-20261013/freeze.json": "d7308c4a185b32e42a014323938a98c3aa8c3a551c7f56ec479fa03f8655e64e",
     "eval/goal-clarification-20261013/PROTOCOL.md": "1026e752735351dba792d023d98dbe1677e5d0d843fcfe50524d860988e0733c",
     "server/provider-transport.ts": "79bc9df89d84161f058f76517d62e9e6a07fd25e25064b05c7665c980c49135f",
