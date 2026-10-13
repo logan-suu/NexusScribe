@@ -1,10 +1,10 @@
 {
   "protocol": "goal-clarification-20261013",
-  "status": "authorized_single_dispatch",
+  "status": "retired_stopped_no_remaining_allowance",
   "sha256": {
-    "scripts/run-goal-clarification.mjs": "5cd4c904bfce9385290f5fd50bcfdac081704452a0d80a116cf6eda11535b00c",
-    ".github/workflows/ci.yml": "03a556b39ed0985c66570830fa82e154619b54b315cf73c4cd424df06c233cd2",
-    "tests/goal-clarification.test.js": "fe0e25b919f9a557825861e7bf69ac7cf5328fff24ffdd0ff8501b458d507de4",
+    "scripts/run-goal-clarification.mjs": "945e7158e3e472ae12c88cdb2056905f94137a955a37e809c82e150722c574a2",
+    ".github/workflows/ci.yml": "a8b52194d26e7299c8d9ec2d9ec54f28531115c9de72d8d046d9eebe023567c4",
+    "tests/goal-clarification.test.js": "a4e58a5ed53232a042253ff5e50f1d9f2a353f47ae23a319d4c7399b6b22cb58",
     "eval/goal-clarification-20261013/freeze.json": "d7308c4a185b32e42a014323938a98c3aa8c3a551c7f56ec479fa03f8655e64e",
     "eval/goal-clarification-20261013/PROTOCOL.md": "1026e752735351dba792d023d98dbe1677e5d0d843fcfe50524d860988e0733c",
     "server/provider-transport.ts": "79bc9df89d84161f058f76517d62e9e6a07fd25e25064b05c7665c980c49135f",
@@ -14,5 +14,6 @@
     "src/domain/prose.ts": "b24eee840958f3bf252e6a10edbc92cae4bbd1e0a810142b8ca73d088cba3033",
     "package.json": "d07e7bda9befecd9523c7e6cb2d7f4f89508a4a9c56e1bbc24b682201d4a8229",
     "package-lock.json": "ea8aa4815b0661d97079afb12971e02add207afb5d71e743f2b9c0f83daabf72"
-  }
+  },
+  "remainingAttempts": 0
 }

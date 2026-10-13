@@ -1,0 +1,18 @@
+{
+  "protocol": "goal-clarification-20261013",
+  "status": "authorized_single_dispatch",
+  "sha256": {
+    "scripts/run-goal-clarification.mjs": "5cd4c904bfce9385290f5fd50bcfdac081704452a0d80a116cf6eda11535b00c",
+    ".github/workflows/ci.yml": "03a556b39ed0985c66570830fa82e154619b54b315cf73c4cd424df06c233cd2",
+    "tests/goal-clarification.test.js": "fe0e25b919f9a557825861e7bf69ac7cf5328fff24ffdd0ff8501b458d507de4",
+    "eval/goal-clarification-20261013/freeze.json": "d7308c4a185b32e42a014323938a98c3aa8c3a551c7f56ec479fa03f8655e64e",
+    "eval/goal-clarification-20261013/PROTOCOL.md": "1026e752735351dba792d023d98dbe1677e5d0d843fcfe50524d860988e0733c",
+    "server/provider-transport.ts": "79bc9df89d84161f058f76517d62e9e6a07fd25e25064b05c7665c980c49135f",
+    "server/provider.ts": "68f9a7fcef7806dd2bcb9677653a257f37e8e19a25ce7c06c70cc0a2138a5a88",
+    "scripts/run-causal-quality-20261007.mjs": "9163c9abece58746907456bd77760aadec6b177af2813ec40538027cf75883bf",
+    "scripts/eval-source-inventory.mjs": "93de877b870c6484cb84fe8cbbe8eb4f5cbdf994c44308842df0446fb274b53e",
+    "src/domain/prose.ts": "b24eee840958f3bf252e6a10edbc92cae4bbd1e0a810142b8ca73d088cba3033",
+    "package.json": "d07e7bda9befecd9523c7e6cb2d7f4f89508a4a9c56e1bbc24b682201d4a8229",
+    "package-lock.json": "ea8aa4815b0661d97079afb12971e02add207afb5d71e743f2b9c0f83daabf72"
+  }
+}

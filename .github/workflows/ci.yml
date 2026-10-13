@@ -1,5 +1,4 @@
 name: CI
-run-name: ${{ github.event_name == 'workflow_dispatch' && 'goal-clarification-20261013' || github.event.head_commit.message || github.event.pull_request.title || 'CI' }}
 
 on:
   push:
@@ -7,18 +6,13 @@ on:
   pull_request:
     branches: [main, dev_v1.0]
   workflow_dispatch:
-    inputs:
-      approval:
-        description: Enter goal-clarification-20261013 to consume four approved attempts
-        required: true
-        type: string
 
 permissions:
   contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   check:
@@ -186,54 +180,3 @@ jobs:
             multichapter-offline-evidence/completed-12.json
           if-no-files-found: ignore
           retention-days: 7
-
-  goal-clarification:
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/goal-clarification-20261013' && github.run_attempt == 1 }}
-    needs: [check, browser-e2e]
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      actions: read
-    env:
-      NEXUS_APPROVED: ${{ inputs.approval }}
-      NEXUS_OVERAGE_CONFIRMED_OFF: 'true'
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '22'
-          cache: npm
-      - run: npm ci
-      - name: Reserve all four attempts and mapping before credentials
-        id: prepare
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          node --import tsx scripts/run-goal-clarification.mjs prepare
-          echo "sha256=$(sha256sum artifacts/goal-clarification-20261013/reservation.json | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
-      - name: Persist global reservation before provider dispatch
-        id: reservation
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: goal-clarification-20261013-reservation
-          path: artifacts/goal-clarification-20261013/reservation.json
-          if-no-files-found: error
-          retention-days: 90
-      - name: Execute four attempts maximum without retry
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-          NEXUS_RESERVATION_SHA256: ${{ steps.prepare.outputs.sha256 }}
-          NEXUS_ARTIFACT_ID: ${{ steps.reservation.outputs.artifact-id }}
-        run: node --import tsx scripts/run-goal-clarification.mjs execute
-      - name: Preserve safe evidence even after stop
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: goal-clarification-20261013-evidence
-          path: artifacts/goal-clarification-20261013/*.json
-          if-no-files-found: warn
-          retention-days: 90

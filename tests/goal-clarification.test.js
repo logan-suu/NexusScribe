@@ -28,3 +28,14 @@ test('secret, hidden reasoning, truncation, usage uncertainty and oversize stop'
  for(const res of [response('test-key'),response('safe',{reasoning:'hidden'}),response('safe',{choices:[{finish_reason:'length',message:{role:'assistant',content:'safe'}}]}),response('safe',{usage:{}}),new Response('x'.repeat(131073))]){const r=await one(f.requests[0].body,'test-key',async()=>res);assert.equal(r.status,'stopped');}
 });
 test('total deadline cannot be overwritten by delayed completion',async()=>{const r=await one(f.requests[0].body,'test-key',async()=>{await new Promise(r=>setTimeout(r,50));return response('late');},10);await new Promise(r=>setTimeout(r,70));assert.equal(r.error,'UPSTREAM_TIMEOUT');assert.equal(r.text,undefined);});
+test('retired helper rejects absent/global transport; CLI fails before credentials or network',async()=>{
+ await assert.rejects(one(f.requests[0].body,'test-key'),/RETIRED/);await assert.rejects(one(f.requests[0].body,'test-key',globalThis.fetch),/RETIRED/);
+ const {spawnSync}=await import('node:child_process');const r=spawnSync(process.execPath,['--import','tsx','scripts/run-goal-clarification.mjs','execute'],{cwd:new URL('..',import.meta.url),encoding:'utf8',env:{PATH:process.env.PATH}});assert.equal(r.status,1);assert.match(r.stderr,/RETIRED/);
+});
+test('actual stopped pilot preserves missing reasoning accounting and undispatched fourth slot',()=>{
+ const read=n=>JSON.parse(readFileSync(new URL('../eval/goal-clarification-20261013/'+n,import.meta.url)));
+ const reservation=read('reservation.json'),ledger=read('ledger.json');assert.deepEqual(reservation.requests,f.requests);assert.equal(ledger.attempts,3);assert.equal(ledger.unusedRetired,1);assert.equal(ledger.remainingAttempts,0);assert.equal(ledger.reportedUsage.reasoningTokens,null);
+ const all=[1,2,3].map(n=>read('completed-'+n+'.json'));for(const c of all){assert.equal(c.textSha256,hash(c.text));assert.equal(c.bodySha256,hash(f.requests[c.sequence-1].body));}
+ assert.deepEqual(all.map(c=>c.status),['complete','complete','stopped']);assert.equal(all[2].error,'BUDGET_UNCERTAIN');assert.equal(Object.hasOwn(all[2].usage,'reasoningTokens'),false);assert.equal(all[2].finishReason,'stop');assert.equal(all[2].httpStatus,200);
+ for(const key of ['promptTokens','completionTokens','totalTokens'])assert.equal(ledger.reportedUsage[key],all.reduce((n,c)=>n+c.usage[key],0));
+});

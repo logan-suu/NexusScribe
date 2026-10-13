@@ -1,0 +1,200 @@
+{
+  "candidateId": "C-7b1d7bf660ab40d79fc84b144deff647",
+  "textSha256": "6e0c85fba239d2fdbbf3871a011f947761bc21a56d6e4b610627d23b592624ce",
+  "fullTextRead": true,
+  "method": "Independent masked native model-assisted editorial reading; not human evaluation. Full input and full output read. No cross-candidate comparison.",
+  "dimensions": {
+    "goalfulfillment": "fulfilled",
+    "causaltransitions": "fulfilled",
+    "boundaries": "fulfilled",
+    "advancement": "fulfilled",
+    "voiceagency": "partial",
+    "countssoft": "partial"
+  },
+  "obligations": [
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "许禾将三册登记簿送达接收室",
+      "status": "fulfilled",
+      "explanation": "Her arrival and placement of the box precede dialogue identifying the contents and the receiver taking them out.",
+      "evidence": [
+        {
+          "quote": "许禾在门口站了一瞬，才迈进去，把周转箱放在桌面上",
+          "start": 154,
+          "end": 178
+        },
+        {
+          "quote": "“三册防潮登记簿，”许禾说",
+          "start": 212,
+          "end": 225
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "许禾亲眼见到逐册核对并签收",
+      "status": "fulfilled",
+      "explanation": "The first check establishes the procedure; the next two are compressed as sequential page inspection before signing. It is not necessary to repeat identical check mechanics for each volume.",
+      "evidence": [
+        {
+          "quote": "接收员没再问，打开箱盖，把第一册取出来，翻到扉页，对着清单上的编号看了一遍。许禾站在桌边，两只手垂在身侧，指尖碰到裤缝。第二册、第三册，接收员逐册翻过，又逐册合上，在签收单上落下自己的名字。",
+          "start": 247,
+          "end": 342
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "签好回执返回丁叔面前",
+      "status": "fulfilled",
+      "explanation": "She checks the signature, carries the receipt back and sets it before Ding, who looks at the signature.",
+      "evidence": [
+        {
+          "quote": "许禾接过去，看了一眼签名，对折，再对折，捏在指间。",
+          "start": 380,
+          "end": 405
+        },
+        {
+          "quote": "许禾把回执放在台面上，推到他面前。丁叔低头看了一眼签名",
+          "start": 491,
+          "end": 518
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "causaltransitions",
+      "requirement": "出发、核对、签收、回程因果及物件流转清楚",
+      "status": "fulfilled",
+      "explanation": "The route and receipt custody stay continuous. Leaving the delivered box is compatible with the goal; the changed impression of light is explicitly subjective.",
+      "evidence": [
+        {
+          "quote": "她沿着原路往回走，回执在指间被捏出一道浅浅的折痕。",
+          "start": 441,
+          "end": 466
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/scene"
+    },
+    {
+      "dimension": "boundaries",
+      "requirement": "不揭晓旧信作者来历，不拿猜测作事实",
+      "status": "fulfilled",
+      "explanation": "Full-text judgment: no letter attribution or provenance appears; no unsupported conjecture is promoted to fact.",
+      "evidence": [],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "boundaries",
+      "requirement": "无故障、灾害、新帮手代办或评析，只写本场",
+      "status": "fulfilled",
+      "explanation": "Full-text judgment: the table-edge bump is an ordinary action, not a device failure or disaster. The scene remains the handover, personally performed by Xu He.",
+      "evidence": [],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "advancement",
+      "requirement": "不重演已完成装箱、丁叔核单，推进新的移交",
+      "status": "fulfilled",
+      "explanation": "It opens on lifting and proceeds directly to delivery and signed return. Ding inspecting the returned receipt does not repeat his prior inventory check.",
+      "evidence": [
+        {
+          "quote": "许禾把灰色周转箱提起来的时候，箱底在桌沿上磕了一下。",
+          "start": 0,
+          "end": 26
+        },
+        {
+          "quote": "“签了。”他说。",
+          "start": 527,
+          "end": 535
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/scene"
+    },
+    {
+      "dimension": "voiceagency",
+      "requirement": "许禾说话先斟酌再回答",
+      "status": "partial",
+      "explanation": "Physical hesitation and controlled speech establish caution, but her replies are not distinctly preceded by consideration of what to say. This concerns characterization, not completion of the handover.",
+      "evidence": [
+        {
+          "quote": "许禾在门口站了一瞬，才迈进去",
+          "start": 154,
+          "end": 168
+        },
+        {
+          "quote": "“三册防潮登记簿，”许禾说，声音比预想中低，“编号在箱内清单上。”",
+          "start": 212,
+          "end": 245
+        },
+        {
+          "quote": "“签了。”许禾答。",
+          "start": 537,
+          "end": 546
+        }
+      ],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "voiceagency",
+      "requirement": "丁叔简短不刻薄、接收员按程序",
+      "status": "fulfilled",
+      "explanation": "Ding’s single confirmation is terse but not hostile; receiver asks the count, checks and signs, then hands over the receipt.",
+      "evidence": [
+        {
+          "quote": "“三册？”接收员问。",
+          "start": 200,
+          "end": 210
+        },
+        {
+          "quote": "“回执。”接收员把最上面一联撕下来，递给她。",
+          "start": 356,
+          "end": 378
+        },
+        {
+          "quote": "“签了。”他说。",
+          "start": 527,
+          "end": 535
+        }
+      ],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "voiceagency",
+      "requirement": "第三人称限知、克制微紧张、动作承载情绪",
+      "status": "fulfilled",
+      "explanation": "Low voice, precise placement and folded receipt express nervousness; the narrative remains in Xu He’s sensory perspective.",
+      "evidence": [
+        {
+          "quote": "她说了声“谢谢”，声音比刚才稳。转身出门时，走廊的灯似乎比来时亮了一些。",
+          "start": 405,
+          "end": 441
+        }
+      ],
+      "inputPointer": "/input/project/tone"
+    },
+    {
+      "dimension": "countssoft",
+      "requirement": "450–600汉字、4–7段，仅作软目标",
+      "status": "partial",
+      "explanation": "448 Han characters narrowly miss the lower target; 10 paragraphs exceed the paragraph target. These are presentation deviations only, not missing goal evidence.",
+      "evidence": [],
+      "inputPointer": "/input/project/boundaries"
+    }
+  ],
+  "counts": {
+    "han": 448,
+    "paragraphs": 10,
+    "hanTarget": [
+      450,
+      600
+    ],
+    "paragraphTarget": [
+      4,
+      7
+    ],
+    "softOnly": true
+  }
+}
