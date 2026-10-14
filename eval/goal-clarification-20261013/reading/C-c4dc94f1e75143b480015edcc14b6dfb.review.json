@@ -1,0 +1,245 @@
+{
+  "candidateId": "C-c4dc94f1e75143b480015edcc14b6dfb",
+  "textSha256": "f3dc1aad24054633c37741bb69bf50adda15d19d1c7fc6bd3ba3a25296752785",
+  "fullTextRead": true,
+  "method": "Independent masked native model-assisted editorial reading; not human evaluation. Full input and full output read. No cross-candidate comparison.",
+  "dimensions": {
+    "goalfulfillment": "partial",
+    "causaltransitions": "partial",
+    "boundaries": "fulfilled",
+    "advancement": "fulfilled",
+    "voiceagency": "fulfilled",
+    "countssoft": "partial"
+  },
+  "obligations": [
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "沈岚发出约定三组灯光信号",
+      "status": "fulfilled",
+      "explanation": "First and third groups are enacted; the second is compressed but shown as light and explicitly recorded as sent. All three are completed before the ending.",
+      "evidence": [
+        {
+          "quote": "“第一组。”她说。",
+          "start": 109,
+          "end": 118
+        },
+        {
+          "quote": "沈岚压下开关，灯光从观测窗斜射出去",
+          "start": 137,
+          "end": 154
+        },
+        {
+          "quote": "第二组。雾比刚才更厚，光斑的边缘几乎化开",
+          "start": 229,
+          "end": 249
+        },
+        {
+          "quote": "“第三组。”沈岚说。",
+          "start": 360,
+          "end": 370
+        },
+        {
+          "quote": "短闪，暗，短闪。",
+          "start": 372,
+          "end": 380
+        },
+        {
+          "quote": "三组都发了。十四点零九分。",
+          "start": 464,
+          "end": 477
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "按操作卡执行约定信号",
+      "status": "partial",
+      "explanation": "She uses the card and prescribed two-short-flash pattern. A half-second deviation is explicitly noticed by Wen, and the supplied time entries do not readily fit the four-second interval. This qualifies exact procedural adherence without denying successful transmission.",
+      "evidence": [
+        {
+          "quote": "她先看操作卡，三组信号，每组两次短闪，间隔四秒。",
+          "start": 45,
+          "end": 69
+        },
+        {
+          "quote": "你刚才第一组的间隔，比操作卡多了半秒。下次可以留意。",
+          "start": 498,
+          "end": 524
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "闻伯记下发送时间",
+      "status": "fulfilled",
+      "explanation": "He states the second group’s recorded time and visibly finishes writing the final digits for the third; this is completed recording, not a future intention.",
+      "evidence": [
+        {
+          "quote": "“第二组记下了。”闻伯翻了一页，“十四点零七分。”",
+          "start": 333,
+          "end": 358
+        },
+        {
+          "quote": "闻伯写完最后一个数字，把笔搁下。“三组都发了。十四点零九分。”",
+          "start": 447,
+          "end": 478
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "以两人在雾中等待回应结束，仍不确认对岸收到或回应",
+      "status": "fulfilled",
+      "explanation": "Both remain at the observation station waiting. No light observed through fog is a local observation, not confirmation of receipt or a conclusive answer from the far shore; the ending preserves the requested suspense.",
+      "evidence": [
+        {
+          "quote": "她等了一会儿，又等了一会儿。闻伯把记录本合上，但没有起身。两个人就这么坐着，听雾里的潮声一阵一阵推过来，谁也没有说走。",
+          "start": 603,
+          "end": 662
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/exitState"
+    },
+    {
+      "dimension": "causaltransitions",
+      "requirement": "三组发送、计时、记录、等待衔接连贯",
+      "status": "partial",
+      "explanation": "Action sequence is intelligible, but four-second spacing conflicts with second and third groups dated 14:07 and 14:09 without an intervening delay. Invented signal patterns and clock times are acceptable in principle; their internal compatibility is the concern.",
+      "evidence": [
+        {
+          "quote": "三组信号，每组两次短闪，间隔四秒。",
+          "start": 52,
+          "end": 69
+        },
+        {
+          "quote": "“第二组记下了。”闻伯翻了一页，“十四点零七分。”",
+          "start": 333,
+          "end": 358
+        },
+        {
+          "quote": "“三组都发了。十四点零九分。”",
+          "start": 463,
+          "end": 478
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/scene"
+    },
+    {
+      "dimension": "boundaries",
+      "requirement": "便条作者保持未知，不越视角进入灯塔",
+      "status": "fulfilled",
+      "explanation": "The unsigned card annotation is likened to the unsigned note, not attributed to an author. Observations stay at Shen’s station; there is no view inside the lighthouse.",
+      "evidence": [
+        {
+          "quote": "备注没有署名，和下午那张便条一样。",
+          "start": 314,
+          "end": 331
+        },
+        {
+          "quote": "对岸的轮廓时隐时现，始终没有亮起任何一盏灯。",
+          "start": 581,
+          "end": 603
+        }
+      ],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "boundaries",
+      "requirement": "设备正常，无新增无线电、手机或帮手，无评析",
+      "status": "fulfilled",
+      "explanation": "Full-text judgment: the lamp works; the half-second mismatch is operator timing, not equipment failure. No auxiliary communications, helper or evaluative afterword appears.",
+      "evidence": [],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "boundaries",
+      "requirement": "不煽情、不作超自然断言",
+      "status": "fulfilled",
+      "explanation": "The breathing image is an explicit simile of fog, not a claim of a supernatural agent; the remainder is restrained sensory narration.",
+      "evidence": [
+        {
+          "quote": "观测窗外，雾在慢慢移动，像有人在很远的地方呼吸。",
+          "start": 557,
+          "end": 581
+        }
+      ],
+      "inputPointer": "/input/project/tone"
+    },
+    {
+      "dimension": "advancement",
+      "requirement": "接续自检后开始发送，不重做接线或自检",
+      "status": "fulfilled",
+      "explanation": "Opening moves the hand away from the self-test control; it does not enact another self-test. The three signals and records create the requested new state before waiting.",
+      "evidence": [
+        {
+          "quote": "沈岚把手从自检旋钮移到发送开关上。",
+          "start": 0,
+          "end": 17
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/scene"
+    },
+    {
+      "dimension": "voiceagency",
+      "requirement": "沈岚提问具体、不长篇自白；闻伯短答并以记录细节提醒",
+      "status": "fulfilled",
+      "explanation": "Shen does not ask a question, so no vague question violates the conditional manner constraint; her short operational utterances avoid self-exposition. Wen gives concise timing guidance and points out a recorded discrepancy.",
+      "evidence": [
+        {
+          "quote": "“知道了。”沈岚说。",
+          "start": 527,
+          "end": 537
+        },
+        {
+          "quote": "他顿了顿，用笔杆点了点记录本上的一栏，“你刚才第一组的间隔，比操作卡多了半秒。下次可以留意。”",
+          "start": 478,
+          "end": 525
+        }
+      ],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "voiceagency",
+      "requirement": "第三人称限知跟随沈岚、安静紧绷并保留行动主体",
+      "status": "fulfilled",
+      "explanation": "She reads, operates, counts, remembers and waits; Wen records rather than taking over. Her physical discomfort and quiet control actions carry the tension without access to another mind.",
+      "evidence": [
+        {
+          "quote": "她数着秒，手指在桌沿轻轻敲。",
+          "start": 177,
+          "end": 191
+        },
+        {
+          "quote": "沈岚盯着那个方向，眼睛发酸。",
+          "start": 264,
+          "end": 278
+        }
+      ],
+      "inputPointer": "/input/project/pov"
+    },
+    {
+      "dimension": "countssoft",
+      "requirement": "450–600汉字、4–7段，仅作软目标",
+      "status": "partial",
+      "explanation": "542 Han characters meet the length target; 11 paragraphs exceed the paragraph target. This soft formatting miss does not negate the requested suspenseful ending.",
+      "evidence": [],
+      "inputPointer": "/input/project/boundaries"
+    }
+  ],
+  "counts": {
+    "han": 542,
+    "paragraphs": 11,
+    "hanTarget": [
+      450,
+      600
+    ],
+    "paragraphTarget": [
+      4,
+      7
+    ],
+    "softOnly": true
+  }
+}

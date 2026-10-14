@@ -1,0 +1,15 @@
+{
+  "protocol": "goal-clarification-20261013",
+  "attempts": 3,
+  "remainingAttempts": 0,
+  "unusedRetired": 1,
+  "status": "stopped",
+  "cost": "unknown",
+  "usage": {
+    "promptTokens": 5549,
+    "completionTokens": 1304,
+    "totalTokens": 6853,
+    "reasoningTokens": 0
+  },
+  "elapsedMs": 16642
+}

@@ -1,0 +1,155 @@
+{
+  "candidateId": "C-c4dc94f1e75143b480015edcc14b6dfb",
+  "input": {
+    "project": {
+      "projectId": "fresh-coastal-signal",
+      "title": "雾里的灯",
+      "idea": "海边观测站的新值班员尝试联系隔水的旧灯塔。",
+      "protagonist": "沈岚",
+      "tone": "安静紧绷，避免煽情与超自然断言",
+      "pov": "第三人称限知，只跟随沈岚",
+      "goal": "沈岚按操作卡发出约定的三组灯光信号，闻伯记下发送时间；以两人在雾中等待回应结束，不能确认对岸是否收到或回应。",
+      "boundaries": "纯虚构。写450–600个汉字，4–7段，只写这一场。沈岚提问具体，不长篇自白；闻伯回答短，偶尔拿记录本上的细节提醒她。设备正常，不临时添加无线电、手机联络或新帮手。便条作者不得揭晓，也不必提及。不得越过沈岚视角进入灯塔内部。不要重复接线或自检。不写评析。",
+      "constraints": [
+        "纯虚构。写450–600个汉字，4–7段，只写这一场。沈岚提问具体，不长篇自白；闻伯回答短，偶尔拿记录本上的细节提醒她。设备正常，不临时添加无线电、手机联络或新帮手。便条作者不得揭晓，也不必提及。不得越过沈岚视角进入灯塔内部。不要重复接线或自检。不写评析。"
+      ],
+      "outline": [
+        {
+          "id": "ch1",
+          "title": "此前",
+          "goal": "仅作前文参考"
+        },
+        {
+          "id": "ch2",
+          "title": "雾里的灯",
+          "goal": "沈岚按操作卡发出约定的三组灯光信号，闻伯记下发送时间；以两人在雾中等待回应结束，不能确认对岸是否收到或回应。",
+          "exitState": "发送与时间记录已经完成；对岸是否收到或回应仍是下一场才揭晓的悬念。",
+          "scene": "紧接自检结束，从沈岚把手移到发送开关开始，写完三组信号、记录时间和等待。"
+        }
+      ],
+      "chapters": [
+        {
+          "text": "沈岚已依照操作卡接好信号灯，完成了电源自检。老值班员闻伯把记录本翻到空白的一页。海雾遮住对岸旧灯塔，只露出一个暗灰色轮廓。下午的便条没有署名，沈岚和闻伯都不知道是谁送来的。"
+        },
+        {
+          "text": "【创作规划，尚非生成正文】紧接自检结束，从沈岚把手移到发送开关开始，写完三组信号、记录时间和等待。"
+        }
+      ]
+    },
+    "chapterIndex": 1,
+    "context": {
+      "constitution": {
+        "title": "雾里的灯",
+        "idea": "海边观测站的新值班员尝试联系隔水的旧灯塔。",
+        "protagonist": "沈岚",
+        "tone": "安静紧绷，避免煽情与超自然断言",
+        "pov": "第三人称限知，只跟随沈岚",
+        "goal": "沈岚按操作卡发出约定的三组灯光信号，闻伯记下发送时间；以两人在雾中等待回应结束，不能确认对岸是否收到或回应。",
+        "boundaries": "纯虚构。写450–600个汉字，4–7段，只写这一场。沈岚提问具体，不长篇自白；闻伯回答短，偶尔拿记录本上的细节提醒她。设备正常，不临时添加无线电、手机联络或新帮手。便条作者不得揭晓，也不必提及。不得越过沈岚视角进入灯塔内部。不要重复接线或自检。不写评析。"
+      },
+      "contextSchemaVersion": 3,
+      "projectId": "fresh-coastal-signal",
+      "version": 2,
+      "view": "writer",
+      "sceneTime": null,
+      "pov": "沈岚",
+      "facts": [],
+      "knowledge": [],
+      "events": [],
+      "memoryContext": {
+        "included": 0,
+        "staleSource": 0,
+        "unverifiedSelection": 0,
+        "omittedByLimit": 0,
+        "maxBytes": 16384,
+        "maxEntries": 100,
+        "policy": "Events are a bounded auxiliary projection of explicitly selected draft memories, not independently verified truth or exhaustive story state. A textual_excerpt proves only exact textual presence, never world truth or entailment of an associated model label. Read its complete paragraph and adjacent context from the exact source offsets; retain dialogue attribution, beliefs, negation, uncertainty and hypothetical scope. A speaker claim is not a world fact. author_attested_paraphrase remains unverified despite explicit informed author attestation; legacy_unverified_paraphrase preserves earlier selections without upgrading their authority. Model assessments are optional fallible advice, never selection authority. Rejected or omitted memory labels do not erase facts expressed by the accepted manuscript. Read source roles: planned_content is a plan, not an event that has happened; unaccepted_manuscript is not accepted continuity. Follow input.chapterIndex and project.outline as the generation target. Earlier accepted chapters record prior prose; later accepted chapters constrain future continuity, not knowledge already acquired. Advance with a new consequential action rather than replaying prior dialogue or discoveries, unless a purposeful callback is needed. All source/context offsets are JavaScript UTF-16 indices into the exact matching sources text. Older-revision memories are excluded until reviewed again; their history is preserved. Adjacent paragraphs are local context, not an exhaustive interpretation; consult the full manuscript when needed."
+      },
+      "forbiddenReveals": [
+        "纯虚构。写450–600个汉字，4–7段，只写这一场。沈岚提问具体，不长篇自白；闻伯回答短，偶尔拿记录本上的细节提醒她。设备正常，不临时添加无线电、手机联络或新帮手。便条作者不得揭晓，也不必提及。不得越过沈岚视角进入灯塔内部。不要重复接线或自检。不写评析。"
+      ],
+      "plans": [
+        {
+          "id": "outline-1",
+          "title": "此前",
+          "chapter": 1,
+          "description": "仅作前文参考",
+          "status": "ready",
+          "condition": "author_outline",
+          "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+        },
+        {
+          "id": "outline-2",
+          "title": "雾里的灯",
+          "chapter": 2,
+          "description": "沈岚按操作卡发出约定的三组灯光信号，闻伯记下发送时间；以两人在雾中等待回应结束，不能确认对岸是否收到或回应。",
+          "status": "ready",
+          "condition": "author_outline",
+          "reason": "作者提供的章节计划；尚未执行通用语义依赖检查"
+        }
+      ],
+      "obligations": [],
+      "sources": [
+        {
+          "chapterId": "ch1",
+          "chapterIndex": 0,
+          "revision": 2,
+          "revisionId": "ch1-r2",
+          "text": "沈岚已依照操作卡接好信号灯，完成了电源自检。老值班员闻伯把记录本翻到空白的一页。海雾遮住对岸旧灯塔，只露出一个暗灰色轮廓。下午的便条没有署名，沈岚和闻伯都不知道是谁送来的。",
+          "channel": "original_text",
+          "chapterStatus": "ACCEPTED",
+          "syncStatus": "CLEAN",
+          "role": "accepted_manuscript"
+        },
+        {
+          "chapterId": "ch2",
+          "chapterIndex": 1,
+          "revision": 1,
+          "revisionId": "ch2-r1",
+          "text": "【创作规划，尚非生成正文】紧接自检结束，从沈岚把手移到发送开关开始，写完三组信号、记录时间和等待。",
+          "channel": "planning_text",
+          "chapterStatus": "PLANNED",
+          "syncStatus": "CLEAN",
+          "role": "planned_content"
+        },
+        {
+          "chapterId": "ch3",
+          "chapterIndex": 2,
+          "revision": 1,
+          "revisionId": "ch3-r1",
+          "text": "【创作规划，尚非生成正文】\n海边观测站的新值班员尝试联系隔水的旧灯塔。\n本章正文等待作者或已配置的模型提供。",
+          "channel": "planning_text",
+          "chapterStatus": "PLANNED",
+          "syncStatus": "CLEAN",
+          "role": "planned_content"
+        }
+      ],
+      "summaries": [],
+      "support": {
+        "status": "unsupported",
+        "validPaths": [],
+        "sourceIds": []
+      },
+      "staging": []
+    },
+    "chapterId": "ch2"
+  },
+  "targets": {
+    "han": [
+      450,
+      600
+    ],
+    "paragraphs": [
+      4,
+      7
+    ]
+  },
+  "obligations": [
+    "沈岚发出约定的三组灯光信号",
+    "闻伯记录发送时间",
+    "两人在雾中等待回应收束"
+  ],
+  "protectedUnknown": "对岸是否收到或回应；便条作者",
+  "text": "沈岚把手从自检旋钮移到发送开关上。开关是黄铜的，边缘被磨得发亮，指腹贴上去有一层薄薄的凉。她先看操作卡，三组信号，每组两次短闪，间隔四秒。操作卡右下角有一行铅笔小字，写着“与对岸约定”，字迹被擦过，只剩浅浅的凹痕。\n\n“第一组。”她说。\n\n闻伯没有抬头，笔尖悬在记录本上方。沈岚压下开关，灯光从观测窗斜射出去，在雾里散成一团模糊的亮斑。短闪，暗，再短闪。她数着秒，手指在桌沿轻轻敲。\n\n“四秒到了。”闻伯说。他的声音很平，像在念一条已经念过很多遍的规矩。\n\n第二组。雾比刚才更厚，光斑的边缘几乎化开，落不到对岸那个暗灰色轮廓上。沈岚盯着那个方向，眼睛发酸。她想起操作卡背面还有一行备注，写的是“如无回应，照常记录，不重复发送”。备注没有署名，和下午那张便条一样。\n\n“第二组记下了。”闻伯翻了一页，“十四点零七分。”\n\n“第三组。”沈岚说。\n\n短闪，暗，短闪。这一次她压开关时用了点力，黄铜的边缘硌进指节。光斑亮起来，又暗下去。雾里什么都没有变。旧灯塔的轮廓还在原处，像一块没有表情的石头。\n\n闻伯写完最后一个数字，把笔搁下。“三组都发了。十四点零九分。”他顿了顿，用笔杆点了点记录本上的一栏，“你刚才第一组的间隔，比操作卡多了半秒。下次可以留意。”\n\n“知道了。”沈岚说。\n\n她把发送开关复位，手却没有离开桌面。观测窗外，雾在慢慢移动，像有人在很远的地方呼吸。对岸的轮廓时隐时现，始终没有亮起任何一盏灯。她等了一会儿，又等了一会儿。闻伯把记录本合上，但没有起身。两个人就这么坐着，听雾里的潮声一阵一阵推过来，谁也没有说走。",
+  "textSha256": "f3dc1aad24054633c37741bb69bf50adda15d19d1c7fc6bd3ba3a25296752785"
+}

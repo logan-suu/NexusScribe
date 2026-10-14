@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "stage": "individual_reviews_locked_before_comparison_and_decode",
+  "method": "independent masked native model-assisted; not human",
+  "availableOutputs": 3,
+  "unavailableFourthAttempt": "never sent; no judgment",
+  "verified": "fullTextRead, text hashes, exact UTF-16 evidence slices, input pointers and Han counts",
+  "files": [
+    {
+      "path": "reading/C-2084e5d763a446e28d2017564eab2cb1.json",
+      "sha256": "e144d7c74c6357a51b0d4f8e610cb2f57654e469dacc0a1e7be27260aab7b9ec"
+    },
+    {
+      "path": "reading/C-2084e5d763a446e28d2017564eab2cb1.review.json",
+      "sha256": "7e21a7b610c4e1542d721f6b66e8e8c248478efd9c2a7e9c539fb576eb5bd250"
+    },
+    {
+      "path": "reading/C-7b1d7bf660ab40d79fc84b144deff647.json",
+      "sha256": "8612a7617fccdc53a2ebdf904065c45b64542f01d930bf50942460a5ee8e31ec"
+    },
+    {
+      "path": "reading/C-7b1d7bf660ab40d79fc84b144deff647.review.json",
+      "sha256": "9adce9dca51a9ad74d2889ef5a010b7a4a0bfee7ddc5ddd96bac3ead4a695640"
+    },
+    {
+      "path": "reading/C-c4dc94f1e75143b480015edcc14b6dfb.json",
+      "sha256": "8e526094a4e999024d554066eb2b4d74d8647dda022940241806a1fed64603c8"
+    },
+    {
+      "path": "reading/C-c4dc94f1e75143b480015edcc14b6dfb.review.json",
+      "sha256": "703b3b10538da233d6ef2d6e9aadcb82eda190ba9d63116d7786b080321f148d"
+    },
+    {
+      "path": "reading/order.json",
+      "sha256": "670896380cdd1ef8844bd85a0cf2561adeb463cd044c9eed3110156aba39f339"
+    }
+  ]
+}

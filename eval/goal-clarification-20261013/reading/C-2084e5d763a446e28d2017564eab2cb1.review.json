@@ -1,0 +1,190 @@
+{
+  "candidateId": "C-2084e5d763a446e28d2017564eab2cb1",
+  "textSha256": "b564bfa40d9a445b54b84f60ae5e6a2602e5a4c5d50e43e8ace908a0e31e5ad4",
+  "fullTextRead": true,
+  "method": "Independent masked native model-assisted editorial reading; not human evaluation. Full input and full output read. No cross-candidate comparison.",
+  "dimensions": {
+    "goalfulfillment": "fulfilled",
+    "causaltransitions": "partial",
+    "boundaries": "fulfilled",
+    "advancement": "fulfilled",
+    "voiceagency": "partial",
+    "countssoft": "fulfilled"
+  },
+  "obligations": [
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "许禾将三册登记簿送达接收室",
+      "status": "fulfilled",
+      "explanation": "She personally carries the packed box down the corridor and puts it before the receiver; the following three-book check establishes the delivered contents.",
+      "evidence": [
+        {
+          "quote": "许禾把周转箱放在桌角，退开半步，没有先开口。",
+          "start": 265,
+          "end": 287
+        },
+        {
+          "quote": "接收员打开箱盖，取出第一册",
+          "start": 289,
+          "end": 302
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "亲眼见到接收员逐册核对并签收",
+      "status": "fulfilled",
+      "explanation": "The first, second and third volumes are handled in sequence, followed by the signature; her observation of the wet ink anchors her presence.",
+      "evidence": [
+        {
+          "quote": "接收员打开箱盖，取出第一册，翻到扉页核对编号，又对了一遍接收单上的条目，才在单子上落笔。第二册他查得慢些，指尖沿着登记栏一行行往下走。第三册合上时，他把三册并齐，在签收栏写下自己的名字和日期，推过一张回执。许禾接过来，看见墨迹还没干透。",
+          "start": 289,
+          "end": 407
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "goalfulfillment",
+      "requirement": "把签好回执带回丁叔面前",
+      "status": "fulfilled",
+      "explanation": "Receipt return and Ding checking its signature are enacted, rather than promised.",
+      "evidence": [
+        {
+          "quote": "许禾把回执从口袋里取出来，放在他手边，纸面朝上。丁叔低头看了看签收栏",
+          "start": 518,
+          "end": 552
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/goal"
+    },
+    {
+      "dimension": "causaltransitions",
+      "requirement": "连贯地写出出发、接收、返回及物件位置",
+      "status": "partial",
+      "explanation": "The main route and receipt custody are clear. The receiver says the box will be collected tomorrow; no return carrying is described, yet the ending places its handle at her own station. This is an unexplained box-location jump, not a failure of receipt delivery.",
+      "evidence": [
+        {
+          "quote": "接收员说，箱子明天有人来取。",
+          "start": 434,
+          "end": 448
+        },
+        {
+          "quote": "许禾应了一声，回到自己的位置，把周转箱的空提手摆正。",
+          "start": 573,
+          "end": 599
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/scene"
+    },
+    {
+      "dimension": "boundaries",
+      "requirement": "旧信作者和来历保持未知，不以猜测充当事实",
+      "status": "fulfilled",
+      "explanation": "Full-text judgment: the letter is not discussed or resolved, and no speculative attribution is asserted. Absence has no invented evidence quote.",
+      "evidence": [],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "boundaries",
+      "requirement": "无故障、灾害或新帮手代办；纯场景而非评析",
+      "status": "fulfilled",
+      "explanation": "Full-text judgment: the receiver performs his assigned role; Xu He performs her own delivery and return. No prohibited disruption or commentary is introduced.",
+      "evidence": [],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "advancement",
+      "requirement": "紧接此前，不重演装箱和丁叔核单",
+      "status": "fulfilled",
+      "explanation": "Begins with lifting the box and advances into the uncompleted handover. Mention of the already packed volumes and Ding’s prior check is retrospective orientation, not a replay. His final receipt check is new work.",
+      "evidence": [
+        {
+          "quote": "许禾提起周转箱。",
+          "start": 0,
+          "end": 8
+        },
+        {
+          "quote": "这是丁叔核过的，她只是把已经确认的东西送到该去的地方。",
+          "start": 143,
+          "end": 170
+        }
+      ],
+      "inputPointer": "/input/project/outline/1/scene"
+    },
+    {
+      "dimension": "voiceagency",
+      "requirement": "许禾说话先斟酌再回答",
+      "status": "partial",
+      "explanation": "Her pauses and withholding speech fit a cautious character, but the actual answers are simple assent without a clearly conveyed moment of weighing the answer. No particular gesture or stock wording is required.",
+      "evidence": [
+        {
+          "quote": "许禾把周转箱放在桌角，退开半步，没有先开口。",
+          "start": 265,
+          "end": 287
+        },
+        {
+          "quote": "许禾点头，说好。",
+          "start": 448,
+          "end": 456
+        }
+      ],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "voiceagency",
+      "requirement": "丁叔简短不刻薄，接收员按程序办事",
+      "status": "fulfilled",
+      "explanation": "Ding’s brief acceptance is neutral; the receiver checks numbered books and signs.",
+      "evidence": [
+        {
+          "quote": "把回执收进抽屉，说了句，行。",
+          "start": 559,
+          "end": 573
+        },
+        {
+          "quote": "在签收栏写下自己的名字和日期",
+          "start": 370,
+          "end": 384
+        }
+      ],
+      "inputPointer": "/input/project/boundaries"
+    },
+    {
+      "dimension": "voiceagency",
+      "requirement": "第三人称限知，情绪克制并藏在动作里",
+      "status": "fulfilled",
+      "explanation": "Perception remains with Xu He; grip, measured pace and receipt handling convey tension without explanatory self-analysis.",
+      "evidence": [
+        {
+          "quote": "箱体比她预想的沉，提手勒进指腹，她换了只手，把箱底托稳，才迈出值班台。",
+          "start": 8,
+          "end": 43
+        }
+      ],
+      "inputPointer": "/input/project/pov"
+    },
+    {
+      "dimension": "countssoft",
+      "requirement": "450–600汉字、4–7段，仅作软目标",
+      "status": "fulfilled",
+      "explanation": "519 Han characters and 6 blank-line-separated paragraphs meet both soft targets.",
+      "evidence": [],
+      "inputPointer": "/input/project/boundaries"
+    }
+  ],
+  "counts": {
+    "han": 519,
+    "paragraphs": 6,
+    "hanTarget": [
+      450,
+      600
+    ],
+    "paragraphTarget": [
+      4,
+      7
+    ],
+    "softOnly": true
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "protocol": "goal-clarification-20261013",
+  "sourceSha": "506101d1b3c13938ac2e964c2d3028334cdf9010",
+  "runId": "38341038248",
+  "attempts": 3,
+  "completeProtocolAttempts": 2,
+  "stoppedAttempt": 3,
+  "stopReason": "BUDGET_UNCERTAIN: reasoningTokens omitted in attempt3 usage",
+  "unusedRetired": 1,
+  "remainingAttempts": 0,
+  "reportedUsage": {
+    "promptTokens": 5549,
+    "completionTokens": 1304,
+    "totalTokens": 6853,
+    "reasoningTokens": null
+  },
+  "reasoningAccounting": "0 reported for attempts1–2; not reported for attempt3; aggregate unknown, not zero",
+  "elapsedMs": 16642,
+  "cost": "unknown",
+  "reservationArtifact": {
+    "id": 11787285849,
+    "zipSha256": "68bacd71652b1b063d690c1eef8d3f8461e2326b0989ecdc93cdacf617074c58"
+  },
+  "evidenceArtifact": {
+    "id": 11787330919,
+    "zipSha256": "c170b83769cd0c10f3ff90b9fb57c65b5c9805976fb265dd6c917bd5d6697ab2"
+  },
+  "attempt4": "not_dispatched",
+  "comparisonAvailability": "archive pair only; coastal clarification text retained but protocol-invalid accounting, no baseline"
+}
