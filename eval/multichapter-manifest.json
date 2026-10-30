@@ -17,7 +17,7 @@
     "src/storage.ts": "b499d6d8b2d878a7116cb3f3c8968c391aaae129b49bf8cb8f082f48732af1ee",
     "src/adapters/provider.ts": "c39abb5605a099ed52dcc837d934d1a5fe2259cde0d8fb012f4efd5cde0c9c4d",
     "src/authoring/live-provider.ts": "3a83337bd47b5414e4d81ae8230488c5318b34a1990cc738b9976fdce184b786",
-    "src/components/DraftPanel.tsx": "4bd8670c09f657cd7c69f217374eba4424732786ab1d3956ec3d3b36bd248bb8",
+    "src/components/DraftPanel.tsx": "1168b7eba23cf54855f9b693b35815bf51a698f85b533cbfbe52762c069da88e",
     "src/components/SceneIntent.tsx": "0eb3a0b8940b935174a67b2df55a68a28e3392195deec000a534a4b24f49e108",
     "src/domain/scene-intent.ts": "076d6079cc235af24e07579da5a11918149c5fe1ec25100a4d1e1fa17c48a83b",
     "src/domain/generation-intent.ts": "76dfa59c906649f84626f9e31076d125ea4ce5923438a953469dcda927995bbf",
@@ -36,14 +36,14 @@
     "src/authoring/wizard.css": "e2969f2d6eb6653e7190405689ba3a1cacc801affcc455c2ad5d2c1f3418f3cf",
     "index.html": "dfe77b5ed51668c0d66ea856517789f2a7108d6c841c889ee95962e4d6dc6636",
     "vite.config.js": "cf5960e8774cfa10916c06661dbb956474538088fdfc5fb2c96fac21b471ec87",
-    "package.json": "d07e7bda9befecd9523c7e6cb2d7f4f89508a4a9c56e1bbc24b682201d4a8229",
+    "package.json": "945fe0c3767e703cd87ccaf7ac532fade0d9d2841dfb3ace77a5a56af854725c",
     "package-lock.json": "ea8aa4815b0661d97079afb12971e02add207afb5d71e743f2b9c0f83daabf72",
     ".github/workflows/live-smoke.yml": "8d216f96b33205570ec73732d9fa514323f13a48d83b268b57ffde1694446e95",
     "server/types.ts": "5b55d68796c2df13891959b060d4118037e4a8835dcfd248e338c6de64ec512b",
     "src/adapters/types.ts": "36342f42898154c93055293f648d43f387fc72b118d9c548499be2892f5c26d9",
     "src/authoring/types.ts": "699c49cc68ccc1d9a190a4b976840a3b069e383f34a1536eb9e503b0b7ac80c8",
     "src/components/RevisionAdoptionDialog.tsx": "351508eefe2974acf85c7617678bc3a9cddc284b8f0861239a1a1af02fc162a2",
-    "src/components/RevisionPanel.tsx": "b96334afb828cc4b2fb674afdee0e885b7488058f4553946b8229a248cba3b2a",
+    "src/components/RevisionPanel.tsx": "d270c7f81d1fe1b09d5ac5fbc619e9441d42912adb97e83edc51d3b62c2f6755",
     "src/domain/author-revision.ts": "6b0b751b074897c31bbe25a9e35c00f7dc07b1fee361cb8f195bdd8a7ee1ee0a",
     "src/domain/review-types.ts": "53eae336559c152a515c12bc57005cf935279eb6787e2e54be8e41fe07ad3dc1",
     "src/domain/types.ts": "e41b3522638694eced5c7960cb202e4d37f0c29a590d08e022e5e82c5af07dba",
@@ -52,8 +52,10 @@
     "scripts/verify-typescript-runtime.mjs": "37388995ac06ee26a72d4717d813e483ae136d318d338fd181e1c00a684be2ce",
     "tsconfig.json": "fef7fcb54e4d59c937210785575f46fc3c3e1f21eb82dc4b0754419d2a5ae3b0",
     "tsconfig.server.json": "daf29c90f5b0636bfa584ba269f0c27facec5b48a3b493ed6528434be7aa1c20",
-    "scripts/eval-source-inventory.mjs": "93de877b870c6484cb84fe8cbbe8eb4f5cbdf994c44308842df0446fb274b53e",
-    "src/domain/request-scene-intent.ts": "92ce66574fe694e91eb45f87df319fd9cc0596e8ec828f1246bf6888f99efb5f"
+    "scripts/eval-source-inventory.mjs": "321771a19265f947206d327534dbd8348b4b99b1891617a8b27cced30b0efa69",
+    "src/domain/request-scene-intent.ts": "92ce66574fe694e91eb45f87df319fd9cc0596e8ec828f1246bf6888f99efb5f",
+    "src/components/RevisionBriefBuilder.tsx": "6cc570ae965902221108502cd99e9924d4a57c3807811cdac59ae66cf3a95d75",
+    "src/domain/revision-brief.ts": "0c74e3a0ce7d7195220bfb9e6dea954d412058e8058f5bc6fffad5d3c140b884"
   },
-  "maintenanceNote": "2026-10-09: credential-free maintenance replay tracks optional initial-generation intent provenance and its new local module. This changes no retained trial evidence, retired live authority, prompt or model budget. 2026-10-09 TypeScript migration: this inventory describes current credential-free maintenance implementation, types and build dependencies. It is not the JavaScript implementation executed in historical trials and grants no live authorization. Exact prior dependencies are separately hash-verified in eval/executed-source-dependencies; all existing eval/history evidence and frozen fixture data remain unchanged. 2026-10-12 maintenance refresh for saved review/revision scene-input binding. No historical evidence, frozen trial input, execution result or live-call authorization changed."
+  "maintenanceNote": "2026-10-09: credential-free maintenance replay tracks optional initial-generation intent provenance and its new local module. This changes no retained trial evidence, retired live authority, prompt or model budget. 2026-10-09 TypeScript migration: this inventory describes current credential-free maintenance implementation, types and build dependencies. It is not the JavaScript implementation executed in historical trials and grants no live authorization. Exact prior dependencies are separately hash-verified in eval/executed-source-dependencies; all existing eval/history evidence and frozen fixture data remain unchanged. 2026-10-12 maintenance refresh for saved review/revision scene-input binding. No historical evidence, frozen trial input, execution result or live-call authorization changed. 2026-10-30 current maintenance refresh for the optional author revision brief builder. Historical evidence, frozen trial input, execution results and retired live-call authorization remain unchanged."
 }

@@ -49,7 +49,7 @@
     "src/authoring/index.ts": "f87cc89593e2e656df819166c840bf37fbf5184f415a21b78d83b3569d989d58",
     "src/authoring/live-provider.ts": "3a83337bd47b5414e4d81ae8230488c5318b34a1990cc738b9976fdce184b786",
     "src/authoring/types.ts": "699c49cc68ccc1d9a190a4b976840a3b069e383f34a1536eb9e503b0b7ac80c8",
-    "src/components/DraftPanel.tsx": "4bd8670c09f657cd7c69f217374eba4424732786ab1d3956ec3d3b36bd248bb8",
+    "src/components/DraftPanel.tsx": "1168b7eba23cf54855f9b693b35815bf51a698f85b533cbfbe52762c069da88e",
     "src/components/Editor.tsx": "88ff07fa14f9553bc44f4eb9e21e674840e8e122989fe65c9b03a8c2b70716c0",
     "src/components/HistoryView.tsx": "9b86afd4ec7c73cf4379ce8b36fe941039c2e3968cb5f567d428c7b7fe45a2ab",
     "src/components/Inspector.tsx": "54dba1ec8aea2ffb6aed4c39b14d7aa074fd6c7022154e68b692e78c3be1cfb0",
@@ -58,7 +58,7 @@
     "src/components/ProjectWizard.tsx": "cd66f2a974385b0c5cc1a41f08f52500172d32cb308f9852144c2e9d5c4a34b4",
     "src/components/ProviderPanel.tsx": "0bf09f23d7c9a8eab50e52e68155b4475be129bfe5772a9d28aa9c304ccba205",
     "src/components/RevisionAdoptionDialog.tsx": "351508eefe2974acf85c7617678bc3a9cddc284b8f0861239a1a1af02fc162a2",
-    "src/components/RevisionPanel.tsx": "b96334afb828cc4b2fb674afdee0e885b7488058f4553946b8229a248cba3b2a",
+    "src/components/RevisionPanel.tsx": "d270c7f81d1fe1b09d5ac5fbc619e9441d42912adb97e83edc51d3b62c2f6755",
     "src/components/SceneIntent.tsx": "0eb3a0b8940b935174a67b2df55a68a28e3392195deec000a534a4b24f49e108",
     "src/components/Sidebar.tsx": "cb48cab582499193815941bf64c5c47c2da95513d39271d5d14c3b02fce70898",
     "src/domain/author-revision.ts": "6b0b751b074897c31bbe25a9e35c00f7dc07b1fee361cb8f195bdd8a7ee1ee0a",
@@ -77,11 +77,13 @@
     "scripts/verify-typescript-runtime.mjs": "37388995ac06ee26a72d4717d813e483ae136d318d338fd181e1c00a684be2ce",
     "tsconfig.json": "fef7fcb54e4d59c937210785575f46fc3c3e1f21eb82dc4b0754419d2a5ae3b0",
     "tsconfig.server.json": "daf29c90f5b0636bfa584ba269f0c27facec5b48a3b493ed6528434be7aa1c20",
-    "package.json": "d07e7bda9befecd9523c7e6cb2d7f4f89508a4a9c56e1bbc24b682201d4a8229",
+    "package.json": "945fe0c3767e703cd87ccaf7ac532fade0d9d2841dfb3ace77a5a56af854725c",
     "package-lock.json": "ea8aa4815b0661d97079afb12971e02add207afb5d71e743f2b9c0f83daabf72",
     "vite.config.js": "cf5960e8774cfa10916c06661dbb956474538088fdfc5fb2c96fac21b471ec87",
-    "scripts/eval-source-inventory.mjs": "93de877b870c6484cb84fe8cbbe8eb4f5cbdf994c44308842df0446fb274b53e",
-    "src/domain/request-scene-intent.ts": "92ce66574fe694e91eb45f87df319fd9cc0596e8ec828f1246bf6888f99efb5f"
+    "scripts/eval-source-inventory.mjs": "321771a19265f947206d327534dbd8348b4b99b1891617a8b27cced30b0efa69",
+    "src/domain/request-scene-intent.ts": "92ce66574fe694e91eb45f87df319fd9cc0596e8ec828f1246bf6888f99efb5f",
+    "src/components/RevisionBriefBuilder.tsx": "6cc570ae965902221108502cd99e9924d4a57c3807811cdac59ae66cf3a95d75",
+    "src/domain/revision-brief.ts": "0c74e3a0ce7d7195220bfb9e6dea954d412058e8058f5bc6fffad5d3c140b884"
   },
   "runId": "37545250479",
   "executedSourceSha": "b40a2735d590665d77d9126b955e1f091d9b3b55",
@@ -90,5 +92,5 @@
   "remainingAttempts": 0,
   "unattemptedSlotsRetired": 5,
   "terminalReason": "DELIVERY_FAILED",
-  "maintenanceNote": "2026-10-09 TypeScript migration: this inventory describes current credential-free maintenance implementation, types and build dependencies. It is not the JavaScript implementation executed in historical trials and grants no live authorization. Exact prior dependencies are separately hash-verified in eval/executed-source-dependencies; all existing eval/history evidence and frozen fixture data remain unchanged. 2026-10-12 maintenance refresh for saved review/revision scene-input binding. No historical evidence, frozen trial input, execution result or live-call authorization changed."
+  "maintenanceNote": "2026-10-09 TypeScript migration: this inventory describes current credential-free maintenance implementation, types and build dependencies. It is not the JavaScript implementation executed in historical trials and grants no live authorization. Exact prior dependencies are separately hash-verified in eval/executed-source-dependencies; all existing eval/history evidence and frozen fixture data remain unchanged. 2026-10-12 maintenance refresh for saved review/revision scene-input binding. No historical evidence, frozen trial input, execution result or live-call authorization changed. 2026-10-30 current maintenance refresh for the optional author revision brief builder. Historical evidence, frozen trial input, execution results and retired live-call authorization remain unchanged."
 }
