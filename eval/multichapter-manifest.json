@@ -54,7 +54,7 @@
     "tsconfig.server.json": "daf29c90f5b0636bfa584ba269f0c27facec5b48a3b493ed6528434be7aa1c20",
     "scripts/eval-source-inventory.mjs": "321771a19265f947206d327534dbd8348b4b99b1891617a8b27cced30b0efa69",
     "src/domain/request-scene-intent.ts": "92ce66574fe694e91eb45f87df319fd9cc0596e8ec828f1246bf6888f99efb5f",
-    "src/components/RevisionBriefBuilder.tsx": "a46b7eeed7d1f7a66f686d41dcb7efe60279b262a4e0c671bdd6907a53fd4682",
+    "src/components/RevisionBriefBuilder.tsx": "63cb3cee2f0ade9a4f3db3a905678defae931676fb8534d3692fd883a3ff0ac3",
     "src/domain/revision-brief.ts": "7d625d97a96a4ae69b8e9eae78259f3794814e207eb5ada2cfcb44924a6b397f"
   },
   "maintenanceNote": "2026-10-09: credential-free maintenance replay tracks optional initial-generation intent provenance and its new local module. This changes no retained trial evidence, retired live authority, prompt or model budget. 2026-10-09 TypeScript migration: this inventory describes current credential-free maintenance implementation, types and build dependencies. It is not the JavaScript implementation executed in historical trials and grants no live authorization. Exact prior dependencies are separately hash-verified in eval/executed-source-dependencies; all existing eval/history evidence and frozen fixture data remain unchanged. 2026-10-12 maintenance refresh for saved review/revision scene-input binding. No historical evidence, frozen trial input, execution result or live-call authorization changed. 2026-10-30 current maintenance refresh for the optional author revision brief builder. Historical evidence, frozen trial input, execution results and retired live-call authorization remain unchanged."
