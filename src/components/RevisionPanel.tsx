@@ -1,7 +1,10 @@
 import type {Draft} from '../domain/types.js';
 import type {ProseCounts} from '../domain/review-types.js';
+import type {SceneIntentReference} from '../domain/scene-intent.js';
+import RevisionBriefBuilder from './RevisionBriefBuilder.js';
 interface RevisionPanelProps {
  draft: Draft;
+ sceneIntent?: SceneIntentReference;
  mode: 'template' | 'server';
  busy: boolean;
  disabled: boolean;
@@ -16,7 +19,8 @@ const lengthLabels: Record<string, string> = {hanMin:'汉字下限',hanMax:'汉�
 import {proseCounts, MAX_REVISION_INSTRUCTION, getRevisionSource, getRevisionAdoptedText, revisionLengthWarnings} from '../domain/author-revision.js';
 export const countLabel = (counts: ProseCounts | null) => `${counts?.han} 汉字 · ${counts?.characters} 字符 · ${counts?.paragraphs} 段`;
 const statuses = {requesting:'请求中', proposed:'待作者核对', failed:'请求失败 · 不自动重试', cancelled:'请求已取消', stale:'建议已过期 · 仅保留记录', discarded:'作者已放弃 · 原稿保留', adopted:'已采用为候选新版本 · 尚未接受'};
-export default function RevisionPanel({draft, mode, busy, disabled, current, onInstruction, onRequest, onAdopt, onDiscard, onCancel}: RevisionPanelProps) {
+/** Render source-bound author revision controls without bypassing request or adoption gates. */
+export default function RevisionPanel({draft, sceneIntent, mode, busy, disabled, current, onInstruction, onRequest, onAdopt, onDiscard, onCancel}: RevisionPanelProps) {
  const active = ['DRAFT','IN_REVIEW'].includes(draft.status);
  const supported = draft.requiresExtraction && draft.providerInfo?.isLive && !draft.manualSource && draft.provider !== 'author-manuscript';
  if (!supported && !draft.revisionProposals?.length) return null;
@@ -24,6 +28,7 @@ export default function RevisionPanel({draft, mode, busy, disabled, current, onI
   <h3>按作者意见改稿</h3>
   <p className="fine">一条修改意见、一次明确请求、一个独立建议。不会覆盖原稿、自动提取记忆、审阅或接受。模型改稿与作者核对都不保证文学质量。</p>
   <p className="fine">计数：汉字按 Unicode Han 字符；字符按 Unicode 码点（含标点、空白与换行）；每个非空物理行算一段。当前稿：{countLabel(proseCounts(draft.text))}</p>
+  {active&&supported&&<RevisionBriefBuilder key={JSON.stringify([draft.projectId,draft.id,draft.revision,draft.text,sceneIntent?.goal,sceneIntent?.exitState])} instruction={draft.revisionInstruction||''} disabled={busy||disabled} onAppend={value=>onInstruction(draft.id,value)}/>}
   {active&&<><label className="form-label">给这篇候选稿的修改意见<textarea aria-label="改稿意见" value={draft.revisionInstruction||''} maxLength={MAX_REVISION_INSTRUCTION} rows={3} disabled={busy||disabled} onChange={event=>onInstruction(draft.id,event.target.value)}/></label><button disabled={busy||disabled||mode!=='server'||!draft.revisionInstruction?.trim()} onClick={()=>onRequest(draft.id)}>按意见生成改稿建议 · 1 次模型请求</button><p className="fine">发送当前候选全文、意见与当前故事上下文到已配置的服务端模型。先检查本次进程调用预算；计数上限不是费用上限。失败不会自动重试或切换模型。{mode!=='server'?'请明确选择真实模型模式；离线模板不能执行此改稿。':''}</p></>}
   {(draft.revisionProposals||[]).slice().reverse().map(proposal=>{
    const source=getRevisionSource(draft,proposal), adoptedText=getRevisionAdoptedText(draft,proposal);
