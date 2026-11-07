@@ -49,7 +49,7 @@
     "src/authoring/index.ts": "f87cc89593e2e656df819166c840bf37fbf5184f415a21b78d83b3569d989d58",
     "src/authoring/live-provider.ts": "3a83337bd47b5414e4d81ae8230488c5318b34a1990cc738b9976fdce184b786",
     "src/authoring/types.ts": "699c49cc68ccc1d9a190a4b976840a3b069e383f34a1536eb9e503b0b7ac80c8",
-    "src/components/DraftPanel.tsx": "1168b7eba23cf54855f9b693b35815bf51a698f85b533cbfbe52762c069da88e",
+    "src/components/DraftPanel.tsx": "a008f607b6acd72ebfd6f5c0c25e85df810f8ad9d312093929466ab51a61fb95",
     "src/components/Editor.tsx": "88ff07fa14f9553bc44f4eb9e21e674840e8e122989fe65c9b03a8c2b70716c0",
     "src/components/HistoryView.tsx": "9b86afd4ec7c73cf4379ce8b36fe941039c2e3968cb5f567d428c7b7fe45a2ab",
     "src/components/Inspector.tsx": "54dba1ec8aea2ffb6aed4c39b14d7aa074fd6c7022154e68b692e78c3be1cfb0",
@@ -58,7 +58,7 @@
     "src/components/ProjectWizard.tsx": "cd66f2a974385b0c5cc1a41f08f52500172d32cb308f9852144c2e9d5c4a34b4",
     "src/components/ProviderPanel.tsx": "0bf09f23d7c9a8eab50e52e68155b4475be129bfe5772a9d28aa9c304ccba205",
     "src/components/RevisionAdoptionDialog.tsx": "351508eefe2974acf85c7617678bc3a9cddc284b8f0861239a1a1af02fc162a2",
-    "src/components/RevisionPanel.tsx": "d270c7f81d1fe1b09d5ac5fbc619e9441d42912adb97e83edc51d3b62c2f6755",
+    "src/components/RevisionPanel.tsx": "349bf1481ae3a44af714107e3f71a7616eb1db79e8133945270d39d3310a385b",
     "src/components/SceneIntent.tsx": "0eb3a0b8940b935174a67b2df55a68a28e3392195deec000a534a4b24f49e108",
     "src/components/Sidebar.tsx": "cb48cab582499193815941bf64c5c47c2da95513d39271d5d14c3b02fce70898",
     "src/domain/author-revision.ts": "6b0b751b074897c31bbe25a9e35c00f7dc07b1fee361cb8f195bdd8a7ee1ee0a",
@@ -82,8 +82,8 @@
     "vite.config.js": "cf5960e8774cfa10916c06661dbb956474538088fdfc5fb2c96fac21b471ec87",
     "scripts/eval-source-inventory.mjs": "321771a19265f947206d327534dbd8348b4b99b1891617a8b27cced30b0efa69",
     "src/domain/request-scene-intent.ts": "92ce66574fe694e91eb45f87df319fd9cc0596e8ec828f1246bf6888f99efb5f",
-    "src/components/RevisionBriefBuilder.tsx": "6cc570ae965902221108502cd99e9924d4a57c3807811cdac59ae66cf3a95d75",
-    "src/domain/revision-brief.ts": "0c74e3a0ce7d7195220bfb9e6dea954d412058e8058f5bc6fffad5d3c140b884"
+    "src/components/RevisionBriefBuilder.tsx": "a46b7eeed7d1f7a66f686d41dcb7efe60279b262a4e0c671bdd6907a53fd4682",
+    "src/domain/revision-brief.ts": "7d625d97a96a4ae69b8e9eae78259f3794814e207eb5ada2cfcb44924a6b397f"
   },
   "runId": "37545250479",
   "executedSourceSha": "b40a2735d590665d77d9126b955e1f091d9b3b55",

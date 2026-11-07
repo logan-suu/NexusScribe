@@ -19,6 +19,7 @@ const lengthLabels: Record<string, string> = {hanMin:'汉字下限',hanMax:'汉�
 import {proseCounts, MAX_REVISION_INSTRUCTION, getRevisionSource, getRevisionAdoptedText, revisionLengthWarnings} from '../domain/author-revision.js';
 export const countLabel = (counts: ProseCounts | null) => `${counts?.han} 汉字 · ${counts?.characters} 字符 · ${counts?.paragraphs} 段`;
 const statuses = {requesting:'请求中', proposed:'待作者核对', failed:'请求失败 · 不自动重试', cancelled:'请求已取消', stale:'建议已过期 · 仅保留记录', discarded:'作者已放弃 · 原稿保留', adopted:'已采用为候选新版本 · 尚未接受'};
+/** Render source-bound author revision controls without bypassing request or adoption gates. */
 export default function RevisionPanel({draft, sceneIntent, mode, busy, disabled, current, onInstruction, onRequest, onAdopt, onDiscard, onCancel}: RevisionPanelProps) {
  const active = ['DRAFT','IN_REVIEW'].includes(draft.status);
  const supported = draft.requiresExtraction && draft.providerInfo?.isLive && !draft.manualSource && draft.provider !== 'author-manuscript';

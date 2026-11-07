@@ -16,3 +16,11 @@ test('append preserves exact existing instruction, rejects duplicates/empty/over
  assert.equal(appendRevisionBrief('a'.repeat(3997),'b').length,4000);
  assert.throws(()=>appendRevisionBrief('a'.repeat(3998),'b'),/超过 4000/);
 });
+test('duplicate override is explicit and never bypasses blank or length limits',()=>{
+ const instruction='不要在开头补充背景细节',preview='补充背景细节';
+ assert.throws(()=>appendRevisionBrief(instruction,preview));
+ assert.throws(()=>appendRevisionBrief(instruction,preview,{allowDuplicate:false}));
+ assert.equal(appendRevisionBrief(instruction,preview,{allowDuplicate:true}),`${instruction}\n\n${preview}`);
+ assert.throws(()=>appendRevisionBrief(instruction,' ',{allowDuplicate:true}));
+ assert.throws(()=>appendRevisionBrief('a'.repeat(3998),'a',{allowDuplicate:true}),/超过 4000/);
+});

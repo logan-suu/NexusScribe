@@ -1,12 +1,14 @@
 // Offline DOM flow: optional fields -> editable preview -> append, with no requests.
 import {JSDOM} from 'jsdom';
 import {build} from 'esbuild';
-import {mkdir,symlink} from 'node:fs/promises';
-import {resolve} from 'node:path';
+import {mkdir,mkdtemp,rm,symlink} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
 import {fixture,workspace,PROSE} from '../tests/fixtures/scene-intent.js';
 import {KEY} from '../src/storage.js';
-const out='/tmp/nexus-next-ui-revision-brief';
+const out=await mkdtemp(join(tmpdir(),'nexus-next-ui-revision-brief-'));
+try {
 await mkdir(out+'/node_modules',{recursive:true});
 for(const name of ['react','react-dom','lucide-react'])try{await symlink(resolve('node_modules',name),out+'/node_modules/'+name);}catch(e){if(e.code!=='EEXIST')throw e;}
 await build({entryPoints:['src/App.tsx','src/components/RevisionPanel.tsx'],bundle:true,packages:'external',format:'esm',outdir:out,outExtension:{'.js':'.mjs'},loader:{'.css':'empty'},jsx:'automatic'});
@@ -42,6 +44,29 @@ assert.equal(saved().state.drafts[0].text,before.state.drafts[0].text);
 assert.deepEqual(saved().state.events,before.state.events);
 assert.deepEqual(saved().state.drafts[0].revisionProposals,[]);
 assert.ok(button('追加到改稿意见 · 保留原有内容').disabled);
+// Matching words can have different meaning; an override applies only to one exact append.
+fill('改稿意见','不要在开头补充背景细节');
+fill('可编辑的意见预览','补充背景细节');
+const duplicateConsent=()=>screen.getByRole('checkbox',{name:'我已核对，仍要追加这段预览（本次有效）'});
+assert.ok(button('追加到改稿意见 · 保留原有内容').disabled);
+fireEvent.click(duplicateConsent());
+assert.ok(!button('追加到改稿意见 · 保留原有内容').disabled);
+fill('改稿意见','不要在开头补充背景细节。');
+assert.ok(!duplicateConsent().checked);
+fill('改稿意见','不要在开头补充背景细节');
+assert.ok(button('追加到改稿意见 · 保留原有内容').disabled);
+fireEvent.click(duplicateConsent());
+fill('可编辑的意见预览','背景细节');
+assert.ok(!duplicateConsent().checked);
+fill('可编辑的意见预览','补充背景细节');
+assert.ok(button('追加到改稿意见 · 保留原有内容').disabled);
+fireEvent.click(duplicateConsent());click('追加到改稿意见 · 保留原有内容');
+assert.equal(saved().state.drafts[0].revisionInstruction,'不要在开头补充背景细节\n\n补充背景细节');
+assert.ok(!duplicateConsent().checked);
+assert.ok(button('追加到改稿意见 · 保留原有内容').disabled);
+fill('改稿意见','长'.repeat(4000));fill('可编辑的意见预览','长');
+fireEvent.click(duplicateConsent());
+assert.ok(button('追加到改稿意见 · 保留原有内容').disabled);
 fireEvent.click(screen.getByRole('checkbox',{name:'我同意重新生成时替换已编辑的预览（下方已保存意见不变）'}));
 click('重新生成预览 · 替换预览内容');
 assert.match(screen.getByLabelText('可编辑的意见预览').value,/保留停顿/);
@@ -64,4 +89,5 @@ view.rerender(React.createElement(RevisionPanel,{...props,sceneIntent:{goal:{sta
 assert.equal(screen.getByLabelText('这次必须写出的结果').value,'');
 view.rerender(React.createElement(RevisionPanel,{...props,busy:true}));
 assert.ok(screen.getByLabelText('这次必须写出的结果').disabled);
-cleanup();console.log('PASS optional brief: preview edits/blank preserved, explicit regenerate, append/no duplicate/no truncation, source reset, reload persistence, busy lock; ZERO requests');
+cleanup();console.log('PASS optional brief: preview edits/blank preserved, explicit regenerate, append/one-use duplicate override/no truncation, source reset, reload persistence, busy lock; ZERO requests');
+} finally {await rm(out,{recursive:true,force:true});}

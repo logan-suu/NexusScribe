@@ -118,6 +118,7 @@ export function DecisionDialog({label,title,onClose,children}: {label: string; t
  }
  return <div className="modal-backdrop"><section ref={container} className="modal memory-decision-modal" role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={keydown}><header><h2>{title}</h2><button className="icon-button" aria-label={`关闭${label}`} onClick={onClose}><X/></button></header>{children}</section></div>;
 }
+/** Render candidate prose and version-bound review controls, preserving explicit author acceptance. */
 export default function DraftPanel({drafts,chapterTitle=null,chapterIntent=null,sceneIntentByDraft={},contextCurrent={},onRefreshContext,onReview,onAccept,onReject,onEdit,factReviews={},onFactDecision,onExtract,onSkipExtraction,onEditingChange,extractionReady={},memoryReviews={},onMemoryDecision,onRejectAllMemory,onMemoryAudit,revisionCurrent={},onRevisionInstruction,onRequestRevision,onAdoptRevision,onDiscardRevision,onCancelRevision,mode='template',auditBudget=null,auditDisabled=false,busy=false}: DraftPanelProps) {
  const [editing,setEditing]=useState<string | null>(null),[text,setText]=useState('');
  useEffect(()=>{onEditingChange?.(editing!==null);return()=>onEditingChange?.(false)},[editing,onEditingChange]);
