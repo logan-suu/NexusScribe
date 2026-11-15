@@ -1,35 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
-import {readFile, readdir} from 'node:fs/promises';
+import {readFile} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
 import {createAgentService} from '../server/provider.js';
 import {stageProseDraft} from '../src/domain/engine.js';
-import {buildControlledContinuity,scope,chapterOne,approved,superseded,notApproved,renderedProse,sourceCommit,sourceRuntimeDigest} from '../eval/controlled-continuity-fixture.mjs';
+import {buildControlledContinuity,scope,chapterOne,approved,superseded,notApproved,renderedProse,sourceCommit} from '../eval/controlled-continuity-fixture.mjs';
 
-const root = new URL('../',import.meta.url);
-const sha256 = value => createHash('sha256').update(value).digest('hex');
-const fromRoot = path => new URL(path,root);
-
-async function sourcePaths(directory) {
-  const entries = await readdir(fromRoot(directory),{withFileTypes:true});
-  return (await Promise.all(entries.map(entry=>{
-    const path = directory + '/' + entry.name;
-    if (entry.isDirectory()) return sourcePaths(path);
-    assert.ok(entry.isFile(),`Unexpected runtime file type: ${path}`);
-    return path;
-  }))).flat();
-}
+import {rehearseControlledContinuity,verifyControlledContinuityPins} from '../scripts/rehearse-controlled-continuity.mjs';
 
 test('controlled continuity pins runtime bytes and fixture separately from the integration commit', async () => {
-  const paths = [
-    ...await sourcePaths('src'), ...await sourcePaths('server'),
-    '.env.example', 'index.html', 'package.json', 'package-lock.json',
-    'tsconfig.json', 'tsconfig.server.json', 'vite.config.js', 'scripts/start-demo.mjs',
-  ].sort();
-  const hashes = await Promise.all(paths.map(async path=>[path,sha256(await readFile(fromRoot(path)))]));
-  assert.equal(sha256(JSON.stringify(hashes)),sourceRuntimeDigest,'Pinned runtime files drifted');
-  const fixtureDigest = sha256(await readFile(fromRoot('eval/controlled-continuity-fixture.mjs')));
-  const protocol = await readFile(fromRoot('eval/CONTROLLED-CONTINUITY-PROTOCOL.md'),'utf8');
+  const {fixtureDigest} = await verifyControlledContinuityPins();
+  const protocol = await readFile(new URL('../eval/CONTROLLED-CONTINUITY-PROTOCOL.md',import.meta.url),'utf8');
   assert.ok(protocol.includes(`- Runtime candidate: \`${sourceCommit}\``));
   assert.ok(protocol.includes(`SHA-256 \`${fixtureDigest}\``),'Fixture digest differs from the protocol');
 });
@@ -115,4 +96,36 @@ test('a failed or truncated reply cannot become an accepted chapter or retry pas
   assert.equal(current.chapters[0].status,'ACCEPTED');
   assert.equal(current.chapters[1].status,'PLANNED');
   assert.equal(current.drafts.length,1);
+});
+
+test('offline rehearsal exposes only unscored diagnostics and a separate blinded synthetic packet', async t => {
+  const fetchTripwire = t.mock.method(globalThis,'fetch',()=>{throw Error('Networking must remain unused');});
+  const {report,reviewerPacket} = await rehearseControlledContinuity();
+  assert.equal(fetchTripwire.mock.callCount(),0);
+  assert.deepEqual(report,{mode:'offline-scripted-control',fakeAttempts:1,providerCalls:0,
+    staged:true,accepted:false,retained:false,qualityGate:'unverified'});
+  assert.deepEqual(Object.keys(reviewerPacket).sort(),[
+    'acceptedChapterOne','candidateId','candidateText','canonAmendment','chapterRequest','unadoptedIdea',
+  ]);
+  assert.equal(reviewerPacket.candidateId,'A');
+  assert.equal(reviewerPacket.acceptedChapterOne,chapterOne);
+  assert.equal(reviewerPacket.canonAmendment,approved);
+  assert.equal(reviewerPacket.unadoptedIdea,notApproved);
+  assert.equal(reviewerPacket.candidateText,renderedProse);
+  assert.match(reviewerPacket.chapterRequest.goal,/询问值班员/);
+});
+
+test('offline rehearsal CLI has no dispatch flags and does not print the scoring packet', () => {
+  const cwd = new URL('../',import.meta.url);
+  const args = ['--import','tsx','scripts/rehearse-controlled-continuity.mjs'];
+  const run = spawnSync(process.execPath,args,{cwd,encoding:'utf8'});
+  assert.equal(run.status,0);
+  assert.equal(run.stderr,'');
+  assert.deepEqual(Object.keys(JSON.parse(run.stdout)).sort(),[
+    'accepted','fakeAttempts','mode','providerCalls','qualityGate','retained','staged',
+  ]);
+  const rejected = spawnSync(process.execPath,[...args,'--live'],{cwd,encoding:'utf8'});
+  assert.equal(rejected.status,1);
+  assert.equal(rejected.stdout,'');
+  assert.equal(rejected.stderr.trim(),'Controlled continuity offline rehearsal stopped.');
 });
