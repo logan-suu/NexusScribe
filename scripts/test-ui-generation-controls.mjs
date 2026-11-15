@@ -14,15 +14,24 @@ await boot();await user.click(screen.getByRole('button',{name:'生成当前章'}
 await boot();await user.click(screen.getByRole('button',{name:'新建故事'}));await user.type(screen.getByLabelText(/你的故事灵感/),'雨中的灯塔');await user.click(screen.getByRole('button',{name:'聊聊这个故事'}));await user.click(screen.getByRole('button',{name:'关闭新建故事'}));assert.equal(calls[0].options.signal.aborted,true);await act(async()=>calls[0].resolve({ok:true,status:200,json:async()=>({output:{questions:[{key:'tone',title:'迟到的问题'}]}})}));await user.click(screen.getByRole('button',{name:'新建故事'}));assert.equal(screen.queryByText('迟到的问题'),null);assert.equal(screen.getByLabelText(/你的故事灵感/).value,'');await user.type(screen.getByLabelText(/你的故事灵感/),'新的灯塔');await user.dblClick(screen.getByRole('button',{name:'聊聊这个故事'}));assert.equal(calls.length,2);await user.type(screen.getByLabelText(/你的故事灵感/),'与新方向');await act(async()=>calls[1].resolve({ok:true,status:200,json:async()=>({output:{questions:[{key:'tone',title:'旧方向的问题'}]}})}));assert.equal(screen.queryByText('旧方向的问题'),null);assert.match(screen.getByLabelText('模型任务状态').textContent,/返回结果未采用/);assert.match(screen.getByLabelText(/你的故事灵感/).value,/与新方向/);cleanup();
 console.log('PASS generation controls: repeated clicks, cancel/new-request late race, project switch, author edit stale result, failure preservation/no retry, reload, wizard close/reopen. Fake responses only.');
 
-for (const questions of [[],[{key:'tone',title:'只有这一问'}]]) {
+for (const questions of [[],[{key:'tone',title:'只有这一问'}],[{key:'protagonist',title:'保留模型的主角问题'}]]) {
   await boot();
   await user.click(screen.getByRole('button',{name:'新建故事'}));
   await user.type(screen.getByLabelText(/你的故事灵感/),'钟声从海面传来');
   await user.click(screen.getByRole('button',{name:'聊聊这个故事'}));
   await act(async()=>calls[0].resolve({ok:true,status:200,json:async()=>({output:{questions}})}));
+  const hasProviderTone=questions[0]?.key==='tone';
+  assert.equal(screen.queryByLabelText('只有这一问')!==null,hasProviderTone);
+  if(!hasProviderTone){
+    assert.ok(screen.getByLabelText(/你希望读者最后留下什么感觉/));
+    assert.match(screen.getByText(/通用模板问题/).textContent,/情绪会影响开场/);
+  }
+  if(questions[0]?.key==='protagonist'){
+    assert.equal(screen.queryByLabelText('保留模型的主角问题'),null);
+    await user.click(screen.getByRole('button',{name:'下一问'}));
+    assert.ok(screen.getByLabelText('保留模型的主角问题'));
+  }
   assert.ok(screen.getByRole('button',{name:'查看故事约定'}));
-  assert.equal(screen.queryByRole('button',{name:'下一问'}),null);
-  assert.equal(screen.queryByLabelText('只有这一问')!==null, questions.length===1);
   assert.equal(calls.length,1);
   await user.click(screen.getByRole('button',{name:'关闭新建故事'}));
   await user.click(screen.getByRole('button',{name:'新建故事'}));
@@ -30,7 +39,7 @@ for (const questions of [[],[{key:'tone',title:'只有这一问'}]]) {
   assert.equal(screen.queryByLabelText('只有这一问'),null);
   cleanup();
 }
-console.log('PASS interview edge cases: zero/one provider questions, optional unanswered flow, fresh reopen; mock only.');
+console.log('PASS interview edge cases: empty or omitted tone falls back locally; provider tone and other questions retained, optional unanswered flow, fresh reopen; mock only.');
 
 await boot();
 await user.click(screen.getByRole('button',{name:'新建故事'}));
@@ -51,7 +60,22 @@ assert.equal(calls.length,2);
 const changedInput = calls[1].body.input.input;
 assert.equal(changedInput.idea,'第一条虚构灵感追加方向');
 assert.equal(changedInput.tone,'');
-await respondToInterview(1);
+await act(async()=>calls[1].resolve({ok:false,status:503,json:async()=>({error:{message:'模拟访谈失败'}})}));
+assert.equal(calls.length,2);
+assert.ok(screen.getByRole('alert'));
+assert.equal(screen.queryByLabelText('想留下什么情绪？'),null);
+const premiseField=screen.getByLabelText(/你的故事灵感/);
+assert.equal(premiseField.value,'第一条虚构灵感追加方向');
+await user.clear(premiseField);
+await user.type(premiseField,'第一条虚构灵感');
+await user.click(screen.getByRole('button',{name:'聊聊这个故事'}));
+assert.equal(calls.length,2);
+assert.equal(screen.getByLabelText('想留下什么情绪？').value,'克制而不安');
+await user.click(screen.getByRole('button',{name:'上一步'}));
+await user.type(screen.getByLabelText(/你的故事灵感/),'追加方向');
+await user.click(screen.getByRole('button',{name:'重新访谈'}));
+assert.equal(calls.length,3);
+await respondToInterview(2);
 assert.equal(screen.getByRole('button',{name:'克制而不安'}).getAttribute('aria-pressed'),'false');
 assert.equal(screen.getByLabelText('想留下什么情绪？').value,'');
 cleanup();

@@ -13,6 +13,7 @@ const contractInputKeys: Record<string, keyof AuthoringInput> = {premise:'idea',
 import {useEffect,useState,useRef} from 'react';
 import {ArrowLeft, ArrowRight, BookOpen, Check, Feather, Sparkles, X} from 'lucide-react';
 import {mergeStoryPlan} from '../authoring/index.js';
+import {presentInterview} from '../authoring/interviewPresentation.js';
 import {createTemplateAdapter, validateActionOutput} from '../adapters/provider.js';
 import '../authoring/wizard.css';
 import useModelTask from '../hooks/useModelTask.js';
@@ -56,7 +57,7 @@ export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVID
         const requestInput=willRefreshInterview?{idea:input.idea,title:input.title,...emptyAnswers}:input;
         const result=validateActionOutput('interview',await provider.interview({input:requestInput},{signal:run.controller.signal}));if(!task.verify(run))return;task.finish(run,'complete',result);
         if(willRefreshInterview)setInput(requestInput);
-        setQuestions(result.questions.map(question=>({key:question.key,title:question.title,options:question.options,hint:typeof question.hint==='string'?question.hint:undefined,placeholder:typeof question.placeholder==='string'?question.placeholder:undefined})));interviewSeed.current={idea:input.idea,title:input.title,provider};setQuestionIndex(0);setStep(1);
+        setQuestions(presentInterview(result.questions,requestInput).map(question=>({key:question.key,title:question.title,options:question.options,hint:typeof question.hint==='string'?question.hint:undefined,placeholder:typeof question.placeholder==='string'?question.placeholder:undefined})));interviewSeed.current={idea:input.idea,title:input.title,provider};setQuestionIndex(0);setStep(1);
       } else {
         const result=validateActionOutput('planStory',await provider.planStory({input},{signal:run.controller.signal}));if(!task.verify(run))return;
         const config=mergeStoryPlan(input,result,provider);
