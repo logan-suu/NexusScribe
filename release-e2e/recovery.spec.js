@@ -140,3 +140,84 @@ test('compiled app preserves accepted author text and uses it for the next chapt
   expect(errors).toEqual([]);
   expect(unexpected).toEqual([]);
 });
+
+test('compiled recovery retains explicitly committed canon but does not promote an unconfirmed patch', async ({page, context}) => {
+  const approved = '守灯人从未打开过蓝色信封。';
+  const unapproved = '这把钥匙属于码头管理员。';
+  const next = '清晨，她把蓝色信封放回抽屉。';
+  const key = 'nexusscribe.demo.v1';
+  const workspace = () => page.evaluate(key => JSON.parse(localStorage.getItem(key)), key);
+  const click = name => page.getByRole('button', {name, exact:true}).click();
+  const unexpected = [], requests = [], errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await context.route('**/*', route => {
+    const url = new URL(route.request().url());
+    if ([source,destination].includes(url.origin) && !url.pathname.startsWith('/api/')) return route.continue();
+    unexpected.push(url.href);
+    return route.abort();
+  });
+  const stageFact = async fact => {
+    await click('作者分类保存 · 不调用模型');
+    await page.getByLabel(/确认的设定/).fill(fact);
+    await click('按这条设定准备补丁');
+  };
+
+  await page.goto('/');
+  await createStory(page);
+  // Chapter 2 generation requires an accepted Chapter 1.
+  await page.getByLabel('章节正文').fill('守灯人来到码头。');
+  await click('作者分类保存 · 不调用模型');
+  await click('仅局部表达，不更新设定');
+  await click('确认并提交状态');
+  await click('准备手写稿 · 不提取记忆');
+  await click('审查候选稿');
+  await click('接受此版本');
+  await click('确认接受正文与所选记忆');
+  expect((await workspace()).state.chapters[0].status).toBe('ACCEPTED');
+  await page.getByRole('navigation', {name:'章节'}).getByRole('button').nth(1).click();
+  await page.getByLabel('章节正文').fill(approved + '\n' + unapproved);
+  await stageFact(approved);
+  expect((await workspace()).state.facts).toEqual([]);
+  await click('确认并提交状态');
+  const original = (await workspace()).state;
+  expect(original.facts.map(fact => fact.label)).toEqual([approved]);
+
+  await stageFact(unapproved);
+  const beforeExport = await workspace();
+  expect(JSON.stringify(beforeExport.patch)).toContain(unapproved);
+  expect(beforeExport.state.facts.map(fact => fact.label)).toEqual([approved]);
+  const [download] = await Promise.all([page.waitForEvent('download'), click('导出项目备份')]);
+  const raw = await readFile(await download.path());
+  const backup = JSON.parse(raw.toString('utf8'));
+  expect(backup.patch).toEqual(beforeExport.patch);
+  expect(backup.state.facts).toEqual(original.facts);
+
+  await page.goto(destination);
+  await page.getByLabel('导入备份', {exact:true}).setInputFiles({name:'fictional-canon.json',mimeType:'application/json',buffer:raw});
+  await expect(page.getByRole('dialog', {name:'备份导入预览'})).toBeVisible();
+  await click('确认作为新项目导入');
+  await page.reload();
+  const imported = await workspace();
+  expect(imported.state.projectId).not.toBe(original.projectId);
+  expect(imported.state.importOrigin.original.patch).toEqual(backup.patch);
+  expect(imported.patch).toBeNull();
+  expect(imported.state.pendingPatches).toEqual([]);
+  expect(imported.state.facts.map(fact => fact.label)).toEqual([approved]);
+
+  await page.route(destination + '/api/status', route => route.fulfill({json:{configured:true,liveEnabled:true,model:'fictional',callsUsed:0,maxCalls:1}}));
+  await page.route(destination + '/api/agent', route => {
+    requests.push(route.request().postDataJSON());
+    return route.fulfill({json:{output:{text:next,chapterId:'ch2',provider:{id:'compiled-recovery-mock',isLive:true}}}});
+  });
+  await click('模型运行方式');
+  await click('检查服务连接');
+  await click('使用真实模型');
+  await page.getByRole('navigation',{name:'章节'}).getByRole('button').nth(1).click();
+  await click('生成当前章');
+  await expect(page.locator('article.draft .draft-prose')).toHaveText(next);
+  expect(requests).toHaveLength(1);
+  expect(requests[0]).toMatchObject({action:'generateProse',input:{chapterIndex:1,context:{facts:imported.state.facts,events:[]}}});
+  expect(JSON.stringify(requests[0].input.context.facts)).not.toContain(unapproved);
+  expect(unexpected).toEqual([]);
+  expect(errors).toEqual([]);
+});
