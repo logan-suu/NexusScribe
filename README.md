@@ -23,7 +23,7 @@ A small edit can change a relationship, invalidate a future scene, or alter what
 
 ## The writing workflow
 
-1. **Explore an idea.** Answer focused interview questions about characters, tone, perspective, goals, and boundaries.
+1. **Explore an idea.** Review one interview question at a time and leave undecided answers blank. The interview batches questions once; moving between questions does not call the provider or regenerate them. If you edit the title or idea after interviewing, reopening the interview starts with blank answers.
 2. **Agree on the story.** Edit the proposed story agreement and three-chapter outline before confirming them.
 3. **Write a chapter.** Save raw candidate prose first, then explicitly extract proposed memories or choose to skip extraction. Review before final acceptance. Editing invalidates the extraction choice and review.
 4. **Select memory, then accept.** Explicitly keep or reject every proposed memory. A separately requested, isolated one-candidate audit judges the label against only its own quote. Unknown/unsupported items require a reasoned author override to keep. Final confirmation commits only selected memories. Rejecting all extracted candidates or explicitly skipping extraction permits zero-memory acceptance after current review.
