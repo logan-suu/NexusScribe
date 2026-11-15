@@ -67,7 +67,7 @@ jobs:
       - name: Exercise browser workflows
         run: npm run test:e2e
       - name: Verify compiled local launch and backup recovery
-        run: npm run test:release:recovery
+        run: npm run build && npx playwright test --config playwright.compiled.config.js
       - name: Exercise exact multi-chapter live harness with fake transport only
         run: node --import tsx scripts/multichapter-eval.mjs --offline-smoke
       - name: Preserve synthetic browser evidence

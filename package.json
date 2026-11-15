@@ -30,8 +30,7 @@
     "typecheck": "tsc --noEmit",
     "server:built": "node dist-server/server/index.js",
     "test:ui:request-scene-intent": "node --import tsx scripts/test-ui-request-scene-intent.mjs",
-    "test:ui:revision-brief": "node --import tsx scripts/test-ui-revision-brief.mjs",
-    "test:release:recovery": "npm run build && playwright test --config playwright.compiled.config.js"
+    "test:ui:revision-brief": "node --import tsx scripts/test-ui-revision-brief.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

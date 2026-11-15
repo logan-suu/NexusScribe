@@ -63,7 +63,7 @@ Run `NEXUS_LIVE_ENABLED=false NEXUS_OVERAGE_CONFIRMED_OFF=false npm run server:b
 and `npm run preview` in separate terminals, then open `http://127.0.0.1:4173`.
 These commands are for local verification, not hosting.
 
-`npx playwright install chromium` followed by `npm run test:release:recovery` exercises
+`npx playwright install chromium` followed by `npm run build && npx playwright test --config playwright.compiled.config.js` exercises
 the compiled app and gateway in desktop/mobile Chromium using fictional data. The
 test requires loopback ports 4173, 4174 and 8787 to be free. It checks a newly created
 story, pending edits across reload, invalid backup rejection and exported JSON
