@@ -1,0 +1,42 @@
+name: Compiled recovery
+on:
+  pull_request:
+    branches: [main, dev_v1.0]
+  push:
+    branches: [main, dev_v1.0]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compiled-recovery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromium:
+    name: Compiled recovery on desktop and mobile Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEXUS_LIVE_ENABLED: 'false'
+      NEXUS_OVERAGE_CONFIRMED_OFF: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npx playwright test --config playwright.compiled.config.js
+      - name: Preserve recovery evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: compiled-recovery-evidence
+          path: test-results/compiled-recovery/
+          if-no-files-found: ignore
+          retention-days: 7
