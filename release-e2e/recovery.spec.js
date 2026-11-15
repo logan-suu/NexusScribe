@@ -164,6 +164,17 @@ test('compiled recovery retains explicitly committed canon but does not promote 
 
   await page.goto('/');
   await createStory(page);
+  // Chapter 2 generation requires an accepted Chapter 1.
+  await page.getByLabel('章节正文').fill('守灯人来到码头。');
+  await click('作者分类保存 · 不调用模型');
+  await click('仅局部表达，不更新设定');
+  await click('确认并提交状态');
+  await click('准备手写稿 · 不提取记忆');
+  await click('审查候选稿');
+  await click('接受此版本');
+  await click('确认接受正文与所选记忆');
+  expect((await workspace()).state.chapters[0].status).toBe('ACCEPTED');
+  await page.getByRole('navigation', {name:'章节'}).getByRole('button').nth(1).click();
   await page.getByLabel('章节正文').fill(approved + '\n' + unapproved);
   await stageFact(approved);
   expect((await workspace()).state.facts).toEqual([]);
