@@ -37,11 +37,15 @@ export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVID
   const hasNextQuestion=step===1&&questionIndex+1<questions.length;
   useEffect(()=>{if(step===1)questionPosition.current?.focus()},[step,questionIndex]);
   const [proposal,setProposal]=useState<StoryProposal | null>(null);
+  const proposalSeed=useRef<{input:string;provider:ProviderAdapter}|null>(null);
+  const planInputKey=JSON.stringify(input);
+  const canReuseProposal=!!proposal&&proposalSeed.current?.input===planInputKey&&proposalSeed.current.provider===provider;
+  const willRefreshProposal=!!proposal&&!canReuseProposal;
   const [preview,setPreview]=useState('');
   const [error,setError]=useState('');
   const [creating,setCreating]=useState(false);
-  const task=useModelTask(),busy=task.busy||creating,latest=useRef<{step: number; input: WizardInput; proposal: StoryProposal | null} | null>(null);latest.current={step,input,proposal};
-  const snapshot=()=>JSON.stringify(latest.current);
+  const task=useModelTask(),busy=task.busy||creating,latest=useRef<{step: number; input: WizardInput; proposal: StoryProposal | null; provider:ProviderAdapter} | null>(null);latest.current={step,input,proposal,provider};
+  const snapshot=()=>latest.current?.provider===provider?JSON.stringify([latest.current.step,latest.current.input,latest.current.proposal]):undefined;
   function close(){task.cancel();onCancel()}
   const update=(key: string,value: string)=>setInput(old=>({...old,[key]:value}));
   async function advance() {
@@ -51,6 +55,7 @@ export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVID
     if(step===0&&canReuseInterview){
       setQuestionIndex(0);setStep(1);return;
     }
+    if(step===1&&canReuseProposal){setStep(2);return;}
     const run=task.begin(step===0?'创作访谈':'故事规划',snapshot);if(!run)return;
     try {
       if(step===0) {
@@ -61,7 +66,7 @@ export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVID
       } else {
         const result=validateActionOutput('planStory',await provider.planStory({input},{signal:run.controller.signal}));if(!task.verify(run))return;
         const config=mergeStoryPlan(input,result,provider);
-        setProposal(config);setPreview('');setStep(2);task.finish(run,'complete',result);
+        proposalSeed.current={input:planInputKey,provider};setProposal(config);setPreview('');setStep(2);task.finish(run,'complete',result);
       }
     }catch(e){if(task.current(run)){task.finish(run,'error');setError(errorMessage(e)||'生成服务暂时不可用，请手动重试');}}
   }
@@ -101,11 +106,12 @@ export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVID
             {question?.key!=='boundaries'?<><label htmlFor="story-boundaries">不希望出现的内容</label><textarea id="story-boundaries" rows={2} maxLength={500} value={input.boundaries} onChange={e=>update('boundaries',e.target.value)} placeholder="例如：不靠失忆解谜；不出现血腥描写"/></>:null}
           </details>
         </>:null}
+        {!hasNextQuestion&&willRefreshProposal?<p role="status">重新规划成功后会替换上一版故事约定和大纲（包括你的修改）；失败时保留上一版。</p>:null}
       </div>:null}
       {step===2&&proposal?<div className="ns-wizard-review"><div className="ns-wizard-contract-head"><BookOpen size={21}/><div><h2>{proposal.title}</h2><p>故事约定 · 点击内容即可修改</p></div></div><div className="ns-wizard-contract">{proposal.contract.fields.map(field=><label key={field.key} className="ns-wizard-contract-field"><span>{field.label}<small className={field.status}>{field.status==='confirmed'?'你的设定':field.status==='deferred'?'待定':provider.isLive?'模型建议':'模板建议'}</small></span><textarea aria-label={field.label} value={field.value} rows={field.key==='premise'?3:2} onChange={e=>editContract(field.key,e.target.value)}/></label>)}</div><div className="ns-wizard-outline"><h2>前三章 · 可调整的路线</h2><p>{provider.isLive?'这是一份模型提案；章节标题和目标都能在这里改':'这是一份模板提案；章节标题和目标都能在这里改'}</p>{proposal.outline.map((chapter,index)=><article key={chapter.id}><span>0{index+1}</span><div><input aria-label={`第${index+1}章标题`} value={chapter.title} onChange={e=>setProposal(old=>old?({...old,outline:old.outline.map((c,i)=>i===index?{...c,title:e.target.value}:c)}):old)}/><textarea aria-label={`第${index+1}章目标`} rows={2} value={chapter.goal} onChange={e=>setProposal(old=>old?({...old,outline:old.outline.map((c,i)=>i===index?{...c,goal:e.target.value}:c)}):old)}/></div></article>)}</div><button className="ns-wizard-preview-button" disabled={busy} onClick={showPreview}><Sparkles size={16}/>{preview?'重新试写开场':'先试写一段'}<span>{provider.isLive?provider.label:'确定性模板 · 非 AI'}</span></button>{preview?<div className="ns-wizard-preview"><b>候选试写 · 不写入正式记忆</b><p>{preview}</p></div>:null}</div>:null}
       <ModelTaskStatus task={task}/>
       {error?<p className="ns-wizard-error" role="alert">{error}</p>:null}
     </div>
-    <footer className="ns-wizard-footer"><button className="ns-wizard-back" onClick={()=>step===0?close():step===1&&questionIndex>0?setQuestionIndex(questionIndex-1):setStep(step-1)} disabled={busy}><ArrowLeft size={16}/>{step===0?'返回工作台':step===1&&questionIndex>0?'上一问':'上一步'}</button><span className="ns-wizard-disclosure">{provider.isLive?'服务端模型规划 · 待作者确认':'离线模板规划 · 不调用 AI'}</span>{step<2?<button className="ns-wizard-next" disabled={busy} onClick={event=>{if(event.detail<=1)void advance()}}>{busy?'正在准备…':step===0?(willRefreshInterview?'重新访谈':'聊聊这个故事'):hasNextQuestion?'下一问':'查看故事约定'}<ArrowRight size={16}/></button>:<button className="ns-wizard-next" disabled={busy} onClick={create}><Check size={16}/>{busy?'正在准备…':'确认约定，开始创作'}</button>}</footer>
+    <footer className="ns-wizard-footer"><button className="ns-wizard-back" onClick={()=>step===0?close():step===1&&questionIndex>0?setQuestionIndex(questionIndex-1):setStep(step-1)} disabled={busy}><ArrowLeft size={16}/>{step===0?'返回工作台':step===1&&questionIndex>0?'上一问':'上一步'}</button><span className="ns-wizard-disclosure">{provider.isLive?'服务端模型规划 · 待作者确认':'离线模板规划 · 不调用 AI'}</span>{step<2?<button className="ns-wizard-next" disabled={busy} onClick={event=>{if(event.detail<=1)void advance()}}>{busy?'正在准备…':step===0?(willRefreshInterview?'重新访谈':'聊聊这个故事'):hasNextQuestion?'下一问':willRefreshProposal?'重新规划':'查看故事约定'}<ArrowRight size={16}/></button>:<button className="ns-wizard-next" disabled={busy} onClick={create}><Check size={16}/>{busy?'正在准备…':'确认约定，开始创作'}</button>}</footer>
   </section></div>;
 }

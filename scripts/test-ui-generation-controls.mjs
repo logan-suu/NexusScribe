@@ -80,3 +80,55 @@ assert.equal(screen.getByRole('button',{name:'克制而不安'}).getAttribute('a
 assert.equal(screen.getByLabelText('想留下什么情绪？').value,'');
 cleanup();
 console.log('PASS edited premise starts a separately disclosed interview without inherited suggestions; mock only.');
+
+await boot();
+await user.click(screen.getByRole('button',{name:'新建故事'}));
+await user.type(screen.getByLabelText(/你的故事灵感/),'一位修表师接到昨天寄给自己的信。');
+await user.click(screen.getByRole('button',{name:'聊聊这个故事'}));
+await respondToInterview(0);
+await user.click(screen.getByRole('button',{name:'克制而不安'}));
+await user.click(screen.getByRole('button',{name:'查看故事约定'}));
+const {createProjectConfig}=await import('../src/authoring/index.js');
+await act(async()=>calls[1].resolve({ok:true,status:200,json:async()=>({
+  output:createProjectConfig(calls[1].body.input.input)
+})}));
+const agreementTone='冷峻，但保留温柔';
+const openingGoal='让修表师先核对邮戳，而不是立即追问寄信人';
+const edit=async(label,value)=>{
+  const field=screen.getByLabelText(label);
+  await user.clear(field);
+  await user.type(field,value);
+};
+const assertEdits=()=>{
+  const tone=screen.getByLabelText('情绪方向');
+  assert.equal(tone.value,agreementTone);
+  assert.match(tone.closest('label').textContent,/你的设定/);
+  assert.equal(screen.getByLabelText('第1章目标').value,openingGoal);
+};
+await edit('情绪方向',agreementTone);
+await edit('第1章目标',openingGoal);
+await user.click(screen.getByRole('button',{name:'上一步'}));
+await user.click(screen.getByRole('button',{name:'查看故事约定'}));
+assertEdits();
+assert.deepEqual(calls.map(({body})=>body.action),['interview','planStory']);
+await user.click(screen.getByRole('button',{name:'上一步'}));
+await edit('想留下什么情绪？','幽默');
+assert.match(screen.getByText(/重新规划成功后会替换/).textContent,/包括你的修改.*失败时保留上一版/);
+await user.click(screen.getByRole('button',{name:'重新规划'}));
+assert.equal(calls[2].body.input.input.tone,'幽默');
+await act(async()=>calls[2].resolve({ok:false,status:503,json:async()=>({error:{message:'模拟规划失败'}})}));
+assert.ok(screen.getByRole('alert'));
+assert.equal(screen.getByLabelText('想留下什么情绪？').value,'幽默');
+assert.equal(calls.length,3);
+await user.click(screen.getByRole('button',{name:'克制而不安'}));
+assert.equal(screen.queryByText(/重新规划成功后会替换/),null);
+await user.click(screen.getByRole('button',{name:'查看故事约定'}));
+assertEdits();
+assert.equal(calls.length,3);
+await user.click(screen.getByRole('button',{name:'确认约定，开始创作'}));
+const savedPlan=saved().state.config;
+const savedTone=savedPlan.contract.fields.find(field=>field.key==='emotionalDirection');
+assert.deepEqual([savedTone.value,savedTone.status,savedTone.source],[agreementTone,'confirmed','user']);
+assert.equal(savedPlan.outline[0].goal,openingGoal);
+cleanup();
+console.log('PASS author agreement and outline edits survive unchanged Back/Forward and failed replanning; mock only.');
