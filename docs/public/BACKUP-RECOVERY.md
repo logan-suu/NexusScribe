@@ -49,3 +49,22 @@ Candidate support reports, per-item decisions and original-candidate history are
 
 
 Isolated support attempts use a separate application-owned scope and shared snapshot references. Old bundled assessments and accepted histories are preserved verbatim; they are not relabeled as isolated. Pending bundled-only keep decisions lose ordinary-keep authority. Re-auditing one candidate preserves unrelated completed audits, while imports and changed review/source generations revoke pending authority. Failed/cancelled attempts remain distinct from a model-returned unknown judgment.
+
+## Moving between local launch addresses
+
+A browser stores projects separately for each scheme, hostname and port. For example,
+the source launcher at `http://127.0.0.1:5173` and compiled preview at
+`http://127.0.0.1:4173` do not share drafts. Before changing address, export a project
+backup from the original address. At the new address, import that JSON and confirm the
+preview. Reopen the chapter to check the latest text and keep the original JSON.
+
+For a local compiled preview, run `npm ci` and `npm run build` from the repository root.
+Run `NEXUS_LIVE_ENABLED=false NEXUS_OVERAGE_CONFIRMED_OFF=false npm run server:built`
+and `npm run preview` in separate terminals, then open `http://127.0.0.1:4173`.
+These commands are for local verification, not hosting.
+
+`npx playwright install chromium` followed by `npm run build && npx playwright test --config playwright.compiled.config.js` exercises
+the compiled app and gateway in desktop/mobile Chromium using fictional data. The
+test requires loopback ports 4173, 4174 and 8787 to be free. It checks a newly created
+story, pending edits across reload, invalid backup rejection and exported JSON
+recovery across two browser origins. It does not test live generation.
