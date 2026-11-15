@@ -12,18 +12,20 @@ async function createStory(page) {
   await page.getByLabel(/给故事起个名字/).fill(title);
   await page.getByRole('button', {name:'聊聊这个故事'}).click();
   await expect(page.getByText('第 1 / 2 问 · 可以留空')).toBeFocused();
-  await expect(page.getByRole('button', {name:'克制而不安'})).toHaveCount(0);
-  await page.getByLabel(/谁来经历/).fill('阿遥');
+  await expect(page.getByLabel(/谁来经历/)).toHaveCount(0);
+  const tone = page.getByRole('button', {name:'温暖又怅然'});
+  await tone.click();
   await page.getByRole('button', {name:'下一问'}).click();
   await expect(page.getByText('第 2 / 2 问 · 可以留空')).toBeFocused();
-  await expect(page.getByLabel(/谁来经历/)).toHaveCount(0);
+  await expect(tone).toHaveCount(0);
   await page.getByRole('button', {name:'上一问'}).click();
-  await expect(page.getByLabel(/谁来经历/)).toHaveValue('阿遥');
+  await expect(tone).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button', {name:'下一问'}).click();
-  await page.getByRole('button', {name:'克制而不安'}).click();
-  await expect(page.getByRole('button', {name:'克制而不安'})).toHaveAttribute('aria-pressed','true');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await page.getByRole('button', {name:'查看故事约定'}).click();
+  const proposalTone = page.locator('label').filter({has:page.getByLabel('情绪方向')});
+  await expect(proposalTone).toContainText('你的设定');
+  await expect(page.getByLabel('情绪方向')).toHaveValue('温暖又怅然');
   await page.getByRole('button', {name:'确认约定，开始创作'}).click();
 }
 

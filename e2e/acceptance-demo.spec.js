@@ -96,9 +96,9 @@ test('complete synthetic writing journey keeps author control through next conte
   await page.getByLabel(/你的故事灵感/).fill(INPUT.idea);
   await page.getByLabel(/给故事起个名字/).fill(INPUT.title);
   await button(page,'聊聊这个故事').click();
-  await page.getByLabel(/谁来经历这个故事/).fill(INPUT.protagonist);
-  await button(page,'下一问').click();
   await page.getByLabel(/你希望读者最后留下什么感觉/).fill(INPUT.tone);
+  await button(page,'下一问').click();
+  await page.getByLabel(/谁来经历这个故事/).fill(INPUT.protagonist);
   await page.getByText('补充主角愿望与创作边界（可选）').click();
   await page.getByLabel('主角愿望',{exact:true}).fill(INPUT.goal);
   await page.getByLabel('不希望出现的内容',{exact:true}).fill(INPUT.boundaries);

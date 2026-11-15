@@ -3,8 +3,8 @@ import type {AuthoringInput, AuthoringKey, NormalizedAuthoringInput, InterviewQu
 export const TEMPLATE_PROVIDER = Object.freeze({id:'deterministic-template',label:'确定性模板 · 非 AI 生成',isLive:false});
 const clean = (value: unknown, fallback='') => typeof value === 'string' && value.trim() ? value.trim() : fallback;
 const questionBank: Array<InterviewQuestion & {key: AuthoringKey}> = [
-  {key:'protagonist',title:'谁来经历这个故事？',hint:'给主角一个名字，也可以补上一句话身份或愿望',placeholder:'例如：许知夏，一位回乡整理遗物的修复师',importance:5},
-  {key:'tone',title:'你希望读者最后留下什么感觉？',hint:'情绪会影响开场、人物选择和章节落点',options:['温暖又怅然','克制而不安','明亮、有冒险感'],placeholder:'也可以写自己的情绪方向',importance:4},
+  {key:'tone',title:'你希望读者最后留下什么感觉？',hint:'情绪会影响开场、人物选择和章节落点',options:['温暖又怅然','克制而不安','明亮、有冒险感'],placeholder:'也可以写自己的情绪方向',importance:5},
+  {key:'protagonist',title:'谁来经历这个故事？',hint:'给主角一个名字，也可以补上一句话身份或愿望',placeholder:'例如：许知夏，一位回乡整理遗物的修复师',importance:4},
   {key:'pov',title:'我们从谁的眼睛看这个故事？',hint:'限知视角只呈现当前人物能知道的事',options:['第三人称限知','第一人称'],importance:3},
   {key:'goal',title:'主角现在最想做到什么？',hint:'一个具体愿望，比提前决定结局更有帮助',placeholder:'例如：找到来信人，弄清母亲没有说出口的事',importance:2},
   {key:'boundaries',title:'有哪些你不希望故事出现的内容？',hint:'可以写不接受的桥段、尺度或设定，也可以暂时留空',placeholder:'例如：不靠失忆解谜；不要突然复活',importance:1},

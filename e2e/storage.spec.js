@@ -31,9 +31,9 @@ test.describe('short desktop backup controls',()=>{
    await page.getByLabel(/你的故事灵感/).fill('守灯人收到一封没有寄件人的信。');
    await page.getByLabel(/给故事起个名字/).fill('海风里的灯');
    await page.getByRole('button',{name:'聊聊这个故事'}).click();
-   await page.getByLabel(/谁来经历/).fill('阿遥');
-   await page.getByRole('button',{name:'下一问'}).click();
    await page.getByRole('button',{name:'克制而不安'}).click();
+   await page.getByRole('button',{name:'下一问'}).click();
+   await page.getByLabel(/谁来经历/).fill('阿遥');
    await page.getByRole('button',{name:'查看故事约定'}).click();
    await page.getByRole('button',{name:'确认约定，开始创作'}).click();
    await page.getByLabel('章节正文').fill(editing);
