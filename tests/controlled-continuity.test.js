@@ -9,6 +9,13 @@ test('controlled continuation sends accepted text and only current Canon over a 
   assert.equal(accepted.chapters[0].status,'ACCEPTED');
   assert.equal(pending.status,'proposed');
   assert.equal(current.factHistory[0].label,superseded);
+  const factSource = current.facts[0].source;
+  const sourceChapter = current.chapters.find(chapter=>chapter.id===factSource.chapterId);
+  const historical = sourceChapter.revisions.find(revision=>revision.revision===factSource.revision);
+  assert.ok(sourceChapter.revision>factSource.revision);
+  assert.equal(historical.text.slice(factSource.start,factSource.end),approved);
+  assert.equal(factSource.quote,approved);
+  assert.equal(current.chapters[0].text,chapterOne);
   const env = {
     NEXUS_OVERAGE_CONFIRMED_OFF:'true', NEXUS_LIVE_ENABLED:'true',
     NEXUS_API_BASE_URL:'https://example.test/v1', NEXUS_API_MODEL:scope.model,
@@ -37,8 +44,17 @@ test('controlled continuation sends accepted text and only current Canon over a 
   assert.deepEqual(wire.input.context.facts.map(({label,recordVersion,authority})=>[label,recordVersion,authority]),
     [[approved,2,'explicit_author_decision']]);
   assert.doesNotMatch(JSON.stringify(wire),new RegExp(superseded));
-  assert.equal(wire.input.context.sources.find(source=>source.chapterId==='ch2').role,'planned_content');
-  assert.match(wire.input.context.sources.find(source=>source.chapterId==='ch2').text,/未采纳的构想/);
+  assert.deepEqual(wire.input.context.facts[0].source,factSource);
+  const planned = wire.input.context.sources.find(source=>source.chapterId==='ch2');
+  assert.equal(planned.role,'planned_content');
+  assert.equal(planned.text,`【未采纳的构想：${notApproved}】`);
+  // Exclude only the one validated authoritative record; no other input, outline,
+  // history or prompt text may supply the target color independently.
+  const withoutAuthorFact = structuredClone(wire);
+  withoutAuthorFact.input.context.facts = [];
+  const nonCanonRequest = {...requests[0],messages:requests[0].messages.map(message=>
+    message.role==='user' ? {...message,content:JSON.stringify(withoutAuthorFact)} : message)};
+  assert.doesNotMatch(JSON.stringify(nonCanonRequest),/蓝|blue/i);
   assert.doesNotMatch(JSON.stringify(wire.input.context.facts),new RegExp(notApproved));
   assert.match(wire.input.project.boundaries,/身份不揭晓/);
   assert.match(wire.input.project.outline[1].exitState,/询问已经发生/);

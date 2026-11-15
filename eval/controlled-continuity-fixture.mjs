@@ -28,9 +28,12 @@ export function buildControlledContinuity() {
   const accepted = acceptDraft(reviewDraft(staged,id),id);
   const oldText = saveRevision(accepted,'ch2',superseded,accepted.chapters[1].revision);
   const baseline = commitPatch(oldText,proposeCustomPatch(oldText,'ch2',{intent:'author_fact',statement:superseded}));
-  const edited = saveRevision(baseline,'ch2',approved+'\n【未采纳的构想：'+notApproved+'】',baseline.chapters[1].revision);
+  const edited = saveRevision(baseline,'ch2',approved,baseline.chapters[1].revision);
   const amendment = proposeCustomPatch(edited,'ch2',{intent:'author_fact',statement:approved,targetFactId:baseline.facts[0].id});
-  const current = commitPatch(edited, amendment);
+  const amended = commitPatch(edited, amendment);
+  // Keep Canon's historical source revision, but remove its duplicate from current planning text.
+  const planning = saveRevision(amended,'ch2','【未采纳的构想：'+notApproved+'】',amended.chapters[1].revision);
+  const current = commitPatch(planning,proposeCustomPatch(planning,'ch2',{intent:'local_prose'}));
   const pending = proposeCustomPatch(current,'ch2',{intent:'author_fact',statement:notApproved});
   return {accepted, current, pending, input:{project:structuredClone(config),chapterIndex:1,context:getContext(current)}};
 }
