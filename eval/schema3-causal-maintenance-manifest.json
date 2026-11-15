@@ -45,7 +45,7 @@
     "src/main.tsx": "20eac38f56ab29d1b27510f8d6cc7603c6a29ed0f2991df9a7e6498940539800",
     "src/storage-types.ts": "6ac0de755e7046f9cab57479ed4e1bba38e3191fd385bbad22aa5fabe7ce42dc",
     "src/storage.ts": "b499d6d8b2d878a7116cb3f3c8968c391aaae129b49bf8cb8f082f48732af1ee",
-    "src/styles.css": "42e23dda348148d6d5060b571ea7f57f9c0bb6bae7b4bbdf7131b8b1e3c5db1b",
+    "src/styles.css": "dbf667565b1b72332dca80a0fb2be88527d6c226039d283be16619d0e14e3f87",
     "tests/schema3-causal-fixtures.test.js": "97bdf1b4184c0085461a38843149132b3558d60066d5e1297fcd718ff383535d",
     "tsconfig.json": "fef7fcb54e4d59c937210785575f46fc3c3e1f21eb82dc4b0754419d2a5ae3b0",
     "type-tests/contracts.ts": "d082de43ea51edec2b61149f22c8e02c76471ecfd5a6d17dd5c9b1f005020640",
