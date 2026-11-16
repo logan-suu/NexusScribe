@@ -11,7 +11,7 @@ import {
 } from '../eval/controlled-continuity-fixture.mjs';
 
 const root = new URL('../', import.meta.url);
-const fixtureDigest = 'fd956aa1f61e74b59d16d8f319faddc7262e40879a6bdecb8882787ef88bb6c4';
+const fixtureDigest = '6e2c229dc2815f5eca8c2ee723cd2e8ab75f6029d7bb865a873996c4c236bbf8';
 const hash = value => createHash('sha256').update(value).digest('hex');
 const read = path => readFile(new URL(path, root));
 

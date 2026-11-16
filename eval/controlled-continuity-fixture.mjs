@@ -1,8 +1,8 @@
 import {acceptDraft, commitPatch, createProjectFromConfig, getContext,
   proposeCustomPatch, reviewDraft, saveRevision, stageManualDraft} from '../src/domain/engine.js';
 
-export const sourceCommit = '5ccefbb9b917e4d56a141dd5888ee0922506a116';
-export const sourceRuntimeDigest = '17984ab79e49ed92bfa50e5d86d0714e0b4aa0d659592e94fb95419432389c12';
+export const sourceCommit = '05ff3e6622e4d4fd86714126ffbc3099b98f899a';
+export const sourceRuntimeDigest = 'd13aa6fa0b12192b2f28a24858a004fffdc5d381ea22f88b1ffb2d40d13b2737';
 export const scope = Object.freeze({model:'deepseek-v4.1-flash', action:'generateProse', maxCalls:1,
   maxOutputTokens:1200, timeoutMs:30000, thinkingMode:'disabled'});
 export const chapterOne = '夜潮已落，照岸把未拆的信塞进干燥的上衣口袋。送信人没有留下姓名。\n\n她敲了值班室的门，没人应声。她决定等天亮，步行去北码头问值班员。';
