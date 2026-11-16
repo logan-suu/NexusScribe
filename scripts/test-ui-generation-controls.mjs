@@ -11,7 +11,26 @@ await boot();await user.click(screen.getByRole('button',{name:'生成当前章'}
 await boot();await user.click(screen.getByRole('button',{name:'生成当前章'}));await user.type(screen.getByLabelText('章节正文'),'作者的未分析修改');const edited=saved().editing;await release(0);assert.deepEqual(saved().editing,edited);assert.equal(saved().state.drafts.length,0);assert.match(screen.getByLabelText('模型任务状态').textContent,/返回结果未采用/);
 await boot();await user.click(screen.getByRole('button',{name:'生成当前章'}));await user.type(screen.getByLabelText('章节正文'),'错误时保留的修改');const before=saved();await act(async()=>calls[0].resolve({ok:false,status:503,json:async()=>({error:{message:'测试失败'}})}));assert.deepEqual(saved(),before);assert.equal(calls.length,1);assert.match(screen.getByLabelText('模型任务状态').textContent,/手动重试/);cleanup();render(React.createElement(App));await user.click(screen.getByRole('navigation',{name:'章节'}).querySelector('button'));assert.match(screen.getByLabelText('章节正文').value,/错误时保留的修改/);assert.equal(screen.queryByRole('button',{name:'取消请求'}),null);assert.equal(calls.length,1);
 await boot();await user.click(screen.getByRole('button',{name:'生成当前章'}));cleanup();assert.equal(calls[0].options.signal.aborted,true);render(React.createElement(App));await release(0);assert.equal(saved().state.drafts.length,0);assert.equal(calls.length,1);assert.equal(screen.queryByRole('button',{name:'取消请求'}),null);
-await boot();await user.click(screen.getByRole('button',{name:'新建故事'}));await user.type(screen.getByLabelText(/你的故事灵感/),'雨中的灯塔');await user.click(screen.getByRole('button',{name:'聊聊这个故事'}));await user.click(screen.getByRole('button',{name:'关闭新建故事'}));assert.equal(calls[0].options.signal.aborted,true);await act(async()=>calls[0].resolve({ok:true,status:200,json:async()=>({output:{questions:[{key:'tone',title:'迟到的问题'}]}})}));await user.click(screen.getByRole('button',{name:'新建故事'}));assert.equal(screen.queryByText('迟到的问题'),null);assert.equal(screen.getByLabelText(/你的故事灵感/).value,'');await user.type(screen.getByLabelText(/你的故事灵感/),'新的灯塔');await user.dblClick(screen.getByRole('button',{name:'聊聊这个故事'}));assert.equal(calls.length,2);await user.type(screen.getByLabelText(/你的故事灵感/),'与新方向');await act(async()=>calls[1].resolve({ok:true,status:200,json:async()=>({output:{questions:[{key:'tone',title:'旧方向的问题'}]}})}));assert.equal(screen.queryByText('旧方向的问题'),null);assert.match(screen.getByLabelText('模型任务状态').textContent,/返回结果未采用/);assert.match(screen.getByLabelText(/你的故事灵感/).value,/与新方向/);cleanup();
+const beforeUnloadWarns=()=>{
+  const event=new window.Event('beforeunload',{cancelable:true});
+  window.dispatchEvent(event);
+  return event.defaultPrevented;
+};
+const exitWizard=()=>screen.getByRole('button',{name:'关闭新建故事'});
+const keepEditing=()=>screen.getByRole('button',{name:'继续编辑'});
+const confirmDiscard=()=>screen.getByRole('button',{name:'放弃新故事',exact:true});
+const discardDialog=()=>screen.queryByRole('dialog',{name:'放弃新故事？'});
+const newStory=()=>screen.getByRole('button',{name:'新建故事'});
+await boot();await user.click(newStory());assert.equal(beforeUnloadWarns(),false);
+await user.click(exitWizard());assert.equal(discardDialog(),null);
+await user.click(newStory());await user.type(screen.getByLabelText(/给故事起个名字/),'临时标题');
+assert.equal(beforeUnloadWarns(),true);
+const backToWorkbench=()=>screen.getByRole('button',{name:'返回工作台'});
+await user.click(backToWorkbench());assert.equal(document.activeElement,keepEditing());
+await user.keyboard('{Escape}');assert.equal(discardDialog(),null);assert.equal(document.activeElement,backToWorkbench());
+assert.equal(screen.getByLabelText(/给故事起个名字/).value,'临时标题');
+await user.click(backToWorkbench());await user.click(confirmDiscard());assert.equal(beforeUnloadWarns(),false);
+await boot();await user.click(screen.getByRole('button',{name:'新建故事'}));await user.type(screen.getByLabelText(/你的故事灵感/),'雨中的灯塔');await user.click(screen.getByRole('button',{name:'聊聊这个故事'}));await user.click(exitWizard());assert.equal(calls[0].options.signal.aborted,false);assert.equal(document.activeElement,keepEditing());await user.click(keepEditing());assert.equal(discardDialog(),null);assert.equal(calls[0].options.signal.aborted,false);assert.equal(screen.getByLabelText(/你的故事灵感/).value,'雨中的灯塔');await user.click(exitWizard());await user.click(confirmDiscard());assert.equal(calls[0].options.signal.aborted,true);assert.equal(beforeUnloadWarns(),false);await act(async()=>calls[0].resolve({ok:true,status:200,json:async()=>({output:{questions:[{key:'tone',title:'迟到的问题'}]}})}));await user.click(screen.getByRole('button',{name:'新建故事'}));assert.equal(screen.queryByText('迟到的问题'),null);assert.equal(screen.getByLabelText(/你的故事灵感/).value,'');await user.type(screen.getByLabelText(/你的故事灵感/),'新的灯塔');await user.dblClick(screen.getByRole('button',{name:'聊聊这个故事'}));assert.equal(calls.length,2);await user.type(screen.getByLabelText(/你的故事灵感/),'与新方向');await act(async()=>calls[1].resolve({ok:true,status:200,json:async()=>({output:{questions:[{key:'tone',title:'旧方向的问题'}]}})}));assert.equal(screen.queryByText('旧方向的问题'),null);assert.match(screen.getByLabelText('模型任务状态').textContent,/返回结果未采用/);assert.match(screen.getByLabelText(/你的故事灵感/).value,/与新方向/);cleanup();
 console.log('PASS generation controls: repeated clicks, cancel/new-request late race, project switch, author edit stale result, failure preservation/no retry, reload, wizard close/reopen. Fake responses only.');
 
 for (const questions of [[],[{key:'tone',title:'只有这一问'}],[{key:'protagonist',title:'保留模型的主角问题'}]]) {
@@ -33,8 +52,9 @@ for (const questions of [[],[{key:'tone',title:'只有这一问'}],[{key:'protag
   }
   assert.ok(screen.getByRole('button',{name:'查看故事约定'}));
   assert.equal(calls.length,1);
-  await user.click(screen.getByRole('button',{name:'关闭新建故事'}));
-  await user.click(screen.getByRole('button',{name:'新建故事'}));
+  await user.click(exitWizard());
+  await user.click(confirmDiscard());
+  await user.click(newStory());
   assert.equal(screen.getByLabelText(/你的故事灵感/).value,'');
   assert.equal(screen.queryByLabelText('只有这一问'),null);
   cleanup();
@@ -87,6 +107,9 @@ await user.type(screen.getByLabelText(/你的故事灵感/),'一位修表师接�
 await user.click(screen.getByRole('button',{name:'聊聊这个故事'}));
 await respondToInterview(0);
 await user.click(screen.getByRole('button',{name:'克制而不安'}));
+await user.click(exitWizard());
+await user.click(keepEditing());
+assert.equal(screen.getByLabelText('想留下什么情绪？').value,'克制而不安');
 await user.click(screen.getByRole('button',{name:'查看故事约定'}));
 const {createProjectConfig}=await import('../src/authoring/index.js');
 await act(async()=>calls[1].resolve({ok:true,status:200,json:async()=>({
@@ -107,6 +130,13 @@ const assertEdits=()=>{
 };
 await edit('情绪方向',agreementTone);
 await edit('第1章目标',openingGoal);
+const storedBeforeExit=saved();
+assert.equal(beforeUnloadWarns(),true);
+await user.click(exitWizard());assert.equal(document.activeElement,keepEditing());
+await user.keyboard('{Escape}');assert.equal(discardDialog(),null);assert.equal(document.activeElement,exitWizard());
+assertEdits();
+assert.deepEqual(saved(),storedBeforeExit);
+assert.deepEqual(calls.map(({body})=>body.action),['interview','planStory']);
 await user.click(screen.getByRole('button',{name:'上一步'}));
 await user.click(screen.getByRole('button',{name:'查看故事约定'}));
 assertEdits();
@@ -126,9 +156,10 @@ await user.click(screen.getByRole('button',{name:'查看故事约定'}));
 assertEdits();
 assert.equal(calls.length,3);
 await user.click(screen.getByRole('button',{name:'确认约定，开始创作'}));
+assert.equal(beforeUnloadWarns(),false);
 const savedPlan=saved().state.config;
 const savedTone=savedPlan.contract.fields.find(field=>field.key==='emotionalDirection');
 assert.deepEqual([savedTone.value,savedTone.status,savedTone.source],[agreementTone,'confirmed','user']);
 assert.equal(savedPlan.outline[0].goal,openingGoal);
 cleanup();
-console.log('PASS author agreement and outline edits survive unchanged Back/Forward and failed replanning; mock only.');
+console.log('PASS author agreement and outline edits survive unchanged Back/Forward, failed replanning, and discard prompt dismissal; dirty-only unload guard clears after explicit save or discard; mock only.');

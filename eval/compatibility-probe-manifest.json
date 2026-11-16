@@ -24,7 +24,7 @@
     "src/components/Inspector.tsx": "54dba1ec8aea2ffb6aed4c39b14d7aa074fd6c7022154e68b692e78c3be1cfb0",
     "src/components/ModelTaskStatus.tsx": "b612706c4d5aae3362ebd37ad6fced007f2371ae64d6013699c6483f8e9321a0",
     "src/components/PatchPanel.tsx": "f68fce50fd27fc74024ad733e68da04eaa0ef6fe223cd71ca3344a3e6c2e8478",
-    "src/components/ProjectWizard.tsx": "3e301b8cd53bf3c8cf41357baaf8c1d80d8b61fca8412742fb4dd64d0a76f972",
+    "src/components/ProjectWizard.tsx": "11c8588084971932a049604e5889ae21729758d37c539d31a2708eb8f8dc60b5",
     "src/components/ProviderPanel.tsx": "0bf09f23d7c9a8eab50e52e68155b4475be129bfe5772a9d28aa9c304ccba205",
     "src/components/RevisionAdoptionDialog.tsx": "351508eefe2974acf85c7617678bc3a9cddc284b8f0861239a1a1af02fc162a2",
     "src/components/RevisionPanel.tsx": "349bf1481ae3a44af714107e3f71a7616eb1db79e8133945270d39d3310a385b",

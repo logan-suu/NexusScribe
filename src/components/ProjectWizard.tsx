@@ -1,3 +1,4 @@
+import type {MouseEvent} from 'react';
 import type {ProjectConfig, AuthoringInput} from '../authoring/types.js';
 import type {ProviderAdapter} from '../adapters/provider.js';
 import {errorMessage} from '../hooks/useModelTask.js';
@@ -18,14 +19,16 @@ import {createTemplateAdapter, validateActionOutput} from '../adapters/provider.
 import '../authoring/wizard.css';
 import useModelTask from '../hooks/useModelTask.js';
 import ModelTaskStatus from './ModelTaskStatus.js';
+import {DecisionDialog} from './DraftPanel.js';
 
 const DEFAULT_PROVIDER=createTemplateAdapter();
 const STEPS=['一句灵感','创作访谈','故事约定'];
 const emptyAnswers={protagonist:'',tone:'',pov:'第三人称限知',goal:'',boundaries:''};
+const emptyInput: WizardInput={idea:'',title:'',...emptyAnswers};
 const EXAMPLE='一个回乡整理遗物的人，发现已故母亲每年都会收到同一个陌生人的信。';
 export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVIDER}: ProjectWizardProps) {
   const [step,setStep]=useState(0);
-  const [input,setInput]=useState<WizardInput>({idea:'',title:'',...emptyAnswers});
+  const [input,setInput]=useState<WizardInput>(emptyInput);
   const [questions,setQuestions]=useState<InterviewQuestionView[]>([]);
   const [questionIndex,setQuestionIndex]=useState(0);
   const interviewSeed=useRef<{idea:string;title:string;provider:ProviderAdapter}|null>(null);
@@ -46,7 +49,24 @@ export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVID
   const [creating,setCreating]=useState(false);
   const task=useModelTask(),busy=task.busy||creating,latest=useRef<{step: number; input: WizardInput; proposal: StoryProposal | null; provider:ProviderAdapter} | null>(null);latest.current={step,input,proposal,provider};
   const snapshot=()=>latest.current?.provider===provider?JSON.stringify([latest.current.step,latest.current.input,latest.current.proposal]):undefined;
-  function close(){task.cancel();onCancel()}
+  const hasUnsavedWork=!!proposal||Object.entries(input).some(([key,value])=>value.trim()!==(emptyInput[key]||''));
+  const [confirmDiscard,setConfirmDiscard]=useState(false);
+  const discardOpener=useRef<HTMLButtonElement|null>(null);
+  useEffect(()=>{
+    if(!hasUnsavedWork)return;
+    function leaving(event: BeforeUnloadEvent){event.preventDefault();event.returnValue=''}
+    window.addEventListener('beforeunload',leaving);
+    return()=>window.removeEventListener('beforeunload',leaving);
+  },[hasUnsavedWork]);
+  useEffect(()=>{
+    if(!confirmDiscard&&discardOpener.current){discardOpener.current.focus();discardOpener.current=null}
+  },[confirmDiscard]);
+  function discard(){task.cancel();onCancel()}
+  function requestClose(event: MouseEvent<HTMLButtonElement>){
+    if(creating||confirmDiscard)return;
+    if(!hasUnsavedWork){discard();return;}
+    discardOpener.current=event.currentTarget;setConfirmDiscard(true);
+  }
   const update=(key: string,value: string)=>setInput(old=>({...old,[key]:value}));
   async function advance() {
     if(task.isActive()||creating)return;setError('');
@@ -86,8 +106,8 @@ export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVID
       await onCreate({...proposal,contract});
     } catch(e){setError(errorMessage(e)||'创建失败，请重试');setCreating(false);}
   }
-  return <div className="ns-wizard-shell"><section className="ns-wizard" aria-labelledby="wizard-title">
-    <header className="ns-wizard-top"><span className="ns-wizard-brand"><Feather size={18}/>NEXUS SCRIBE <span>/ 新故事</span></span><button className="ns-wizard-icon" onClick={close} aria-label="关闭新建故事"><X size={20}/></button></header>
+  return <div className="ns-wizard-shell"><section className="ns-wizard" aria-labelledby="wizard-title" inert={confirmDiscard}>
+    <header className="ns-wizard-top"><span className="ns-wizard-brand"><Feather size={18}/>NEXUS SCRIBE <span>/ 新故事</span></span><button className="ns-wizard-icon" onClick={requestClose} disabled={creating} aria-label="关闭新建故事"><X size={20}/></button></header>
     <nav aria-label="创建步骤" className="ns-wizard-progress">{STEPS.map((label,index)=><span key={label} aria-current={step===index?'step':undefined} className={step===index?'current':step>index?'completed':''}><b>{step>index?<Check size={13}/>:String(index+1).padStart(2,'0')}</b>{label}</span>)}</nav>
     <div className="ns-wizard-content">
       <div className="ns-wizard-heading"><h1 id="wizard-title">{['一个念头，就能开始','把重要的方向说清楚','在落笔前，达成约定'][step]}</h1><p>{['不需要完整的大纲。一个人、一桩怪事，或一种忘不掉的感觉，都可以。','一次看一个问题。还没决定的部分，可以留待写作时发现。','这是可修改的创作提案。你确认后，我们才把它作为故事的起点。'][step]}</p></div>
@@ -112,6 +132,10 @@ export default function ProjectWizard({onCreate,onCancel,provider=DEFAULT_PROVID
       <ModelTaskStatus task={task}/>
       {error?<p className="ns-wizard-error" role="alert">{error}</p>:null}
     </div>
-    <footer className="ns-wizard-footer"><button className="ns-wizard-back" onClick={()=>step===0?close():step===1&&questionIndex>0?setQuestionIndex(questionIndex-1):setStep(step-1)} disabled={busy}><ArrowLeft size={16}/>{step===0?'返回工作台':step===1&&questionIndex>0?'上一问':'上一步'}</button><span className="ns-wizard-disclosure">{provider.isLive?'服务端模型规划 · 待作者确认':'离线模板规划 · 不调用 AI'}</span>{step<2?<button className="ns-wizard-next" disabled={busy} onClick={event=>{if(event.detail<=1)void advance()}}>{busy?'正在准备…':step===0?(willRefreshInterview?'重新访谈':'聊聊这个故事'):hasNextQuestion?'下一问':willRefreshProposal?'重新规划':'查看故事约定'}<ArrowRight size={16}/></button>:<button className="ns-wizard-next" disabled={busy} onClick={create}><Check size={16}/>{busy?'正在准备…':'确认约定，开始创作'}</button>}</footer>
-  </section></div>;
+    <footer className="ns-wizard-footer"><button className="ns-wizard-back" onClick={event=>step===0?requestClose(event):step===1&&questionIndex>0?setQuestionIndex(questionIndex-1):setStep(step-1)} disabled={busy}><ArrowLeft size={16}/>{step===0?'返回工作台':step===1&&questionIndex>0?'上一问':'上一步'}</button><span className="ns-wizard-disclosure">{provider.isLive?'服务端模型规划 · 待作者确认':'离线模板规划 · 不调用 AI'}</span>{step<2?<button className="ns-wizard-next" disabled={busy} onClick={event=>{if(event.detail<=1)void advance()}}>{busy?'正在准备…':step===0?(willRefreshInterview?'重新访谈':'聊聊这个故事'):hasNextQuestion?'下一问':willRefreshProposal?'重新规划':'查看故事约定'}<ArrowRight size={16}/></button>:<button className="ns-wizard-next" disabled={busy} onClick={create}><Check size={16}/>{busy?'正在准备…':'确认约定，开始创作'}</button>}</footer>
+  </section>
+  {confirmDiscard?<DecisionDialog label="放弃新故事？" title="放弃尚未保存的新故事？" onClose={()=>setConfirmDiscard(false)}>
+    <p>灵感、访谈答案和对故事约定的修改尚未保存。放弃后不能恢复，已保存的项目不变。</p>
+    <div className="draft-actions"><button data-autofocus onClick={()=>setConfirmDiscard(false)}>继续编辑</button><button onClick={discard}>放弃新故事</button></div>
+  </DecisionDialog>:null}</div>;
 }
