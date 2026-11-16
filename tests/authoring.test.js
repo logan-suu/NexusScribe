@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {getInterviewQuestions,createProjectConfig,createStoryContract,createOutline,createDeterministicProvider,generateChapter} from '../src/authoring/index.js';
 const idea='失去记忆的灯塔管理员发现每一场暴风雨都会带来一位过去的自己';
 test('interview asks two important missing fields and does not repeat explicit input',()=>{
-  assert.deepEqual(getInterviewQuestions({idea}).map(q=>q.key),['protagonist','tone']);
+  assert.deepEqual(getInterviewQuestions({idea}).map(q=>q.key),['tone','protagonist']);
   assert.deepEqual(getInterviewQuestions({idea,protagonist:'江屿',tone:'温暖',pov:'第一人称'}).map(q=>q.key),['goal','boundaries']);
   assert.equal(getInterviewQuestions({protagonist:'a',tone:'b',pov:'c',goal:'d',boundaries:'e'}).length,0);
 });

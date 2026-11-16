@@ -18,3 +18,45 @@ test('corrupt primary recovery cancel/confirm includes current edits and preserv
 test('quota failure retains typed edits, exports them, retries and reloads',async({page},info)=>{
  const errors=errorsFor(page);await page.goto('/');await page.evaluate(()=>{window.originalSet=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw new DOMException('Quota exhausted','QuotaExceededError')}});await page.getByLabel('章节正文').fill('配额失败时的虚构编辑');await expect(page.getByRole('alert')).toContainText('尚未安全保存');await expect(page.getByLabel('章节正文')).toHaveValue('配额失败时的虚构编辑');await capture(page,info,'quota-unsaved');const downloaded=page.waitForEvent('download');await page.getByRole('button',{name:'导出当前内容（含暂存编辑）'}).click();const dl=await downloaded;const stream=await dl.createReadStream();let raw='';for await(const chunk of stream)raw+=chunk;expect(JSON.parse(raw).editing.ch2).toBe('配额失败时的虚构编辑');await page.evaluate(()=>{Storage.prototype.setItem=window.originalSet});await page.getByRole('button',{name:'重试保存'}).click();await expect(page.getByRole('alert')).toHaveCount(0);await page.reload();await expect(page.getByLabel('章节正文')).toHaveValue('配额失败时的虚构编辑');expect(errors).toEqual([]);
 });
+
+test.describe('short desktop backup controls',()=>{
+ test.use({viewport:{width:1280,height:720}});
+ test.skip(({isMobile})=>isMobile,'Short desktop layout only');
+
+ for(const method of ['pointer','keyboard']){
+  test(`backup after reload with ${method} in a short viewport`,async({page})=>{
+   const editing='小窗口中尚未提交的虚构正文';
+   await page.goto('/');
+   await page.getByRole('button',{name:'新建故事'}).click();
+   await page.getByLabel(/你的故事灵感/).fill('守灯人收到一封没有寄件人的信。');
+   await page.getByLabel(/给故事起个名字/).fill('海风里的灯');
+   await page.getByRole('button',{name:'聊聊这个故事'}).click();
+   await page.getByRole('button',{name:'克制而不安'}).click();
+   await page.getByRole('button',{name:'下一问'}).click();
+   await page.getByLabel(/谁来经历/).fill('阿遥');
+   await page.getByRole('button',{name:'查看故事约定'}).click();
+   await page.getByRole('button',{name:'确认约定，开始创作'}).click();
+   await page.getByLabel('章节正文').fill(editing);
+   await page.reload();
+   await expect(page.getByLabel('章节正文')).toHaveValue(editing);
+   const chapters=page.getByRole('navigation',{name:'章节'});
+   const button=page.getByRole('button',{name:'导出项目备份',exact:true});
+   if(method==='keyboard'){
+    await chapters.getByRole('button').last().focus();
+    await page.keyboard.press('Tab');
+    await expect(button).toBeFocused();
+    await expect(button).toBeInViewport({ratio:1});
+   }
+   const download=page.waitForEvent('download');
+   if(method==='pointer') await button.click();
+   else await page.keyboard.press('Enter');
+   await expect(button).toBeInViewport({ratio:1});
+   let raw='';
+   for await(const chunk of await (await download).createReadStream()) raw+=chunk;
+   const backup=JSON.parse(raw);
+   expect(backup.state.title).toBe('海风里的灯');
+   expect(Object.values(backup.editing)).toContain(editing);
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  });
+ }
+});
