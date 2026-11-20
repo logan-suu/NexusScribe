@@ -42,7 +42,17 @@ test('failure preserves all story data without retry; reload does not restart',a
  const {calls,errors}=await boot(page,context,true);await page.getByRole('button',{name:'生成当前章'}).click();await expect.poll(()=>calls.length).toBe(1);await page.getByLabel('章节正文').fill('失败时也保留的虚构正文');const before=await saved(page);await calls[0].route.fulfill({status:503,json:{error:{message:'虚构测试失败'}}});calls[0].resolve();await expect(page.getByLabel('模型任务状态')).toContainText('手动重试');expect(await saved(page)).toEqual(before);await capture(page,info,'failure');expect(calls).toHaveLength(1);await page.reload();await page.getByRole('navigation',{name:'章节'}).getByRole('button').first().click();await expect(page.getByLabel('章节正文')).toHaveValue('失败时也保留的虚构正文');await expect(page.getByRole('button',{name:'取消请求'})).toHaveCount(0);expect(calls).toHaveLength(1);await page.getByLabel('章节正文').fill(before.state.chapters[0].text);await page.getByRole('button',{name:'生成当前章'}).click();await expect.poll(()=>calls.length).toBe(2);await release(calls[1],'手动重试后的虚构候选稿');await expect(page.getByLabel('模型任务状态')).toContainText('结果已返回');expect((await saved(page)).state.drafts).toHaveLength(1);expect(calls).toHaveLength(2);expect(errors).toEqual([]);
 });
 test('wizard close and reopen ignores old interview results',async({page,context})=>{
- const {calls,errors}=await boot(page,context);await page.getByRole('button',{name:'新建故事'}).click();await page.getByLabel(/你的故事灵感/).fill('虚构灯塔在雨中发来消息');await page.getByRole('button',{name:'聊聊这个故事'}).click();await expect.poll(()=>calls.length).toBe(1);await page.getByRole('button',{name:'关闭新建故事'}).click();await calls[0].route.fulfill({json:{output:{questions:[{key:'tone',title:'迟到的虚构问题'}]}}});calls[0].resolve();await page.getByRole('button',{name:'新建故事'}).click();await expect(page.getByLabel(/你的故事灵感/)).toHaveValue('');await expect(page.getByText('迟到的虚构问题')).toHaveCount(0);expect(calls).toHaveLength(1);expect(errors).toEqual([]);
+ const {calls,errors}=await boot(page,context);await page.getByRole('button',{name:'新建故事'}).click();await page.getByLabel(/你的故事灵感/).fill('虚构灯塔在雨中发来消息');await page.getByRole('button',{name:'聊聊这个故事'}).click();await expect.poll(()=>calls.length).toBe(1);const close=page.getByRole('button',{name:'关闭新建故事'});
+ await close.click();
+ const discard=page.getByRole('dialog',{name:'放弃新故事？'});
+ await expect(discard.getByRole('button',{name:'继续编辑'})).toBeFocused();
+ await page.keyboard.press('Escape');
+ await expect(discard).toHaveCount(0);
+ await expect(close).toBeFocused();
+ await expect(page.getByLabel(/你的故事灵感/)).toHaveValue('虚构灯塔在雨中发来消息');
+ await close.click();
+ await discard.getByRole('button',{name:'放弃新故事',exact:true}).click();
+ await calls[0].route.fulfill({json:{output:{questions:[{key:'tone',title:'迟到的虚构问题'}]}}});calls[0].resolve();await page.getByRole('button',{name:'新建故事'}).click();await expect(page.getByLabel(/你的故事灵感/)).toHaveValue('');await expect(page.getByText('迟到的虚构问题')).toHaveCount(0);expect(calls).toHaveLength(1);expect(errors).toEqual([]);
 });
 
 
